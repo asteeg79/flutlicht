@@ -1,0 +1,4047 @@
+{
+  "fetchedAt": "2026-09-25T16:36:16.220259Z",
+  "url": "https://api.sofascore.com/api/v1/event/16434036/lineups",
+  "phase": "final",
+  "data": {
+    "confirmed": true,
+    "home": {
+      "players": [
+        {
+          "player": {
+            "name": "Fabian Bredlow",
+            "firstName": "Fabian",
+            "lastName": "Bredlow",
+            "slug": "fabian-bredlow",
+            "shortName": "F. Bredlow",
+            "position": "G",
+            "jerseyNumber": "1",
+            "height": 191,
+            "userCount": 320,
+            "gender": "M",
+            "sofascoreId": "imj-7me",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 152463,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 794102400,
+            "proposedMarketValueRaw": {
+              "value": 725000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "فابيان بريدلو",
+                "bn": "ফ্যাবিয়ান ব্রেডলো",
+                "hi": "फेबियन ब्रेडलो",
+                "ru": "Фабиан Бредлоу"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. بريدلو",
+                "bn": "এফ. ব্রেডলো",
+                "hi": "एफ. ब्रेडलो",
+                "ru": "Ф. Бредлоу"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 1,
+          "jerseyNumber": "1",
+          "position": "G",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 24,
+            "accuratePass": 20,
+            "totalLongBalls": 9,
+            "accurateLongBalls": 5,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 17,
+            "totalOwnHalfPasses": 17,
+            "accurateOppositionHalfPasses": 3,
+            "totalOppositionHalfPasses": 7,
+            "totalClearance": 1,
+            "ballRecovery": 4,
+            "savedShotsFromInsideTheBox": 3,
+            "saves": 3,
+            "punches": 1,
+            "totalKeeperSweeper": 1,
+            "accurateKeeperSweeper": 1,
+            "minutesPlayed": 90,
+            "touches": 29,
+            "rating": 7.5,
+            "possessionLostCtrl": 4,
+            "expectedAssists": 0.00150822,
+            "totalBallCarriesDistance": 22.977412312587,
+            "ballCarriesCount": 4,
+            "totalProgression": 0.97001042345023,
+            "progressiveBallCarriesCount": 0,
+            "keeperSaveValue": 0.626,
+            "ratingVersions": {
+              "original": 7.5,
+              "alternative": 7.1
+            },
+            "totalShots": 0,
+            "goalsPrevented": 0.0212,
+            "passValueNormalized": 0,
+            "dribbleValueNormalized": 0,
+            "defensiveValueNormalized": -0.08,
+            "goalkeeperValueNormalized": 0.49,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Finn Jeltsch",
+            "firstName": "Finn Jeltsch",
+            "slug": "jeltsch-finn",
+            "shortName": "F. Jeltsch",
+            "position": "D",
+            "jerseyNumber": "29",
+            "height": 188,
+            "userCount": 1809,
+            "gender": "M",
+            "sofascoreId": "b7j-vyz",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 1418649,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1153094400,
+            "proposedMarketValueRaw": {
+              "value": 32000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "يلتش، فين",
+                "ru": "Финн Ельч"
+              },
+              "shortNameTranslation": {
+                "ar": "ف. يلتش",
+                "ru": "Ф. Ельч"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 29,
+          "jerseyNumber": "29",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 65,
+            "accuratePass": 60,
+            "totalLongBalls": 7,
+            "accurateLongBalls": 4,
+            "goalAssist": 1,
+            "accurateOwnHalfPasses": 34,
+            "totalOwnHalfPasses": 36,
+            "accurateOppositionHalfPasses": 26,
+            "totalOppositionHalfPasses": 29,
+            "aerialLost": 4,
+            "aerialWon": 4,
+            "duelLost": 5,
+            "duelWon": 6,
+            "shotOffTarget": 1,
+            "onTargetScoringAttempt": 1,
+            "totalClearance": 6,
+            "ballRecovery": 2,
+            "totalTackle": 2,
+            "wonTackle": 1,
+            "fouls": 1,
+            "minutesPlayed": 90,
+            "touches": 76,
+            "rating": 7.1,
+            "possessionLostCtrl": 5,
+            "expectedGoals": 0.236,
+            "expectedGoalsOnTarget": 0.0528,
+            "expectedAssists": 0.0190656,
+            "topSpeed": 32,
+            "kilometersCovered": 9.62,
+            "numberOfSprints": 11,
+            "totalBallCarriesDistance": 162.41143139734,
+            "ballCarriesCount": 24,
+            "totalProgression": 56.364046084574,
+            "progressiveBallCarriesCount": 0,
+            "keyPass": 2,
+            "ratingVersions": {
+              "original": 7.1,
+              "alternative": 7.4
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.42,
+            "passValueNormalized": 0.33,
+            "dribbleValueNormalized": 0.07,
+            "defensiveValueNormalized": 0,
+            "metersCoveredRunningKm": 1.28,
+            "metersCoveredHighSpeedRunningKm": 0.45,
+            "metersCoveredSprintingKm": 0.19,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Jeff Chabot",
+            "slug": "julian-chabot",
+            "shortName": "J. Chabot",
+            "position": "D",
+            "jerseyNumber": "24",
+            "height": 194,
+            "userCount": 925,
+            "gender": "M",
+            "sofascoreId": "626-mnh",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 863271,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 887241600,
+            "proposedMarketValueRaw": {
+              "value": 15500000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جيف شابوت",
+                "bn": "জুলিয়ান চাবোট",
+                "hi": "जूलियन चैबोट",
+                "ru": "Джефф Шабо"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. شابوت",
+                "bn": "জে. চাবোট",
+                "hi": "जे. चैबोट",
+                "ru": "Д. Шабо"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 24,
+          "jerseyNumber": "24",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 57,
+            "accuratePass": 52,
+            "totalLongBalls": 11,
+            "accurateLongBalls": 7,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 32,
+            "totalOwnHalfPasses": 34,
+            "accurateOppositionHalfPasses": 20,
+            "totalOppositionHalfPasses": 23,
+            "aerialLost": 4,
+            "aerialWon": 7,
+            "duelLost": 5,
+            "duelWon": 9,
+            "challengeLost": 1,
+            "bigChanceMissed": 1,
+            "shotOffTarget": 1,
+            "onTargetScoringAttempt": 1,
+            "totalClearance": 8,
+            "outfielderBlock": 1,
+            "interceptionWon": 2,
+            "ballRecovery": 4,
+            "lastManTackle": 1,
+            "totalTackle": 2,
+            "wonTackle": 2,
+            "unsuccessfulTouch": 1,
+            "minutesPlayed": 90,
+            "touches": 75,
+            "rating": 7.8,
+            "possessionLostCtrl": 6,
+            "expectedGoals": 0.2916,
+            "expectedGoalsOnTarget": 0.5623,
+            "expectedAssists": 0.0292808,
+            "topSpeed": 28.51,
+            "kilometersCovered": 9.27,
+            "numberOfSprints": 9,
+            "totalBallCarriesDistance": 92.708991725106,
+            "ballCarriesCount": 13,
+            "totalProgression": 50.657441992409,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 7.8,
+              "alternative": 7.6
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.57,
+            "passValueNormalized": 0.38,
+            "dribbleValueNormalized": 0.08,
+            "defensiveValueNormalized": 0.69,
+            "metersCoveredRunningKm": 1.24,
+            "metersCoveredHighSpeedRunningKm": 0.46,
+            "metersCoveredSprintingKm": 0.1,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Maximilian Mittelstädt",
+            "firstName": "Maximilian",
+            "lastName": "Mittelstadt",
+            "slug": "maximilian-mittelstadt",
+            "shortName": "M. Mittelstädt",
+            "position": "D",
+            "jerseyNumber": "7",
+            "height": 178,
+            "userCount": 2891,
+            "gender": "M",
+            "sofascoreId": "c2t-hcg",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 788949,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 858643200,
+            "proposedMarketValueRaw": {
+              "value": 19800000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ماكسيميليان ميتلشتيت",
+                "bn": "ম্যাক্সিমিলিয়ান মিটেলস্ট্যাডট",
+                "hi": "मैक्सिमिलियन मित्तेलस्टैड",
+                "ru": "Максимилиан Миттельштадт"
+              },
+              "shortNameTranslation": {
+                "ar": "م. ميتلشتيت",
+                "bn": "এম. মিটেলস্ট্যাডট",
+                "hi": "एम. मित्तेलस्टैड",
+                "ru": "М. Миттельштадт"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 7,
+          "jerseyNumber": "7",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 56,
+            "accuratePass": 52,
+            "totalLongBalls": 3,
+            "accurateLongBalls": 1,
+            "goalAssist": 1,
+            "accurateOwnHalfPasses": 15,
+            "totalOwnHalfPasses": 15,
+            "accurateOppositionHalfPasses": 37,
+            "totalOppositionHalfPasses": 41,
+            "totalCross": 10,
+            "accurateCross": 3,
+            "duelLost": 2,
+            "duelWon": 1,
+            "totalContest": 1,
+            "bigChanceCreated": 1,
+            "totalClearance": 2,
+            "outfielderBlock": 1,
+            "interceptionWon": 2,
+            "ballRecovery": 2,
+            "totalTackle": 1,
+            "wonTackle": 1,
+            "fouls": 1,
+            "minutesPlayed": 78,
+            "touches": 83,
+            "rating": 8.8,
+            "possessionLostCtrl": 12,
+            "expectedAssists": 0.566233,
+            "topSpeed": 29.36,
+            "kilometersCovered": 8.49,
+            "numberOfSprints": 10,
+            "totalBallCarriesDistance": 160.76094412484,
+            "ballCarriesCount": 16,
+            "totalProgression": 91.411162394881,
+            "bestBallCarryProgression": 24.212898101716,
+            "totalProgressiveBallCarriesDistance": 76.813875551404,
+            "progressiveBallCarriesCount": 3,
+            "keyPass": 4,
+            "ratingVersions": {
+              "original": 8.8,
+              "alternative": 8.2
+            },
+            "totalShots": 0,
+            "passValueNormalized": 1,
+            "dribbleValueNormalized": 0.08,
+            "defensiveValueNormalized": 0.24,
+            "metersCoveredRunningKm": 1.24,
+            "metersCoveredHighSpeedRunningKm": 0.45,
+            "metersCoveredSprintingKm": 0.13,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Josha Vagnoman",
+            "firstName": "Josha",
+            "lastName": "Vagnoman",
+            "slug": "josha-vagnoman",
+            "shortName": "J. Vagnoman",
+            "position": "D",
+            "jerseyNumber": "4",
+            "height": 186,
+            "userCount": 910,
+            "gender": "M",
+            "sofascoreId": "ffe-pnb",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 906278,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 976492800,
+            "proposedMarketValueRaw": {
+              "value": 10300000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جوشوا فاجنومان",
+                "bn": "জোশা ওয়াগনোম্যান",
+                "hi": "जोशा वाग्नोमन",
+                "ru": "Доша Вагноман"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. فاجنومان",
+                "bn": "জে. ভ্যাগনোম্যান",
+                "hi": "जे. वाग्नोमन",
+                "ru": "Д. Вагноман"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 4,
+          "jerseyNumber": "4",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 40,
+            "accuratePass": 33,
+            "totalLongBalls": 4,
+            "accurateLongBalls": 4,
+            "goalAssist": 1,
+            "accurateOwnHalfPasses": 15,
+            "totalOwnHalfPasses": 17,
+            "accurateOppositionHalfPasses": 18,
+            "totalOppositionHalfPasses": 23,
+            "totalCross": 2,
+            "accurateCross": 2,
+            "duelLost": 3,
+            "duelWon": 2,
+            "challengeLost": 1,
+            "dispossessed": 1,
+            "totalContest": 2,
+            "wonContest": 1,
+            "bigChanceCreated": 1,
+            "bigChanceMissed": 1,
+            "shotOffTarget": 1,
+            "onTargetScoringAttempt": 1,
+            "blockedScoringAttempt": 1,
+            "hitWoodwork": 1,
+            "goals": 1,
+            "totalClearance": 1,
+            "outfielderBlock": 1,
+            "ballRecovery": 3,
+            "wasFouled": 1,
+            "minutesPlayed": 90,
+            "touches": 65,
+            "rating": 8.1,
+            "possessionLostCtrl": 9,
+            "expectedGoals": 0.7188,
+            "expectedGoalsOnTarget": 0.0596,
+            "expectedAssists": 0.191254,
+            "topSpeed": 33.86,
+            "kilometersCovered": 11.18,
+            "numberOfSprints": 23,
+            "totalBallCarriesDistance": 92.02753175103,
+            "ballCarriesCount": 12,
+            "totalProgression": 11.034930386559,
+            "bestBallCarryProgression": 11.624809196077,
+            "totalProgressiveBallCarriesDistance": 12.536844938022,
+            "progressiveBallCarriesCount": 1,
+            "keyPass": 4,
+            "ratingVersions": {
+              "original": 8.1,
+              "alternative": 8.4
+            },
+            "totalShots": 3,
+            "shotValueNormalized": 0.44,
+            "passValueNormalized": 0.41,
+            "dribbleValueNormalized": -0.44,
+            "defensiveValueNormalized": 0.14,
+            "metersCoveredRunningKm": 1.94,
+            "metersCoveredHighSpeedRunningKm": 0.7,
+            "metersCoveredSprintingKm": 0.46,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Grischa Prömel",
+            "slug": "grischa-promel",
+            "shortName": "G. Prömel",
+            "position": "M",
+            "jerseyNumber": "21",
+            "height": 182,
+            "userCount": 397,
+            "gender": "M",
+            "sofascoreId": "8nq-xtw",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 253993,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 789609600,
+            "proposedMarketValueRaw": {
+              "value": 3600000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "غريشا بروميل",
+                "bn": "গ্রিশা প্রমেল",
+                "hi": "ग्रिस्चा प्रोमेल",
+                "ru": "Гриша Прёмель"
+              },
+              "shortNameTranslation": {
+                "ar": "غ. بروميل",
+                "bn": "জি. প্রমেল",
+                "hi": "जी. प्रोमेल",
+                "ru": "Г. Прёмель"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 21,
+          "jerseyNumber": "21",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 45,
+            "accuratePass": 42,
+            "totalLongBalls": 1,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 14,
+            "totalOwnHalfPasses": 16,
+            "accurateOppositionHalfPasses": 28,
+            "totalOppositionHalfPasses": 29,
+            "aerialWon": 3,
+            "duelLost": 3,
+            "duelWon": 4,
+            "challengeLost": 2,
+            "onTargetScoringAttempt": 1,
+            "blockedScoringAttempt": 2,
+            "goals": 1,
+            "totalClearance": 1,
+            "outfielderBlock": 1,
+            "ballRecovery": 1,
+            "wasFouled": 1,
+            "fouls": 1,
+            "minutesPlayed": 90,
+            "touches": 53,
+            "rating": 7.9,
+            "possessionLostCtrl": 3,
+            "expectedGoals": 0.5638,
+            "expectedGoalsOnTarget": 0.6423,
+            "expectedAssists": 0.103379,
+            "topSpeed": 29.49,
+            "kilometersCovered": 11.94,
+            "numberOfSprints": 8,
+            "totalBallCarriesDistance": 52.694464033466,
+            "ballCarriesCount": 10,
+            "totalProgression": 16.623101136446,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 7.9,
+              "alternative": 7.5
+            },
+            "totalShots": 3,
+            "shotValueNormalized": 0.47,
+            "passValueNormalized": 0.25,
+            "dribbleValueNormalized": 0.07,
+            "defensiveValueNormalized": -0.02,
+            "metersCoveredRunningKm": 2.63,
+            "metersCoveredHighSpeedRunningKm": 0.63,
+            "metersCoveredSprintingKm": 0.12,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Angelo Stiller",
+            "firstName": "Angelo",
+            "lastName": "Stiller",
+            "slug": "angelo-stiller",
+            "shortName": "A. Stiller",
+            "position": "M",
+            "jerseyNumber": "6",
+            "height": 183,
+            "userCount": 9585,
+            "gender": "M",
+            "sofascoreId": "tt9-ct5",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 901882,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 986342400,
+            "proposedMarketValueRaw": {
+              "value": 46000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أنجيلو شتيلر",
+                "bn": "স্টিলার, অ্যাঞ্জেলো",
+                "hi": "स्टिलर, एंजेलो",
+                "ru": "Ангело Штиллер"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. شتيلر",
+                "bn": "এ. স্টিলার",
+                "hi": "ए. स्टिलर",
+                "ru": "А. Штиллер"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 6,
+          "jerseyNumber": "6",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 80,
+            "accuratePass": 73,
+            "totalLongBalls": 3,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 23,
+            "totalOwnHalfPasses": 24,
+            "accurateOppositionHalfPasses": 50,
+            "totalOppositionHalfPasses": 56,
+            "totalCross": 1,
+            "aerialLost": 1,
+            "aerialWon": 2,
+            "duelLost": 4,
+            "duelWon": 3,
+            "challengeLost": 1,
+            "totalContest": 1,
+            "shotOffTarget": 1,
+            "totalClearance": 1,
+            "interceptionWon": 1,
+            "ballRecovery": 5,
+            "wasFouled": 1,
+            "fouls": 1,
+            "minutesPlayed": 89,
+            "touches": 87,
+            "rating": 6.8,
+            "possessionLostCtrl": 9,
+            "expectedGoals": 0.059,
+            "expectedAssists": 0.0884485,
+            "topSpeed": 28.84,
+            "kilometersCovered": 10.69,
+            "numberOfSprints": 3,
+            "totalBallCarriesDistance": 63.998163750395,
+            "ballCarriesCount": 10,
+            "totalProgression": 6.1437610403497,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 6.8,
+              "alternative": 7
+            },
+            "totalShots": 1,
+            "shotValueNormalized": -0.01,
+            "passValueNormalized": 0.34,
+            "dribbleValueNormalized": 0.02,
+            "defensiveValueNormalized": -0.03,
+            "metersCoveredRunningKm": 1.74,
+            "metersCoveredHighSpeedRunningKm": 0.29,
+            "metersCoveredSprintingKm": 0.05,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Chris Führich",
+            "firstName": "Chris",
+            "lastName": "Fuhrich",
+            "slug": "chris-fuhrich",
+            "shortName": "C. Führich",
+            "position": "M",
+            "jerseyNumber": "10",
+            "height": 178,
+            "userCount": 2080,
+            "gender": "M",
+            "sofascoreId": "dz5-vgf",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 891510,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 884304000,
+            "proposedMarketValueRaw": {
+              "value": 11600000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "كريس فيوريتش",
+                "bn": "ক্রিস ফুহরিচ",
+                "hi": "क्रिस फ़्यूरिच",
+                "ru": "Крис Фюрих"
+              },
+              "shortNameTranslation": {
+                "ar": "ك. فيوريتش",
+                "bn": "সি. ফুহরিচ",
+                "hi": "सी. फ़्यूरिच",
+                "ru": "К. Фюрих"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 10,
+          "jerseyNumber": "10",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 44,
+            "accuratePass": 37,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 12,
+            "totalOwnHalfPasses": 12,
+            "accurateOppositionHalfPasses": 25,
+            "totalOppositionHalfPasses": 32,
+            "totalCross": 6,
+            "accurateCross": 1,
+            "duelLost": 2,
+            "duelWon": 3,
+            "dispossessed": 1,
+            "totalContest": 1,
+            "totalClearance": 1,
+            "ballRecovery": 5,
+            "totalTackle": 2,
+            "wonTackle": 1,
+            "unsuccessfulTouch": 1,
+            "wasFouled": 1,
+            "totalOffside": 1,
+            "minutesPlayed": 70,
+            "touches": 59,
+            "rating": 7.5,
+            "possessionLostCtrl": 15,
+            "expectedAssists": 0.227798,
+            "topSpeed": 34.23,
+            "kilometersCovered": 7.74,
+            "numberOfSprints": 7,
+            "totalBallCarriesDistance": 134.71132656957,
+            "ballCarriesCount": 12,
+            "totalProgression": 59.531010086312,
+            "bestBallCarryProgression": 20.735032817791,
+            "totalProgressiveBallCarriesDistance": 89.255135200533,
+            "progressiveBallCarriesCount": 5,
+            "keyPass": 3,
+            "ratingVersions": {
+              "original": 7.5,
+              "alternative": 7.2
+            },
+            "totalShots": 0,
+            "passValueNormalized": 0.5,
+            "dribbleValueNormalized": 0.27,
+            "defensiveValueNormalized": 0.19,
+            "metersCoveredRunningKm": 1.06,
+            "metersCoveredHighSpeedRunningKm": 0.44,
+            "metersCoveredSprintingKm": 0.17,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Deniz Undav",
+            "firstName": "Deniz",
+            "lastName": "Undav",
+            "slug": "deniz-undav",
+            "shortName": "D. Undav",
+            "position": "F",
+            "jerseyNumber": "26",
+            "height": 179,
+            "userCount": 26637,
+            "gender": "M",
+            "sofascoreId": "t3k-ii5",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 794298,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 837734400,
+            "proposedMarketValueRaw": {
+              "value": 20000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دينيز أونداف",
+                "bn": "ডেনিজ উন্দাভ",
+                "hi": "डेनिस उंदाव",
+                "ru": "Дениз Ундав"
+              },
+              "shortNameTranslation": {
+                "ar": "د. أونداف",
+                "bn": "ডি. উন্দাভ",
+                "hi": "डी. उंदाव",
+                "ru": "Д. Ундав"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 26,
+          "jerseyNumber": "26",
+          "position": "F",
+          "substitute": false,
+          "captain": true,
+          "statistics": {
+            "totalPass": 30,
+            "accuratePass": 23,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 7,
+            "totalOwnHalfPasses": 7,
+            "accurateOppositionHalfPasses": 16,
+            "totalOppositionHalfPasses": 23,
+            "aerialLost": 1,
+            "duelLost": 1,
+            "onTargetScoringAttempt": 1,
+            "interceptionWon": 1,
+            "ballRecovery": 4,
+            "errorLeadToAShot": 1,
+            "unsuccessfulTouch": 4,
+            "fouls": 1,
+            "minutesPlayed": 70,
+            "touches": 36,
+            "rating": 6.7,
+            "possessionLostCtrl": 11,
+            "expectedGoals": 0.3076,
+            "expectedGoalsOnTarget": 0.3103,
+            "expectedAssists": 0.0786427,
+            "topSpeed": 27.54,
+            "kilometersCovered": 7.82,
+            "numberOfSprints": 6,
+            "totalBallCarriesDistance": 22.523278749334,
+            "ballCarriesCount": 3,
+            "totalProgression": 16.955414934363,
+            "progressiveBallCarriesCount": 0,
+            "keyPass": 2,
+            "ratingVersions": {
+              "original": 6.7,
+              "alternative": 6.9
+            },
+            "totalShots": 1,
+            "shotValueNormalized": 0.05,
+            "passValueNormalized": 0.37,
+            "dribbleValueNormalized": 0.05,
+            "defensiveValueNormalized": -0.13,
+            "metersCoveredRunningKm": 1.31,
+            "metersCoveredHighSpeedRunningKm": 0.34,
+            "metersCoveredSprintingKm": 0.06,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Bilal El Khannouss",
+            "firstName": "Bilal",
+            "lastName": "El Khannouss",
+            "slug": "bilal-el-khannouss",
+            "shortName": "B. E. Khannouss",
+            "position": "M",
+            "jerseyNumber": "11",
+            "height": 180,
+            "userCount": 34806,
+            "gender": "M",
+            "sofascoreId": "8j3-hne",
+            "country": {
+              "alpha2": "MA",
+              "alpha3": "MAR",
+              "name": "Morocco",
+              "slug": "morocco"
+            },
+            "id": 1126569,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1084147200,
+            "proposedMarketValueRaw": {
+              "value": 32000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "بلال الخنوس",
+                "bn": "বিলাল এল খানৌস",
+                "hi": "बिलाल अल खन्नौस",
+                "ru": "Билал Эль Ханнусс"
+              },
+              "shortNameTranslation": {
+                "ar": "ب. أ. خنوس",
+                "bn": "বি. ই. খানৌস",
+                "hi": "बी.ई. खन्नौस",
+                "ru": "Б. Ханнусс"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 11,
+          "jerseyNumber": "11",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 31,
+            "accuratePass": 22,
+            "totalLongBalls": 4,
+            "accurateLongBalls": 2,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 4,
+            "totalOwnHalfPasses": 5,
+            "accurateOppositionHalfPasses": 18,
+            "totalOppositionHalfPasses": 26,
+            "totalCross": 5,
+            "accurateCross": 3,
+            "aerialWon": 1,
+            "duelLost": 3,
+            "duelWon": 5,
+            "challengeLost": 2,
+            "dispossessed": 1,
+            "totalContest": 1,
+            "wonContest": 1,
+            "bigChanceCreated": 1,
+            "onTargetScoringAttempt": 1,
+            "blockedScoringAttempt": 1,
+            "goals": 1,
+            "ballRecovery": 3,
+            "totalTackle": 3,
+            "wonTackle": 2,
+            "unsuccessfulTouch": 1,
+            "minutesPlayed": 78,
+            "touches": 49,
+            "rating": 8.8,
+            "possessionLostCtrl": 14,
+            "expectedGoals": 0.2243,
+            "expectedGoalsOnTarget": 0.3998,
+            "expectedAssists": 0.69172,
+            "topSpeed": 31.35,
+            "kilometersCovered": 8.9,
+            "numberOfSprints": 11,
+            "totalBallCarriesDistance": 111.87427845903,
+            "ballCarriesCount": 14,
+            "totalProgression": 64.613129707766,
+            "bestBallCarryProgression": 30.259022933233,
+            "totalProgressiveBallCarriesDistance": 52.868049082656,
+            "progressiveBallCarriesCount": 3,
+            "keyPass": 2,
+            "ratingVersions": {
+              "original": 8.8,
+              "alternative": 8
+            },
+            "totalShots": 2,
+            "shotValueNormalized": 0.45,
+            "passValueNormalized": 0.52,
+            "dribbleValueNormalized": 0.66,
+            "defensiveValueNormalized": -0.09,
+            "metersCoveredRunningKm": 1.29,
+            "metersCoveredHighSpeedRunningKm": 0.45,
+            "metersCoveredSprintingKm": 0.09,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Dženan Pejčinović",
+            "slug": "dzenan-pejcinovic",
+            "shortName": "D. Pejčinović",
+            "position": "F",
+            "jerseyNumber": "17",
+            "height": 188,
+            "userCount": 1783,
+            "gender": "M",
+            "sofascoreId": "wru-g75",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 1127790,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1108425600,
+            "proposedMarketValueRaw": {
+              "value": 16399999,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دجينان بييتشينوفيتش",
+                "bn": "জেনান পেজচিনোভিচ",
+                "hi": "जेनन पेजचिनोविच",
+                "ru": "Джанан Пейчинович"
+              },
+              "shortNameTranslation": {
+                "ar": "د. بييتشينوفيتش",
+                "bn": "ডি. পেজচিনোভিচ",
+                "hi": "डी. पेजचिनोविच",
+                "ru": "Д. Пейчинович"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 17,
+          "jerseyNumber": "17",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 27,
+            "accuratePass": 14,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 5,
+            "totalOwnHalfPasses": 10,
+            "accurateOppositionHalfPasses": 9,
+            "totalOppositionHalfPasses": 17,
+            "aerialLost": 5,
+            "aerialWon": 2,
+            "duelLost": 6,
+            "duelWon": 4,
+            "challengeLost": 1,
+            "bigChanceMissed": 2,
+            "shotOffTarget": 4,
+            "onTargetScoringAttempt": 1,
+            "blockedScoringAttempt": 1,
+            "hitWoodwork": 1,
+            "totalClearance": 2,
+            "ballRecovery": 2,
+            "totalTackle": 2,
+            "wonTackle": 2,
+            "unsuccessfulTouch": 4,
+            "minutesPlayed": 90,
+            "touches": 43,
+            "rating": 6.3,
+            "possessionLostCtrl": 17,
+            "expectedGoals": 0.8572,
+            "expectedGoalsOnTarget": 0.4615,
+            "expectedAssists": 0.028271,
+            "topSpeed": 31.49,
+            "kilometersCovered": 11.06,
+            "numberOfSprints": 21,
+            "totalBallCarriesDistance": 35.058838072486,
+            "ballCarriesCount": 4,
+            "totalProgression": 2.9353048490841,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 6.3,
+              "alternative": 6.5
+            },
+            "totalShots": 6,
+            "shotValueNormalized": -0.51,
+            "passValueNormalized": -0.18,
+            "dribbleValueNormalized": 0,
+            "defensiveValueNormalized": -0.02,
+            "metersCoveredRunningKm": 1.71,
+            "metersCoveredHighSpeedRunningKm": 0.68,
+            "metersCoveredSprintingKm": 0.32,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Jamie Leweling",
+            "firstName": "Jamie",
+            "lastName": "Leweling",
+            "slug": "jamie-leweling",
+            "shortName": "J. Leweling",
+            "position": "M",
+            "jerseyNumber": "18",
+            "height": 184,
+            "userCount": 2960,
+            "gender": "M",
+            "sofascoreId": "b74-6ib",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 990201,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 983145600,
+            "proposedMarketValueRaw": {
+              "value": 37000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جيمي لويلينغ",
+                "bn": "লেভেলিং, জেমি",
+                "hi": "लेवलिंग, जेमी",
+                "ru": "Джейми Левелинг"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. لويلينغ",
+                "bn": "জে. লিউয়েলিং",
+                "hi": "जे. लेवलिंग",
+                "ru": "Д. Левелинг"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 18,
+          "jerseyNumber": "18",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 7,
+            "accuratePass": 6,
+            "totalLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 3,
+            "totalOwnHalfPasses": 3,
+            "accurateOppositionHalfPasses": 3,
+            "totalOppositionHalfPasses": 4,
+            "totalCross": 1,
+            "duelLost": 2,
+            "challengeLost": 1,
+            "totalContest": 1,
+            "ballRecovery": 1,
+            "minutesPlayed": 20,
+            "touches": 12,
+            "rating": 6.4,
+            "possessionLostCtrl": 5,
+            "expectedAssists": 0.00311962,
+            "topSpeed": 27.96,
+            "kilometersCovered": 2.56,
+            "numberOfSprints": 4,
+            "totalBallCarriesDistance": 62.594144342225,
+            "ballCarriesCount": 3,
+            "totalProgression": 47.658207192303,
+            "bestBallCarryProgression": 24.171773504657,
+            "totalProgressiveBallCarriesDistance": 52.126587607246,
+            "progressiveBallCarriesCount": 2,
+            "ratingVersions": {
+              "original": 6.4,
+              "alternative": 6.3
+            },
+            "totalShots": 0,
+            "passValueNormalized": -0.07,
+            "dribbleValueNormalized": 0.08,
+            "defensiveValueNormalized": -0.05,
+            "metersCoveredRunningKm": 0.43,
+            "metersCoveredHighSpeedRunningKm": 0.14,
+            "metersCoveredSprintingKm": 0.07,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ermedin Demirović",
+            "firstName": "Ermedin",
+            "lastName": "Demirovic",
+            "slug": "ermedin-demirovic",
+            "shortName": "E. Demirović",
+            "position": "F",
+            "jerseyNumber": "9",
+            "height": 184,
+            "userCount": 17548,
+            "gender": "M",
+            "sofascoreId": "gc5-4mi",
+            "country": {
+              "alpha2": "BA",
+              "alpha3": "BIH",
+              "name": "Bosnia & Herzegovina",
+              "slug": "bosnia-and-herzegovina"
+            },
+            "id": 878081,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 890784000,
+            "proposedMarketValueRaw": {
+              "value": 20000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيرميدين ديميروفيتش",
+                "bn": "এরমেডিন ডেমিরোভিচ",
+                "hi": "एर्मेडिन डेमिरोविच",
+                "ru": "Эрмедин Демирович"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. ديميروفيتش",
+                "bn": "ই. ডেমিরোভিচ",
+                "hi": "ई. डेमिरोविच",
+                "ru": "Э. Демирович"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 9,
+          "jerseyNumber": "9",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 5,
+            "accuratePass": 4,
+            "totalLongBalls": 1,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 1,
+            "totalOwnHalfPasses": 1,
+            "accurateOppositionHalfPasses": 3,
+            "totalOppositionHalfPasses": 4,
+            "aerialWon": 1,
+            "duelWon": 3,
+            "totalContest": 1,
+            "wonContest": 1,
+            "bigChanceCreated": 1,
+            "onTargetScoringAttempt": 1,
+            "goals": 1,
+            "interceptionWon": 1,
+            "ballRecovery": 2,
+            "unsuccessfulTouch": 1,
+            "wasFouled": 1,
+            "minutesPlayed": 20,
+            "touches": 10,
+            "rating": 8.2,
+            "possessionLostCtrl": 2,
+            "expectedGoals": 0.1513,
+            "expectedGoalsOnTarget": 0.1568,
+            "expectedAssists": 0.0447474,
+            "topSpeed": 29.29,
+            "kilometersCovered": 2.76,
+            "numberOfSprints": 4,
+            "totalBallCarriesDistance": 71.389549676772,
+            "ballCarriesCount": 4,
+            "totalProgression": 46.85423632858,
+            "bestBallCarryProgression": 30.755686491073,
+            "totalProgressiveBallCarriesDistance": 35.113108036743,
+            "progressiveBallCarriesCount": 1,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 8.2,
+              "alternative": 7.8
+            },
+            "totalShots": 1,
+            "shotValueNormalized": 0.49,
+            "passValueNormalized": 0.24,
+            "dribbleValueNormalized": 0.4,
+            "defensiveValueNormalized": 0.15,
+            "metersCoveredRunningKm": 0.51,
+            "metersCoveredHighSpeedRunningKm": 0.11,
+            "metersCoveredSprintingKm": 0.07,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ramon Hendriks",
+            "firstName": "Ramon",
+            "lastName": "Hendriks",
+            "slug": "ramon-hendriks",
+            "shortName": "R. Hendriks",
+            "position": "D",
+            "jerseyNumber": "3",
+            "height": 189,
+            "userCount": 551,
+            "gender": "M",
+            "sofascoreId": "ii2-rye",
+            "country": {
+              "alpha2": "NL",
+              "alpha3": "NLD",
+              "name": "Netherlands",
+              "slug": "netherlands"
+            },
+            "id": 916943,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 995414400,
+            "proposedMarketValueRaw": {
+              "value": 24000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "رامون هندريكس",
+                "ru": "Рамон Хендрикс"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. هندريكس",
+                "ru": "Р. Хендрикс"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 3,
+          "jerseyNumber": "3",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 7,
+            "accuratePass": 7,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 5,
+            "totalOwnHalfPasses": 5,
+            "accurateOppositionHalfPasses": 2,
+            "totalOppositionHalfPasses": 2,
+            "aerialLost": 1,
+            "duelLost": 1,
+            "duelWon": 1,
+            "ballRecovery": 2,
+            "ownGoals": 1,
+            "wasFouled": 1,
+            "minutesPlayed": 12,
+            "touches": 11,
+            "rating": 7.5,
+            "possessionLostCtrl": 1,
+            "expectedAssists": 0.0011592,
+            "topSpeed": 32.34,
+            "kilometersCovered": 1.77,
+            "numberOfSprints": 5,
+            "ratingVersions": {
+              "original": 7.5,
+              "alternative": 7.3
+            },
+            "totalShots": 0,
+            "passValueNormalized": 0.02,
+            "defensiveValueNormalized": -0.73,
+            "metersCoveredRunningKm": 0.28,
+            "metersCoveredHighSpeedRunningKm": 0.11,
+            "metersCoveredSprintingKm": 0.1,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Leo Sauer",
+            "firstName": "Leo Sauer",
+            "lastName": "",
+            "slug": "sauer-leo",
+            "shortName": "L. Sauer",
+            "position": "F",
+            "jerseyNumber": "44",
+            "height": 184,
+            "userCount": 2305,
+            "gender": "M",
+            "sofascoreId": "td4-wkd",
+            "country": {
+              "alpha2": "SK",
+              "alpha3": "SVK",
+              "name": "Slovakia",
+              "slug": "slovakia"
+            },
+            "id": 1150938,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1134691200,
+            "proposedMarketValueRaw": {
+              "value": 6500000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ليو ساور",
+                "bn": "সাউয়ার, লিও",
+                "hi": "सॉयर, लियो",
+                "ru": "Лео Заур"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. ساور",
+                "bn": "এল. সওয়ার",
+                "hi": "एल. सॉयर",
+                "ru": "Л. Заур"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 44,
+          "jerseyNumber": "44",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 7,
+            "accuratePass": 5,
+            "goalAssist": 0,
+            "accurateOppositionHalfPasses": 5,
+            "totalOppositionHalfPasses": 7,
+            "blockedScoringAttempt": 1,
+            "minutesPlayed": 12,
+            "touches": 9,
+            "rating": 6.6,
+            "possessionLostCtrl": 2,
+            "expectedGoals": 0.0653,
+            "expectedAssists": 0.00468634,
+            "topSpeed": 27.75,
+            "kilometersCovered": 1.82,
+            "numberOfSprints": 2,
+            "totalBallCarriesDistance": 45.326414568805,
+            "ballCarriesCount": 4,
+            "totalProgression": 40.936574691591,
+            "bestBallCarryProgression": 27.426011930372,
+            "totalProgressiveBallCarriesDistance": 27.426082768051,
+            "progressiveBallCarriesCount": 1,
+            "ratingVersions": {
+              "original": 6.6,
+              "alternative": 6.6
+            },
+            "totalShots": 1,
+            "shotValueNormalized": -0.18,
+            "passValueNormalized": -0.11,
+            "dribbleValueNormalized": 0.38,
+            "defensiveValueNormalized": 0.15,
+            "metersCoveredRunningKm": 0.33,
+            "metersCoveredHighSpeedRunningKm": 0.16,
+            "metersCoveredSprintingKm": 0.02,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Yanik Spalt",
+            "firstName": "Yanik Spalt",
+            "slug": "yanik-spalt",
+            "shortName": "Y. Spalt",
+            "position": "M",
+            "jerseyNumber": "47",
+            "height": 176,
+            "userCount": 128,
+            "gender": "M",
+            "sofascoreId": "jv6-98v",
+            "country": {
+              "alpha2": "AT",
+              "alpha3": "AUT",
+              "name": "Austria",
+              "slug": "austria"
+            },
+            "id": 1566307,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1188777600,
+            "proposedMarketValueRaw": {
+              "value": 730000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "سبالت، يانيك",
+                "ru": "Спальт, Яник"
+              },
+              "shortNameTranslation": {
+                "ar": "ي. سبالت",
+                "ru": "Я. Спальт"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 47,
+          "jerseyNumber": "47",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 1,
+            "goalAssist": 0,
+            "totalOppositionHalfPasses": 1,
+            "aerialWon": 1,
+            "duelWon": 1,
+            "minutesPlayed": 1,
+            "touches": 1,
+            "possessionLostCtrl": 1,
+            "topSpeed": 19.62,
+            "kilometersCovered": 0.28,
+            "numberOfSprints": 0,
+            "totalShots": 0,
+            "metersCoveredRunningKm": 0.07,
+            "metersCoveredHighSpeedRunningKm": 0,
+            "metersCoveredSprintingKm": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Marius Funk",
+            "firstName": "Marius",
+            "lastName": "Funk",
+            "slug": "marius-funk",
+            "shortName": "M. Funk",
+            "position": "G",
+            "jerseyNumber": "33",
+            "height": 187,
+            "userCount": 65,
+            "gender": "M",
+            "sofascoreId": "np6-mfx",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 222770,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 820454400,
+            "proposedMarketValueRaw": {
+              "value": 290000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ماريوس فونك",
+                "bn": "মারিয়াস ফাঙ্ক",
+                "hi": "मारियस फंक",
+                "ru": "Мариус Функ"
+              },
+              "shortNameTranslation": {
+                "ar": "م. فونك",
+                "bn": "এম. ফাঙ্ক",
+                "hi": "एम. फंक",
+                "ru": "М. Функ"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 33,
+          "jerseyNumber": "33",
+          "position": "G",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ameen Al-Dakhil",
+            "firstName": "Ameen",
+            "lastName": "Al-Dakhil",
+            "slug": "al-dhakil",
+            "shortName": "A. Al-Dakhil",
+            "position": "D",
+            "jerseyNumber": "2",
+            "height": 185,
+            "userCount": 752,
+            "gender": "M",
+            "sofascoreId": "r3n-7fv",
+            "country": {
+              "alpha2": "BE",
+              "alpha3": "BEL",
+              "name": "Belgium",
+              "slug": "belgium"
+            },
+            "id": 1979970,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1015372800,
+            "proposedMarketValueRaw": {
+              "value": 3100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أمين الدخيل",
+                "ru": "Амин Аль-Дахиль"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. الدخيل",
+                "ru": "А. Аль-Дахиль"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 2,
+          "jerseyNumber": "2",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Leonidas Stergiou",
+            "firstName": "Leonidas",
+            "lastName": "Stergiou",
+            "slug": "leonidas-stergiou",
+            "shortName": "L. Stergiou",
+            "position": "D",
+            "jerseyNumber": "20",
+            "height": 180,
+            "userCount": 697,
+            "gender": "M",
+            "sofascoreId": "n55-4np",
+            "country": {
+              "alpha2": "CH",
+              "alpha3": "CHE",
+              "name": "Switzerland",
+              "slug": "switzerland"
+            },
+            "id": 962898,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1015113600,
+            "proposedMarketValueRaw": {
+              "value": 2700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ليونيداس ستيرجيو",
+                "bn": "লিওনিডাস স্টারজিউ",
+                "hi": "लियोनिदास स्टर्गियोउ",
+                "ru": "Леонидас Стергиу"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. ستيرجيو",
+                "bn": "এল. স্টারজিউ",
+                "hi": "एल. स्टर्गियोउ",
+                "ru": "Л. Стергиу"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 20,
+          "jerseyNumber": "20",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Atakan Karazor",
+            "firstName": "Atakan",
+            "lastName": "Karazor",
+            "slug": "atakan-karazor",
+            "shortName": "A. Karazor",
+            "position": "M",
+            "jerseyNumber": "16",
+            "height": 190,
+            "userCount": 1260,
+            "gender": "M",
+            "sofascoreId": "ft5-ksb",
+            "country": {
+              "alpha2": "TR",
+              "alpha3": "TUR",
+              "name": "Türkiye",
+              "slug": "turkiye"
+            },
+            "id": 801030,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 845164800,
+            "proposedMarketValueRaw": {
+              "value": 8800000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أتاكان كرازور",
+                "bn": "আতাকান কারাজোর",
+                "hi": "अताकन करज़ोर",
+                "ru": "Атакан Каразор"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. كرازور",
+                "bn": "এ. কারাজোর",
+                "hi": "ए. करज़ोर",
+                "ru": "А. Каразор"
+              }
+            }
+          },
+          "teamId": 2677,
+          "shirtNumber": 16,
+          "jerseyNumber": "16",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        }
+      ],
+      "supportStaff": [],
+      "formation": "3-4-2-1",
+      "playerColor": {
+        "primary": "ffffff",
+        "number": "c90311",
+        "outline": "ffffff",
+        "fancyNumber": "222226"
+      },
+      "goalkeeperColor": {
+        "primary": "fb3487",
+        "number": "ffffff",
+        "outline": "fb3487",
+        "fancyNumber": "222226"
+      },
+      "missingPlayers": [
+        {
+          "player": {
+            "name": "Dan Zagadou",
+            "firstName": "Dan",
+            "lastName": "Zagadou",
+            "slug": "dan-zagadou",
+            "shortName": "D. Zagadou",
+            "position": "D",
+            "jerseyNumber": "23",
+            "height": 196,
+            "userCount": 1173,
+            "gender": "M",
+            "sofascoreId": "ke6-6cj",
+            "country": {
+              "alpha2": "FR",
+              "alpha3": "FRA",
+              "name": "France",
+              "slug": "france"
+            },
+            "id": 826205,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 928368000,
+            "proposedMarketValueRaw": {
+              "value": 1900000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "دان زاغادو",
+                "bn": "ড্যান-অ্যাক্সেল জাগাদউ",
+                "hi": "डैन-एक्सल ज़गाडौ",
+                "ru": "Дан Загаду"
+              },
+              "shortNameTranslation": {
+                "ar": "د. زاغادو",
+                "bn": "ডি. জাগাদউ",
+                "hi": "डी. ज़गाडौ",
+                "ru": "Д. Загаду"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Hamstring Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-10-20T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Dennis Seimen",
+            "firstName": "Dennis Seimen",
+            "slug": "seimen-dennis",
+            "shortName": "D. Seimen",
+            "position": "G",
+            "jerseyNumber": "41",
+            "height": 191,
+            "userCount": 1238,
+            "gender": "M",
+            "sofascoreId": "5f2-pap",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 1195736,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1133395200,
+            "proposedMarketValueRaw": {
+              "value": 9500000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "سيمين، دينيس",
+                "bn": "সিমেন, ডেনিস",
+                "hi": "सीमेन, डेनिस",
+                "ru": "Деннис Саймен"
+              },
+              "shortNameTranslation": {
+                "ar": "د. سيمين",
+                "bn": "ডি. সিমেন",
+                "hi": "डी. सीमेन",
+                "ru": "Д. Саймен"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Hamstring Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-10-10T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Jeremy Arevalo",
+            "firstName": "Jeremy Arévalo",
+            "slug": "arevalo-jeremy",
+            "shortName": "J. Arévalo",
+            "position": "F",
+            "jerseyNumber": "25",
+            "height": 180,
+            "userCount": 3501,
+            "gender": "M",
+            "sofascoreId": "rs2-x39",
+            "country": {
+              "alpha2": "EC",
+              "alpha3": "ECU",
+              "name": "Ecuador",
+              "slug": "ecuador"
+            },
+            "id": 1464642,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1111190400,
+            "proposedMarketValueRaw": {
+              "value": 7200000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جيريمي أريفالو",
+                "ru": "Джереми Аревало"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. أريفالو",
+                "ru": "Д. Аревало"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Back Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-09-20T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Lorenz Assignon",
+            "slug": "lorenz-assignon",
+            "shortName": "L. Assignon",
+            "position": "D",
+            "jerseyNumber": "22",
+            "height": 179,
+            "userCount": 685,
+            "gender": "M",
+            "sofascoreId": "dqp-t69",
+            "country": {
+              "alpha2": "FR",
+              "alpha3": "FRA",
+              "name": "France",
+              "slug": "france"
+            },
+            "id": 1009334,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 961632000,
+            "proposedMarketValueRaw": {
+              "value": 8700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "لورينز أسينيون",
+                "bn": "লরেঞ্জ অ্যাসিগনন",
+                "hi": "लोरेन्ज़ एसिग्नोन",
+                "ru": "Лоренц Ассиньон"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. أسينيون",
+                "bn": "এল. অ্যাসিগনন",
+                "hi": "एल. एसिग्नोन",
+                "ru": "Л. Ассиньон"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Shoulder Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-10-20T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Luca Jaquez",
+            "firstName": "",
+            "lastName": "",
+            "slug": "luca-jaquez",
+            "shortName": "L. Jaquez",
+            "position": "D",
+            "jerseyNumber": "14",
+            "height": 187,
+            "userCount": 749,
+            "gender": "M",
+            "sofascoreId": "iwv-6qt",
+            "country": {
+              "alpha2": "CH",
+              "alpha3": "CHE",
+              "name": "Switzerland",
+              "slug": "switzerland"
+            },
+            "id": 1127823,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1054512000,
+            "proposedMarketValueRaw": {
+              "value": 10700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "لوكا هاكيز",
+                "ru": "Лука Хакес"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. هاكيز",
+                "ru": "Л. Хакес"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Muscle Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-10-20T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Tiago Tomás",
+            "slug": "tiago-tomas",
+            "shortName": "T. Tomás",
+            "position": "F",
+            "jerseyNumber": "8",
+            "height": 180,
+            "userCount": 1593,
+            "gender": "M",
+            "sofascoreId": "g8w-e5k",
+            "country": {
+              "alpha2": "PT",
+              "alpha3": "PRT",
+              "name": "Portugal",
+              "slug": "portugal"
+            },
+            "id": 983540,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1024185600,
+            "proposedMarketValueRaw": {
+              "value": 14600000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "تياغو توماس",
+                "bn": "তিয়াগো টমাস",
+                "hi": "टियागो टॉमस",
+                "ru": "Тьяго Томаш"
+              },
+              "shortNameTranslation": {
+                "ar": "ت. توماس",
+                "bn": "টি. টমাস",
+                "hi": "टी. टॉमस",
+                "ru": "Т. Томаш"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Muscle Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-10-10T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Nikolas Nartey",
+            "firstName": "Nikolas",
+            "lastName": "Nartey",
+            "slug": "nikolas-nartey",
+            "shortName": "N. Nartey",
+            "position": "M",
+            "jerseyNumber": "28",
+            "height": 185,
+            "userCount": 821,
+            "gender": "M",
+            "sofascoreId": "k88-wij",
+            "country": {
+              "alpha2": "DK",
+              "alpha3": "DNK",
+              "name": "Denmark",
+              "slug": "denmark"
+            },
+            "id": 861981,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 951177600,
+            "proposedMarketValueRaw": {
+              "value": 10300000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "نارتي، نيكولاس",
+                "bn": "নার্তে, নিকোলাস",
+                "hi": "नार्टे, निकोलस",
+                "ru": "Николас Нартей"
+              },
+              "shortNameTranslation": {
+                "ar": "ن. زورتا",
+                "bn": "এন. নার্টি",
+                "hi": "एन. नार्टे",
+                "ru": "Н. Нартей"
+              }
+            }
+          },
+          "type": "doubtful",
+          "reason": 1,
+          "description": "Muscle Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-09-05T00:00:00+00:00"
+        }
+      ]
+    },
+    "away": {
+      "players": [
+        {
+          "player": {
+            "name": "Marvin Schwäbe",
+            "slug": "marvin-schwabe",
+            "shortName": "M. Schwäbe",
+            "position": "G",
+            "jerseyNumber": "1",
+            "height": 189,
+            "userCount": 386,
+            "gender": "M",
+            "sofascoreId": "knt-cxj",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 187185,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 798768000,
+            "proposedMarketValueRaw": {
+              "value": 3200000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "مارفين شفايب",
+                "bn": "মারভিন শোয়াবে",
+                "hi": "मार्विन श्वाबे",
+                "ru": "Марвин Швабе"
+              },
+              "shortNameTranslation": {
+                "ar": "م. شفايب",
+                "bn": "এম. শোয়েব",
+                "hi": "एम. श्वाबे",
+                "ru": "М. Швабе"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 1,
+          "jerseyNumber": "1",
+          "position": "G",
+          "substitute": false,
+          "captain": true,
+          "statistics": {
+            "totalPass": 50,
+            "accuratePass": 34,
+            "totalLongBalls": 27,
+            "accurateLongBalls": 11,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 29,
+            "totalOwnHalfPasses": 30,
+            "accurateOppositionHalfPasses": 5,
+            "totalOppositionHalfPasses": 20,
+            "totalClearance": 2,
+            "ballRecovery": 7,
+            "errorLeadToAShot": 1,
+            "savedShotsFromInsideTheBox": 2,
+            "saves": 4,
+            "punches": 1,
+            "minutesPlayed": 90,
+            "touches": 60,
+            "rating": 6.5,
+            "possessionLostCtrl": 16,
+            "expectedAssists": 0.00308245,
+            "totalBallCarriesDistance": 77.748422004697,
+            "ballCarriesCount": 15,
+            "totalProgression": 13.01086153806,
+            "progressiveBallCarriesCount": 0,
+            "keeperSaveValue": 1.129,
+            "ratingVersions": {
+              "original": 6.5,
+              "alternative": 6.4
+            },
+            "totalShots": 0,
+            "goalsPrevented": -1.3547,
+            "passValueNormalized": 0.19,
+            "dribbleValueNormalized": -0.01,
+            "defensiveValueNormalized": -0.51,
+            "goalkeeperValueNormalized": 0.31,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Alessio Castro-Montes",
+            "firstName": "Alessio",
+            "lastName": "Castro-Montes",
+            "slug": "alessio-castro-montes",
+            "shortName": "A. Castro-Montes",
+            "position": "M",
+            "jerseyNumber": "17",
+            "height": 175,
+            "userCount": 338,
+            "gender": "M",
+            "sofascoreId": "tnp-tg5",
+            "country": {
+              "alpha2": "BE",
+              "alpha3": "BEL",
+              "name": "Belgium",
+              "slug": "belgium"
+            },
+            "id": 839898,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 863827200,
+            "proposedMarketValueRaw": {
+              "value": 2700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "أليسيو كاسترو-مونتيس",
+                "bn": "অ্যালেসিও কাস্ত্রো-মন্টেস",
+                "hi": "एलेसियो कास्त्रो-मोंटेस",
+                "ru": "Алессио Кастро-Монтес"
+              },
+              "shortNameTranslation": {
+                "ar": "أ. كاسترو-مونتيس",
+                "bn": "এ. কাস্ত্রো-মন্টেস",
+                "hi": "ए. कास्त्रो-मोंटेस",
+                "ru": "А. Кастро-Монтес"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 17,
+          "jerseyNumber": "17",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 26,
+            "accuratePass": 19,
+            "totalLongBalls": 4,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 11,
+            "totalOwnHalfPasses": 14,
+            "accurateOppositionHalfPasses": 8,
+            "totalOppositionHalfPasses": 12,
+            "totalCross": 6,
+            "accurateCross": 1,
+            "aerialWon": 1,
+            "duelLost": 3,
+            "duelWon": 6,
+            "totalContest": 4,
+            "wonContest": 2,
+            "totalClearance": 4,
+            "interceptionWon": 2,
+            "ballRecovery": 8,
+            "lastManTackle": 1,
+            "totalTackle": 3,
+            "wonTackle": 3,
+            "unsuccessfulTouch": 1,
+            "fouls": 1,
+            "minutesPlayed": 90,
+            "touches": 55,
+            "rating": 6.5,
+            "possessionLostCtrl": 16,
+            "expectedAssists": 0.0513914,
+            "topSpeed": 32.61,
+            "kilometersCovered": 9.72,
+            "numberOfSprints": 13,
+            "totalBallCarriesDistance": 120.86269210759,
+            "ballCarriesCount": 14,
+            "totalProgression": 82.872009848584,
+            "bestBallCarryProgression": 18.068076177608,
+            "totalProgressiveBallCarriesDistance": 35.291186766578,
+            "progressiveBallCarriesCount": 2,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 6.5,
+              "alternative": 6.7
+            },
+            "totalShots": 0,
+            "passValueNormalized": -0.17,
+            "dribbleValueNormalized": 0.31,
+            "defensiveValueNormalized": -0.16,
+            "metersCoveredRunningKm": 1.12,
+            "metersCoveredHighSpeedRunningKm": 0.4,
+            "metersCoveredSprintingKm": 0.23,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Jahmai Simpson-Pusey",
+            "firstName": "Jahmai Simpson-Pusey",
+            "lastName": "",
+            "slug": "jahmai-simpson-pusey",
+            "shortName": "J. Simpson-Pusey",
+            "position": "D",
+            "jerseyNumber": "22",
+            "height": 187,
+            "userCount": 2888,
+            "gender": "M",
+            "sofascoreId": "ekb-jh7",
+            "country": {
+              "alpha2": "EN",
+              "alpha3": "ENG",
+              "name": "England",
+              "slug": "england"
+            },
+            "id": 1402924,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1131062400,
+            "proposedMarketValueRaw": {
+              "value": 9300000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جاماي سيمبسون-بوسي",
+                "bn": "জাহমাই সিম্পসন-পুসে",
+                "hi": "जहमई सिम्पसन-पुसे",
+                "ru": "Джамай Симпсон-Пьюзи"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. سيمبسون-بوسي",
+                "bn": "জে. সিম্পসন-পুসি",
+                "hi": "जे. सिम्पसन-पुसे",
+                "ru": "Д. Симпсон-Пьюзи"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 22,
+          "jerseyNumber": "22",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 43,
+            "accuratePass": 33,
+            "totalLongBalls": 6,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 22,
+            "totalOwnHalfPasses": 29,
+            "accurateOppositionHalfPasses": 11,
+            "totalOppositionHalfPasses": 14,
+            "aerialLost": 1,
+            "aerialWon": 4,
+            "duelLost": 3,
+            "duelWon": 7,
+            "totalContest": 3,
+            "wonContest": 2,
+            "totalClearance": 9,
+            "outfielderBlock": 2,
+            "interceptionWon": 3,
+            "ballRecovery": 3,
+            "totalTackle": 1,
+            "wonTackle": 1,
+            "fouls": 1,
+            "minutesPlayed": 90,
+            "touches": 64,
+            "rating": 6.2,
+            "possessionLostCtrl": 11,
+            "expectedAssists": 0.00500122,
+            "topSpeed": 33.37,
+            "kilometersCovered": 9.38,
+            "numberOfSprints": 7,
+            "totalBallCarriesDistance": 132.58331367516,
+            "ballCarriesCount": 19,
+            "totalProgression": 33.569345361151,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 6.2,
+              "alternative": 6.6
+            },
+            "totalShots": 0,
+            "passValueNormalized": -0.07,
+            "dribbleValueNormalized": 0.1,
+            "defensiveValueNormalized": -0.17,
+            "metersCoveredRunningKm": 1.14,
+            "metersCoveredHighSpeedRunningKm": 0.29,
+            "metersCoveredSprintingKm": 0.16,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Luka Lochoshvili",
+            "firstName": "Luka",
+            "lastName": "Lochoshvili",
+            "slug": "luka-lochoshvili",
+            "shortName": "L. Lochoshvili",
+            "position": "D",
+            "jerseyNumber": "24",
+            "height": 191,
+            "userCount": 1187,
+            "gender": "M",
+            "sofascoreId": "kec-myj",
+            "country": {
+              "alpha2": "GE",
+              "alpha3": "GEO",
+              "name": "Georgia",
+              "slug": "georgia"
+            },
+            "id": 827473,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 896400000,
+            "proposedMarketValueRaw": {
+              "value": 2600000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "لوكا لوتشوشفيلي",
+                "bn": "লুকা লোচোশভিলি",
+                "hi": "लुका लोचोश्विली",
+                "ru": "Лука Лохошвили"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. لوتشوشفيلي",
+                "bn": "এল. লোচোশভিলি",
+                "hi": "एल. लोचोश्विली",
+                "ru": "Л. Лохошвили"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 24,
+          "jerseyNumber": "24",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 42,
+            "accuratePass": 38,
+            "totalLongBalls": 5,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 32,
+            "totalOwnHalfPasses": 33,
+            "accurateOppositionHalfPasses": 6,
+            "totalOppositionHalfPasses": 9,
+            "aerialLost": 3,
+            "aerialWon": 1,
+            "duelLost": 6,
+            "duelWon": 1,
+            "challengeLost": 2,
+            "totalContest": 1,
+            "shotOffTarget": 1,
+            "totalClearance": 5,
+            "outfielderBlock": 2,
+            "ballRecovery": 4,
+            "unsuccessfulTouch": 1,
+            "minutesPlayed": 90,
+            "touches": 55,
+            "rating": 5.7,
+            "possessionLostCtrl": 6,
+            "expectedGoals": 0.095,
+            "expectedAssists": 0.00192595,
+            "topSpeed": 31.4,
+            "kilometersCovered": 8.85,
+            "numberOfSprints": 7,
+            "totalBallCarriesDistance": 163.90997318324,
+            "ballCarriesCount": 16,
+            "totalProgression": 40.885644411328,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 5.7,
+              "alternative": 6.1
+            },
+            "totalShots": 1,
+            "shotValueNormalized": -0.03,
+            "passValueNormalized": 0,
+            "dribbleValueNormalized": 0.01,
+            "defensiveValueNormalized": -0.51,
+            "metersCoveredRunningKm": 0.97,
+            "metersCoveredHighSpeedRunningKm": 0.27,
+            "metersCoveredSprintingKm": 0.11,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Gideon Mensah",
+            "slug": "gideon-mensah",
+            "shortName": "G. Mensah",
+            "position": "D",
+            "jerseyNumber": "14",
+            "height": 177,
+            "userCount": 3683,
+            "gender": "M",
+            "sofascoreId": "wez-nuk",
+            "country": {
+              "alpha2": "GH",
+              "alpha3": "GHA",
+              "name": "Ghana",
+              "slug": "ghana"
+            },
+            "id": 844942,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 900720000,
+            "proposedMarketValueRaw": {
+              "value": 3700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "جيدوين مينساه",
+                "bn": "গিডিয়ন মেনসাহ",
+                "hi": "गिदोन मेन्सा",
+                "ru": "Гидеон Менса"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. مينساه",
+                "bn": "জি. মেনসাহ",
+                "hi": "जी. मेन्सा",
+                "ru": "Г. Менса"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 14,
+          "jerseyNumber": "14",
+          "position": "D",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 33,
+            "accuratePass": 30,
+            "totalLongBalls": 5,
+            "accurateLongBalls": 3,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 17,
+            "totalOwnHalfPasses": 17,
+            "accurateOppositionHalfPasses": 13,
+            "totalOppositionHalfPasses": 16,
+            "totalCross": 2,
+            "duelLost": 3,
+            "duelWon": 2,
+            "challengeLost": 1,
+            "totalContest": 2,
+            "wonContest": 1,
+            "shotOffTarget": 1,
+            "blockedScoringAttempt": 1,
+            "totalClearance": 1,
+            "interceptionWon": 2,
+            "ballRecovery": 7,
+            "totalTackle": 1,
+            "wonTackle": 1,
+            "fouls": 1,
+            "minutesPlayed": 90,
+            "touches": 49,
+            "rating": 5.9,
+            "possessionLostCtrl": 8,
+            "expectedGoals": 0.0661,
+            "expectedAssists": 0.0116169,
+            "topSpeed": 33.09,
+            "kilometersCovered": 9.44,
+            "numberOfSprints": 9,
+            "totalBallCarriesDistance": 157.58099024846,
+            "ballCarriesCount": 19,
+            "totalProgression": 55.43349147824,
+            "bestBallCarryProgression": 20.757572180321,
+            "totalProgressiveBallCarriesDistance": 29.475542132419,
+            "progressiveBallCarriesCount": 1,
+            "ratingVersions": {
+              "original": 5.9,
+              "alternative": 6.2
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.01,
+            "passValueNormalized": 0.08,
+            "dribbleValueNormalized": 0.2,
+            "defensiveValueNormalized": -0.62,
+            "metersCoveredRunningKm": 1.38,
+            "metersCoveredHighSpeedRunningKm": 0.43,
+            "metersCoveredSprintingKm": 0.13,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ísak Bergmann Jóhannesson",
+            "firstName": "Isak",
+            "lastName": "Johannesson",
+            "slug": "isak-bergmann-johannesson",
+            "shortName": "Í. B. Jóhannesson",
+            "position": "M",
+            "jerseyNumber": "8",
+            "height": 180,
+            "userCount": 988,
+            "gender": "M",
+            "sofascoreId": "6gk-vnt",
+            "country": {
+              "alpha2": "IS",
+              "alpha3": "ISL",
+              "name": "Iceland",
+              "slug": "iceland"
+            },
+            "id": 1112327,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1048377600,
+            "proposedMarketValueRaw": {
+              "value": 8400000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إيساك بيرغمان يوهانيسون",
+                "bn": "ইসাক বার্গম্যান জোহানেসন",
+                "hi": "इसाक बर्गमैन जोहानसन",
+                "ru": "Исаак Бергманн Йоаханнесон"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. ب. يوهانيسون",
+                "bn": "ই. বি. জোহানেসন",
+                "hi": "आई.बी. जोहानसन",
+                "ru": "И. Йоаханнесон"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 8,
+          "jerseyNumber": "8",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 31,
+            "accuratePass": 27,
+            "totalLongBalls": 3,
+            "accurateLongBalls": 2,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 17,
+            "totalOwnHalfPasses": 19,
+            "accurateOppositionHalfPasses": 10,
+            "totalOppositionHalfPasses": 12,
+            "totalCross": 6,
+            "accurateCross": 1,
+            "aerialLost": 1,
+            "duelLost": 1,
+            "duelWon": 3,
+            "shotOffTarget": 1,
+            "ballRecovery": 4,
+            "totalTackle": 1,
+            "wonTackle": 1,
+            "unsuccessfulTouch": 1,
+            "wasFouled": 2,
+            "minutesPlayed": 90,
+            "touches": 43,
+            "rating": 6.7,
+            "possessionLostCtrl": 10,
+            "expectedGoals": 0.1473,
+            "expectedAssists": 0.0728973,
+            "topSpeed": 30.65,
+            "kilometersCovered": 11.81,
+            "numberOfSprints": 20,
+            "totalBallCarriesDistance": 107.81876004942,
+            "ballCarriesCount": 8,
+            "totalProgression": 64.378567118044,
+            "bestBallCarryProgression": 30.134767242465,
+            "totalProgressiveBallCarriesDistance": 37.923591615247,
+            "progressiveBallCarriesCount": 1,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 6.7,
+              "alternative": 6.6
+            },
+            "totalShots": 1,
+            "shotValueNormalized": -0.32,
+            "passValueNormalized": 0.24,
+            "dribbleValueNormalized": 0.12,
+            "defensiveValueNormalized": -0.16,
+            "metersCoveredRunningKm": 2.09,
+            "metersCoveredHighSpeedRunningKm": 0.7,
+            "metersCoveredSprintingKm": 0.3,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Tom Krauß",
+            "firstName": "Tom",
+            "lastName": "Krauss",
+            "slug": "tom-krauss",
+            "shortName": "T. Krauß",
+            "position": "M",
+            "jerseyNumber": "5",
+            "height": 182,
+            "userCount": 449,
+            "gender": "M",
+            "sofascoreId": "8jk-uk6",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 930272,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 993168000,
+            "proposedMarketValueRaw": {
+              "value": 4700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "توم كراوس",
+                "bn": "টম ক্রাউস",
+                "hi": "टॉम क्राउस",
+                "ru": "Том Краус"
+              },
+              "shortNameTranslation": {
+                "ar": "ت. كراوس",
+                "bn": "টি. ক্রাউস",
+                "hi": "टी. क्राउस",
+                "ru": "Т. Краус"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 5,
+          "jerseyNumber": "5",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 33,
+            "accuratePass": 30,
+            "totalLongBalls": 1,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 21,
+            "totalOwnHalfPasses": 24,
+            "accurateOppositionHalfPasses": 9,
+            "totalOppositionHalfPasses": 9,
+            "totalCross": 1,
+            "aerialLost": 1,
+            "aerialWon": 2,
+            "duelLost": 3,
+            "duelWon": 4,
+            "totalContest": 1,
+            "bigChanceMissed": 1,
+            "shotOffTarget": 2,
+            "totalClearance": 2,
+            "outfielderBlock": 1,
+            "interceptionWon": 2,
+            "ballRecovery": 4,
+            "totalTackle": 2,
+            "wonTackle": 1,
+            "fouls": 1,
+            "minutesPlayed": 89,
+            "touches": 48,
+            "rating": 6.5,
+            "possessionLostCtrl": 5,
+            "expectedGoals": 0.2793,
+            "expectedAssists": 0.0722615,
+            "topSpeed": 35.17,
+            "kilometersCovered": 10.7,
+            "numberOfSprints": 12,
+            "totalBallCarriesDistance": 91.852325596566,
+            "ballCarriesCount": 13,
+            "totalProgression": 20.013404175357,
+            "progressiveBallCarriesCount": 0,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 6.5,
+              "alternative": 7
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.47,
+            "passValueNormalized": 0.05,
+            "dribbleValueNormalized": -0.1,
+            "defensiveValueNormalized": -0.1,
+            "metersCoveredRunningKm": 1.74,
+            "metersCoveredHighSpeedRunningKm": 0.63,
+            "metersCoveredSprintingKm": 0.18,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Paul Okon-Engstler",
+            "firstName": "Paul Okon-Engstler",
+            "slug": "paul-okon-engstler",
+            "shortName": "P. Okon-Engstler",
+            "position": "M",
+            "jerseyNumber": "23",
+            "height": 186,
+            "userCount": 691,
+            "gender": "M",
+            "sofascoreId": "g8d-nnd",
+            "country": {
+              "alpha2": "AU",
+              "alpha3": "AUS",
+              "name": "Australia",
+              "slug": "australia"
+            },
+            "id": 1411105,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1106524800,
+            "proposedMarketValueRaw": {
+              "value": 1100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "بول أوكُن-إنغستلار",
+                "ru": "Окон-Энгстлер, Пол"
+              },
+              "shortNameTranslation": {
+                "ar": "ب. أوكُن-إنغستلار",
+                "ru": "П. Окон-Энгстлер"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 23,
+          "jerseyNumber": "23",
+          "position": "M",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 25,
+            "accuratePass": 24,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 12,
+            "totalOwnHalfPasses": 12,
+            "accurateOppositionHalfPasses": 12,
+            "totalOppositionHalfPasses": 13,
+            "aerialWon": 1,
+            "duelLost": 1,
+            "duelWon": 1,
+            "totalClearance": 1,
+            "outfielderBlock": 1,
+            "ballRecovery": 4,
+            "unsuccessfulTouch": 2,
+            "fouls": 1,
+            "minutesPlayed": 45,
+            "touches": 32,
+            "rating": 6.8,
+            "possessionLostCtrl": 3,
+            "expectedAssists": 0.00757992,
+            "topSpeed": 29.1,
+            "kilometersCovered": 5.76,
+            "numberOfSprints": 4,
+            "totalBallCarriesDistance": 65.960869163501,
+            "ballCarriesCount": 8,
+            "totalProgression": 32.97598834475,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 6.8,
+              "alternative": 6.7
+            },
+            "totalShots": 0,
+            "passValueNormalized": 0.1,
+            "dribbleValueNormalized": 0.01,
+            "defensiveValueNormalized": 0.28,
+            "metersCoveredRunningKm": 1.05,
+            "metersCoveredHighSpeedRunningKm": 0.31,
+            "metersCoveredSprintingKm": 0.06,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Jan Uwe Thielmann",
+            "firstName": "Jan Uwe",
+            "lastName": "Thielmann",
+            "slug": "jan-uwe-thielmann",
+            "shortName": "J. Thielmann",
+            "position": "M",
+            "jerseyNumber": "29",
+            "height": 178,
+            "userCount": 432,
+            "gender": "M",
+            "sofascoreId": "fp7-zu7",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 1010726,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1022371200,
+            "proposedMarketValueRaw": {
+              "value": 4500000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "يان أويف ثيلمان",
+                "bn": "থিয়েলম্যান, জান",
+                "hi": "थिएलमैन, जान",
+                "ru": "Ян Уве Тильман"
+              },
+              "shortNameTranslation": {
+                "ar": "ي. ثيلمان",
+                "bn": "জে. থিয়েলম্যান",
+                "hi": "जे. थिएलमैन",
+                "ru": "Я. Тильман"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 29,
+          "jerseyNumber": "29",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 8,
+            "accuratePass": 7,
+            "totalLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 4,
+            "totalOwnHalfPasses": 4,
+            "accurateOppositionHalfPasses": 3,
+            "totalOppositionHalfPasses": 4,
+            "aerialLost": 1,
+            "duelLost": 1,
+            "duelWon": 1,
+            "totalContest": 1,
+            "wonContest": 1,
+            "shotOffTarget": 1,
+            "interceptionWon": 1,
+            "ballRecovery": 2,
+            "minutesPlayed": 45,
+            "touches": 18,
+            "rating": 6.5,
+            "possessionLostCtrl": 1,
+            "expectedGoals": 0.018,
+            "expectedAssists": 0.00136766,
+            "topSpeed": 28.06,
+            "kilometersCovered": 5.92,
+            "numberOfSprints": 4,
+            "totalBallCarriesDistance": 49.819644440666,
+            "ballCarriesCount": 5,
+            "totalProgression": 40.304745159491,
+            "bestBallCarryProgression": 23.828213560751,
+            "totalProgressiveBallCarriesDistance": 28.642082675671,
+            "progressiveBallCarriesCount": 1,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 6.5,
+              "alternative": 6.8
+            },
+            "totalShots": 1,
+            "shotValueNormalized": 0.01,
+            "passValueNormalized": -0.05,
+            "dribbleValueNormalized": 0.04,
+            "defensiveValueNormalized": -0.03,
+            "metersCoveredRunningKm": 1.3,
+            "metersCoveredHighSpeedRunningKm": 0.29,
+            "metersCoveredSprintingKm": 0.05,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ragnar Ache",
+            "slug": "ragnar-ache",
+            "shortName": "R. Ache",
+            "position": "F",
+            "jerseyNumber": "9",
+            "height": 182,
+            "userCount": 1457,
+            "gender": "M",
+            "sofascoreId": "eid-mc8",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 877544,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 901584000,
+            "proposedMarketValueRaw": {
+              "value": 9400000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "راغنار أتشي",
+                "bn": "রাগনার আচে",
+                "hi": "राग्नार ऐचे",
+                "ru": "Рагнар Аче"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. أتشي",
+                "bn": "আর. আচে",
+                "hi": "आर. ऐचे",
+                "ru": "Р. Аче"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 9,
+          "jerseyNumber": "9",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 17,
+            "accuratePass": 11,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 5,
+            "totalOwnHalfPasses": 6,
+            "accurateOppositionHalfPasses": 6,
+            "totalOppositionHalfPasses": 11,
+            "aerialLost": 8,
+            "aerialWon": 5,
+            "duelLost": 11,
+            "duelWon": 5,
+            "dispossessed": 3,
+            "bigChanceCreated": 1,
+            "blockedScoringAttempt": 2,
+            "ballRecovery": 1,
+            "unsuccessfulTouch": 5,
+            "minutesPlayed": 75,
+            "touches": 28,
+            "rating": 6.2,
+            "possessionLostCtrl": 14,
+            "expectedGoals": 0.2694,
+            "expectedAssists": 0.0498786,
+            "topSpeed": 31.84,
+            "kilometersCovered": 7.83,
+            "numberOfSprints": 9,
+            "totalBallCarriesDistance": 60.778266671032,
+            "ballCarriesCount": 7,
+            "totalProgression": 22.397128854054,
+            "bestBallCarryProgression": 29.907191407265,
+            "totalProgressiveBallCarriesDistance": 30.821700553344,
+            "progressiveBallCarriesCount": 1,
+            "keyPass": 2,
+            "ratingVersions": {
+              "original": 6.2,
+              "alternative": 6.7
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.02,
+            "passValueNormalized": -0.21,
+            "dribbleValueNormalized": 0.18,
+            "defensiveValueNormalized": -0.02,
+            "metersCoveredRunningKm": 1.08,
+            "metersCoveredHighSpeedRunningKm": 0.42,
+            "metersCoveredSprintingKm": 0.14,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Linton Maina",
+            "firstName": "Linton",
+            "lastName": "Maina",
+            "slug": "linton-maina",
+            "shortName": "L. Maina",
+            "position": "M",
+            "jerseyNumber": "37",
+            "height": 173,
+            "userCount": 565,
+            "gender": "M",
+            "sofascoreId": "88i-zyw",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 921033,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 930096000,
+            "proposedMarketValueRaw": {
+              "value": 3300000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "لينتون ماينا",
+                "bn": "লিন্টন মাইনা",
+                "hi": "लिंटन मैना",
+                "ru": "Линтон Мэина"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. ماينا",
+                "bn": "এল. মাইনা",
+                "hi": "एल. मैना",
+                "ru": "Л. Мэина"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 37,
+          "jerseyNumber": "37",
+          "position": "F",
+          "substitute": false,
+          "statistics": {
+            "totalPass": 24,
+            "accuratePass": 21,
+            "totalLongBalls": 1,
+            "accurateLongBalls": 1,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 8,
+            "totalOwnHalfPasses": 9,
+            "accurateOppositionHalfPasses": 13,
+            "totalOppositionHalfPasses": 15,
+            "totalCross": 1,
+            "aerialLost": 2,
+            "duelLost": 2,
+            "duelWon": 2,
+            "totalContest": 1,
+            "wonContest": 1,
+            "blockedScoringAttempt": 1,
+            "totalClearance": 1,
+            "ballRecovery": 4,
+            "unsuccessfulTouch": 2,
+            "wasFouled": 1,
+            "minutesPlayed": 75,
+            "touches": 34,
+            "rating": 6.9,
+            "possessionLostCtrl": 6,
+            "expectedGoals": 0.0289,
+            "expectedAssists": 0.0229819,
+            "topSpeed": 29.94,
+            "kilometersCovered": 9.12,
+            "numberOfSprints": 15,
+            "totalBallCarriesDistance": 184.18515801895,
+            "ballCarriesCount": 16,
+            "totalProgression": 108.00458054854,
+            "bestBallCarryProgression": 27.825725834965,
+            "totalProgressiveBallCarriesDistance": 82.667076393461,
+            "progressiveBallCarriesCount": 4,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 6.9,
+              "alternative": 7
+            },
+            "totalShots": 1,
+            "shotValueNormalized": 0,
+            "passValueNormalized": -0.09,
+            "dribbleValueNormalized": 0.38,
+            "defensiveValueNormalized": 0.26,
+            "metersCoveredRunningKm": 1.54,
+            "metersCoveredHighSpeedRunningKm": 0.55,
+            "metersCoveredSprintingKm": 0.19,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ellyes Skhiri",
+            "firstName": "Ellyes",
+            "lastName": "Skhiri",
+            "slug": "ellyes-skhiri",
+            "shortName": "E. Skhiri",
+            "position": "M",
+            "jerseyNumber": "6",
+            "height": 185,
+            "userCount": 4979,
+            "gender": "M",
+            "sofascoreId": "tw3-ra5",
+            "country": {
+              "alpha2": "TN",
+              "alpha3": "TUN",
+              "name": "Tunisia",
+              "slug": "tunisia"
+            },
+            "id": 591706,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 800064000,
+            "proposedMarketValueRaw": {
+              "value": 5200000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "إلياس السخيري",
+                "bn": "এলিস স্খিরি",
+                "hi": "एलीस स्कीरी",
+                "ru": "Эллиес Скири"
+              },
+              "shortNameTranslation": {
+                "ar": "إ. السخيري",
+                "bn": "ই. স্খিরি",
+                "hi": "ई. स्कीरी",
+                "ru": "Э. Скири"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 6,
+          "jerseyNumber": "6",
+          "position": "M",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 22,
+            "accuratePass": 20,
+            "totalLongBalls": 4,
+            "accurateLongBalls": 2,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 13,
+            "totalOwnHalfPasses": 14,
+            "accurateOppositionHalfPasses": 7,
+            "totalOppositionHalfPasses": 8,
+            "aerialLost": 2,
+            "aerialWon": 1,
+            "duelLost": 4,
+            "duelWon": 1,
+            "dispossessed": 1,
+            "bigChanceMissed": 1,
+            "shotOffTarget": 1,
+            "onTargetScoringAttempt": 1,
+            "totalClearance": 2,
+            "ballRecovery": 1,
+            "fouls": 1,
+            "minutesPlayed": 45,
+            "touches": 27,
+            "rating": 7,
+            "possessionLostCtrl": 3,
+            "expectedGoals": 0.575,
+            "expectedGoalsOnTarget": 0.8491,
+            "expectedAssists": 0.0433438,
+            "topSpeed": 27.99,
+            "kilometersCovered": 5.62,
+            "numberOfSprints": 1,
+            "totalBallCarriesDistance": 73.322379671021,
+            "ballCarriesCount": 11,
+            "totalProgression": 4.8836499858054,
+            "progressiveBallCarriesCount": 0,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 7,
+              "alternative": 6.3
+            },
+            "totalShots": 2,
+            "shotValueNormalized": 0.32,
+            "passValueNormalized": 0.09,
+            "dribbleValueNormalized": 0.04,
+            "defensiveValueNormalized": -0.08,
+            "metersCoveredRunningKm": 1.01,
+            "metersCoveredHighSpeedRunningKm": 0.24,
+            "metersCoveredSprintingKm": 0.03,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Mikey Moore",
+            "slug": "mikey-moore",
+            "shortName": "M. Moore",
+            "position": "F",
+            "jerseyNumber": "47",
+            "height": 180,
+            "userCount": 5141,
+            "gender": "M",
+            "sofascoreId": "5fe-qpa",
+            "country": {
+              "alpha2": "EN",
+              "alpha3": "ENG",
+              "name": "England",
+              "slug": "england"
+            },
+            "id": 1403192,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1186790400,
+            "proposedMarketValueRaw": {
+              "value": 18500000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "مايكي مور",
+                "bn": "মাইকি মুর",
+                "hi": "मिकी मूर",
+                "ru": "Майки Мур"
+              },
+              "shortNameTranslation": {
+                "ar": "م. مور",
+                "bn": "এম. মুর",
+                "hi": "एम. मूर",
+                "ru": "М. Мур"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 47,
+          "jerseyNumber": "47",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 13,
+            "accuratePass": 12,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 5,
+            "totalOwnHalfPasses": 6,
+            "accurateOppositionHalfPasses": 7,
+            "totalOppositionHalfPasses": 7,
+            "aerialLost": 1,
+            "duelLost": 2,
+            "duelWon": 1,
+            "totalContest": 2,
+            "wonContest": 1,
+            "bigChanceCreated": 2,
+            "bigChanceMissed": 1,
+            "onTargetScoringAttempt": 2,
+            "totalClearance": 1,
+            "ballRecovery": 1,
+            "unsuccessfulTouch": 1,
+            "minutesPlayed": 45,
+            "touches": 22,
+            "rating": 7.3,
+            "possessionLostCtrl": 3,
+            "expectedGoals": 0.2657,
+            "expectedGoalsOnTarget": 0.1721,
+            "expectedAssists": 0.637884,
+            "topSpeed": 32.67,
+            "kilometersCovered": 5.75,
+            "numberOfSprints": 9,
+            "totalBallCarriesDistance": 116.92302468328,
+            "ballCarriesCount": 11,
+            "totalProgression": 66.078794031298,
+            "bestBallCarryProgression": 43.086363203125,
+            "totalProgressiveBallCarriesDistance": 73.315183050993,
+            "progressiveBallCarriesCount": 3,
+            "keyPass": 2,
+            "ratingVersions": {
+              "original": 7.3,
+              "alternative": 7
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.51,
+            "passValueNormalized": 0.49,
+            "dribbleValueNormalized": 0.38,
+            "defensiveValueNormalized": 0.16,
+            "metersCoveredRunningKm": 1.1,
+            "metersCoveredHighSpeedRunningKm": 0.36,
+            "metersCoveredSprintingKm": 0.22,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Reigan Heskey",
+            "firstName": "Reigan",
+            "lastName": "Heskey",
+            "slug": "reigan-heskey",
+            "shortName": "R. Heskey",
+            "position": "F",
+            "jerseyNumber": "11",
+            "height": 184,
+            "userCount": 3162,
+            "gender": "M",
+            "sofascoreId": "hip-7du",
+            "country": {
+              "alpha2": "EN",
+              "alpha3": "ENG",
+              "name": "England",
+              "slug": "england"
+            },
+            "id": 1601596,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1200614400,
+            "proposedMarketValueRaw": {
+              "value": 2200000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ريغان هيسكي",
+                "ru": "Рейган Хески"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. هيسكي",
+                "ru": "Р. Хески"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 11,
+          "jerseyNumber": "11",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 3,
+            "accuratePass": 3,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 3,
+            "totalOwnHalfPasses": 3,
+            "duelLost": 1,
+            "duelWon": 1,
+            "totalContest": 1,
+            "shotOffTarget": 1,
+            "wasFouled": 1,
+            "minutesPlayed": 15,
+            "touches": 7,
+            "rating": 6.5,
+            "possessionLostCtrl": 1,
+            "expectedGoals": 0.0371,
+            "expectedAssists": 7.55e-05,
+            "topSpeed": 28.4,
+            "kilometersCovered": 2.17,
+            "numberOfSprints": 3,
+            "totalBallCarriesDistance": 3.0752952703765,
+            "ballCarriesCount": 1,
+            "totalProgression": 2.8985912223523,
+            "progressiveBallCarriesCount": 0,
+            "ratingVersions": {
+              "original": 6.5,
+              "alternative": 6.4
+            },
+            "totalShots": 1,
+            "shotValueNormalized": -0.08,
+            "passValueNormalized": -0.01,
+            "dribbleValueNormalized": -0.3,
+            "defensiveValueNormalized": 0,
+            "metersCoveredRunningKm": 0.35,
+            "metersCoveredHighSpeedRunningKm": 0.14,
+            "metersCoveredSprintingKm": 0.05,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Marius Bülter",
+            "slug": "marius-bulter",
+            "shortName": "M. Bülter",
+            "position": "F",
+            "jerseyNumber": "30",
+            "height": 188,
+            "userCount": 514,
+            "gender": "M",
+            "sofascoreId": "q8u-urp",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 378340,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 733363200,
+            "proposedMarketValueRaw": {
+              "value": 1900000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ماريوس بيلتر",
+                "bn": "মারিয়াস বুল্টার",
+                "hi": "मारियस बुल्टर",
+                "ru": "Мариус Бюльтер"
+              },
+              "shortNameTranslation": {
+                "ar": "م. بيلتر",
+                "bn": "এম. বুল্টার",
+                "hi": "एम. बुल्टर",
+                "ru": "М. Бюльтер"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 30,
+          "jerseyNumber": "30",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "totalPass": 8,
+            "accuratePass": 7,
+            "goalAssist": 0,
+            "accurateOwnHalfPasses": 5,
+            "totalOwnHalfPasses": 5,
+            "accurateOppositionHalfPasses": 2,
+            "totalOppositionHalfPasses": 3,
+            "aerialWon": 1,
+            "duelWon": 1,
+            "bigChanceMissed": 1,
+            "shotOffTarget": 2,
+            "ballRecovery": 1,
+            "minutesPlayed": 15,
+            "touches": 10,
+            "rating": 7.4,
+            "possessionLostCtrl": 1,
+            "expectedGoals": 1.0458,
+            "expectedAssists": 0.0145635,
+            "topSpeed": 29.39,
+            "kilometersCovered": 2.16,
+            "numberOfSprints": 3,
+            "totalBallCarriesDistance": 59.356391034352,
+            "ballCarriesCount": 4,
+            "totalProgression": 31.354692195788,
+            "bestBallCarryProgression": 28.280120099528,
+            "totalProgressiveBallCarriesDistance": 29.29307419852,
+            "progressiveBallCarriesCount": 1,
+            "keyPass": 1,
+            "ratingVersions": {
+              "original": 7.4,
+              "alternative": 7.3
+            },
+            "totalShots": 2,
+            "shotValueNormalized": -0.97,
+            "passValueNormalized": -0.02,
+            "dribbleValueNormalized": 0.34,
+            "defensiveValueNormalized": -0.01,
+            "metersCoveredRunningKm": 0.5,
+            "metersCoveredHighSpeedRunningKm": 0.11,
+            "metersCoveredSprintingKm": 0.05,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Imad Rondić",
+            "firstName": "Imad",
+            "lastName": "Rondic",
+            "slug": "imad-rondic",
+            "shortName": "I. Rondić",
+            "position": "F",
+            "jerseyNumber": "15",
+            "height": 188,
+            "userCount": 349,
+            "gender": "M",
+            "sofascoreId": "eg6-zy8",
+            "country": {
+              "alpha2": "BA",
+              "alpha3": "BIH",
+              "name": "Bosnia & Herzegovina",
+              "slug": "bosnia-and-herzegovina"
+            },
+            "id": 858600,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 919123200,
+            "proposedMarketValueRaw": {
+              "value": 690000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "عماد رونديتش",
+                "bn": "ইমাদ রন্ডিচ",
+                "hi": "इमाद रोन्डिक",
+                "ru": "Имад Рондич"
+              },
+              "shortNameTranslation": {
+                "ar": "ع. رونديتش",
+                "bn": "আই. রন্ডিচ",
+                "hi": "आई. रोन्डिक",
+                "ru": "И. Рондич"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 15,
+          "jerseyNumber": "15",
+          "position": "F",
+          "substitute": true,
+          "statistics": {
+            "goalAssist": 0,
+            "aerialLost": 1,
+            "duelLost": 1,
+            "duelWon": 1,
+            "totalContest": 1,
+            "wonContest": 1,
+            "totalClearance": 1,
+            "ballRecovery": 1,
+            "unsuccessfulTouch": 1,
+            "minutesPlayed": 1,
+            "touches": 3,
+            "possessionLostCtrl": 1,
+            "topSpeed": 25.62,
+            "kilometersCovered": 0.28,
+            "numberOfSprints": 1,
+            "totalBallCarriesDistance": 23.601632290719,
+            "ballCarriesCount": 3,
+            "totalProgression": 8.0688180822448,
+            "progressiveBallCarriesCount": 0,
+            "totalShots": 0,
+            "metersCoveredRunningKm": 0.06,
+            "metersCoveredHighSpeedRunningKm": 0.03,
+            "metersCoveredSprintingKm": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Ron-Robert Zieler",
+            "slug": "ron-robert-zieler",
+            "shortName": "R. Zieler",
+            "position": "G",
+            "jerseyNumber": "20",
+            "height": 188,
+            "userCount": 199,
+            "gender": "M",
+            "sofascoreId": "iwt-u5e",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 41615,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 603244800,
+            "proposedMarketValueRaw": {
+              "value": 455000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "رون-روبرت زيلر",
+                "bn": "রন-রবার্ট জিলার",
+                "hi": "रॉन-रॉबर्ट ज़ीलर",
+                "ru": "Рон-Роберт Цилер"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. زيلر",
+                "bn": "আর. জিলার",
+                "hi": "आर. ज़ीलर",
+                "ru": "Р. Цилер"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 20,
+          "jerseyNumber": "20",
+          "position": "G",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Joel Schmied",
+            "firstName": "Joel",
+            "lastName": "Schmied",
+            "slug": "joel-schmied",
+            "shortName": "J. Schmied",
+            "position": "D",
+            "jerseyNumber": "2",
+            "height": 188,
+            "userCount": 183,
+            "gender": "M",
+            "sofascoreId": "p99-kyn",
+            "country": {
+              "alpha2": "CH",
+              "alpha3": "CHE",
+              "name": "Switzerland",
+              "slug": "switzerland"
+            },
+            "id": 965950,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 906508800,
+            "proposedMarketValueRaw": {
+              "value": 3100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "شمييد، جويل",
+                "ru": "Джоэл Шмид"
+              },
+              "shortNameTranslation": {
+                "ar": "ج. شمييد",
+                "ru": "Д. Шмид"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 2,
+          "jerseyNumber": "2",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Rav van den Berg",
+            "firstName": "",
+            "lastName": "",
+            "slug": "rav-van-den-berg",
+            "shortName": "R. v. d. Berg",
+            "position": "D",
+            "jerseyNumber": "33",
+            "height": 190,
+            "userCount": 1083,
+            "gender": "M",
+            "sofascoreId": "kms-m29",
+            "country": {
+              "alpha2": "NL",
+              "alpha3": "NLD",
+              "name": "Netherlands",
+              "slug": "netherlands"
+            },
+            "id": 1014493,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1089158400,
+            "proposedMarketValueRaw": {
+              "value": 7300000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "راف فان دن بيرغ",
+                "ru": "Рав ван ден Берг"
+              },
+              "shortNameTranslation": {
+                "ar": "ر. فان دن بيرغ",
+                "ru": "Р. Берг"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 33,
+          "jerseyNumber": "33",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        },
+        {
+          "player": {
+            "name": "Borna Sosa",
+            "firstName": "Borna",
+            "lastName": "Sosa",
+            "slug": "borna-sosa",
+            "shortName": "B. Sosa",
+            "position": "M",
+            "jerseyNumber": "3",
+            "height": 187,
+            "userCount": 3723,
+            "gender": "M",
+            "sofascoreId": "s4u-xs3",
+            "country": {
+              "alpha2": "HR",
+              "alpha3": "HRV",
+              "name": "Croatia",
+              "slug": "croatia"
+            },
+            "id": 357584,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 885340800,
+            "proposedMarketValueRaw": {
+              "value": 2700000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "بورنا سوسا",
+                "bn": "বর্না সোসা",
+                "hi": "बोर्ना सोसा",
+                "ru": "Борна Соса"
+              },
+              "shortNameTranslation": {
+                "ar": "ب. سوسا",
+                "bn": "বি. সোসা",
+                "hi": "बी. सोसा",
+                "ru": "Б. Соса"
+              }
+            }
+          },
+          "teamId": 2671,
+          "shirtNumber": 3,
+          "jerseyNumber": "3",
+          "position": "D",
+          "substitute": true,
+          "statistics": {
+            "totalShots": 0,
+            "statisticsType": {
+              "sportSlug": "football",
+              "statisticsType": "player"
+            }
+          }
+        }
+      ],
+      "supportStaff": [],
+      "formation": "4-3-3",
+      "playerColor": {
+        "primary": "002166",
+        "number": "ffffff",
+        "outline": "002166",
+        "fancyNumber": "ffffff"
+      },
+      "goalkeeperColor": {
+        "primary": "709fee",
+        "number": "fbf9f9",
+        "outline": "709fee",
+        "fancyNumber": "222226"
+      },
+      "missingPlayers": [
+        {
+          "player": {
+            "name": "Luca Waldschmidt",
+            "firstName": "Luca",
+            "lastName": "Waldschmidt",
+            "slug": "luca-waldschmidt",
+            "shortName": "L. Waldschmidt",
+            "position": "F",
+            "jerseyNumber": "7",
+            "height": 181,
+            "userCount": 756,
+            "gender": "M",
+            "sofascoreId": "c37-2wg",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 319861,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 832464000,
+            "proposedMarketValueRaw": {
+              "value": 1800000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "لوكا فالدشميت",
+                "bn": "লুকা ওয়াল্ডস্মিড্ট",
+                "hi": "लुका वाल्ड्स्च्मिड्ट",
+                "ru": "Лука Вальдшмидт"
+              },
+              "shortNameTranslation": {
+                "ar": "ل. فالدشميت",
+                "bn": "এল. ওয়াল্ডস্মিড্ট",
+                "hi": "एल. वाल्ड्स्च्मिड्ट",
+                "ru": "Л. Вальдшмидт"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Thigh Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-09-05T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Sebastian Sebulonsen",
+            "slug": "sebastian-sebulonsen",
+            "shortName": "S. Sebulonsen",
+            "position": "D",
+            "jerseyNumber": "28",
+            "height": 187,
+            "userCount": 274,
+            "gender": "M",
+            "sofascoreId": "wrv-n4i",
+            "country": {
+              "alpha2": "NO",
+              "alpha3": "NOR",
+              "name": "Norway",
+              "slug": "norway"
+            },
+            "id": 1020206,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 948931200,
+            "proposedMarketValueRaw": {
+              "value": 5100000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "سيباستيان سوراس سيبولونسن",
+                "bn": "সেবাস্তিয়ান সোরাস সেবুলোনসেন",
+                "hi": "सेबेस्टियन सोरास सेबुलोन्सेन",
+                "ru": "Себастьян Себулонсен"
+              },
+              "shortNameTranslation": {
+                "ar": "س. س. سيبولونسن",
+                "bn": "এস. এস. সেবুলোনসেন",
+                "hi": "एस.एस. सेबुलोन्सेन",
+                "ru": "С. Себулонсен"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Thigh Injury",
+          "externalType": 114,
+          "expectedEndDate": "2026-09-30T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Thijs Dallinga",
+            "firstName": "Thijs",
+            "lastName": "Dallinga",
+            "slug": "thijs-dallinga",
+            "shortName": "T. Dallinga",
+            "position": "F",
+            "jerseyNumber": "27",
+            "height": 190,
+            "userCount": 2688,
+            "gender": "M",
+            "sofascoreId": "zzc-pnd",
+            "country": {
+              "alpha2": "NL",
+              "alpha3": "NLD",
+              "name": "Netherlands",
+              "slug": "netherlands"
+            },
+            "id": 905381,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 965260800,
+            "proposedMarketValueRaw": {
+              "value": 9800000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "تيس دالينغا",
+                "bn": "থিজস ডালিঙ্গা",
+                "hi": "थिज्स डालिंगा",
+                "ru": "Тейс Даллинга"
+              },
+              "shortNameTranslation": {
+                "ar": "ت. دالينغا",
+                "bn": "টি. ডালিঙ্গা",
+                "hi": "टी. डालिंगा",
+                "ru": "Т. Даллинга"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Illness",
+          "externalType": 114,
+          "expectedEndDate": "2026-09-16T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Timo Hübers",
+            "slug": "timo-hubers",
+            "shortName": "T. Hübers",
+            "position": "D",
+            "jerseyNumber": "4",
+            "height": 190,
+            "userCount": 292,
+            "gender": "M",
+            "sofascoreId": "gxg-hgi",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 387220,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 837820800,
+            "proposedMarketValueRaw": {
+              "value": 1400000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "تيمو هيوبرس",
+                "bn": "টিমো হাবার্স",
+                "hi": "टिमो ह्यूबर्स",
+                "ru": "Тимо Хюбертс"
+              },
+              "shortNameTranslation": {
+                "ar": "ت. هيوبرس",
+                "bn": "টি. হাবার্স",
+                "hi": "टी. ह्यूबर्स",
+                "ru": "Т. Хюбертс"
+              }
+            }
+          },
+          "type": "missing",
+          "reason": 1,
+          "description": "Knee Surgery",
+          "externalType": 114,
+          "expectedEndDate": "2027-01-10T00:00:00+00:00"
+        },
+        {
+          "player": {
+            "name": "Said El Mala",
+            "firstName": "Said",
+            "lastName": "El Mala",
+            "slug": "said-el-mala",
+            "shortName": "S. El Mala",
+            "position": "M",
+            "jerseyNumber": "10",
+            "height": 185,
+            "userCount": 4259,
+            "gender": "M",
+            "sofascoreId": "iwg-5f6",
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 1800475,
+            "marketValueCurrency": "EUR",
+            "dateOfBirthTimestamp": 1156550400,
+            "proposedMarketValueRaw": {
+              "value": 46000000,
+              "currency": "EUR"
+            },
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "سعيد المالا",
+                "ru": "Саид Эль Мала"
+              },
+              "shortNameTranslation": {
+                "ar": "س. المالا",
+                "ru": "С. Мала"
+              }
+            }
+          },
+          "type": "doubtful",
+          "reason": 1,
+          "description": "Illness",
+          "externalType": 114,
+          "expectedEndDate": "2026-09-17T00:00:00+00:00"
+        }
+      ]
+    },
+    "statisticalVersion": 3
+  }
+}
