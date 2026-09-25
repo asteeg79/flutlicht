@@ -1,0 +1,57 @@
+name: Compute (raw → data)
+
+# Übernommen aus WM-Tipp .github/workflows/news.yml (Commit-/Rebase-Block, Concurrency),
+# angepasst: Auslöser push auf raw/**, manuell und repository_dispatch (Neuberechnung
+# vom Admin, KONZEPT 11). Pushes des Scrapers per Deploy-Key starten diesen Workflow.
+# Schlägt der Build fehl (kaputtes Raw-File, Sanity-Guard), bleibt data/ unverändert.
+on:
+  push:
+    branches: [main]
+    paths: ["raw/**"]
+  workflow_dispatch:
+  repository_dispatch:
+    types: [recompute]
+
+concurrency:
+  group: data-pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Pipeline (raw → data)
+        run: pnpm --filter pipeline build
+      - name: Commit & push data
+        run: |
+          git config user.name "fm-pipeline-bot"
+          git config user.email "actions@github.com"
+          git add data
+          if git diff --staged --quiet; then
+            echo "Keine Datenänderungen, nichts zu committen."
+          else
+            git commit -m "data: compute $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            # -X theirs: Konflikte in generierten data/-Dateien zugunsten des eigenen
+            # (neueren) Stands lösen, wenn zwei Läufe knapp nacheinander pushen.
+            git pull --rebase --autostash -X theirs origin "${{ github.ref_name }}" || git rebase --abort || true
+            git push
+          fi
+
+  # Bei Fehlschlag: GitHub-Issue-Alarm (Label "pipeline-failure", s. _alert.yml).
+  alert:
+    needs: build
+    if: failure()
+    permissions:
+      issues: write
+    uses: ./.github/workflows/_alert.yml

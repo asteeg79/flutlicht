@@ -4,6 +4,7 @@ import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 import { z } from "zod";
 import {
+  ManualMatch,
   ManualMapping,
   ManualPositions,
   ManualSeason,
@@ -13,9 +14,12 @@ import {
 } from "@fm/core";
 import { parseCsv } from "./csv";
 import type { SquadSnapshot, ValuedCandidate } from "./steps/players";
+import type { OpenligaMatch, RoundEvent } from "./steps/fixtures";
+import type { MatchData } from "./steps/points";
+import { openligaSeasonPath, originalKickoffsPath } from "./fetch-openligadb";
 import { readJson, readJsonOptional } from "./io/json";
 
-const Envelope = z.object({ data: z.unknown() });
+const Envelope = z.object({ fetchedAt: z.string(), data: z.unknown() });
 
 async function readData(path: string): Promise<unknown> {
   return (await readJson(path, Envelope)).data;
@@ -178,4 +182,100 @@ export async function readImageIds(imgDir: string): Promise<Set<number>> {
   return new Set(
     files.filter((f) => f.endsWith(".webp")).map((f) => Number(f.slice(0, -5))),
   );
+}
+
+const OpenligaSeason = z.array(
+  z.object({
+    matchID: z.int(),
+    matchDateTimeUTC: z.string(),
+    group: z.object({ groupOrderID: z.int() }),
+    team1: z.object({ teamId: z.int() }),
+    team2: z.object({ teamId: z.int() }),
+    matchIsFinished: z.boolean(),
+    matchResults: z.array(
+      z.object({
+        resultTypeID: z.int(),
+        pointsTeam1: z.int(),
+        pointsTeam2: z.int(),
+      }),
+    ),
+  }),
+);
+
+export async function readOpenliga(rawDir: string): Promise<{
+  fetchedAt: string;
+  matches: OpenligaMatch[];
+  originals: Record<string, string>;
+}> {
+  const env = await readJson(openligaSeasonPath(rawDir), Envelope);
+  const originals =
+    (await readJsonOptional(
+      originalKickoffsPath(rawDir),
+      z.record(z.string(), z.string()),
+    )) ?? {};
+  return {
+    fetchedAt: env.fetchedAt,
+    matches: OpenligaSeason.parse(env.data),
+    originals,
+  };
+}
+
+const SofaRound = z.object({
+  events: z.array(
+    z.object({
+      id: z.int(),
+      homeTeam: z.object({ id: z.int() }),
+      awayTeam: z.object({ id: z.int() }),
+      roundInfo: z.object({ round: z.int() }).optional(),
+    }),
+  ),
+});
+
+export async function readRounds(rawDir: string): Promise<RoundEvent[]> {
+  const base = join(rawDir, "sofascore", "rounds");
+  const out: RoundEvent[] = [];
+  for (const file of await listJson(base)) {
+    const matchday = Number(/round-(\d+)\.json/.exec(file)?.[1]);
+    for (const e of SofaRound.parse(await readData(join(base, file))).events) {
+      out.push({
+        id: e.id,
+        matchday: e.roundInfo?.round ?? matchday,
+        homeTeamId: e.homeTeam.id,
+        awayTeamId: e.awayTeam.id,
+      });
+    }
+  }
+  return out;
+}
+
+/** Spieldaten je Event: Admin-Nachtrag vor Sofascore-final vor Sofascore-provisional (6.5). */
+export async function readMatchData(
+  rawDir: string,
+): Promise<Map<number, MatchData>> {
+  const out = new Map<number, MatchData>();
+  const base = join(rawDir, "sofascore", "matches");
+  for (const event of await listDirs(base)) {
+    for (const phase of ["provisional", "final"] as const) {
+      const dir = join(base, event, phase);
+      if (
+        !existsSync(join(dir, "lineups.json")) ||
+        !existsSync(join(dir, "incidents.json"))
+      )
+        continue;
+      const lineups = await readJson(join(dir, "lineups.json"), Envelope);
+      const incidents = await readJson(join(dir, "incidents.json"), Envelope);
+      out.set(Number(event), {
+        kind: phase,
+        lineups: lineups.data,
+        incidents: incidents.data,
+        at: [lineups.fetchedAt, incidents.fetchedAt].sort().at(-1)!,
+      });
+    }
+  }
+  const manualDir = join(rawDir, "manual", "matches");
+  for (const file of await listJson(manualDir)) {
+    const match = await readJson(join(manualDir, file), ManualMatch);
+    out.set(match.eventId, { kind: "manual", match, at: match.enteredAt });
+  }
+  return out;
 }

@@ -54,3 +54,15 @@ export const MissingValueEntry = z.object({
 });
 export const MissingValues = z.array(MissingValueEntry);
 export type MissingValueEntry = z.infer<typeof MissingValueEntry>;
+
+/** Beendete Spiele ohne Sofascore-Daten seit > 3 Tagen (KONZEPT 5.8) → Admin trägt nach. */
+export const ManualNeededEntry = z.object({
+  matchday: Matchday,
+  openligaMatchId: z.int(),
+  sofascoreEventId: z.int().optional(),
+  homeTeamId: SofascoreId,
+  awayTeamId: SofascoreId,
+  kickoffUtc: z.iso.datetime({ offset: true }),
+});
+export const ManualNeeded = z.array(ManualNeededEntry);
+export type ManualNeededEntry = z.infer<typeof ManualNeededEntry>;

@@ -31,4 +31,6 @@ export const RULES = {
   extraTransferPenalty: 5,
   /** Ab so vielen Tagen zwischen Finalisierung und erster Sperre gilt das Fenster als Pause. */
   breakMinDays: 10,
+  /** Ein verlegtes Spiel zählt nur, wenn es höchstens so viele Tage nach dem ursprünglichen Termin stattfindet (2.9). */
+  postponedGraceDays: 3,
 };

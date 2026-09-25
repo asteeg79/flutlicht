@@ -1,5 +1,5 @@
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, writeFile } from "node:fs/promises";
+import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -7,6 +7,8 @@ import { build } from "../src/build";
 
 let root: string;
 const raw = (p: string) => join(root, "raw", p);
+const run = (warn: (m: string) => void = () => {}) =>
+  build(join(root, "raw"), join(root, "data"), join(root, "img"), warn);
 
 async function put(path: string, value: unknown) {
   await mkdir(dirname(path), { recursive: true });
@@ -15,61 +17,112 @@ async function put(path: string, value: unknown) {
     typeof value === "string" ? value : JSON.stringify(value),
   );
 }
-const envelope = (data: unknown) => ({
-  fetchedAt: "2026-09-25T10:00:00Z",
+const envelope = (data: unknown, fetchedAt = "2026-09-25T10:00:00Z") => ({
+  fetchedAt,
   url: "u",
   phase: "p",
   data,
 });
-const squadPlayer = (id: number, position: string, value?: number) => ({
-  player: {
-    id,
-    name: `Spieler ${id}`,
-    shortName: `S. ${id}`,
-    position,
-    dateOfBirthTimestamp: 946684800, // 2000-01-01
-    ...(value ? { proposedMarketValueRaw: { value, currency: "EUR" } } : {}),
-  },
-});
-const teams = Array.from({ length: 18 }, (_, i) => ({
+
+// 18 Vereine mit je 23 Spielern (IDs teamIndex*100 + 1..23), damit der Sanity-Guard zufrieden ist.
+const TEAMS = Array.from({ length: 18 }, (_, i) => ({
   id: 1000 + i,
   name: `Verein ${i}`,
   shortName: `V${i}`,
   openligaTeamId: i,
   tmClubId: String(i),
 }));
+const POS = ["G", "D", "D", "D", "D", "M", "M", "M", "M", "F", "F"];
+const squad = (t: number) =>
+  Array.from({ length: 23 }, (_, k) => ({
+    player: {
+      id: t * 100 + k + 1,
+      name: `Spieler ${t}-${k}`,
+      shortName: `S${t}-${k}`,
+      position: POS[k % POS.length],
+      dateOfBirthTimestamp: 946684800,
+      proposedMarketValueRaw: { value: (k + 1) * 1_000_000 },
+    },
+  }));
+const lineup = (t: number) =>
+  squad(t)
+    .slice(0, 11)
+    .map((p) => ({
+      player: { id: p.player.id, position: p.player.position },
+      teamId: 1000 + t,
+      substitute: false,
+      statistics: { minutesPlayed: 90, rating: 7.0 },
+    }));
 
 beforeEach(async () => {
   root = await mkdtemp(join(tmpdir(), "fm-build-"));
-  await put(raw("manual/teams.json"), teams);
-  await put(raw("manual/season.json"), { firstScoredMatchday: 8 });
+  await put(raw("manual/teams.json"), TEAMS);
+  await put(raw("manual/season.json"), { firstScoredMatchday: 1 });
+  for (let t = 0; t < 18; t++)
+    await put(
+      raw(`sofascore/squads/2026-09-25/${1000 + t}.json`),
+      envelope({ players: squad(t) }),
+    );
   await put(
-    raw("sofascore/squads/2026-09-25/1000.json"),
+    raw("openligadb/season-2026.json"),
+    envelope(
+      [
+        {
+          matchID: 1,
+          matchDateTimeUTC: "2026-09-20T13:30:00Z",
+          group: { groupOrderID: 1 },
+          team1: { teamId: 0 },
+          team2: { teamId: 1 },
+          matchIsFinished: true,
+          matchResults: [{ resultTypeID: 2, pointsTeam1: 1, pointsTeam2: 0 }],
+        },
+        {
+          matchID: 2,
+          matchDateTimeUTC: "2026-10-10T13:30:00Z",
+          group: { groupOrderID: 2 },
+          team1: { teamId: 2 },
+          team2: { teamId: 3 },
+          matchIsFinished: false,
+          matchResults: [],
+        },
+      ],
+      "2026-09-26T10:00:00Z",
+    ),
+  );
+  await put(
+    raw("sofascore/rounds/round-01.json"),
     envelope({
-      players: [squadPlayer(1, "G", 4_000_000), squadPlayer(2, "F")],
+      events: [
+        {
+          id: 700,
+          homeTeam: { id: 1000 },
+          awayTeam: { id: 1001 },
+          roundInfo: { round: 1 },
+        },
+      ],
     }),
   );
   await put(
-    raw("sofascore/squads/2026-09-25/1001.json"),
-    envelope({ players: [squadPlayer(3, "D", 16_000_000)] }),
+    raw("sofascore/matches/700/final/lineups.json"),
+    envelope(
+      { home: { players: lineup(0) }, away: { players: lineup(1) } },
+      "2026-09-21T08:15:00Z",
+    ),
   );
   await put(
-    raw("dcaribou/players-L1.csv"),
-    "player_id,name,last_name,date_of_birth,current_club_id,market_value_in_eur\n55,Spieler 2,2,2000-01-01 00:00:00,0,9000000\n",
-  );
-  await put(
-    raw("sofascore/matches/9/final/lineups.json"),
-    envelope({
-      home: {
-        players: [
-          { player: { id: 1 }, statistics: { minutesPlayed: 90 } },
-          { player: { id: 2 } },
+    raw("sofascore/matches/700/final/incidents.json"),
+    envelope(
+      {
+        incidents: [
+          {
+            incidentType: "goal",
+            incidentClass: "regular",
+            player: { id: 10 },
+          },
         ],
       },
-      away: {
-        players: [{ player: { id: 3 }, statistics: { minutesPlayed: 45 } }],
-      },
-    }),
+      "2026-09-21T08:16:00Z",
+    ),
   );
 });
 
@@ -77,50 +130,73 @@ const readData = async (file: string) =>
   JSON.parse(await readFile(join(root, "data", file), "utf8"));
 
 describe("pipeline build (raw → data, KONZEPT 6.5)", () => {
-  it("schreibt teams, players, season und review deterministisch", async () => {
-    await build(join(root, "raw"), join(root, "data"), join(root, "img"));
-    const first = await readFile(join(root, "data", "players.json"), "utf8");
+  it("schreibt alle Dateien deterministisch", async () => {
+    await run();
+    const first = await readFile(join(root, "data", "meta.json"), "utf8");
 
-    expect((await readData("teams.json"))[0]).toEqual({
-      ...teams[0],
-      logo: "/img/clubs/1000.webp",
-    });
+    expect(await readdir(join(root, "data"))).toEqual([
+      "fixtures.json",
+      "market",
+      "meta.json",
+      "players.json",
+      "points",
+      "review",
+      "season.json",
+      "teams.json",
+    ]);
+    expect((await readData("players.json")).length).toBe(414);
     expect(
-      (await readData("players.json")).map(
-        (p: {
-          id: number;
-          valueSource: string;
-          price: number;
-          tmId?: string;
-        }) => [p.id, p.valueSource, p.price, p.tmId],
+      (await readData("fixtures.json")).map(
+        (f: { sofascoreEventId?: number; dataState: string }) => [
+          f.sofascoreEventId,
+          f.dataState,
+        ],
       ),
     ).toEqual([
-      [1, "sofascore", 12.5, undefined],
-      [2, "dcaribou", 18.8, "55"],
-      [3, "sofascore", 25, undefined],
+      [700, "final"],
+      [undefined, "none"],
     ]);
-    expect(await readData("season.json")).toMatchObject({
-      vMaxEur: 16_000_000,
-      firstScoredMatchday: 8,
+    const md1 = await readData("points/md-01.json");
+    expect(md1).toMatchObject({
+      status: "final",
+      generatedAt: "2026-09-21T08:16:00Z",
     });
-    expect(
-      (await readData("review/mapping.json")).map(
-        (m: { playerId: number }) => m.playerId,
-      ),
-    ).toEqual([1, 3]);
-    expect(await readData("review/missing-values.json")).toEqual([]);
+    expect(md1.players["10"].parts.goals).toBe(5);
+    // Erster gewerteter Spieltag 1: Spieler 10 (ST, 90′, Note 7, Tor, zu null nicht für ST) → P = 15, E = 4 → +4.4 %
+    const history = await readData("market/history.json");
+    expect(history["10"]).toHaveLength(1);
+    expect(await readData("meta.json")).toMatchObject({
+      generatedAt: "2026-09-26T10:00:00.000Z",
+      lastFinalMatchday: 1,
+    });
 
-    await build(join(root, "raw"), join(root, "data"), join(root, "img"));
-    expect(await readFile(join(root, "data", "players.json"), "utf8")).toBe(
-      first,
-    );
+    await run();
+    expect(await readFile(join(root, "data", "meta.json"), "utf8")).toBe(first);
   });
 
-  it("schreibt bei einem Fehler nichts", async () => {
-    await put(raw("manual/teams.json"), teams.slice(1));
-    await expect(
-      build(join(root, "raw"), join(root, "data"), join(root, "img")),
-    ).rejects.toThrow();
+  it("löscht Spieltagsdateien, die es nicht mehr gibt", async () => {
+    await put(join(root, "data", "points", "md-09.json"), "{}");
+    await run();
+    expect(await readdir(join(root, "data", "points"))).toEqual(["md-01.json"]);
+  });
+
+  it("schreibt nichts bei kaputtem Raw-File", async () => {
+    await put(raw("sofascore/matches/700/final/lineups.json"), "{kaputt");
+    await expect(run()).rejects.toThrow();
+    expect(existsSync(join(root, "data"))).toBe(false);
+  });
+
+  it("schreibt nichts, wenn der Sanity-Guard anschlägt", async () => {
+    await put(
+      raw("sofascore/matches/700/final/lineups.json"),
+      envelope({
+        home: { players: lineup(0).slice(0, 5) },
+        away: { players: lineup(1) },
+      }),
+    );
+    await expect(run()).rejects.toThrow(
+      /Sanity-Guard: Spiel 700: nur 16 Spieler/,
+    );
     expect(existsSync(join(root, "data"))).toBe(false);
   });
 });

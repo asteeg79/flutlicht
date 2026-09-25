@@ -29,6 +29,10 @@ export const SofascoreLineups = z.object({
 
 const Incident = z.object({
   incidentType: z.string(),
+  /** Bei `period`: "HT" / "FT" mit Spielstand in homeScore/awayScore. */
+  text: z.string().optional(),
+  homeScore: z.number().optional(),
+  awayScore: z.number().optional(),
   incidentClass: z.string().optional(),
   player: Ref.optional(),
   /** Karten an Trainer tragen `manager` statt `player`. */
@@ -216,4 +220,16 @@ export function readSofascoreMatch(
     input,
   }));
   return { players, warnings };
+}
+
+/** Endstand aus dem Abpfiff-Incident (`period`, text "FT"); null, solange das Spiel läuft. */
+export function finalScoreFromIncidents(
+  incidentsRaw: unknown,
+): ScoreLine | null {
+  const { incidents } = SofascoreIncidents.parse(incidentsRaw);
+  const ft = incidents.find(
+    (i) => i.incidentType === "period" && i.text === "FT",
+  );
+  if (ft?.homeScore === undefined || ft.awayScore === undefined) return null;
+  return { home: ft.homeScore, away: ft.awayScore };
 }

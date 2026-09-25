@@ -1,0 +1,58 @@
+name: Fixtures (OpenLigaDB)
+
+# Übernommen aus WM-Tipp .github/workflows/news.yml, angepasst: holt den OpenLigaDB-
+# Spielplan, rechnet data/ im selben Lauf neu (Pushes per GITHUB_TOKEN starten
+# compute.yml nicht, KONZEPT 6.4) und meldet überfällige Scraper-Daten.
+# Zeitplan: täglich plus stündlich in den typischen Spielfenstern (Fr–So, Di/Mi abends).
+# GitHub-Schedules sind best effort; krumme Minuten werden seltener verworfen.
+on:
+  schedule:
+    - cron: "17 5 * * *"
+    - cron: "23 11-22 * * 5,6,0"
+    - cron: "23 16-22 * * 2,3"
+  workflow_dispatch:
+
+concurrency:
+  group: data-pipeline
+  cancel-in-progress: false
+
+permissions:
+  contents: write
+
+jobs:
+  run:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: OpenLigaDB holen
+        run: pnpm --filter pipeline fetch:openligadb
+      - name: Pipeline (raw → data)
+        run: pnpm --filter pipeline build
+      - name: Commit & push
+        run: |
+          git config user.name "fm-pipeline-bot"
+          git config user.email "actions@github.com"
+          git add raw/openligadb data
+          if git diff --staged --quiet; then
+            echo "Keine Änderungen, nichts zu committen."
+          else
+            git commit -m "data: fixtures $(date -u +'%Y-%m-%dT%H:%M:%SZ')"
+            git pull --rebase --autostash -X theirs origin "${{ github.ref_name }}" || git rebase --abort || true
+            git push
+          fi
+      - name: Scraper überfällig?
+        run: pnpm --filter pipeline check:overdue
+
+  alert:
+    needs: run
+    if: failure()
+    permissions:
+      issues: write
+    uses: ./.github/workflows/_alert.yml

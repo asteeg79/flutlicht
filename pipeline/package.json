@@ -6,7 +6,8 @@
   "scripts": {
     "build": "tsx src/index.ts build",
     "fetch:openligadb": "tsx src/index.ts fetch-openligadb",
-    "typecheck": "tsc --noEmit"
+    "typecheck": "tsc --noEmit",
+    "check:overdue": "tsx src/index.ts check-overdue"
   },
   "dependencies": {
     "@fm/core": "workspace:*",
