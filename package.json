@@ -13,7 +13,7 @@
     "format": "prettier --write .",
     "format:check": "prettier --check .",
     "typecheck": "pnpm -r typecheck",
-    "test": "vitest run --coverage"
+    "test": "node scripts/stage-data.mjs && vitest run --coverage"
   },
   "devDependencies": {
     "@eslint/js": "^10",

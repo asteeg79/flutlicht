@@ -84,3 +84,31 @@ export type ManagerDoc = z.infer<typeof ManagerDoc>;
 /** { [emailLower]: userId } */
 export const EmailIndex = z.record(z.string(), z.uuid());
 export type EmailIndex = z.infer<typeof EmailIndex>;
+
+/** 8 Zeichen aus [A-HJ-NP-Z2-9]: ohne I, O, 0, 1 (KONZEPT 8.3). */
+export const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+export const LeagueCode = z.string().regex(/^[A-HJ-NP-Z2-9]{8}$/);
+
+export const InviteCode = z.object({
+  code: LeagueCode,
+  createdAt: IsoDateTime,
+  usedBy: z.uuid().optional(),
+  usedAt: IsoDateTime.optional(),
+  revoked: z.boolean().optional(),
+});
+export type InviteCode = z.infer<typeof InviteCode>;
+
+export const ResetCode = z.object({
+  code: LeagueCode,
+  userId: z.uuid(),
+  createdAt: IsoDateTime,
+  usedAt: IsoDateTime.optional(),
+});
+export type ResetCode = z.infer<typeof ResetCode>;
+
+/** league.json.enc: Einladungs- und Reset-Codes (KONZEPT 7.3). */
+export const League = z.object({
+  invites: z.array(InviteCode),
+  resets: z.array(ResetCode),
+});
+export type League = z.infer<typeof League>;

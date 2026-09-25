@@ -19,3 +19,5 @@ export * from "./schemas/admin";
 export * from "./text";
 export * from "./manual-match";
 export * from "./matchday";
+export * from "./league";
+export * from "./time";

@@ -1,12 +1,19 @@
-// Übernommen aus WM-Tipp vitest.config.ts, angepasst: Pakete core/pipeline/app,
-// Tests liegen in `<paket>/test/**` (außerhalb von `src/`).
+// Übernommen aus WM-Tipp vitest.config.ts, angepasst: Projekte core+pipeline und app,
+// Tests liegen in `<paket>/test/**` bzw. neben den App-Modulen.
 import { defineConfig } from "vitest/config";
 
 export default defineConfig({
   test: {
-    environment: "node",
-    include: ["core/test/**/*.test.ts", "pipeline/test/**/*.test.ts"],
-    passWithNoTests: true,
+    projects: [
+      {
+        test: {
+          name: "core+pipeline",
+          environment: "node",
+          include: ["core/test/**/*.test.ts", "pipeline/test/**/*.test.ts"],
+        },
+      },
+      "app/vitest.config.ts",
+    ],
     coverage: {
       provider: "v8",
       reportsDirectory: "./coverage",

@@ -1,0 +1,20 @@
+import "server-only";
+import { notFound, redirect } from "next/navigation";
+import type { ManagerDoc } from "@fm/core";
+import { auth } from "@/lib/auth";
+import { loadManager } from "@/lib/storage";
+
+/** Manager der aktuellen Session für Server-Komponenten; ohne Konto zurück zur Anmeldung. */
+export async function currentManager(): Promise<ManagerDoc> {
+  const session = await auth();
+  const doc = session?.user?.id ? await loadManager(session.user.id) : null;
+  if (!doc) redirect("/login");
+  return doc;
+}
+
+/** Nur für Admins; alle anderen sehen eine 404, nicht einmal die Existenz der Seite. */
+export async function requireAdmin(): Promise<ManagerDoc> {
+  const doc = await currentManager();
+  if (doc.role !== "admin") notFound();
+  return doc;
+}

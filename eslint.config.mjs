@@ -44,8 +44,19 @@ export default tseslint.config(
     rules: { ...reactHooks.configs.recommended.rules },
   },
   {
-    files: ["pipeline/**/*.ts", "scripts/**/*.mjs", "*.config.{ts,mjs}"],
+    files: [
+      "pipeline/**/*.ts",
+      "scripts/**/*.mjs",
+      "*.config.{ts,mjs}",
+      "app/*.config.{ts,mjs}",
+    ],
     languageOptions: { globals: { ...globals.node } },
+  },
+  {
+    // Next lädt next.config.js als CommonJS.
+    files: ["app/next.config.js"],
+    languageOptions: { sourceType: "commonjs", globals: { ...globals.node } },
+    rules: { "@typescript-eslint/no-require-imports": "off" },
   },
   prettier,
 );

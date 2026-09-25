@@ -1,0 +1,158 @@
+// Registrierung mit Einladungscode und Passwort-Reset mit Admin-Code (KONZEPT 8.2, 8.3).
+import { randomUUID } from "node:crypto";
+import {
+  findInvite,
+  findReset,
+  firstMatchdayFor,
+  RULES,
+  type ManagerDoc,
+} from "@fm/core";
+import { z } from "zod";
+import { BadRequest, Conflict } from "@/lib/api-route";
+import { finals, gameData } from "@/lib/game-data";
+import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
+import {
+  loadEmailIndex,
+  loadLeague,
+  loadManager,
+  saveEmailIndex,
+  saveLeague,
+  saveManager,
+} from "@/lib/storage";
+
+const Email = z
+  .string()
+  .trim()
+  .toLowerCase()
+  .pipe(z.email("Bitte gib eine gültige E-Mail-Adresse ein."));
+const Password = z
+  .string()
+  .min(
+    MIN_PASSWORD_LENGTH,
+    `Das Passwort braucht mindestens ${MIN_PASSWORD_LENGTH} Zeichen.`,
+  );
+const Name = (what: string) =>
+  z
+    .string()
+    .trim()
+    .min(1, `Bitte gib einen ${what} ein.`)
+    .max(40, `Der ${what} darf höchstens 40 Zeichen haben.`);
+
+export const RegisterInput = z.object({
+  email: Email,
+  password: Password,
+  displayName: Name("Anzeigenamen"),
+  teamName: Name("Teamnamen"),
+  inviteCode: z.string().optional(),
+});
+
+export const ResetInput = z.object({
+  email: Email,
+  code: z.string(),
+  password: Password,
+});
+
+function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
+  const result = schema.safeParse(raw);
+  if (!result.success)
+    throw new BadRequest(
+      result.error.issues[0]?.message ?? "Ungültige Eingabe",
+    );
+  return result.data;
+}
+
+/** Admin ist, wer mit einer E-Mail aus ADMIN_EMAILS registriert (KONZEPT 8.3). */
+export function isAdminEmail(email: string): boolean {
+  return (process.env.ADMIN_EMAILS ?? "")
+    .split(",")
+    .map((e) => e.trim().toLowerCase())
+    .includes(email);
+}
+
+const INVALID_INVITE = "Der Einladungscode ist ungültig oder schon benutzt.";
+const INVALID_RESET =
+  "E-Mail oder Reset-Code passen nicht. Codes gelten 24 Stunden und nur einmal.";
+
+/**
+ * Legt einen Manager an. Admins (ADMIN_EMAILS) brauchen keinen Einladungscode:
+ * sonst könnte der erste Admin sich nie registrieren, denn Codes erzeugt nur er.
+ */
+export async function registerManager(
+  raw: unknown,
+  now: Date,
+): Promise<ManagerDoc> {
+  const input = parse(RegisterInput, raw);
+  const index = await loadEmailIndex();
+  if (index[input.email])
+    throw new Conflict("Für diese E-Mail-Adresse gibt es schon ein Konto.");
+
+  const admin = isAdminEmail(input.email);
+  const league = await loadLeague();
+  const invite = input.inviteCode
+    ? findInvite(league, input.inviteCode)
+    : undefined;
+  if (!admin && !invite) throw new BadRequest(INVALID_INVITE);
+
+  const at = now.toISOString();
+  const firstMatchday = firstMatchdayFor(
+    gameData.fixtures,
+    finals(),
+    now,
+    gameData.season.firstScoredMatchday,
+  );
+  const doc: ManagerDoc = {
+    userId: randomUUID(),
+    email: input.email,
+    displayName: input.displayName,
+    teamName: input.teamName,
+    passwordHash: await hashPassword(input.password),
+    role: admin ? "admin" : "player",
+    createdAt: at,
+    updatedAt: at,
+    firstMatchday,
+    squad: [],
+    cash: gameData.season.startBudget,
+    lineup: null,
+    lineupHistory: {},
+    transfers: [],
+    transferBank: {
+      matchday: firstMatchday,
+      available: RULES.freeTransfersPerMatchday,
+    },
+  };
+  // Reihenfolge: Dokument, dann Index, dann Code verbrauchen. Bricht es
+  // zwischendrin ab, bleibt höchstens ein unerreichbares Dokument zurück.
+  await saveManager(doc);
+  await saveEmailIndex({ ...index, [input.email]: doc.userId });
+  if (invite) {
+    await saveLeague({
+      ...league,
+      invites: league.invites.map((i) =>
+        i.code === invite.code ? { ...i, usedBy: doc.userId, usedAt: at } : i,
+      ),
+    });
+  }
+  return doc;
+}
+
+export async function resetPassword(raw: unknown, now: Date): Promise<void> {
+  const input = parse(ResetInput, raw);
+  const userId = (await loadEmailIndex())[input.email];
+  const league = await loadLeague();
+  const reset = userId ? findReset(league, input.code, userId, now) : undefined;
+  const doc = userId ? await loadManager(userId) : null;
+  if (!reset || !doc) throw new BadRequest(INVALID_RESET);
+
+  const at = now.toISOString();
+  await saveManager({
+    ...doc,
+    passwordHash: await hashPassword(input.password),
+    updatedAt: at,
+  });
+  await saveLeague({
+    ...league,
+    resets: league.resets.map((r) =>
+      r.code === reset.code ? { ...r, usedAt: at } : r,
+    ),
+  });
+}

@@ -52,6 +52,22 @@ jobs:
       - name: Unit-Tests (Vitest)
         run: pnpm test
 
+  e2e:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Playwright-Browser
+        run: pnpm --filter @fm/app exec playwright install --with-deps chromium
+      - name: E2E (Playwright)
+        run: pnpm --filter @fm/app test:e2e
+
   scraper:
     runs-on: ubuntu-latest
     timeout-minutes: 10
