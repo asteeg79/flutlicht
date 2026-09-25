@@ -1,0 +1,134 @@
+import { describe, expect, it, vi } from "vitest";
+import { defaultLineup, type ManagerDoc, type MatchdayPoints } from "@fm/core";
+
+vi.mock("@/lib/auth", () => ({ auth: async () => null }));
+const { leagueTable, matchdayView } = await import("@/lib/standings");
+const { players, SQUAD } = await import("@/test/fixtures");
+
+// Standardaufstellung des Test-Kaders: Starter 1 (Verein 1), 11–14, 21–24, 31 (Verein 2), 32 (Verein 3).
+const lineup = defaultLineup(
+  SQUAD.map((id) => players.find((p) => p.id === id)!),
+);
+const manager = (userId: string, displayName: string): ManagerDoc => ({
+  userId,
+  email: `${displayName}@example.org`,
+  displayName,
+  teamName: `${displayName} FC`,
+  passwordHash: "x",
+  role: "player",
+  createdAt: "2026-10-01T10:00:00Z",
+  updatedAt: "2026-10-01T10:00:00Z",
+  firstMatchday: 9,
+  squad: SQUAD,
+  cash: 1,
+  lineup,
+  lineupHistory: {},
+  transfers: [],
+  transferBank: { matchday: 9, available: 2 },
+});
+const tom = manager("11111111-1111-4111-8111-111111111111", "Tom");
+const ida = manager("22222222-2222-4222-8222-222222222222", "Ida");
+
+const points = (status: MatchdayPoints["status"]): MatchdayPoints => ({
+  matchday: 9,
+  status,
+  generatedAt: "2026-11-06T22:00:00Z",
+  players: {
+    "1": {
+      eventId: 1,
+      minutes: 90,
+      started: true,
+      rating: 7,
+      parts: {
+        rating: 5,
+        goals: 0,
+        assists: 0,
+        cleanSheet: 0,
+        conceded: 0,
+        penSaved: 0,
+        penMissed: 0,
+        ownGoals: 0,
+        cards: 0,
+      },
+      base: 5,
+    },
+  },
+});
+// Verein 1–2 spielt Freitag (gesperrt ab 18:00 UTC), Verein 3–4 Samstag.
+const fixtures = [
+  { home: 1, away: 2, kickoffUtc: "2026-11-06T19:30:00Z" },
+  { home: 3, away: 4, kickoffUtc: "2026-11-07T14:30:00Z" },
+].map((f, i) => ({
+  matchday: 9,
+  openligaMatchId: i,
+  homeTeamId: f.home,
+  awayTeamId: f.away,
+  kickoffUtc: f.kickoffUtc,
+  originalKickoffUtc: f.kickoffUtc,
+  status: "scheduled" as const,
+  dataState: "none" as const,
+}));
+const game = (status: MatchdayPoints["status"]) => ({
+  players,
+  teams: [],
+  points: [points(status)],
+  fixtures,
+});
+const FRIDAY_EVENING = new Date("2026-11-06T20:00:00Z");
+
+describe("matchdayView: Sichtbarkeit fremder Aufstellungen (KONZEPT 2.8)", () => {
+  it("zeigt die eigene Aufstellung ganz, fremde nur mit gesperrten Spielern", () => {
+    const view = matchdayView(
+      9,
+      [ida, tom],
+      tom.userId,
+      FRIDAY_EVENING,
+      game("running"),
+    );
+    const [own, other] = view.managers;
+    expect(own).toMatchObject({ displayName: "Tom", own: true, hidden: 0 });
+    expect(own!.slots).toHaveLength(11);
+    // Gesperrt sind am Freitagabend nur Spieler von Verein 1 und 2: TW 1, MF 21, ST 31.
+    expect(other!.slots.map((s) => s.starter.id).sort()).toEqual([1, 21, 31]);
+    expect(other).toMatchObject({ own: false, hidden: 8, total: 7 });
+    expect(other!.slots.find((s) => s.starter.id === 31)!.captain).toBe(true);
+  });
+
+  it("zeigt nach der Finalisierung alle Spieler", () => {
+    const view = matchdayView(
+      9,
+      [ida, tom],
+      tom.userId,
+      FRIDAY_EVENING,
+      game("final"),
+    );
+    expect(
+      view.managers.every((m) => m.hidden === 0 && m.slots.length === 11),
+    ).toBe(true);
+  });
+
+  it("meldet Spieltage ohne Punkte als bevorstehend", () => {
+    expect(
+      matchdayView(10, [tom], tom.userId, FRIDAY_EVENING, game("running")),
+    ).toEqual({
+      matchday: 10,
+      status: "upcoming",
+      managers: [],
+    });
+  });
+});
+
+describe("leagueTable", () => {
+  it("rechnet die Tabelle mit Namen und Spieltagssiegern", () => {
+    const t = leagueTable([tom, ida], game("final"));
+    expect(t.rows.map((r) => [r.rank, r.displayName, r.total])).toEqual([
+      [1, "Tom", 7],
+      [1, "Ida", 7],
+    ]);
+    expect(t.winners[9]).toEqual({
+      matchday: 9,
+      names: ["Tom", "Ida"],
+      points: 7,
+    });
+  });
+});

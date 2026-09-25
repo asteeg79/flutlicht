@@ -12,7 +12,7 @@ export default defineConfig({
           include: ["core/test/**/*.test.ts", "pipeline/test/**/*.test.ts"],
         },
       },
-      "app/vitest.config.ts",
+      "app/vitest.config.mts",
     ],
     coverage: {
       provider: "v8",

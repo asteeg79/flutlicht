@@ -4,6 +4,13 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-25 | Tabelle live | Die Gesamtsumme enthält auch laufende und vorläufige Spieltage; Spieltagssiege (und damit der Tie-Break) zählen nur an finalen Spieltagen | Live-Stand für die Runde, aber keine Siege auf Basis vorläufiger Zahlen |
+| 2026-09-25 | Rang bei Gleichstand | Gleichauf nach Summe, Siegen und bestem Einzelspieltag teilt sich den Rang (1, 1, 3) | KONZEPT 2.8 „→ gleichauf“ |
+| 2026-09-25 | Eingefrorene Aufstellung fehlt | Für einen finalen Spieltag ohne `lineupHistory`-Eintrag gilt die aktuelle Aufstellung | Der Tick friert erst nach der Finalisierung ein (M9); bis dahin ist die aktuelle Aufstellung die gültige |
+| 2026-09-25 | Sichtbarkeit fremder Aufstellungen | Je Starter ab dessen Sperre; nach der Finalisierung alles; die Bank anderer bleibt bis dahin verdeckt; Spieler ohne Spiel an diesem Spieltag erst nach der Finalisierung; der Kapitänsbonus nur, wenn der Kapitän sichtbar ist | KONZEPT 2.8; Spieler ohne Spiel werden nie gesperrt, sonst blieben sie für immer verdeckt |
+| 2026-09-25 | `/spieltag` | Leitet auf den aktuellen Spieltag um (kleinster nicht finaler) | Einstieg über die Navigation |
+| 2026-09-25 | Tabelle ab erstem gewerteten Spieltag | Verlauf und Spieltagssieger zeigen nur Spieltage ab `firstScoredMatchday` | Frühere Spieltage stammen aus dem Backfill und zählen für niemanden |
+| 2026-09-25 | Hinweis Kalibrierung | Mit echten Daten kommen starke Spieler allein über die Note auf +25 bis +31; ein Kader der besten Punktesammler hätte an Spieltag 2 332 Punkte geholt | KONZEPT 3 sieht die Kalibrierung nach den ersten Spieltagen vor (Faktor in `scoring.ts`); zur Entscheidung durch Alex |
 | 2026-09-25 | Statuscode bei Sperr-Verstößen | 400 mit deutscher Meldung und Spielername; 409 bleibt dem veralteten Stand (`updatedAt`) vorbehalten | Bei 409 lädt der Client neu; ein Sperr-Verstoß ist eine Regelverletzung, kein veralteter Stand |
 | 2026-09-25 | Welche Sperren gelten | Die des aktuellen Spieltags (kleinster nicht finaler), für alle Manager, auch vor ihrem ersten gewerteten Spieltag | Einheitlich und einfach; für Nachzügler ohne Wirkung auf Punkte |
 | 2026-09-25 | Bedienung der Aufstellung | Zwei Spieler antippen tauscht ihre Rollen; die Formation ergibt sich aus der Startelf (`core/swapPlayers`); jede Änderung wird sofort gespeichert | Mobil ohne Drag-and-Drop; es gibt nie eine ungespeicherte Aufstellung, die man vergessen könnte |

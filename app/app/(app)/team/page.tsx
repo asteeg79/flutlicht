@@ -3,8 +3,11 @@ import {
   firstLock,
   formatKickoff,
   formatMio,
+  lineupForMatchday,
   lockAt,
+  scoreManager,
 } from "@fm/core";
+import { STATUS_LABEL } from "@/components/points";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { TeamLineup, type SquadEntry } from "@/components/team-lineup";
@@ -69,6 +72,25 @@ export default async function TeamPage() {
     ];
   });
   const first = firstLock(fixtures);
+  // Punkte des laufenden Spieltags (8.1), sobald es welche gibt und er für den Manager zählt.
+  const points = gameData.points.find((p) => p.matchday === matchday);
+  const lineup = points
+    ? lineupForMatchday(manager, points.matchday, points.status)
+    : null;
+  const live =
+    points && lineup && points.matchday >= manager.firstMatchday
+      ? {
+          matchday: points.matchday,
+          status: points.status,
+          total: scoreManager(
+            points.matchday,
+            lineup,
+            points.players,
+            manager.transfers,
+            new Map(gameData.players.map((p) => [p.id, p.position])),
+          ).total,
+        }
+      : null;
 
   return (
     <>
@@ -80,6 +102,19 @@ export default async function TeamPage() {
         }
         title={manager.teamName}
       />
+      {live ? (
+        <Link
+          href={`/spieltag/${live.matchday}`}
+          className="mb-4 flex items-center justify-between rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3"
+        >
+          <span className="text-sm">
+            Spieltag {live.matchday} · {STATUS_LABEL[live.status]}
+          </span>
+          <span className="font-display text-3xl font-bold text-lampe tabular-nums">
+            {live.total} P.
+          </span>
+        </Link>
+      ) : null}
       <TeamLineup
         initialManager={publicManager(manager)}
         squad={squad}

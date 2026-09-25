@@ -13,6 +13,7 @@ import {
   type Position,
 } from "@fm/core";
 import { ArrowRight, LoaderCircle } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
@@ -490,7 +491,14 @@ function PlayerRow({
         {POS_LABEL[p.position]}
       </span>
       <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">{p.name}</p>
+        <p className="truncate font-medium">
+          <Link
+            href={`/spieler/${p.id}`}
+            className="underline-offset-4 hover:underline"
+          >
+            {p.name}
+          </Link>
+        </p>
         <p className="text-xs text-kreide-matt">
           {club} · {stats ? `${stats.points} P.` : "0 P."}
           {stats?.form !== null && stats?.form !== undefined
