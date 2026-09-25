@@ -1,6 +1,7 @@
 # Sofascore-Felder (verifiziert in M2)
 
-Stichprobe am 25.09.2026: Spieltag 1 der Saison 2026/27 (alle 9 Spiele, `final`),
+Stichprobe am 25.09.2026: Spieltag 1 der Saison 2026/27 (alle 9 Spiele, `final`,
+in M3 ergänzt um Spieltag 2 aus dem Backfill),
 Kader von Union Berlin, je ein Spieler- und Vereinsbild. Insgesamt 22 Abrufe im
 `botasaurus.request`-Modus, ohne 403, 429 oder Bot-Challenge. Der Browser-Modus
 war nicht nötig.
@@ -42,16 +43,18 @@ Beobachtete Kombinationen `incidentType` / `incidentClass` am Spieltag 1:
 | `goal` | `ownGoal` | 1 | Eigentor von `player`. **`isHome` bezeichnet das begünstigte Team**, nicht das des Spielers |
 | `card` | `yellow` | 27 | Gelb. `rescinded: true` zählt nicht |
 | `card` | `red` | 2 | Glatt Rot ✓ |
+| `card` | `yellowRed` | 1 (Spieltag 2) | Gelb-Rot ✓, hier an einen Trainer |
+| `card` ohne `player`, mit `manager` | `yellow`, `yellowRed` | 2 (Spieltag 2) | Karte an den Trainer → ignoriert |
 | `inGamePenalty` | `missed` | 1 | Verschossen von `player`. Mit `reason: "goalkeeperSave"` steht der haltende Torwart in `footballPassingNetworkAction[]` mit `eventType: "penalty-save"` unter `goalkeeper.id` |
-| `varDecision` | `goalAwarded` | 2 | nur Info, das Tor steht zusätzlich als `goal` drin → ignoriert |
+| `varDecision` | `goalAwarded`, `penaltyAwarded` | 4 | nur Info, das Tor bzw. der Elfmeter steht zusätzlich als eigener Incident drin → ignoriert. Im Fall `penaltyAwarded` (Event 16434101) folgte kein Elfmeter-Incident, die Entscheidung wurde offenbar zurückgenommen |
 | `substitution` | `regular`, `injury` | 87 | ignoriert (Minuten kommen aus `lineups`) |
 | `period`, `injuryTime` | – | 36 | ignoriert |
 
 **Noch nicht beobachtet** (die Pipeline meldet unbekannte Klassen als Warnung):
-- `card` / `yellowRed`: Die Klasse ist nach der Sofascore-Namenskonvention angenommen.
-  Im Backfill (M3) prüfen.
-- `goal` / `penalty` (verwandelter Elfmeter): Er zählt als normales Tor. Andere
-  Tor-Klassen werden auch als Tor gewertet, lösen aber eine Warnung aus.
+- `goal` / `penalty` (verwandelter Elfmeter): In 18 Spielen kam die Klasse nicht vor;
+  möglicherweise führt Sofascore verwandelte Elfmeter als `regular`. Für die Punkte ist
+  das egal, beides zählt als Tor. Andere Tor-Klassen werden auch als Tor gewertet,
+  lösen aber eine Warnung aus.
 - `inGamePenalty` mit anderem `reason` als `goalkeeperSave` (etwa Pfosten oder
   vorbei): Er zählt nur als verschossen, niemand bekommt „gehalten“.
 

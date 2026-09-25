@@ -37,3 +37,15 @@ def test_committet_und_pusht_raw(tmp_path):
 def test_ohne_aenderungen_kein_commit(tmp_path):
     _, work = setup_repos(tmp_path)
     assert gitsync.sync(work, "round-events") is False
+
+
+def test_committet_nur_die_angegebenen_pfade(tmp_path):
+    remote, work = setup_repos(tmp_path)
+    (work / "raw").mkdir()
+    (work / "raw" / "a.json").write_text("{}")
+    (work / "img").mkdir()
+    (work / "img" / "1.webp").write_text("x")
+    assert gitsync.sync(work, "images", ("img",)) is True
+    files = subprocess.run(["git", "ls-tree", "-r", "--name-only", "main"], cwd=remote, capture_output=True, text=True)
+    assert "img/1.webp" in files.stdout
+    assert "raw/a.json" not in files.stdout

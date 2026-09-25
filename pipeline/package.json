@@ -4,6 +4,8 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "build": "tsx src/index.ts build",
+    "fetch:openligadb": "tsx src/index.ts fetch-openligadb",
     "typecheck": "tsc --noEmit"
   },
   "dependencies": {
@@ -11,6 +13,7 @@
     "zod": "^4"
   },
   "devDependencies": {
-    "@types/node": "^22"
+    "@types/node": "^22",
+    "tsx": "^4.23.15"
   }
 }

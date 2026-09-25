@@ -61,7 +61,7 @@ jobs:
         with:
           python-version: "3.11"
       # Die Tests brauchen botasaurus nicht (wird erst im Transport importiert).
-      - run: pip install pytest
+      - run: pip install pytest pillow
       - name: Scraper-Tests (pytest, ohne Netzwerk)
         working-directory: scraper
         run: python -m pytest -q

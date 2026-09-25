@@ -15,3 +15,5 @@ export * from "./squad";
 export * from "./transfers";
 export * from "./violations";
 export * from "./sofascore";
+export * from "./schemas/admin";
+export * from "./text";

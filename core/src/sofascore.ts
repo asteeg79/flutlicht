@@ -31,6 +31,8 @@ const Incident = z.object({
   incidentType: z.string(),
   incidentClass: z.string().optional(),
   player: Ref.optional(),
+  /** Karten an Trainer tragen `manager` statt `player`. */
+  manager: Ref.optional(),
   assist1: Ref.optional(),
   rescinded: z.boolean().optional(),
   reason: z.string().optional(),
@@ -166,7 +168,7 @@ export function readSofascoreMatch(
         if (assist) assist.assists++;
       }
     } else if (type === "card") {
-      if (inc.rescinded) continue;
+      if (inc.rescinded || (inc.manager && !inc.player)) continue;
       const carded = inputOf(inc.player, `Karte (${cls})`);
       if (cls === "yellow" || cls === "yellowRed" || cls === "red") {
         if (carded) carded[cls] = true;

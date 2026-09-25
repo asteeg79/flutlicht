@@ -141,6 +141,11 @@ describe("readSofascoreMatch: Robustheit", () => {
             rescinded: true,
             player: { id: 1 },
           },
+          {
+            incidentType: "card",
+            incidentClass: "yellowRed",
+            manager: { id: 7 },
+          },
         ],
       },
       { home: 0, away: 0 },

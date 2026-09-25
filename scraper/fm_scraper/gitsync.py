@@ -16,9 +16,14 @@ def _git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True)
 
 
-def sync(repo: Path, job: str, sleep: Callable[[float], None] = time.sleep) -> bool:
-    """Committet raw/ und pusht. Gibt False zurück, wenn es nichts zu committen gab."""
-    _git(repo, "add", "raw")
+def sync(
+    repo: Path,
+    job: str,
+    paths: tuple[str, ...] = ("raw",),
+    sleep: Callable[[float], None] = time.sleep,
+) -> bool:
+    """Committet `paths` (Standard raw/) und pusht. False, wenn es nichts zu committen gab."""
+    _git(repo, "add", *paths)
     if _git(repo, "diff", "--staged", "--quiet").returncode == 0:
         log.info("Keine neuen Rohdaten, nichts zu committen")
         return False

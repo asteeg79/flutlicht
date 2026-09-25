@@ -47,11 +47,12 @@ class Client:
     def __init__(
         self,
         request_transport: Transport,
-        browser_factory: Callable[[], Transport],
+        browser_factory: Callable[[], Transport] | None,
         state_file: Path,
         now: Callable[[], datetime] = lambda: datetime.now(timezone.utc),
         sleep: Callable[[float], None] = time.sleep,
         uniform: Callable[[float, float], float] = random.uniform,
+        pacing: tuple[float, float] = config.PACING_SECONDS,
     ):
         self._request = request_transport
         self._browser_factory = browser_factory
@@ -60,6 +61,7 @@ class Client:
         self._now = now
         self._sleep = sleep
         self._uniform = uniform
+        self._pacing = pacing
         self._requests_made = 0
 
     def get_json(self, url: str) -> Any:
@@ -72,7 +74,7 @@ class Client:
     def _fetch(self, url: str, expect_json: bool) -> bytes:
         in_browser = self._browser is not None
         response = self._send(self._browser or self._request, url)
-        if not in_browser and _is_blocked(response, expect_json):
+        if not in_browser and self._browser_factory and _is_blocked(response, expect_json):
             log.warning("403/Bot-Challenge bei %s, wechsle auf den Browser-Modus", url)
             self._browser = self._browser_factory()
             response = self._send(self._browser, url)
@@ -92,7 +94,7 @@ class Client:
     def _send(self, transport: Transport, url: str) -> RawResponse:
         self._check_allowed()
         if self._requests_made > 0:
-            self._sleep(self._uniform(*config.PACING_SECONDS))
+            self._sleep(self._uniform(*self._pacing))
         self._requests_made += 1
         log.info("GET %s", url)
         return transport.get(url)
@@ -172,6 +174,30 @@ class BotasaurusBrowserTransport:
 
     def close(self) -> None:
         self._driver.close()
+
+
+class UrllibTransport:
+    """Schlichtes HTTP für den lokalen transfermarkt-api-Dienst."""
+
+    def get(self, url: str) -> RawResponse:
+        import urllib.error
+        import urllib.request
+
+        try:
+            with urllib.request.urlopen(url, timeout=config.REQUEST_TIMEOUT_SECONDS * 4) as r:
+                return RawResponse(r.status, r.read())
+        except urllib.error.HTTPError as e:
+            return RawResponse(e.code, e.read())
+
+
+def tm_client() -> Client:
+    """Client für den Transfermarkt-Crawl: 60–180 s Abstand, kein Browser, eigene Pause."""
+    return Client(
+        UrllibTransport(),
+        None,
+        config.STATE_DIR / "tm-state.json",
+        pacing=config.TM_PACING_SECONDS,
+    )
 
 
 def default_client() -> Client:
