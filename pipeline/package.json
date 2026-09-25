@@ -1,0 +1,16 @@
+{
+  "name": "@fm/pipeline",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@fm/core": "workspace:*",
+    "zod": "^4"
+  },
+  "devDependencies": {
+    "@types/node": "^22"
+  }
+}

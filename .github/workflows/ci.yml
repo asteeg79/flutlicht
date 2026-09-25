@@ -1,0 +1,53 @@
+name: CI (Lint + Typecheck + Tests)
+
+# Übernommen aus WM-Tipp .github/workflows/ci.yml, angepasst: paths-ignore für
+# raw/ und data/, Node 22 (vitest 5 braucht ≥ 22.12).
+#
+# Qualitäts-Gate: prüft bei jedem Code-Push/PR Lint, Format, Typecheck aller
+# Pakete und die Vitest-Suite. Keine Secrets nötig, keine Netzwerkabrufe.
+# Reine Daten-/Doku-Commits lösen keinen Lauf aus → spart CI-Minuten.
+on:
+  push:
+    branches: [main]
+    paths-ignore:
+      - "raw/**"
+      - "data/**"
+      - "docs/**"
+      - "**.md"
+  pull_request:
+    paths-ignore:
+      - "raw/**"
+      - "data/**"
+      - "docs/**"
+      - "**.md"
+  workflow_dispatch:
+
+# Überholte Läufe auf demselben Ref abbrechen (CI darf canceln, anders als die
+# Daten-Pipeline, die nie abgebrochen wird).
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v6
+      - uses: pnpm/action-setup@v6
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - name: Lint (ESLint)
+        run: pnpm lint
+      - name: Format-Check (Prettier)
+        run: pnpm format:check
+      - name: Typecheck (alle Pakete)
+        run: pnpm -r typecheck
+      - name: Unit-Tests (Vitest)
+        run: pnpm test

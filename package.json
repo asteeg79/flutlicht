@@ -1,0 +1,32 @@
+{
+  "name": "fussballmanager",
+  "private": true,
+  "type": "module",
+  "packageManager": "pnpm@9.15.9",
+  "engines": {
+    "node": ">=22.12"
+  },
+  "scripts": {
+    "dev": "pnpm --filter @fm/app dev",
+    "build": "pnpm --filter @fm/app build",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "typecheck": "pnpm -r typecheck",
+    "test": "vitest run",
+    "coverage": "vitest run --coverage"
+  },
+  "devDependencies": {
+    "@eslint/js": "^10",
+    "@types/node": "^22",
+    "@vitest/coverage-v8": "^5",
+    "eslint": "^10",
+    "eslint-config-prettier": "^10",
+    "eslint-plugin-react-hooks": "^7",
+    "globals": "^17.12.0",
+    "prettier": "^3",
+    "typescript": "~5.9.3",
+    "typescript-eslint": "^8.70",
+    "vitest": "^5"
+  }
+}
