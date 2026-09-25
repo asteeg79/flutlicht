@@ -4,6 +4,13 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-25 | Statuscode bei Sperr-Verstößen | 400 mit deutscher Meldung und Spielername; 409 bleibt dem veralteten Stand (`updatedAt`) vorbehalten | Bei 409 lädt der Client neu; ein Sperr-Verstoß ist eine Regelverletzung, kein veralteter Stand |
+| 2026-09-25 | Welche Sperren gelten | Die des aktuellen Spieltags (kleinster nicht finaler), für alle Manager, auch vor ihrem ersten gewerteten Spieltag | Einheitlich und einfach; für Nachzügler ohne Wirkung auf Punkte |
+| 2026-09-25 | Bedienung der Aufstellung | Zwei Spieler antippen tauscht ihre Rollen; die Formation ergibt sich aus der Startelf (`core/swapPlayers`); jede Änderung wird sofort gespeichert | Mobil ohne Drag-and-Drop; es gibt nie eine ungespeicherte Aufstellung, die man vergessen könnte |
+| 2026-09-25 | Kapitän auf die Bank | Nicht per Tausch möglich; erst einen anderen Kapitän wählen | Der Kapitän muss in der Startelf stehen (2.4); ein stiller Kapitänswechsel wäre überraschend |
+| 2026-09-25 | Countdown | Die Seite misst beim Laden den Versatz zwischen Server- und Geräteuhr und zählt in Serverzeit; die Entscheidung trifft der Server | KONZEPT 2.5: Serverzeit ist maßgeblich; falsch gehende Handyuhren sollen keine falschen Countdowns zeigen |
+| 2026-09-25 | Punkte auf `/team` | Folgen in M8 mit der Wertung | M7 umfasst Aufstellung und Sperren |
+| 2026-09-25 | E2E für M7 | Playwright prüft zustandsunabhängig Spielfeld (11 Starter, Formation), Bank (4) und genau einen Kapitän; das Sperrverhalten prüfen Route-Tests mit fester Uhr | Mit den echten Daten ändert sich der Sperrstand täglich; die Abnahme verlangt ausdrücklich Tests mit gemockter Uhr |
 | 2026-09-25 | Bank-Prüfung bei unbegrenzten Transfers (Fehler aus M1) | `applyTransfer` verlangt die fortgeschriebene Transferbank nur noch für gezählte Transfers | Sonst waren Transfers vor dem ersten gewerteten Spieltag unmöglich (Bank auf Spieltag 8, Fenster zu Spieltag 5) |
 | 2026-09-25 | Erstkader: wann | Nur solange der Kader leer ist, aber jederzeit, auch während eines laufenden Spieltags; der Startspieltag rückt dann auf den nächsten offenen Spieltag vor | „in Pause“ (8.2) deckt der unbegrenzte Transfer ab; Nachzügler sollen nicht bis Montag warten müssen |
 | 2026-09-25 | Erstkader: Guthaben | Guthaben = Startbudget aus `season.json` zum Zeitpunkt des Erstkaders − Kaderkosten | Der Admin darf das Startbudget bis zum ersten gewerteten Spieltag ändern (4.2) |

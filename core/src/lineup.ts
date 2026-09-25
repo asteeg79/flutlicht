@@ -1,5 +1,10 @@
 // Aufstellung und Sperren (KONZEPT 2.3–2.5).
-import { POSITIONS, type Formation, type Position } from "./config/rules";
+import {
+  FORMATIONS,
+  POSITIONS,
+  type Formation,
+  type Position,
+} from "./config/rules";
 import type { Player } from "./schemas/data";
 import type { Lineup } from "./schemas/manager";
 import type { Violation } from "./violations";
@@ -138,4 +143,86 @@ export function defaultLineup(
     bench: { gk: gk[1]!, b: benchField as [number, number, number] },
     captain,
   };
+}
+
+/** Formation aus den Positionen der Starter; null, wenn sie nicht erlaubt ist. */
+export function formationOf(
+  starterPositions: readonly Position[],
+): Formation | null {
+  const n = (pos: Position) => starterPositions.filter((p) => p === pos).length;
+  if (n("GK") !== 1) return null;
+  const f = `${n("DEF")}-${n("MID")}-${n("FWD")}`;
+  return (FORMATIONS as readonly string[]).includes(f)
+    ? (f as Formation)
+    : null;
+}
+
+export type LineupChange =
+  { ok: true; lineup: Lineup } | { ok: false; message: string };
+
+/**
+ * Tauscht die Rollen zweier Spieler (Startelf, Ersatz-TW, B1–B3). Die Formation
+ * ergibt sich aus der neuen Startelf. Torhüter tauschen nur mit Torhütern, der
+ * Kapitän bleibt in der Startelf (2.3, 2.4).
+ */
+export function swapPlayers(
+  lineup: Lineup,
+  a: number,
+  b: number,
+  positionOf: (id: number) => Position | undefined,
+): LineupChange {
+  const roleA = roleOf(lineup, a);
+  const roleB = roleOf(lineup, b);
+  if (roleA === null || roleB === null)
+    return {
+      ok: false,
+      message: "Dieser Spieler steht nicht in deinem Kader.",
+    };
+  if (a === b || (roleA === "starter" && roleB === "starter"))
+    return { ok: true, lineup };
+  if ((positionOf(a) === "GK") !== (positionOf(b) === "GK")) {
+    return { ok: false, message: "Torhüter tauschen nur mit Torhütern." };
+  }
+  if (a === lineup.captain || b === lineup.captain) {
+    return {
+      ok: false,
+      message:
+        "Der Kapitän bleibt in der Startelf. Wähle zuerst einen anderen Kapitän.",
+    };
+  }
+  const swap = (id: number) => (id === a ? b : id === b ? a : id);
+  const order = (id: number) => POSITIONS.indexOf(positionOf(id)!);
+  const starters = lineup.starters
+    .map(swap)
+    .sort((x, y) => order(x) - order(y));
+  const formation = formationOf(starters.map((id) => positionOf(id)!));
+  if (formation === null) {
+    const counts = POSITIONS.slice(1).map(
+      (pos) => starters.filter((id) => positionOf(id) === pos).length,
+    );
+    return {
+      ok: false,
+      message: `Ein ${counts.join("-")} ist nicht erlaubt. Möglich sind ${FORMATIONS.join(", ")}.`,
+    };
+  }
+  const [b1, b2, b3] = lineup.bench.b;
+  return {
+    ok: true,
+    lineup: {
+      formation,
+      starters,
+      bench: { gk: swap(lineup.bench.gk), b: [swap(b1), swap(b2), swap(b3)] },
+      captain: lineup.captain,
+    },
+  };
+}
+
+/** Kapitän setzen; nur Starter können Kapitän sein (2.4). */
+export function setCaptain(lineup: Lineup, id: number): LineupChange {
+  if (!lineup.starters.includes(id))
+    return {
+      ok: false,
+      message: "Nur ein Spieler aus der Startelf kann Kapitän sein.",
+    };
+  return { ok: true, lineup: { ...lineup, captain: id } };
 }

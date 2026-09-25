@@ -49,7 +49,7 @@ export function publicManager(doc: ManagerDoc): PublicManager {
 const UpdatedAt = z.string().min(1);
 
 /** Lädt das Dokument und prüft, dass der Client den aktuellen Stand kennt. */
-async function loadFresh(
+export async function loadFresh(
   userId: string,
   updatedAt: string,
 ): Promise<ManagerDoc> {
@@ -59,7 +59,7 @@ async function loadFresh(
   return doc;
 }
 
-function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
+export function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
   const result = schema.safeParse(raw);
   if (!result.success) throw new BadRequest("Ungültige Eingabe");
   return result.data;

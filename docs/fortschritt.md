@@ -9,7 +9,7 @@ Ein Meilenstein gilt als erledigt, wenn seine Abnahmekriterien (KONZEPT.md Absch
 - [x] M4 · Pipeline-Automatisierung
 - [x] M5 · App-Grundgerüst & Login
 - [x] M6 · Kader & Markt
-- [ ] M7 · Aufstellung & Sperren
+- [x] M7 · Aufstellung & Sperren
 - [ ] M8 · Punkte, Spieltag, Tabelle
 - [ ] M9 · Push & Taktgeber
 - [ ] M10 · Admin
@@ -24,3 +24,4 @@ Ein Meilenstein gilt als erledigt, wenn seine Abnahmekriterien (KONZEPT.md Absch
 - 2026-09-25 M4: `pipeline build` vollständig (fixtures, points, market, meta, review, Sanity-Guard), `compute.yml`, `fixtures.yml` mit Überfällig-Alarm. Abnahme auf GitHub: Ein Push nach `raw/` ergab nach 24 s einen `data/`-Commit; ein kaputtes Raw-File (Wegwerf-Branch) ergab einen roten Lauf und Issue #1, `data/` blieb unverändert (Issue geschlossen, Branch gelöscht). Lokaler und GitHub-Build sind byte-gleich. Offen wie in M3: Backfill Spieltage 3 und 4.
 - 2026-09-25 M5: Next.js-App mit den Workgrid-Bausteinen (storage, crypto, api-route mit `withAdmin`, auth mit E-Mail/Passwort und scrypt, Middleware, Rate-Limits, Guard-Tests), `stage-data`, `game-data`, Design „Rasen/Flutlicht“, Bottom-Navigation, Platzhalter für Team/Markt/Spieltag/Tabelle, Einstellungen mit Abmelden, Impressum. Abnahme per Playwright: Registrieren mit Code → Anmelden → Abmelden → Reset, ungültige Codes abgewiesen, `/api/*` ohne Session = 401 JSON. Für den Betrieb fehlen noch Vercel-Projekt, Upstash und die Env-Variablen (M11).
 - 2026-09-25 M6: `/markt` mit Filtern (Position, Verein, Preis) und Sortierung (Preis, Punkte, Form), Erstkader-Aufbau mit Live-Prüfung, Tausch-Dialog mit Kosten und Guthaben danach; `POST /api/squad/initial`, `POST /api/transfer` mit optimistischer Sperre. Abnahme: Route-Tests je Regel aus 2.2/2.6/2.7 (Budget, 6. Spieler eines Vereins, falsche Position, Fenster zu, Zählung, Übertrag, Pause und Kaderaufbau unbegrenzt, 409), E2E „Erstkader bauen“. Fehler aus M1 behoben: Bank-Prüfung bei unbegrenzten Transfers.
+- 2026-09-25 M7: `/team` mit Spielfeld (Mähstreifen, Formation), Bank TW/B1–B3, Kapitän, Schloss und Countdown je Spieler, Tippen-zum-Tauschen mit sofortigem Speichern; `PUT /api/lineup` prüft Aufstellung und Sperren serverseitig. core: `swapPlayers`, `setCaptain`, `formationOf`, `lockedPlayers`. Abnahme mit fester Uhr: Tausch mit gesperrtem Spieler → 400 mit deutscher Meldung, Tausch zweier ungesperrter Spieler am laufenden Spieltag → ok, Kapitänswechsel bei gesperrtem Alt-Kapitän → abgewiesen.

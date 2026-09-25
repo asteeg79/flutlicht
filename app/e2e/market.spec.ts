@@ -23,7 +23,7 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
   await page.getByRole("button", { name: "Konto anlegen" }).click();
   await expect(page).toHaveURL(/\/team$/);
 
-  await page.getByRole("link", { name: "Markt" }).click();
+  await page.getByRole("link", { name: "Markt", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Markt" })).toBeVisible();
   await page.getByLabel("Sortierung").selectOption("price-asc");
 
@@ -48,6 +48,12 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
 
   // Nach dem Speichern: Tausch-Modus mit Guthaben statt Budget-Anzeige.
   await expect(page.getByText("Kaderwert")).toBeVisible();
-  await page.getByRole("link", { name: "Team" }).click();
-  await expect(page.getByText("15 / 15")).toBeVisible();
+  // Abnahme M7: Die Team-Seite zeigt die Startaufstellung (unabhängig vom Sperrstand der echten Daten).
+  await page.getByRole("link", { name: "Team", exact: true }).click();
+  const pitch = page.getByRole("region", { name: "Startelf, 4-4-2" });
+  await expect(pitch.getByRole("button")).toHaveCount(11);
+  await expect(pitch.getByRole("button", { name: /Kapitän/ })).toHaveCount(1);
+  await expect(
+    page.getByRole("region", { name: "Bank" }).getByRole("button"),
+  ).toHaveCount(4);
 });

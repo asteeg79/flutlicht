@@ -1,0 +1,2255 @@
+{
+  "fetchedAt": "2026-09-25T18:32:37.472201Z",
+  "url": "https://api.sofascore.com/api/v1/unique-tournament/35/season/97464/events/round/3",
+  "phase": "round",
+  "data": {
+    "events": [
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "FabsXab",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 2,
+        "homeTeam": {
+          "name": "1. FC Union Berlin",
+          "slug": "1-fc-union-berlin",
+          "shortName": "Union Berlin",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 130639,
+          "nameCode": "FCU",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2547,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ff0000",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "1 إف سي يونيون برلين",
+              "ru": "Унион Берлин"
+            },
+            "shortNameTranslation": {
+              "ar": "يونيون برلين",
+              "bn": "ইউনিয়ন বার্লিন",
+              "hi": "यूनियन बर्लिन",
+              "ru": "Унион Берлин"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "FC Schalke 04",
+          "slug": "fc-schalke-04",
+          "shortName": "Schalke",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 97532,
+          "nameCode": "S04",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2530,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#0541cd",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "شالكه 04",
+              "ru": "Шальке-04"
+            },
+            "shortNameTranslation": {
+              "ar": "شالكه",
+              "bn": "শালকে",
+              "hi": "शाल्के"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 1,
+          "display": 1,
+          "period1": 0,
+          "period2": 1,
+          "normaltime": 1
+        },
+        "awayScore": {
+          "current": 3,
+          "display": 3,
+          "period1": 1,
+          "period2": 2,
+          "normaltime": 3
+        },
+        "time": {
+          "injuryTime1": 2,
+          "injuryTime2": 12,
+          "currentPeriodStartTimestamp": 1789155237,
+          "lastPeriodEndTimestamp": 1789154271
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type",
+            "awayScore.normaltime"
+          ],
+          "changeTimestamp": 1789158776
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": false,
+        "correctHalftimeAiInsight": true,
+        "id": 16434045,
+        "slug": "1-fc-union-berlin-fc-schalke-04",
+        "startTimestamp": 1789151400,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "gbbszdb",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 2,
+        "homeTeam": {
+          "name": "1. FSV Mainz 05",
+          "slug": "1-fsv-mainz-05",
+          "shortName": "Mainz 05",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 109083,
+          "nameCode": "M05",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2556,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ff0000",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "05 ماينتس",
+              "ru": "Майнц 05"
+            },
+            "shortNameTranslation": {
+              "ar": "ماينتس 05",
+              "bn": "মেইনজ 05",
+              "hi": "माइनज़ 05"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "Eintracht Frankfurt",
+          "slug": "eintracht-frankfurt",
+          "shortName": "Frankfurt",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 266793,
+          "nameCode": "SGE",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2674,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#000000",
+            "secondary": "#ff1111",
+            "text": "#ff1111"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "آينتراخت فرانكفورت",
+              "hi": "एईनट्राख्ट फ्रांकफुर्ट",
+              "ru": "Айнтрахт Франкфурт"
+            },
+            "shortNameTranslation": {
+              "ar": "اينتراخت",
+              "bn": "ফ্রাঙ্কফুর্ট",
+              "hi": "फ्रैंकफर्ट",
+              "ru": "Айнтрахт"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 1,
+          "display": 1,
+          "period1": 0,
+          "period2": 1,
+          "normaltime": 1
+        },
+        "awayScore": {
+          "current": 3,
+          "display": 3,
+          "period1": 2,
+          "period2": 1,
+          "normaltime": 3
+        },
+        "time": {
+          "injuryTime1": 3,
+          "injuryTime2": 3,
+          "currentPeriodStartTimestamp": 1789223686,
+          "lastPeriodEndTimestamp": 1789222731
+        },
+        "changes": {
+          "changes": [
+            "time.injuryTime2"
+          ],
+          "changeTimestamp": 1789226637
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": false,
+        "correctHalftimeAiInsight": true,
+        "id": 16434018,
+        "slug": "eintracht-frankfurt-1-fsv-mainz-05",
+        "startTimestamp": 1789219800,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "lbbsydb",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 1,
+        "homeTeam": {
+          "name": "Borussia Dortmund",
+          "slug": "borussia-dortmund",
+          "shortName": "Dortmund",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 1445800,
+          "nameCode": "BVB",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2673,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffe600",
+            "secondary": "#000000",
+            "text": "#000000"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بوروسيا دورتموند",
+              "hi": "बोरुस्सिया  डॉर्टमुंड",
+              "ru": "Боруссия Дортмунд"
+            },
+            "shortNameTranslation": {
+              "ar": "دورتموند",
+              "bn": "ডর্টমুন্ড",
+              "hi": "डॉर्टमुंड",
+              "ru": "Дортмунд"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "SC Paderborn 07",
+          "slug": "sc-paderborn-07",
+          "shortName": "Paderborn",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 33509,
+          "nameCode": "PAD",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2561,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#0000bb",
+            "secondary": "#0000a6",
+            "text": "#0000a6"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بادربورن",
+              "hi": "एससी पेडरबोर्न 07",
+              "ru": "Падерборн 07"
+            },
+            "shortNameTranslation": {
+              "ar": "بادربورن",
+              "bn": "প্যাডারবর্ন",
+              "hi": "पेडरबॉर्न",
+              "ru": "Падерборн 07"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 3,
+          "display": 3,
+          "period1": 1,
+          "period2": 2,
+          "normaltime": 3
+        },
+        "awayScore": {
+          "current": 0,
+          "display": 0,
+          "period1": 0,
+          "period2": 0,
+          "normaltime": 0
+        },
+        "time": {
+          "injuryTime1": 2,
+          "injuryTime2": 3,
+          "currentPeriodStartTimestamp": 1789223691,
+          "lastPeriodEndTimestamp": 1789222701
+        },
+        "changes": {
+          "changes": [
+            "time.injuryTime2"
+          ],
+          "changeTimestamp": 1789226690
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": true,
+        "correctHalftimeAiInsight": true,
+        "id": 16434037,
+        "slug": "borussia-dortmund-sc-paderborn-07",
+        "startTimestamp": 1789219800,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "acbsGdb",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 3,
+        "homeTeam": {
+          "name": "FC Augsburg",
+          "slug": "fc-augsburg",
+          "shortName": "Augsburg",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 82737,
+          "nameCode": "FCA",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2600,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#cd1719",
+            "text": "#cd1719"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "أوجسبورج",
+              "hi": "ऍफ़सी ऑग्सबर्ग",
+              "ru": "Аугсбург"
+            },
+            "shortNameTranslation": {
+              "ar": "أوجسبورج",
+              "bn": "অগসবার্গ",
+              "hi": "ऑग्सबर्ग"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "Bayer 04 Leverkusen",
+          "slug": "bayer-04-leverkusen",
+          "shortName": "Leverkusen",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 1010020,
+          "nameCode": "B04",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2681,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#000000",
+            "secondary": "#ff2222",
+            "text": "#ff2222"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "باير ليفركوزن",
+              "ru": "Байер Леверкузен"
+            },
+            "shortNameTranslation": {
+              "ar": "ليفركوزن",
+              "bn": "লেভারকুসেন",
+              "hi": "लेवरकुसेन"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 2,
+          "display": 2,
+          "period1": 0,
+          "period2": 2,
+          "normaltime": 2
+        },
+        "awayScore": {
+          "current": 2,
+          "display": 2,
+          "period1": 1,
+          "period2": 1,
+          "normaltime": 2
+        },
+        "time": {
+          "injuryTime1": 2,
+          "injuryTime2": 5,
+          "currentPeriodStartTimestamp": 1789223650,
+          "lastPeriodEndTimestamp": 1789222633
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type"
+          ],
+          "changeTimestamp": 1789226677
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": false,
+        "correctHalftimeAiInsight": false,
+        "id": 16434031,
+        "slug": "bayer-04-leverkusen-fc-augsburg",
+        "startTimestamp": 1789219800,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "CabsNab",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 1,
+        "homeTeam": {
+          "name": "SC Freiburg",
+          "slug": "sc-freiburg",
+          "shortName": "Freiburg",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 155582,
+          "nameCode": "SCF",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2538,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#cc3333",
+            "secondary": "#000000",
+            "text": "#000000"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "فرايبورج",
+              "hi": "एससी फ्रैबर्ग",
+              "ru": "Фрайбург"
+            },
+            "shortNameTranslation": {
+              "ar": "فرايبورج",
+              "bn": "ফ্রেইবার্গ",
+              "hi": "फ्रायबर्ग"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "Borussia M'gladbach",
+          "slug": "borussia-mgladbach",
+          "shortName": "M'gladbach",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 116491,
+          "nameCode": "BMG",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2527,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#000000",
+            "text": "#000000"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بوروسيا مونشنغلادباخ",
+              "ru": "Боруссия Мёнхенгладбах"
+            },
+            "shortNameTranslation": {
+              "ar": "مونشنغلادباخ",
+              "bn": "এম'গ্লাডবাখ",
+              "hi": "एम'ग्लैडबाक",
+              "ru": "Мёнхенгладбах"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 5,
+          "display": 5,
+          "period1": 2,
+          "period2": 3,
+          "normaltime": 5
+        },
+        "awayScore": {
+          "current": 0,
+          "display": 0,
+          "period1": 0,
+          "period2": 0,
+          "normaltime": 0
+        },
+        "time": {
+          "injuryTime1": 1,
+          "injuryTime2": 3,
+          "currentPeriodStartTimestamp": 1789223604,
+          "lastPeriodEndTimestamp": 1789222577
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type",
+            "time.injuryTime2"
+          ],
+          "changeTimestamp": 1789226491
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": true,
+        "correctHalftimeAiInsight": true,
+        "id": 16434040,
+        "awayRedCards": 1,
+        "slug": "sc-freiburg-borussia-mgladbach",
+        "startTimestamp": 1789219800,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "ubbsCdb",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 1,
+        "homeTeam": {
+          "name": "TSG Hoffenheim",
+          "slug": "tsg-hoffenheim",
+          "shortName": "Hoffenheim",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 113404,
+          "nameCode": "TSG",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2569,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#1f5da6",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "هوفنهايم",
+              "hi": "TSG होफ्फेन्हेइम",
+              "ru": "Хоффенхайм"
+            },
+            "shortNameTranslation": {
+              "ar": "هوفنهايم",
+              "bn": "হফেনহাইম",
+              "hi": "हॉफेनहाइम"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "VfB Stuttgart",
+          "slug": "vfb-stuttgart",
+          "shortName": "Stuttgart",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 271374,
+          "nameCode": "VFB",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2677,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#ff0000",
+            "text": "#ff0000"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "شتوتجارت",
+              "hi": "VFB स्टुटगार्ट",
+              "ru": "Штутгарт"
+            },
+            "shortNameTranslation": {
+              "ar": "شتوتجارت",
+              "bn": "স্টুটগার্ট",
+              "hi": "स्टुटगार्ट"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 2,
+          "display": 2,
+          "period1": 1,
+          "period2": 1,
+          "normaltime": 2
+        },
+        "awayScore": {
+          "current": 1,
+          "display": 1,
+          "period1": 0,
+          "period2": 1,
+          "normaltime": 1
+        },
+        "time": {
+          "injuryTime1": 3,
+          "injuryTime2": 4,
+          "currentPeriodStartTimestamp": 1789223773,
+          "lastPeriodEndTimestamp": 1789222844
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type"
+          ],
+          "changeTimestamp": 1789226801
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": true,
+        "correctHalftimeAiInsight": false,
+        "id": 16434035,
+        "slug": "vfb-stuttgart-tsg-hoffenheim",
+        "startTimestamp": 1789219800,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "Jabswdb",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 3,
+        "homeTeam": {
+          "name": "1. FC Köln",
+          "slug": "1-fc-koln",
+          "shortName": "Köln",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 89706,
+          "nameCode": "KOE",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2671,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#e30613",
+            "text": "#e30613"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "1. إف سي كولن",
+              "ru": "Кёльн"
+            },
+            "shortNameTranslation": {
+              "ar": "كولن",
+              "bn": "কোলন",
+              "hi": "कोलन"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "SV Werder Bremen",
+          "slug": "sv-werder-bremen",
+          "shortName": "Bremen",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 92766,
+          "nameCode": "SVW",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2534,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#009966",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "فيردر بريمن",
+              "ru": "Вердер Бремен"
+            },
+            "shortNameTranslation": {
+              "ar": "فيردر",
+              "bn": "ব্রেমেন",
+              "hi": "ब्रेमन",
+              "ru": "Вердер"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 1,
+          "display": 1,
+          "period1": 1,
+          "period2": 0,
+          "normaltime": 1
+        },
+        "awayScore": {
+          "current": 1,
+          "display": 1,
+          "period1": 0,
+          "period2": 1,
+          "normaltime": 1
+        },
+        "time": {
+          "injuryTime1": 2,
+          "injuryTime2": 4,
+          "currentPeriodStartTimestamp": 1789234445,
+          "lastPeriodEndTimestamp": 1789233432
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type"
+          ],
+          "changeTimestamp": 1789237424
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": false,
+        "correctHalftimeAiInsight": false,
+        "id": 16434027,
+        "slug": "1-fc-koln-sv-werder-bremen",
+        "startTimestamp": 1789230600,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "BdbskCo",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 1,
+        "homeTeam": {
+          "name": "RB Leipzig",
+          "slug": "rb-leipzig",
+          "shortName": "Leipzig",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 396598,
+          "nameCode": "RBL",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 36360,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#dd0000",
+            "text": "#dd0000"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "آر بي لايبزيغ",
+              "hi": "RB लैपज़िग",
+              "ru": "РБ Лейпциг"
+            },
+            "shortNameTranslation": {
+              "ar": "لايبزيغ",
+              "bn": "লিপজিগ",
+              "hi": "लीपज़िग"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "Hamburger SV",
+          "slug": "hamburger-sv",
+          "shortName": "HSV",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 94156,
+          "nameCode": "HSV",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2676,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "هامبورغ",
+              "hi": "हैमबर्गर ऐसवि",
+              "ru": "Гамбург"
+            },
+            "shortNameTranslation": {
+              "ar": "هامبورغ",
+              "bn": "এইচএসভি",
+              "hi": "एचएसवी"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 5,
+          "display": 5,
+          "period1": 2,
+          "period2": 3,
+          "normaltime": 5
+        },
+        "awayScore": {
+          "current": 0,
+          "display": 0,
+          "period1": 0,
+          "period2": 0,
+          "normaltime": 0
+        },
+        "time": {
+          "injuryTime1": 2,
+          "injuryTime2": 3,
+          "currentPeriodStartTimestamp": 1789310087,
+          "lastPeriodEndTimestamp": 1789309074
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type"
+          ],
+          "changeTimestamp": 1789312984
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": true,
+        "correctHalftimeAiInsight": true,
+        "id": 16434043,
+        "slug": "rb-leipzig-hamburger-sv",
+        "startTimestamp": 1789306200,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      },
+      {
+        "eventState": {},
+        "tournament": {
+          "name": "Bundesliga",
+          "slug": "bundesliga",
+          "category": {
+            "name": "Germany",
+            "slug": "germany",
+            "sport": {
+              "name": "Football",
+              "slug": "football",
+              "id": 1
+            },
+            "priority": 8,
+            "country": {
+              "alpha2": "DE",
+              "alpha3": "DEU",
+              "name": "Germany",
+              "slug": "germany"
+            },
+            "id": 30,
+            "flag": "germany",
+            "alpha2": "DE",
+            "fieldTranslations": {
+              "nameTranslation": {
+                "ar": "ألمانيا",
+                "bn": "জার্মানি",
+                "hi": "जर्मनी",
+                "ru": "Германия"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "uniqueTournament": {
+            "name": "Bundesliga",
+            "slug": "bundesliga",
+            "primaryColorHex": "#e2080e",
+            "secondaryColorHex": "#8e0902",
+            "category": {
+              "name": "Germany",
+              "slug": "germany",
+              "sport": {
+                "name": "Football",
+                "slug": "football",
+                "id": 1
+              },
+              "priority": 8,
+              "country": {
+                "alpha2": "DE",
+                "alpha3": "DEU",
+                "name": "Germany",
+                "slug": "germany"
+              },
+              "id": 30,
+              "flag": "germany",
+              "alpha2": "DE",
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ألمانيا",
+                  "bn": "জার্মানি",
+                  "hi": "जर्मनी",
+                  "ru": "Германия"
+                },
+                "shortNameTranslation": {}
+              }
+            },
+            "userCount": 563197,
+            "hasPerformanceGraphFeature": true,
+            "liveActivityEnabled": true,
+            "country": {},
+            "id": 35,
+            "hasEventPlayerStatistics": true,
+            "displayInverseHomeAwayTeams": false,
+            "fieldTranslations": {
+              "nameTranslation": {
+                "bn": "বুন্দেসলীগা",
+                "ar": "الدوري الألماني",
+                "hi": "बुंडेसलीगा",
+                "ru": "Бундеслига"
+              },
+              "shortNameTranslation": {}
+            }
+          },
+          "priority": 699,
+          "isGroup": false,
+          "isLive": false,
+          "id": 42,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "hi": "बुंडेसलीगा",
+              "ar": "الدوري الألماني",
+              "bn": "বুন্দেসলীগা",
+              "ru": "Бундеслига"
+            },
+            "shortNameTranslation": {}
+          }
+        },
+        "season": {
+          "name": "Bundesliga 26/27",
+          "year": "26/27",
+          "editor": false,
+          "id": 97464
+        },
+        "roundInfo": {
+          "round": 3
+        },
+        "customId": "Ybbsxdb",
+        "status": {
+          "code": 100,
+          "description": "Ended",
+          "type": "finished"
+        },
+        "winnerCode": 2,
+        "homeTeam": {
+          "name": "SV 07 Elversberg",
+          "slug": "sv-07-elversberg",
+          "shortName": "Elversberg",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 33533,
+          "nameCode": "ELV",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2598,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#ffffff",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "إلفرسبيرغ",
+              "hi": "एल्वेर्सबर्ग",
+              "ru": "Эльверсберг"
+            },
+            "shortNameTranslation": {
+              "ar": "إلفرسبيرغ"
+            }
+          }
+        },
+        "awayTeam": {
+          "name": "FC Bayern München",
+          "slug": "fc-bayern-munchen",
+          "shortName": "Bayern",
+          "gender": "M",
+          "sport": {
+            "name": "Football",
+            "slug": "football",
+            "id": 1
+          },
+          "userCount": 3217420,
+          "nameCode": "FCB",
+          "disabled": false,
+          "national": false,
+          "type": 0,
+          "country": {
+            "alpha2": "DE",
+            "alpha3": "DEU",
+            "name": "Germany",
+            "slug": "germany"
+          },
+          "id": 2672,
+          "subTeams": [],
+          "teamColors": {
+            "primary": "#cf142f",
+            "secondary": "#ffffff",
+            "text": "#ffffff"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بايرن ميونخ",
+              "ru": "Бавария Мюнхен"
+            },
+            "shortNameTranslation": {
+              "ar": "بايرن",
+              "bn": "বায়ার্ন",
+              "hi": "बायर्न"
+            }
+          }
+        },
+        "homeScore": {
+          "current": 1,
+          "display": 1,
+          "period1": 0,
+          "period2": 1,
+          "normaltime": 1
+        },
+        "awayScore": {
+          "current": 2,
+          "display": 2,
+          "period1": 1,
+          "period2": 1,
+          "normaltime": 2
+        },
+        "time": {
+          "injuryTime1": 5,
+          "injuryTime2": 3,
+          "currentPeriodStartTimestamp": 1789317456,
+          "lastPeriodEndTimestamp": 1789316413
+        },
+        "changes": {
+          "changes": [
+            "status.code",
+            "status.description",
+            "status.type"
+          ],
+          "changeTimestamp": 1789320359
+        },
+        "hasGlobalHighlights": true,
+        "hasXg": true,
+        "hasEventPlayerStatistics": true,
+        "hasEventPlayerHeatMap": true,
+        "detailId": 1,
+        "crowdsourcingDataDisplayEnabled": false,
+        "correctAiInsight": true,
+        "correctHalftimeAiInsight": true,
+        "id": 16434041,
+        "slug": "fc-bayern-munchen-sv-07-elversberg",
+        "startTimestamp": 1789313400,
+        "finalResultOnly": false,
+        "feedLocked": true,
+        "isEditor": false,
+        "eventFilters": {
+          "category": [
+            "club"
+          ],
+          "level": [
+            "top-competitions",
+            "pro"
+          ],
+          "gender": [
+            "M"
+          ]
+        }
+      }
+    ],
+    "hasNextPage": false
+  }
+}

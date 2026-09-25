@@ -34,3 +34,17 @@ export function isLocked(
   );
   return fixture !== undefined && now >= lockAt(fixture);
 }
+
+/** IDs der gesperrten Spieler; `fixtures` sind die Spiele des aktuellen Spieltags. */
+export function lockedPlayers(
+  players: readonly Pick<Player, "id" | "teamId">[],
+  now: Date,
+  fixtures: readonly Pick<
+    Fixture,
+    "homeTeamId" | "awayTeamId" | "kickoffUtc"
+  >[],
+): Set<number> {
+  return new Set(
+    players.filter((p) => isLocked(p, now, fixtures)).map((p) => p.id),
+  );
+}
