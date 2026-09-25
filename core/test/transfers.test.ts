@@ -267,6 +267,21 @@ describe("applyTransfer (KONZEPT 2.3, 2.6, 2.7)", () => {
     expect(r2.ok && r2.state.transferBank.available).toBe(2);
   });
 
+  it("braucht für unbegrenzte Transfers keine fortgeschriebene Bank", () => {
+    // Wertung ab Spieltag 8, Fenster zu Spieltag 5: Bank steht noch auf 8.
+    const early = {
+      ...state,
+      firstMatchday: 8,
+      transferBank: { matchday: 8, available: 2 },
+    };
+    const r = applyTransfer(early, 14, 101, {
+      ...ctx,
+      window: { ...openWindow, matchday: 5 },
+    });
+    expect(r.ok && r.transfer).toMatchObject({ matchday: 5, free: true });
+    expect(r.ok && r.state.transferBank).toEqual({ matchday: 8, available: 2 });
+  });
+
   it("markiert Transfers ohne freies Kontingent als kostenpflichtig", () => {
     const r = applyTransfer(
       { ...state, transferBank: { matchday: 8, available: 0 } },

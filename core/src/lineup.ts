@@ -107,3 +107,35 @@ export function diffLineupRespectsLocks(
   }
   return violations;
 }
+
+/**
+ * Aufstellung direkt nach dem Erstkader, damit es immer eine gültige gibt (2.3):
+ * 4-4-2 mit den jeweils teuersten Spielern, Bank nach Preis absteigend,
+ * Kapitän ist der teuerste Starter. Erwartet einen gültigen Kader (2/5/5/3).
+ */
+export function defaultLineup(
+  squad: readonly Pick<Player, "id" | "position" | "price">[],
+): Lineup {
+  const byPrice = [...squad].sort((a, b) => b.price - a.price || a.id - b.id);
+  const of = (pos: Position) =>
+    byPrice.filter((p) => p.position === pos).map((p) => p.id);
+  const [gk, def, mid, fwd] = [of("GK"), of("DEF"), of("MID"), of("FWD")];
+  const starters = [
+    gk[0]!,
+    ...def.slice(0, 4),
+    ...mid.slice(0, 4),
+    ...fwd.slice(0, 2),
+  ];
+  const benchField = [def[4]!, mid[4]!, fwd[2]!];
+  const price = new Map(squad.map((p) => [p.id, p.price]));
+  benchField.sort((a, b) => price.get(b)! - price.get(a)! || a - b);
+  const captain = starters.reduce((best, id) =>
+    price.get(id)! > price.get(best)! ? id : best,
+  );
+  return {
+    formation: "4-4-2",
+    starters,
+    bench: { gk: gk[1]!, b: benchField as [number, number, number] },
+    captain,
+  };
+}

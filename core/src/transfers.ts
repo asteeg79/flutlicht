@@ -133,7 +133,9 @@ export function applyTransfer<T extends TransferState>(
   if (!window.open) {
     return fail("window-closed", "Das Transferfenster ist geschlossen.");
   }
-  if (state.transferBank.matchday !== window.matchday) {
+  const unlimited = isUnlimited(window, state.firstMatchday);
+  // Nur gezählte Transfers brauchen die fortgeschriebene Bank; unbegrenzte nicht.
+  if (!unlimited && state.transferBank.matchday !== window.matchday) {
     return fail(
       "bank-stale",
       "Das Transferfenster wird gerade vorbereitet. Bitte versuche es in ein paar Minuten erneut.",
@@ -183,7 +185,7 @@ export function applyTransfer<T extends TransferState>(
 
   let bank = state.transferBank;
   let free = true;
-  if (!isUnlimited(window, state.firstMatchday)) {
+  if (!unlimited) {
     if (bank.available > 0) bank = { ...bank, available: bank.available - 1 };
     else free = false;
   }

@@ -21,3 +21,4 @@ export * from "./manual-match";
 export * from "./matchday";
 export * from "./league";
 export * from "./time";
+export * from "./stats";

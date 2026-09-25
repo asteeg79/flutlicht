@@ -4,6 +4,15 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-25 | Bank-Prüfung bei unbegrenzten Transfers (Fehler aus M1) | `applyTransfer` verlangt die fortgeschriebene Transferbank nur noch für gezählte Transfers | Sonst waren Transfers vor dem ersten gewerteten Spieltag unmöglich (Bank auf Spieltag 8, Fenster zu Spieltag 5) |
+| 2026-09-25 | Erstkader: wann | Nur solange der Kader leer ist, aber jederzeit, auch während eines laufenden Spieltags; der Startspieltag rückt dann auf den nächsten offenen Spieltag vor | „in Pause“ (8.2) deckt der unbegrenzte Transfer ab; Nachzügler sollen nicht bis Montag warten müssen |
+| 2026-09-25 | Erstkader: Guthaben | Guthaben = Startbudget aus `season.json` zum Zeitpunkt des Erstkaders − Kaderkosten | Der Admin darf das Startbudget bis zum ersten gewerteten Spieltag ändern (4.2) |
+| 2026-09-25 | Aufstellung nach dem Erstkader | 4-4-2 mit den jeweils teuersten Spielern, Bank nach Preis absteigend, Kapitän = teuerster Starter (`core/defaultLineup`) | Es gibt immer eine gültige Aufstellung (2.3); anpassen lässt sie sich in M7 |
+| 2026-09-25 | Fehlerantworten Kader/Transfer | Regelverstöße → 400 mit den deutschen Meldungen aus `core`; veralteter Stand (`updatedAt`) → 409, der Client lädt neu | KONZEPT 7.3; die Oberfläche zeigt die Meldung direkt an |
+| 2026-09-25 | Spieler auf dem Markt | Aktive Spieler plus alle aus dem eigenen Kader; Spieler ohne Marktwert erscheinen als „nicht kaufbar“ | Ehemalige Bundesliga-Spieler müssen zum Verkauf sichtbar bleiben (2.2) |
+| 2026-09-25 | Punkte und Form auf dem Markt | Punkte = Summe der Basispunkte aller vorhandenen Spieltage, Form = Ø der letzten 5 Einsätze (`core/playerStats`) | KONZEPT 8.1 „Form = Ø letzte 5“ |
+| 2026-09-25 | Next-Dev-Anzeige | `devIndicators: false` | Die Anzeige lag unten links genau über dem Team-Punkt der Navigation und fing Klicks ab |
+| 2026-09-25 | E2E für Transfers | Playwright prüft den Erstkader; der Tausch-Ablauf ist über Route-Tests je Regel abgedeckt | Mit den echten Daten ist das Transferfenster gerade zu (Backfill Spieltag 3/4 fehlt); die Abnahme verlangt E2E nur für den Erstkader |
 | 2026-09-25 | Erster Admin ohne Einladungscode | Wer mit einer E-Mail aus `ADMIN_EMAILS` registriert, braucht keinen Einladungscode | Codes erzeugt nur der Admin; ohne diese Ausnahme käme der erste Admin nie hinein |
 | 2026-09-25 | Erster Spieltag neuer Manager | Aktueller Spieltag, solange dessen erste Sperre aussteht, sonst der nächste; nie vor `firstScoredMatchday` (`core/firstMatchdayFor`) | Nachzügler starten ab ihrem ersten Spieltag mit 0 Punkten (2.8) |
 | 2026-09-25 | Redis-Anbindung | Nur Upstash REST (`@upstash/redis`); den TCP-Weg (ioredis) aus Workgrid übernehme ich nicht | KONZEPT 7.3/15.2 nennen nur Upstash REST; eine Abhängigkeit weniger |

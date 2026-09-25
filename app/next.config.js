@@ -71,6 +71,8 @@ function buildDate() {
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  // Die Dev-Anzeige läge unten links genau über dem Team-Punkt der Navigation.
+  devIndicators: false,
   transpilePackages: ["@fm/core"],
   // Build-Kennung (Git-SHA auf Vercel) — sichtbar in den Einstellungen, damit
   // verifizierbar ist, welche Client-Version geladen ist. Version kommt aus
