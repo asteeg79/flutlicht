@@ -7,7 +7,8 @@ name: Compute (raw → data)
 on:
   push:
     branches: [main]
-    paths: ["raw/**"]
+    # Bilder (Job images) setzen das Feld image in players.json.
+    paths: ["raw/**", "app/public/img/**"]
   workflow_dispatch:
   repository_dispatch:
     types: [recompute]
