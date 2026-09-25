@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import { PushSettings } from "@/components/push-settings";
 import { Button } from "@/components/ui";
 import { signOut } from "@/lib/auth";
 import { currentManager } from "@/lib/session";
@@ -29,6 +30,7 @@ export default async function SettingsPage() {
           </div>
         </dl>
       </section>
+      <PushSettings initialPrefs={manager.push?.prefs ?? null} />
       <form action={logout} className="mb-8">
         <Button type="submit" variant="secondary">
           Abmelden

@@ -38,3 +38,14 @@ test("Spieltag, Tabelle und Spielerprofil", async ({ page }) => {
   await expect(page.getByRole("heading", { name: name! })).toBeVisible();
   await expect(page.getByText("Preisverlauf")).toBeVisible();
 });
+
+test("Einstellungen zeigen die Push-Benachrichtigungen", async ({ page }) => {
+  await page.getByRole("link", { name: "Einstellungen", exact: true }).click();
+  const push = page.getByRole("region", { name: "Benachrichtigungen" });
+  await expect(
+    push.getByRole("heading", { name: "Push-Benachrichtigungen" }),
+  ).toBeVisible();
+  await expect(
+    push.getByRole("switch", { name: "Push-Benachrichtigungen" }),
+  ).toBeVisible();
+});

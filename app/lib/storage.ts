@@ -4,7 +4,7 @@
 import { Redis as UpstashRedis } from "@upstash/redis";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { EmailIndex, League, ManagerDoc } from "@fm/core";
+import { EmailIndex, League, ManagerDoc, SystemState } from "@fm/core";
 import type { z } from "zod";
 import { decrypt, encrypt } from "@/lib/crypto";
 
@@ -178,6 +178,8 @@ const EMAIL_INDEX_PATH = "email-index.json.enc";
 const EMAIL_INDEX_KEY = "__email_index__";
 const LEAGUE_PATH = "league.json.enc";
 const LEAGUE_KEY = "__league__";
+const SYSTEM_STATE_PATH = "system-state.json.enc";
+const SYSTEM_STATE_KEY = "__system_state__";
 
 /** { [emailLower]: userId } */
 export async function loadEmailIndex(): Promise<EmailIndex> {
@@ -201,4 +203,22 @@ export async function loadLeague(): Promise<League> {
 
 export function saveLeague(league: League): Promise<void> {
   return writeEncrypted(LEAGUE_PATH, LEAGUE_KEY, League, league);
+}
+
+/** Tick-Idempotenz: ausgeführte Aktionen (KONZEPT 9). */
+export async function loadSystemState(): Promise<SystemState> {
+  return (
+    (await readEncrypted(SYSTEM_STATE_PATH, SYSTEM_STATE_KEY, SystemState)) ?? {
+      done: {},
+    }
+  );
+}
+
+export function saveSystemState(state: SystemState): Promise<void> {
+  return writeEncrypted(
+    SYSTEM_STATE_PATH,
+    SYSTEM_STATE_KEY,
+    SystemState,
+    state,
+  );
 }

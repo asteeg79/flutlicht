@@ -4,6 +4,17 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-25 | Aufteilung des Ticks | `core/planTick` entscheidet rein, welche Aktionen fällig sind (je mit Schlüssel); `app/lib/tick.ts` führt aus | Regeln gehören nach core und sind so ohne Storage und Push testbar |
+| 2026-09-25 | „Höchstens einmal“ bei Pushes | Schlüssel werden in `system-state` gespeichert, bevor gesendet wird; die Finalisierung ist idempotent und bekommt ihren Schlüssel danach | KONZEPT 9 verlangt höchstens einmal; bei einem Absturz fehlt lieber ein Push, als dass er doppelt kommt |
+| 2026-09-25 | Server-eigene Felder | Push-Anmeldung, Push-Einstellungen und die Finalisierung durch den Tick ändern `updatedAt` nicht | Wie `keepServerOwnedFields` in Workgrid: keine 409 für den Manager; jede Schreibroute lädt ohnehin frisch |
+| 2026-09-25 | Erinnerungsfenster | 24 h: 24 h bis 3 h vor der ersten Sperre; 3 h: letzte 3 h; Anlass: kein Kader (alle) oder ein Starter inaktiv / ohne gewertetes Spiel (ab `firstMatchday`) | KONZEPT 9; getrennte Fenster, damit ein verspäteter Tick nicht beide auf einmal schickt |
+| 2026-09-25 | Tagesfazit | Nur für den heutigen Berliner Kalendertag, ab 20:00 Uhr, mit den bisherigen Spieltagspunkten und dem Platz im Spieltag | Sonst schickte der erste Tick nach dem Go-live Fazits für alle vergangenen Tage |
+| 2026-09-25 | Endergebnis-Push | Nur für Spieltage ab `firstScoredMatchday` | Die Backfill-Spieltage zählen für niemanden |
+| 2026-09-25 | Einfrieren der Aufstellung | `lineupHistory[n]` nur ab dem ersten gewerteten Spieltag des Managers | Frühere Stände wären nur Ballast im Dokument |
+| 2026-09-25 | Test-Push | `POST /api/push/test` an das eigene Gerät, Knopf in den Einstellungen | Abnahme M9 „Test-Push aus /einstellungen“ |
+| 2026-09-25 | Push-Status im Browser | `usePush` fragt `getRegistration()` statt `serviceWorker.ready` ab und setzt den Zustand erst nach dem Nachsehen | `ready` hängt ohne registrierten Service Worker (Dev-Modus); die neue React-Hooks-Regel verbietet setState direkt im Effekt |
+| 2026-09-25 | Icons | Selbst erzeugt: Rasen mit Mähstreifen, Kreide und Flutlichtpunkt auf Nachtblau (192, 512, maskable, Apple 180) | Passend zum Design, keine Vereins- oder Liga-Marken |
+| 2026-09-25 | Offene Abnahme M9 | Test-Push auf Android/iOS und Deploy des Cloudflare-Workers erst mit öffentlicher App-URL (Vercel, M11); VAPID-Keys werden dann erzeugt und nur in Vercel gesetzt | Push braucht HTTPS und eine erreichbare App; Secrets gehören nicht ins Repo |
 | 2026-09-25 | Tabelle live | Die Gesamtsumme enthält auch laufende und vorläufige Spieltage; Spieltagssiege (und damit der Tie-Break) zählen nur an finalen Spieltagen | Live-Stand für die Runde, aber keine Siege auf Basis vorläufiger Zahlen |
 | 2026-09-25 | Rang bei Gleichstand | Gleichauf nach Summe, Siegen und bestem Einzelspieltag teilt sich den Rang (1, 1, 3) | KONZEPT 2.8 „→ gleichauf“ |
 | 2026-09-25 | Eingefrorene Aufstellung fehlt | Für einen finalen Spieltag ohne `lineupHistory`-Eintrag gilt die aktuelle Aufstellung | Der Tick friert erst nach der Finalisierung ein (M9); bis dahin ist die aktuelle Aufstellung die gültige |

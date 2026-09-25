@@ -112,3 +112,9 @@ export const League = z.object({
   resets: z.array(ResetCode),
 });
 export type League = z.infer<typeof League>;
+
+/** system-state.json.enc: ausgeführte Tick-Aktionen, Schlüssel → Zeitpunkt (KONZEPT 9). */
+export const SystemState = z.object({
+  done: z.record(z.string(), IsoDateTime),
+});
+export type SystemState = z.infer<typeof SystemState>;

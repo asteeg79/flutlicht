@@ -23,3 +23,4 @@ export * from "./league";
 export * from "./time";
 export * from "./stats";
 export * from "./standings";
+export * from "./tick";

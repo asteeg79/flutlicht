@@ -11,7 +11,7 @@ Ein Meilenstein gilt als erledigt, wenn seine Abnahmekriterien (KONZEPT.md Absch
 - [x] M6 · Kader & Markt
 - [x] M7 · Aufstellung & Sperren
 - [x] M8 · Punkte, Spieltag, Tabelle
-- [ ] M9 · Push & Taktgeber
+- [ ] M9 · Push & Taktgeber (Code fertig; offen: Geräte-Test und Worker-Deploy, brauchen die öffentliche App aus M11)
 - [ ] M10 · Admin
 - [ ] M11 · Heim-Rechner-Betrieb & Go-live
 
@@ -26,3 +26,4 @@ Ein Meilenstein gilt als erledigt, wenn seine Abnahmekriterien (KONZEPT.md Absch
 - 2026-09-25 M6: `/markt` mit Filtern (Position, Verein, Preis) und Sortierung (Preis, Punkte, Form), Erstkader-Aufbau mit Live-Prüfung, Tausch-Dialog mit Kosten und Guthaben danach; `POST /api/squad/initial`, `POST /api/transfer` mit optimistischer Sperre. Abnahme: Route-Tests je Regel aus 2.2/2.6/2.7 (Budget, 6. Spieler eines Vereins, falsche Position, Fenster zu, Zählung, Übertrag, Pause und Kaderaufbau unbegrenzt, 409), E2E „Erstkader bauen“. Fehler aus M1 behoben: Bank-Prüfung bei unbegrenzten Transfers.
 - 2026-09-25 M7: `/team` mit Spielfeld (Mähstreifen, Formation), Bank TW/B1–B3, Kapitän, Schloss und Countdown je Spieler, Tippen-zum-Tauschen mit sofortigem Speichern; `PUT /api/lineup` prüft Aufstellung und Sperren serverseitig. core: `swapPlayers`, `setCaptain`, `formationOf`, `lockedPlayers`. Abnahme mit fester Uhr: Tausch mit gesperrtem Spieler → 400 mit deutscher Meldung, Tausch zweier ungesperrter Spieler am laufenden Spieltag → ok, Kapitänswechsel bei gesperrtem Alt-Kapitän → abgewiesen.
 - 2026-09-25 M8: core `scoreLeague`/`standings` (Tie-Break, Spieltagssieger), `GET /api/standings`, `GET /api/matchday/[n]` mit Sichtbarkeit fremder Aufstellungen ab Sperre; Seiten `/spieltag/[n]` (Aufschlüsselung, Auto-Wechsel markiert, andere Manager), `/tabelle` (Gesamt, Sieger, Verlauf), `/spieler/[id]` (Preisverlauf, Punkte je Spieltag), Punkte des laufenden Spieltags auf `/team`. Abnahme: Szenario-Test 3 Manager × 2 Spieltage mit Auto-Wechsel, Kapitän und Transferabzug (`core/test/standings.test.ts`). Offen zur Entscheidung: Kalibrierung der Notenpunkte.
+- 2026-09-25 M9: `core/planTick` (Erinnerungen 24 h/3 h, Tagesfazit, Finalisierung, Endergebnis) und `finalizeManager`; `POST /api/cron/tick` mit Bearer `CRON_SECRET`, Idempotenz über `system-state`; Push-Anmeldung, Einstellungen je Typ, Test-Push; Service Worker mit Push-Handlern, Manifest, Icons, iPhone-Hinweis; Cloudflare-Worker `infra/cron-worker` (Cron */10). Tests: doppelter Tick sendet nichts doppelt, Finalisierung friert `lineupHistory` ein, abgelaufene Anmeldungen werden entfernt. Lokal gegen den Produktions-Build geprüft: 401 ohne Secret, erster Tick finalisiert Spieltage 1–3, zweiter Tick tut nichts.

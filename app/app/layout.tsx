@@ -2,6 +2,7 @@ import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Schibsted_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 import { Toaster } from "sonner";
+import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import "./globals.css";
 
 const display = Big_Shoulders({
@@ -17,6 +18,13 @@ const sans = Schibsted_Grotesk({
 export const metadata: Metadata = {
   title: { default: "Fußballmanager", template: "%s · Fußballmanager" },
   description: "Private Bundesliga-Managerrunde",
+  manifest: "/manifest.json",
+  icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
+  appleWebApp: {
+    capable: true,
+    title: "Fußballmanager",
+    statusBarStyle: "black-translucent",
+  },
 };
 
 export const viewport: Viewport = {
@@ -31,6 +39,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh antialiased">
         {children}
         <Toaster theme="dark" position="top-center" richColors />
+        <ServiceWorkerRegister />
       </body>
     </html>
   );

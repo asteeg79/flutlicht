@@ -1,0 +1,32 @@
+import { NextResponse } from "next/server";
+import { BadRequest, NotFound, withUser } from "@/lib/api-route";
+import { sendPush } from "@/lib/push";
+import { loadManager, saveManager } from "@/lib/storage";
+
+export const runtime = "nodejs";
+
+/** Test-Push an das eigene Gerät (Abnahme M9). */
+export const POST = withUser(async ({ user }) => {
+  const doc = await loadManager(user.id);
+  if (!doc) throw new NotFound();
+  if (!doc.push)
+    throw new BadRequest(
+      "Auf diesem Konto sind keine Push-Benachrichtigungen eingeschaltet.",
+    );
+  const result = await sendPush(doc.push.subscription, {
+    title: "Fußballmanager",
+    body: "🔔 Test: Push-Benachrichtigungen kommen an.",
+    url: "/einstellungen",
+    tag: "test",
+  });
+  if (result === "expired") {
+    const { push: _removed, ...rest } = doc;
+    await saveManager(rest);
+    throw new BadRequest(
+      "Die Push-Anmeldung ist abgelaufen. Bitte schalte Push neu ein.",
+    );
+  }
+  if (result === "failed")
+    throw new BadRequest("Der Test-Push konnte nicht gesendet werden.");
+  return NextResponse.json({ ok: true });
+});
