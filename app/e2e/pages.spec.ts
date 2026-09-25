@@ -49,3 +49,29 @@ test("Einstellungen zeigen die Push-Benachrichtigungen", async ({ page }) => {
     push.getByRole("switch", { name: "Push-Benachrichtigungen" }),
   ).toBeVisible();
 });
+
+test("Admin erzeugt einen Einladungscode, ein neuer Manager registriert sich damit", async ({
+  page,
+  context,
+}) => {
+  await page.goto("/admin");
+  await expect(page.getByRole("heading", { name: "Admin" })).toBeVisible();
+  const invites = page.getByRole("region", { name: "Einladungen" });
+  await invites.getByRole("button", { name: "Neuen Code erzeugen" }).click();
+  const code = (await invites.locator("code").first().textContent())!;
+  expect(code).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
+
+  await context.clearCookies();
+  await page.goto("/registrieren");
+  await page.getByLabel("Einladungscode").fill(code);
+  await page.getByLabel("E-Mail").fill("neu@e2e.test");
+  await page.getByLabel("Passwort").fill("flutlicht-neu");
+  await page.getByLabel("Anzeigename").fill("Neu");
+  await page.getByLabel("Teamname").fill("Neu FC");
+  await page.getByRole("button", { name: "Konto anlegen" }).click();
+  await expect(page).toHaveURL(/\/team$/);
+
+  // Spieler ohne Admin-Rolle sehen /admin nicht.
+  await page.goto("/admin");
+  await expect(page.getByRole("heading", { name: "Admin" })).toHaveCount(0);
+});

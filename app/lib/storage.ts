@@ -50,6 +50,10 @@ async function localRead(pathname: string): Promise<string | null> {
   }
 }
 
+async function localDelete(pathname: string): Promise<void> {
+  await fs.rm(path.join(localDir(), pathname), { force: true });
+}
+
 async function localWrite(pathname: string, content: string): Promise<void> {
   await fs.mkdir(localDir(), { recursive: true });
   await fs.writeFile(path.join(localDir(), pathname), content, "utf8");
@@ -68,6 +72,14 @@ async function backendWrite(pathname: string, content: string): Promise<void> {
     return;
   }
   await localWrite(pathname, content);
+}
+
+async function backendDelete(pathname: string): Promise<void> {
+  if (kv) {
+    await kv.del(pathname);
+    return;
+  }
+  await localDelete(pathname);
 }
 
 interface Entry {
@@ -154,6 +166,11 @@ export function loadManager(userId: string): Promise<ManagerDoc | null> {
 
 export function saveManager(doc: ManagerDoc): Promise<void> {
   return writeEncrypted(managerPath(doc.userId), doc.userId, ManagerDoc, doc);
+}
+
+/** Konto löschen (KONZEPT 15.4); den E-Mail-Index räumt der Aufrufer auf. */
+export async function deleteManager(userId: string): Promise<void> {
+  await backendDelete(managerPath(userId));
 }
 
 /** Alle Manager-Dokumente (Tabelle, Tick). Unlesbares wird geloggt und übersprungen. */

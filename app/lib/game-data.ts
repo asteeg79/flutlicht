@@ -4,6 +4,9 @@ import "server-only";
 import { z } from "zod";
 import {
   Fixtures,
+  ManualNeeded,
+  MappingReview,
+  MissingValues,
   MarketHistory,
   MatchdayPoints,
   Meta,
@@ -14,6 +17,9 @@ import {
 import fixtures from "@/generated/data/fixtures.json";
 import history from "@/generated/data/market/history.json";
 import meta from "@/generated/data/meta.json";
+import reviewManual from "@/generated/data/review/manual-needed.json";
+import reviewMapping from "@/generated/data/review/mapping.json";
+import reviewValues from "@/generated/data/review/missing-values.json";
 import players from "@/generated/data/players.json";
 import points from "@/generated/data/points.json";
 import season from "@/generated/data/season.json";
@@ -27,6 +33,11 @@ export const gameData = {
   points: z.array(MatchdayPoints).parse(points),
   history: MarketHistory.parse(history),
   meta: Meta.parse(meta),
+  review: {
+    mapping: MappingReview.parse(reviewMapping),
+    missingValues: MissingValues.parse(reviewValues),
+    manualNeeded: ManualNeeded.parse(reviewManual),
+  },
 };
 
 /** Finalisierte Spieltage → Zeitpunkt der Finalisierung (Stand der finalen Daten). */

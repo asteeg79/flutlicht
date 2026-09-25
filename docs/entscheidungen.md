@@ -4,6 +4,13 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-25 | Commits der Admin-Seite | Über die GitHub-Contents-API mit `sha` des gelesenen Stands; weicht er ab, gibt es 409 („Seite neu laden“). Commit-Nachricht `raw(manual): … (Admin <Name>)` | Keine verlorenen Änderungen bei zwei Admins; nachvollziehbar, wer was geändert hat |
+| 2026-09-25 | Rechte des PAT | Fine-grained, nur dieses Repo: Contents R/W (Dateien, `repository_dispatch`), Actions Read (Status der Läufe) | KONZEPT 11 „Contents R/W + Actions“; `repository_dispatch` verlangt Contents-Schreibrecht |
+| 2026-09-25 | Admin-Routen | Eine Route je Bereich unter `/api/admin/*` mit `withAdmin`; Zuordnung, Wert, Position und Saison gebündelt in `PUT /api/admin/manual` (Feld `kind`) | Gleicher Ablauf (lesen, ändern, committen), weniger Dateien |
+| 2026-09-25 | Konto löschen | Löscht Dokument und E-Mail-Index; das eigene Konto nicht, zweiter Klick zur Bestätigung | KONZEPT 15.4; ein Admin soll sich nicht aussperren |
+| 2026-09-25 | Saison-Einstellungen | Änderbar, solange die erste Sperre des aktuellen ersten gewerteten Spieltags aussteht; der neue erste Spieltag darf noch nicht begonnen haben | KONZEPT 11 „nur vor dem ersten gewerteten Spieltag“ |
+| 2026-09-25 | Spielnachtrag | Nur für Spiele mit Sofascore-Event-ID; `enteredBy`/`enteredAt` setzt der Server; Spiele aus `manual-needed` stehen oben | Die Pipeline ordnet Nachträge über die Event-ID zu (6.5); ohne Round-Datei gibt es keine ID |
+| 2026-09-25 | Abnahme M10 | Mit simuliertem GitHub: Commit mit Pfad, Inhalt, sha und Nachricht; in der Pipeline: Nachtrag → Punkte, Mapping-Fix → Eintrag verschwindet aus der Review-Liste. Die echte Kette mit PAT prüfe ich beim Go-live | Ein echter Nachtrag hätte echte Spieldaten überschrieben; Push nach `raw/` → Pipeline ist seit M4 live belegt (24 s) |
 | 2026-09-25 | Aufteilung des Ticks | `core/planTick` entscheidet rein, welche Aktionen fällig sind (je mit Schlüssel); `app/lib/tick.ts` führt aus | Regeln gehören nach core und sind so ohne Storage und Push testbar |
 | 2026-09-25 | „Höchstens einmal“ bei Pushes | Schlüssel werden in `system-state` gespeichert, bevor gesendet wird; die Finalisierung ist idempotent und bekommt ihren Schlüssel danach | KONZEPT 9 verlangt höchstens einmal; bei einem Absturz fehlt lieber ein Push, als dass er doppelt kommt |
 | 2026-09-25 | Server-eigene Felder | Push-Anmeldung, Push-Einstellungen und die Finalisierung durch den Tick ändern `updatedAt` nicht | Wie `keepServerOwnedFields` in Workgrid: keine 409 für den Manager; jede Schreibroute lädt ohnehin frisch |

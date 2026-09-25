@@ -1,5 +1,12 @@
 import { existsSync } from "node:fs";
-import { mkdir, mkdtemp, readFile, readdir, writeFile } from "node:fs/promises";
+import {
+  mkdir,
+  mkdtemp,
+  readFile,
+  readdir,
+  rm,
+  writeFile,
+} from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
 import { beforeEach, describe, expect, it } from "vitest";
@@ -198,5 +205,61 @@ describe("pipeline build (raw → data, KONZEPT 6.5)", () => {
       /Sanity-Guard: Spiel 700: nur 16 Spieler/,
     );
     expect(existsSync(join(root, "data"))).toBe(false);
+  });
+});
+
+describe("Admin-Änderungen über raw/manual/ (Abnahme M10)", () => {
+  it("ein manueller Spielnachtrag ergibt Punkte", async () => {
+    // Spiel 700 ohne Sofascore-Daten, dafür vom Admin nachgetragen.
+    await rm(raw("sofascore/matches/700"), { recursive: true });
+    const row = {
+      started: true,
+      minutes: 90,
+      rating: 7.5,
+      goals: 1,
+      assists: 0,
+      ownGoals: 0,
+      yellow: false,
+      yellowRed: false,
+      red: false,
+      penMissed: 0,
+      penSaved: 0,
+    };
+    await put(raw("manual/matches/700.json"), {
+      eventId: 700,
+      enteredBy: "Alex",
+      enteredAt: "2026-09-24T08:00:00Z",
+      score: { home: 1, away: 0 },
+      players: Array.from({ length: 22 }, (_, k) => ({
+        ...row,
+        playerId: k < 11 ? k + 1 : 100 + k - 10,
+        goals: k === 9 ? 1 : 0,
+      })),
+    });
+    await run();
+    const fixtures = await readData("fixtures.json");
+    expect(fixtures[0]).toMatchObject({
+      sofascoreEventId: 700,
+      dataState: "manual",
+    });
+    const md1 = await readData("points/md-01.json");
+    expect(md1.status).toBe("final");
+    // Spieler 10 (ST): Note 7.5 → 10, Tor 5 → 15
+    expect(md1.players["10"]).toMatchObject({ eventId: 700, base: 15 });
+  });
+
+  it("ein Mapping-Fix entfernt den Eintrag aus der Review-Liste", async () => {
+    await run();
+    const before = (await readData("review/mapping.json")).map(
+      (m: { playerId: number }) => m.playerId,
+    );
+    expect(before).toContain(1);
+    await put(raw("manual/mapping.json"), { "1": null });
+    await run();
+    const after = (await readData("review/mapping.json")).map(
+      (m: { playerId: number }) => m.playerId,
+    );
+    expect(after).not.toContain(1);
+    expect(after).toHaveLength(before.length - 1);
   });
 });
