@@ -14,3 +14,4 @@ export * from "./schemas/manual";
 export * from "./squad";
 export * from "./transfers";
 export * from "./violations";
+export * from "./sofascore";

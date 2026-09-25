@@ -4,6 +4,17 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-25 | Umfang der M2-Abrufe | Ganzer Spieltag 1 (9 Spiele) statt eines Spiels, dazu 1 Kader und 2 Bilder, zusammen 22 Abrufe | Im ersten Spiel kamen weder Rot noch Elfmeter noch Eigentor vor. Ein ganzer Spieltag ist der normale Umfang von `match-final`, und `match-final` überspringt vorhandene Spiele, also ruft der Backfill (M3) nichts doppelt ab |
+| 2026-09-25 | Wo Sofascore-Rohdaten gelesen werden | `readSofascoreMatch` in `core/src/sofascore.ts`, rein und getestet | Welche Incident-Klasse wie viele Punkte bringt, ist eine Regel und gehört nach `core`; die Pipeline ruft nur auf |
+| 2026-09-25 | Quelle der Gegentore | Endstand des Spiels (round-Datei bzw. `fixtures.json`), nicht die Tor-Incidents | Bei Eigentoren bezeichnet `isHome` das begünstigte Team; der Endstand ist eindeutig |
+| 2026-09-25 | Vorlagen: Incidents oder Statistik | `assist1`-Zählung; ist `statistics.goalAssist` höher, gilt die Statistik (mit Warnung) | KONZEPT 3.2 nennt die Statistik als Fallback; so geht keine Vorlage verloren, und nichts wird doppelt gezählt |
+| 2026-09-25 | Elfmeter gehalten | Torwart aus `footballPassingNetworkAction[].goalkeeper` (eventType `penalty-save`); fehlt er, gibt es eine Warnung und niemand erhält die Punkte | Nur diese Angabe ist eindeutig, ein Raten über die Aufstellung könnte den falschen Torwart treffen |
+| 2026-09-25 | Positions-Fallback ohne players.json | Stammposition `player.position`, nicht die Spielposition `players[i].position` | Die Position gilt laut 2.2 die ganze Saison und stammt aus dem Kader-Import |
+| 2026-09-25 | Browser-Modus | Chromium ruft die API-URL direkt auf und liest den Seitentext, ohne vorher die Sofascore-Startseite zu laden | Kein zusätzlicher Endpunkt (5.6) |
+| 2026-09-25 | Nachtruhe | Der Client selbst verweigert Abrufe zwischen 00 und 07 Uhr (Berlin), auch bei manuellem Start | Die Regel aus 5.5 gilt dann unabhängig vom Scheduler |
+| 2026-09-25 | CLI-Optionen | `run <job> --matchday N [--event ID] [--no-sync]` | `--event` für einzelne Spiele (M2, Admin-Nachholen), `--no-sync` für lokale Läufe ohne Push |
+| 2026-09-25 | Python-Version | `requires-python >= 3.11`, CI mit 3.11; lokal lief 3.14 | Auf dem Mac ist nur 3.14 installiert; der Pi bekommt 3.11 laut KONZEPT 10 |
+| 2026-09-25 | Scraper-Tests in der CI | Eigener Job mit `pip install pytest`, ohne botasaurus | botasaurus wird erst in den Transport-Klassen importiert; die Tests brauchen es nicht, und die CI bleibt schnell |
 | 2026-09-25 | Transferbank nach unbegrenztem Fenster (2.6: „erhöhen auch nicht den Übertrag“) | Nach einem unbegrenzten Fenster (Kaderaufbau oder Pause) bleibt die Zahl verfügbarer freier Transfers unverändert (`rollTransferBank(bank, true)`); nach normalen Fenstern gilt `2 + min(1, ungenutzt)` | Unbegrenzte Transfers sollen die Zählung nicht beeinflussen, weder nach oben noch nach unten; wer vor der Pause 3 hatte, behält 3 |
 | 2026-09-25 | Transferfenster vor dem ersten finalen Spieltag der Saison | Gilt als Pause (unbegrenzt) | Es gibt keine Finalisierung, ab der sich die 10-Tage-Regel messen ließe; praktisch betrifft das nur den Saisonbeginn |
 | 2026-09-25 | Transfer, bevor der Tick die Transferbank fortgeschrieben hat | `applyTransfer` weist mit `bank-stale` ab („Bitte in ein paar Minuten erneut versuchen“) | Die Bank wird bei der Finalisierung im Tick (alle 10 Min.) fortgeschrieben; so wird nie gegen einen veralteten Stand gezählt |

@@ -18,6 +18,7 @@ export default tseslint.config(
       "raw/**",
       "data/**",
       "reuse/**",
+      "scraper/**",
       "app/generated/**",
       "app/public/**",
       "app/next-env.d.ts",
