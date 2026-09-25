@@ -10,7 +10,10 @@ export default defineConfig({
     coverage: {
       provider: "v8",
       reportsDirectory: "./coverage",
+      reporter: ["text-summary"],
       include: ["core/src/**/*.ts"],
+      // KONZEPT M1: core ist zu ≥ 95 % getestet.
+      thresholds: { lines: 95, functions: 95, branches: 95, statements: 95 },
     },
   },
 });
