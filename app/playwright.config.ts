@@ -24,16 +24,21 @@ export default defineConfig({
   forbidOnly: !!process.env.CI,
   retries: process.env.CI ? 1 : 0,
   reporter: process.env.CI ? "github" : "list",
+  expect: { timeout: 15_000 },
   use: {
     baseURL: BASE_URL,
     trace: "on-first-retry",
   },
   projects: [{ name: "mobile", use: { ...devices["Pixel 7"] } }],
   webServer: {
-    command: `node ../scripts/stage-data.mjs && next dev -p ${PORT}`,
+    // In der CI gegen den Produktions-Build: schneller und näher am Betrieb als next dev,
+    // dessen Kompilieren beim ersten Seitenaufruf die Zeitgrenzen reißen kann.
+    command: process.env.CI
+      ? `node ../scripts/stage-data.mjs && next build && next start -p ${PORT}`
+      : `node ../scripts/stage-data.mjs && next dev -p ${PORT}`,
     url: `${BASE_URL}/api/health`,
     reuseExistingServer: !process.env.CI,
-    timeout: 180_000,
+    timeout: 300_000,
     env: testEnv,
   },
 });
