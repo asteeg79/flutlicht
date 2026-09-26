@@ -23,8 +23,11 @@ interface KvClient {
   keys(pattern: string): Promise<string[]>;
 }
 
-const restUrl = process.env.UPSTASH_REDIS_REST_URL;
-const restToken = process.env.UPSTASH_REDIS_REST_TOKEN;
+// KV_REST_API_* setzt die Vercel-Marketplace-Integration „Upstash for Redis“.
+const restUrl =
+  process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL;
+const restToken =
+  process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN;
 
 const kv: KvClient | null =
   restUrl && restToken
