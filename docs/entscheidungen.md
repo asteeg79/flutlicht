@@ -4,6 +4,7 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-26 | Name der App | „Flutlicht“ statt „Fußballmanager“: App-Titel, Wortmarke (FLUT + LICHT in Natriumgelb), Manifest, Push-Titel, Paketname, Domain `flutlicht.a-tec.dev`, Worker `flutlicht-cron`, GitHub-Repo `asteeg79/flutlicht`, lokaler Ordner `Projects/Flutlicht`. Das interne Kürzel `fm` (`@fm/core`, `fm_scraper`, `FM_…`) bleibt | Entscheidung von Alex; das Kürzel ist rein technisch und nicht sichtbar, seine Umbenennung hätte ~70 Dateien und die Pfade auf dem Heim-Rechner betroffen |
 | 2026-09-25 | Commits der Admin-Seite | Über die GitHub-Contents-API mit `sha` des gelesenen Stands; weicht er ab, gibt es 409 („Seite neu laden“). Commit-Nachricht `raw(manual): … (Admin <Name>)` | Keine verlorenen Änderungen bei zwei Admins; nachvollziehbar, wer was geändert hat |
 | 2026-09-25 | Rechte des PAT | Fine-grained, nur dieses Repo: Contents R/W (Dateien, `repository_dispatch`), Actions Read (Status der Läufe) | KONZEPT 11 „Contents R/W + Actions“; `repository_dispatch` verlangt Contents-Schreibrecht |
 | 2026-09-25 | Admin-Routen | Eine Route je Bereich unter `/api/admin/*` mit `withAdmin`; Zuordnung, Wert, Position und Saison gebündelt in `PUT /api/admin/manual` (Feld `kind`) | Gleicher Ablauf (lesen, ändern, committen), weniger Dateien |
@@ -55,7 +56,7 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 | 2026-09-25 | Schriften | Big Shoulders (Stadion-Beschilderung) für Titel und Zahlen, Schibsted Grotesk für Fließtext; zuerst geplant war Atkinson Hyperlegible | Atkinson schreibt die Null durchgestrichen, „Mainz 05“ und „3:0“ lasen sich als „Ø“ |
 | 2026-09-25 | Design „Rasen/Flutlicht“ | Nachtblau, zwei Rasentöne mit Mähstreifen, Kreide, Natriumgelb als einziger Akzent; Login als Blick von der Tribüne, die Bottom-Navigation mit Kreidelinie | Mit dem Skill `frontend-design` erarbeitet; keine Vereins- oder Liga-Marken |
 | 2026-09-25 | Middleware-Matcher | Als Literal-Liste ausgeschrieben; ein Test prüft, dass alle `PROTECTED_PREFIXES` darin stehen | Next.js liest den Matcher statisch aus, Ausdrücke sind dort nicht erlaubt |
-| 2026-09-25 | Kanonische Domain | Umleitung `fussballmanager.vercel.app` → `https://fussballmanager.a-tec.dev` fest im Code (Workgrid-Muster) | Vorschlag aus 15.3; beim Go-live (M11) mit dem echten Vercel-Projektnamen abgleichen |
+| 2026-09-25 | Kanonische Domain | Umleitung `flutlicht.vercel.app` → `https://flutlicht.a-tec.dev` fest im Code (bis 26.09. `fussballmanager.…`) (Workgrid-Muster) | Vorschlag aus 15.3; beim Go-live (M11) mit dem echten Vercel-Projektnamen abgleichen |
 | 2026-09-25 | Test-Codes in E2E | `app/e2e/seed.ts` legt Einladungs- und Reset-Codes direkt im lokalen Storage an | Die Admin-Oberfläche dafür kommt erst in M10; keine Test-Route in der App |
 | 2026-09-25 | PWA und Versionsanzeige | Service Worker, Manifest und Push folgen in M9, `gen-version`/`useVersion` in M11; M5 zeigt die Build-Kennung aus `next.config.js` | Gehören laut Meilensteinplan dorthin |
 | 2026-09-25 | Vitest-Aufbau | Root-Konfiguration mit den Projekten `core+pipeline` und `app`; Coverage-Pflicht nur für `core/src` | Ein `pnpm test` für alles, die App braucht eigene Aliase (`@/`, `server-only`) |

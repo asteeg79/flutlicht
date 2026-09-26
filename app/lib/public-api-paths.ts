@@ -1,4 +1,4 @@
-// Übernommen aus Workgrid lib/public-api-paths.ts, angepasst: Routen des Fußballmanagers.
+// Übernommen aus Workgrid lib/public-api-paths.ts, angepasst: Routen von Flutlicht.
 /**
  * API-Routen, die absichtlich ohne Session funktionieren, jede aus einem eigenen Grund:
  *  - /api/health  öffentlicher Uptime-Check

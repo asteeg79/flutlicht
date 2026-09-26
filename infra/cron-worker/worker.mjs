@@ -14,7 +14,7 @@ export default {
       method: "POST",
       headers: {
         Authorization: `Bearer ${env.CRON_SECRET}`,
-        "User-Agent": "fussballmanager-cron-worker",
+        "User-Agent": "flutlicht-cron-worker",
       },
     });
     // Ergebnis sichtbar über `wrangler tail` bzw. Dashboard → Worker → Logs.

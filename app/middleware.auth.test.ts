@@ -1,4 +1,4 @@
-// Übernommen aus Workgrid middleware.auth.test.ts, angepasst: Pfade des Fußballmanagers,
+// Übernommen aus Workgrid middleware.auth.test.ts, angepasst: Pfade von Flutlicht,
 // strenges Auth-Limit, Matcher deckt alle geschützten Seiten ab.
 import { describe, it, expect, vi, beforeEach } from "vitest";
 import { PROTECTED_PREFIXES } from "@/lib/auth.config";
@@ -36,7 +36,7 @@ const middleware = mod.default as unknown as (
 
 function request(path: string, init?: { method?: string; host?: string }) {
   return new NextRequest(
-    `https://${init?.host ?? "fussballmanager.a-tec.dev"}${path}`,
+    `https://${init?.host ?? "flutlicht.a-tec.dev"}${path}`,
     {
       method: init?.method ?? "GET",
     },
@@ -99,19 +99,16 @@ describe("API-Riegel in der Middleware", () => {
 describe("Domain und Matcher", () => {
   it("leitet die Vercel-URL auf die eigene Domain um, API ausgenommen", async () => {
     const res = await middleware(
-      request("/team?x=1", { host: "fussballmanager.vercel.app" }),
+      request("/team?x=1", { host: "flutlicht.vercel.app" }),
     );
     expect(res.status).toBe(308);
     expect(res.headers.get("location")).toBe(
-      "https://fussballmanager.a-tec.dev/team?x=1",
+      "https://flutlicht.a-tec.dev/team?x=1",
     );
     session = { user: { id: "u1" } };
     expect(
-      (
-        await middleware(
-          request("/api/me", { host: "fussballmanager.vercel.app" }),
-        )
-      ).status,
+      (await middleware(request("/api/me", { host: "flutlicht.vercel.app" })))
+        .status,
     ).toBe(200);
   });
 

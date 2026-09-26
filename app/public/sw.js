@@ -1,6 +1,6 @@
 // Übernommen aus Workgrid public/sw.js, angepasst: Cache-Name fm-v1, Push- und
 // notificationclick-Handler ergänzt (fehlten in Workgrid, KONZEPT 8.5).
-// Fußballmanager Service Worker.
+// Flutlicht Service Worker.
 // Ziel: PWA-Installierbarkeit (Chrome verlangt einen SW mit fetch-Handler) OHNE
 // die früheren Sync-Probleme. Deshalb: API-Requests werden NIE gecacht
 // (immer Netzwerk → keine veralteten Daten). Gehashte, unveränderliche Assets
@@ -83,7 +83,7 @@ self.addEventListener("fetch", (event) => {
 self.addEventListener("push", (e) => {
   const d = e.data ? e.data.json() : {};
   e.waitUntil(
-    self.registration.showNotification(d.title ?? "Fußballmanager", {
+    self.registration.showNotification(d.title ?? "Flutlicht", {
       body: d.body,
       icon: "/icons/icon-192.png",
       badge: "/icons/icon-192.png",

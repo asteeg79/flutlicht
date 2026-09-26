@@ -5,7 +5,7 @@ const { github } = await import("@/lib/github");
 
 beforeEach(() => {
   vi.stubEnv("GITHUB_PAT", "pat-geheim");
-  vi.stubEnv("GITHUB_REPO", "asteeg79/fussballmanager");
+  vi.stubEnv("GITHUB_REPO", "asteeg79/flutlicht");
 });
 
 const json = (body: unknown, status = 200) =>
@@ -27,7 +27,7 @@ describe("github (Contents-API, Dispatch)", () => {
     expect(await gh.getJson("raw/manual/values.json")).toBeNull();
     const [url, init] = fetch.mock.calls[0] as unknown as [string, RequestInit];
     expect(url).toBe(
-      "https://api.github.com/repos/asteeg79/fussballmanager/contents/raw/manual/mapping.json?ref=main",
+      "https://api.github.com/repos/asteeg79/flutlicht/contents/raw/manual/mapping.json?ref=main",
     );
     expect((init.headers as Record<string, string>).Authorization).toBe(
       "Bearer pat-geheim",

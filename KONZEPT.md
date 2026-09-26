@@ -1,4 +1,4 @@
-# Fußballmanager: Konzept & Umsetzungsplan
+# Flutlicht: Konzept & Umsetzungsplan
 
 > **Für Claude Code.** Dieses Dokument ist die verbindliche Spezifikation. Es wird
 > **Meilenstein für Meilenstein** (Abschnitt 13) abgearbeitet. Jede Regel in den
@@ -6,7 +6,7 @@
 > (Annahmen). Neue Annahmen trägst du in `docs/entscheidungen.md` ein und fährst fort.
 > Frage nur bei Entscheidungen, die nicht rückgängig zu machen sind.
 >
-> Stand: 25.09.2026 · Saison 2026/27 · Arbeitstitel „Fußballmanager“
+> Stand: 25.09.2026 · Saison 2026/27 · Name „Flutlicht“ (Arbeitstitel war „Fußballmanager“, umbenannt am 26.09.2026)
 > Auftraggeber & Admin: Alex (asteeg79)
 
 ---
@@ -431,7 +431,7 @@ verbindet beides zur Laufzeit. Die Pipeline kennt **keine** Nutzerdaten.
 
 ### 6.2 Repo-Layout (pnpm-Monorepo)
 ```
-fussballmanager/
+flutlicht/
 ├─ app/                 Next.js 15 (App Router), PWA, API-Routen   → Vercel Root Directory
 ├─ core/                reine TS-Logik + zod-Schemas (Regeln, Punkte, Preise, Formationen)
 ├─ pipeline/            TS-Jobs für GitHub Actions: raw/ → data/
@@ -668,7 +668,7 @@ Alle unter `withUser` (Workgrid), außer den ausdrücklich öffentlichen
   ```js
   self.addEventListener("push", (e) => {
     const d = e.data ? e.data.json() : {};
-    e.waitUntil(self.registration.showNotification(d.title ?? "Fußballmanager", {
+    e.waitUntil(self.registration.showNotification(d.title ?? "Flutlicht", {
       body: d.body, icon: "/icons/icon-192.png", badge: "/icons/icon-192.png",
       data: { url: d.url ?? "/team" }, tag: d.tag }));
   });
@@ -950,7 +950,7 @@ Strom für den Heim-Rechner.
 | Deploy-Key (SSH) | Heim-Rechner | Push nach `raw/` |
 
 ### 15.3 Domain
-Vorschlag `fussballmanager.a-tec.dev` (wie die anderen Projekte), Umleitung von
+Vorschlag `flutlicht.a-tec.dev` (wie die anderen Projekte), Umleitung von
 `*.vercel.app` nach dem Workgrid-Muster in `middleware.ts`.
 
 ### 15.4 Rechtliches (Kurzfassung, keine Rechtsberatung)
@@ -980,5 +980,5 @@ trägst du in `docs/entscheidungen.md` ein.
 9. Preis-Obergrenze nach Dynamik: 30 Mio. (Startpreise ≤ 25).
 10. Sofascore-Marktwert als Fallback vor der manuellen Eingabe (4.1).
 11. Passwort mindestens 10 Zeichen. Reset nur über einen Admin-Code, keine Mails.
-12. Arbeitsdomain `fussballmanager.a-tec.dev`.
+12. Arbeitsdomain `flutlicht.a-tec.dev`.
 13. Maximal ~20 Manager. Keine Caches oder Datenbank-Indizes nötig.

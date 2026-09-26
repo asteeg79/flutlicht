@@ -1,4 +1,4 @@
-# CLAUDE.md: Fußballmanager
+# CLAUDE.md: Flutlicht
 
 ## Projekt
 Privater Bundesliga-Fantasy-Manager für eine Freundesrunde. Die **verbindliche

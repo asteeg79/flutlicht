@@ -1,5 +1,5 @@
-// Übernommen aus Workgrid lib/auth.config.ts, angepasst: geschützte Pfade des
-// Fußballmanagers, Rolle im Token für die Anzeige (geprüft wird serverseitig am Dokument).
+// Übernommen aus Workgrid lib/auth.config.ts, angepasst: geschützte Pfade von
+// Flutlicht, Rolle im Token für die Anzeige (geprüft wird serverseitig am Dokument).
 import type { NextAuthConfig } from "next-auth";
 
 export const PROTECTED_PREFIXES = [

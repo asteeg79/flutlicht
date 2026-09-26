@@ -1,6 +1,6 @@
 # fm_scraper
 
-Holt Rohdaten für den Fußballmanager nach `raw/` (KONZEPT 5, 10). Die vollständige
+Holt Rohdaten für Flutlicht nach `raw/` (KONZEPT 5, 10). Die vollständige
 Betriebsanleitung (Scheduler, Deploy-Key, Timer) folgt in M11.
 
 ## Einrichten

@@ -8,8 +8,7 @@ function ensureConfigured() {
   if (configured) return;
   const publicKey = process.env.VAPID_PUBLIC_KEY;
   const privateKey = process.env.VAPID_PRIVATE_KEY;
-  const subject =
-    process.env.VAPID_SUBJECT || "mailto:admin@fussballmanager.invalid";
+  const subject = process.env.VAPID_SUBJECT || "mailto:admin@flutlicht.invalid";
   if (!publicKey || !privateKey) {
     throw new Error("VAPID-Keys sind nicht gesetzt");
   }

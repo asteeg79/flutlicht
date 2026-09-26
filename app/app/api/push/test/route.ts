@@ -14,7 +14,7 @@ export const POST = withUser(async ({ user }) => {
       "Auf diesem Konto sind keine Push-Benachrichtigungen eingeschaltet.",
     );
   const result = await sendPush(doc.push.subscription, {
-    title: "Fußballmanager",
+    title: "Flutlicht",
     body: "🔔 Test: Push-Benachrichtigungen kommen an.",
     url: "/einstellungen",
     tag: "test",

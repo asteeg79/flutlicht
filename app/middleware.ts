@@ -1,5 +1,5 @@
 // Übernommen aus Workgrid middleware.ts, angepasst: Domain-Redirect auf die neue
-// Domain, Matcher für die Routen des Fußballmanagers, strenges Limit für Login,
+// Domain, Matcher für die Routen von Flutlicht, strenges Limit für Login,
 // Registrierung und Reset (KONZEPT 8.3).
 import NextAuth from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
@@ -9,8 +9,8 @@ import { isPublicApiPath } from "@/lib/public-api-paths";
 
 const { auth } = NextAuth(authConfig);
 
-const VERCEL_HOST = "fussballmanager.vercel.app";
-const CANONICAL_ORIGIN = "https://fussballmanager.a-tec.dev";
+const VERCEL_HOST = "flutlicht.vercel.app";
+const CANONICAL_ORIGIN = "https://flutlicht.a-tec.dev";
 
 function getClientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for");

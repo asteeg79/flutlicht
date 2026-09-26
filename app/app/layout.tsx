@@ -16,13 +16,13 @@ const sans = Schibsted_Grotesk({
 });
 
 export const metadata: Metadata = {
-  title: { default: "Fußballmanager", template: "%s · Fußballmanager" },
+  title: { default: "Flutlicht", template: "%s · Flutlicht" },
   description: "Private Bundesliga-Managerrunde",
   manifest: "/manifest.json",
   icons: { icon: "/icons/icon-192.png", apple: "/icons/apple-touch-icon.png" },
   appleWebApp: {
     capable: true,
-    title: "Fußballmanager",
+    title: "Flutlicht",
     statusBarStyle: "black-translucent",
   },
 };

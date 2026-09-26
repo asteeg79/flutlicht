@@ -1,9 +1,9 @@
 // Übernommen aus WM-Tipp infra/cron-worker/wrangler.jsonc, angepasst: Cron */10, APP_URL.
-// Cloudflare-Worker "fussballmanager-cron": Taktgeber für /api/cron/tick (KONZEPT 9).
+// Cloudflare-Worker "flutlicht-cron": Taktgeber für /api/cron/tick (KONZEPT 9).
 // Deploy:  npx wrangler deploy            (aus diesem Verzeichnis)
 // Secret:  npx wrangler secret put CRON_SECRET
 {
-  "name": "fussballmanager-cron",
+  "name": "flutlicht-cron",
   "main": "worker.mjs",
   "compatibility_date": "2026-09-01",
   // Reiner Cron-Worker: keine öffentliche URL nötig (und keine angreifbare).
@@ -14,7 +14,7 @@
   },
   "vars": {
     // Beim Go-live (M11) auf die echte Domain setzen.
-    "APP_URL": "https://fussballmanager.a-tec.dev",
+    "APP_URL": "https://flutlicht.a-tec.dev",
   },
   "observability": { "enabled": true },
 }

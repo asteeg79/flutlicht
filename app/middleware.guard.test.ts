@@ -1,5 +1,5 @@
 // Übernommen aus Workgrid middleware.guard.test.ts, angepasst: withAdmin zählt wie withUser,
-// Routen und Pfade des Fußballmanagers.
+// Routen und Pfade von Flutlicht.
 import { describe, it, expect } from "vitest";
 import { readdirSync, readFileSync, statSync } from "node:fs";
 import { join } from "node:path";

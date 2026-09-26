@@ -42,7 +42,7 @@ export function github(fetchImpl: typeof fetch = fetch): GitHub {
         Authorization: `Bearer ${token}`,
         Accept: "application/vnd.github+json",
         "X-GitHub-Api-Version": "2022-11-28",
-        "User-Agent": "fussballmanager-admin",
+        "User-Agent": "flutlicht-admin",
         ...(init.body ? { "Content-Type": "application/json" } : {}),
       },
     });
