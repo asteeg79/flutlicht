@@ -1,6 +1,8 @@
 import { redirect } from "next/navigation";
 import type { ReactNode } from "react";
 import { BottomNav } from "@/components/bottom-nav";
+import { FreshnessBanner } from "@/components/freshness-banner";
+import { UpdateNotice } from "@/components/update-notice";
 import { auth } from "@/lib/auth";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
@@ -9,6 +11,8 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
   return (
     <>
       <main className="mx-auto min-h-dvh max-w-lg px-5 pt-8 pb-28">
+        <UpdateNotice />
+        <FreshnessBanner />
         {children}
       </main>
       <BottomNav />

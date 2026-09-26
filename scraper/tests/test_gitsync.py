@@ -49,3 +49,15 @@ def test_committet_nur_die_angegebenen_pfade(tmp_path):
     files = subprocess.run(["git", "ls-tree", "-r", "--name-only", "main"], cwd=remote, capture_output=True, text=True)
     assert "img/1.webp" in files.stdout
     assert "raw/a.json" not in files.stdout
+
+
+def test_committet_keine_fremden_gestagten_dateien(tmp_path):
+    remote, work = setup_repos(tmp_path)
+    (work / "raw").mkdir()
+    (work / "raw" / "a.json").write_text("{}")
+    (work / "code.txt").write_text("gestagt, aber nicht vom Scraper")
+    git(work, "add", "code.txt")
+    assert gitsync.sync(work, "backfill") is True
+    files = subprocess.run(["git", "ls-tree", "-r", "--name-only", "main"], cwd=remote, capture_output=True, text=True)
+    assert "raw/a.json" in files.stdout
+    assert "code.txt" not in files.stdout

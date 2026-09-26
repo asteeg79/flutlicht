@@ -68,6 +68,18 @@ function buildDate() {
   }).format(new Date());
 }
 
+/**
+ * Version aus public/version.json (scripts/gen-version.mjs, Commit-Zeitstempel,
+ * shallow-clone-sicher). Fehlt sie (next dev), gilt "dev".
+ */
+function builtVersion() {
+  try {
+    return require("./public/version.json");
+  } catch {
+    return { version: 0, commit: "dev" };
+  }
+}
+
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
@@ -82,8 +94,8 @@ const nextConfig = {
   // dem Server noch im Client neu formatiert werden muss — sonst koennten
   // unterschiedliche Zeitzonen eine Hydration-Abweichung ausloesen.
   env: {
-    NEXT_PUBLIC_BUILD: (process.env.VERCEL_GIT_COMMIT_SHA || "dev").slice(0, 7),
-    NEXT_PUBLIC_VERSION: require("./package.json").version,
+    NEXT_PUBLIC_APP_VERSION: String(builtVersion().version),
+    NEXT_PUBLIC_APP_COMMIT: builtVersion().commit,
     NEXT_PUBLIC_BUILD_DATE: buildDate(),
   },
   async headers() {

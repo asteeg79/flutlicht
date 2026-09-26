@@ -16,6 +16,14 @@ def _git(repo: Path, *args: str) -> subprocess.CompletedProcess[str]:
     return subprocess.run(["git", *args], cwd=repo, capture_output=True, text=True)
 
 
+def pull(repo: Path) -> None:
+    """Lokalen Klon aktualisieren (Spielplan in data/); Fehler nur loggen."""
+    result = _git(repo, "pull", "--rebase", "--autostash")
+    if result.returncode != 0:
+        _git(repo, "rebase", "--abort")
+        log.warning("git pull fehlgeschlagen: %s", result.stderr.strip())
+
+
 def sync(
     repo: Path,
     job: str,
@@ -24,11 +32,12 @@ def sync(
 ) -> bool:
     """Committet `paths` (Standard raw/) und pusht. False, wenn es nichts zu committen gab."""
     _git(repo, "add", *paths)
-    if _git(repo, "diff", "--staged", "--quiet").returncode == 0:
+    if _git(repo, "diff", "--staged", "--quiet", "--", *paths).returncode == 0:
         log.info("Keine neuen Rohdaten, nichts zu committen")
         return False
     stamp = datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%SZ")
-    commit = _git(repo, "commit", "-m", f"raw: {job} {stamp}")
+    # Pfade explizit: sonst landete anderes Gestagtes (lokale Arbeit am Klon) im raw-Commit.
+    commit = _git(repo, "commit", "-m", f"raw: {job} {stamp}", "--", *paths)
     if commit.returncode != 0:
         raise RuntimeError(f"git commit fehlgeschlagen: {commit.stderr.strip()}")
     for attempt in range(1, ATTEMPTS + 1):

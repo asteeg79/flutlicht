@@ -1,0 +1,11 @@
+# Ruft den Scheduler alle 5 Minuten auf; er entscheidet lokal, ob ein Job fällig ist.
+[Unit]
+Description=Flutlicht-Scraper alle 5 Minuten
+
+[Timer]
+OnBootSec=2min
+OnUnitActiveSec=5min
+Persistent=true
+
+[Install]
+WantedBy=timers.target

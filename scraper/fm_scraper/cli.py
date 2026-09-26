@@ -1,4 +1,5 @@
-"""Kommandozeile: python -m fm_scraper run <job> [--matchday N] [--event ID] [--no-sync]."""
+"""Kommandozeile: python -m fm_scraper run <job> [--matchday N] [--event ID] [--no-sync]
+bzw. python -m fm_scraper schedule (vom Timer alle 5 Min.)."""
 
 import argparse
 import logging
@@ -7,10 +8,19 @@ from zoneinfo import ZoneInfo
 
 from . import config, gitsync
 from .client import Client, PauseRequired, default_client, tm_client
-from .jobs import backfill, dcaribou, images, match_final, round_events, squads, tm_crawl
+from .jobs import (
+    backfill,
+    dcaribou,
+    images,
+    match_final,
+    match_provisional,
+    round_events,
+    squads,
+    tm_crawl,
+)
 from .teams import load_teams
 
-JOBS = ("round-events", "match-final", "backfill", "squads", "dcaribou", "tm-crawl", "images")
+JOBS = ("round-events", "match-provisional", "match-final", "backfill", "squads", "dcaribou", "tm-crawl", "images")
 NEEDS_MATCHDAY = {"round-events", "match-final", "backfill"}
 
 
@@ -20,6 +30,10 @@ def _run_job(args: argparse.Namespace, client: Client):
     match args.job:
         case "round-events":
             return round_events.run(client, raw, args.matchday)
+        case "match-provisional":
+            if args.event is None:
+                raise SystemExit("match-provisional braucht --event")
+            return match_provisional.run(client, raw, args.event)[0]
         case "match-final":
             return match_final.run(client, raw, args.matchday, args.event)
         case "backfill":
@@ -40,9 +54,16 @@ def main(argv: list[str] | None = None) -> int:
     run = sub.add_parser("run", help="einen Job manuell ausführen")
     run.add_argument("job", choices=JOBS)
     run.add_argument("--matchday", type=int)
-    run.add_argument("--event", type=int, help="nur dieses Spiel (match-final)")
+    run.add_argument("--event", type=int, help="nur dieses Spiel (match-final, match-provisional)")
     run.add_argument("--no-sync", action="store_true", help="nicht committen und pushen")
+    sub.add_parser("schedule", help="fällige Jobs ausführen (Timer, alle 5 Min.)")
     args = parser.parse_args(argv)
+    if args.command == "schedule":
+        logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
+        from .scheduler import run_once
+
+        run_once()
+        return 0
     if args.job in NEEDS_MATCHDAY and args.matchday is None:
         parser.error(f"{args.job} braucht --matchday")
 

@@ -1,0 +1,13 @@
+# systemd-Benutzer-Unit für den Heim-Rechner (Raspberry Pi), KONZEPT 10.
+# Installation siehe scraper/README.md (Abschnitt „Heim-Rechner einrichten“).
+[Unit]
+Description=Flutlicht-Scraper: fällige Jobs ausführen
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=oneshot
+WorkingDirectory=%h/flutlicht/scraper
+ExecStart=%h/flutlicht/scraper/.venv/bin/python -m fm_scraper schedule
+# Ein Lauf kann mehrere Jobs mit 8–20 s Abstand enthalten (backfill: ~6 Min.).
+TimeoutStartSec=45min

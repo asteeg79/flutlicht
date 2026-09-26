@@ -1,6 +1,7 @@
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { PushSettings } from "@/components/push-settings";
+import { APP_COMMIT, APP_VERSION, formatVersion } from "@/lib/version";
 import { Button } from "@/components/ui";
 import { signOut } from "@/lib/auth";
 import { currentManager } from "@/lib/session";
@@ -52,8 +53,8 @@ export default async function SettingsPage() {
           Impressum und Datenschutz
         </Link>
         <p className="text-xs text-kreide-matt/70">
-          Version {process.env.NEXT_PUBLIC_VERSION} ·{" "}
-          {process.env.NEXT_PUBLIC_BUILD} · {process.env.NEXT_PUBLIC_BUILD_DATE}
+          Version {formatVersion(APP_VERSION)} · {APP_COMMIT} · gebaut{" "}
+          {process.env.NEXT_PUBLIC_BUILD_DATE}
         </p>
       </nav>
     </>

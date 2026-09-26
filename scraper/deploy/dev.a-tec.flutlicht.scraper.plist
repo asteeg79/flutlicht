@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!-- launchd-Agent für den Heim-Rechner (Mac), KONZEPT 10. REPO_DIR bei der Installation
+     durch den absoluten Pfad des Klons ersetzen (siehe scraper/README.md). -->
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+  <key>Label</key>
+  <string>dev.a-tec.flutlicht.scraper</string>
+  <key>ProgramArguments</key>
+  <array>
+    <string>REPO_DIR/scraper/.venv/bin/python</string>
+    <string>-m</string>
+    <string>fm_scraper</string>
+    <string>schedule</string>
+  </array>
+  <key>WorkingDirectory</key>
+  <string>REPO_DIR/scraper</string>
+  <key>StartInterval</key>
+  <integer>300</integer>
+  <key>RunAtLoad</key>
+  <true/>
+  <key>StandardOutPath</key>
+  <string>REPO_DIR/scraper/scraper.log</string>
+  <key>StandardErrorPath</key>
+  <string>REPO_DIR/scraper/scraper.log</string>
+</dict>
+</plist>
