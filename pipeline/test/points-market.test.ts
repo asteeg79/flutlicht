@@ -2,7 +2,6 @@ import { describe, expect, it } from "vitest";
 import type { Fixture, MatchdayPoints, Player } from "@fm/core";
 import { overdueFixtures } from "../src/check-overdue";
 import { manualNeeded } from "../src/build";
-import { buildMarket } from "../src/steps/market";
 import { buildPoints, type MatchData } from "../src/steps/points";
 import { sanityCheck } from "../src/steps/sanity";
 
@@ -191,32 +190,7 @@ const md = (
   players: entries,
 });
 
-describe("buildMarket (KONZEPT 4.3)", () => {
-  it("bewegt Preise erst ab dem ersten gewerteten Spieltag, E aus allen Einsätzen davor", () => {
-    const points = [
-      md(1, "final", { "10": pp(6) }),
-      md(2, "final", { "10": pp(18), "110": pp(0, 0) }),
-      md(3, "provisional", { "10": pp(40) }),
-    ];
-    const { history, prices } = buildMarket(players, points, 2);
-    expect(history).toEqual({ "10": [{ matchday: 2, price: 10.5 }] }); // E = 6, P = 18 → +4.8 %
-    expect(prices.get(10)).toBe(10.5);
-    expect(prices.get(110)).toBe(10);
-  });
-
-  it("nimmt ohne Einsatz-Historie den Standardwert und lässt Spieler ohne Marktwert aus", () => {
-    const withMissing = [
-      ...players,
-      player(30, 1, { valueSource: "missing", price: 0.5 }),
-    ];
-    const { history } = buildMarket(
-      withMissing,
-      [md(8, "final", { "10": pp(4), "30": pp(20) })],
-      8,
-    );
-    expect(history).toEqual({ "10": [{ matchday: 8, price: 10 }] }); // E = 4 → Δ 0
-  });
-});
+// buildMarket ist als priceTimeline nach core gewandert (core/test/price-timeline.test.ts).
 
 describe("sanityCheck (KONZEPT 6.4)", () => {
   it("meldet zu wenige Vereine, Spieler, Preise außerhalb der Grenzen und dünne Spiele", () => {

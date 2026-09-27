@@ -14,6 +14,7 @@ import {
   Meta,
   MissingValues,
   Players,
+  priceTimeline,
   Season,
   Teams,
   type Fixture,
@@ -34,7 +35,6 @@ import {
   readTmCrawl,
 } from "./raw";
 import { buildFixtures } from "./steps/fixtures";
-import { buildMarket } from "./steps/market";
 import { buildPlayers } from "./steps/players";
 import { buildPoints } from "./steps/points";
 import { sanityCheck } from "./steps/sanity";
@@ -107,7 +107,7 @@ export async function build(
     now,
   });
   const points = buildPoints(fixtures, matchData, imported.players, now, warn);
-  const market = buildMarket(
+  const market = priceTimeline(
     imported.players,
     points,
     season.firstScoredMatchday,

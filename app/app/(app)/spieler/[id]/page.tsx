@@ -1,5 +1,5 @@
 import {
-  expectation,
+  expectationFor,
   formatMio,
   MARKET,
   nextPrice,
@@ -134,13 +134,7 @@ export default async function PlayerPage({
           valueEur={player.startValueEur}
           source={player.valueSource}
           vMaxEur={gameData.season.vMaxEur}
-          E={expectation(
-            [...appearances]
-              .reverse()
-              .filter((a) => a.pp!.minutes > 0)
-              .map((a) => a.pp!.base),
-            player.position,
-          )}
+          E={expectationFor(gameData.points, id, player.position)}
         />
       </section>
 

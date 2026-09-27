@@ -1,7 +1,9 @@
 // Startpreise, Startbudget und Preisdynamik (KONZEPT 4).
 import { MARKET } from "./config/market";
 import type { Position } from "./config/rules";
+import { isScoredMatchday } from "./participation";
 import { clamp, median, round1 } from "./rounding";
+import type { MarketHistory, MatchdayPoints, Player } from "./schemas/data";
 
 /** Startpreis in Mio. aus dem Marktwert v (Wurzelskala, 4.1). */
 export function startPrice(valueEur: number, vMaxEur: number): number {
@@ -29,6 +31,29 @@ export function chooseStartValue(
     if (v !== undefined && v > 0) return { valueEur: v, source };
   }
   return null;
+}
+
+/**
+ * Preis und Kaufbarkeit beim Import (4.1): Startpreis aus dem Marktwert, kaufbar nur
+ * aktive Spieler. Ohne Marktwert gilt der Mindestpreis als Platzhalter, nicht kaufbar,
+ * bis der Admin einen Wert einträgt.
+ */
+export function initialPricing(
+  value: { valueEur: number; source: ValueSourceName } | null,
+  active: boolean,
+  vMaxEur: number,
+): Pick<Player, "valueSource" | "price" | "purchasable"> {
+  if (!value)
+    return {
+      valueSource: "missing",
+      price: MARKET.priceMin,
+      purchasable: false,
+    };
+  return {
+    valueSource: value.source,
+    price: startPrice(value.valueEur, vMaxEur),
+    purchasable: active,
+  };
 }
 
 /**
@@ -79,4 +104,68 @@ export function nextPrice(price: number, P: number, E: number): number {
     MARKET.deltaCap,
   );
   return clamp(round1(price * (1 + delta)), MARKET.priceMin, MARKET.priceMax);
+}
+
+/** Basispunkte aller finalen Einsätze (> 0 Min.) eines Spielers, nach Spieltag geordnet. */
+function finalAppearances(
+  points: readonly MatchdayPoints[],
+  playerId: number,
+): number[] {
+  return [...points]
+    .filter((md) => md.status === "final")
+    .sort((a, b) => a.matchday - b.matchday)
+    .flatMap((md) => {
+      const pp = md.players[String(playerId)];
+      return pp && pp.minutes > 0 ? [pp.base] : [];
+    });
+}
+
+/** Erwartung E für den nächsten finalen Spieltag, wie `priceTimeline` sie rechnen wird. */
+export function expectationFor(
+  points: readonly MatchdayPoints[],
+  playerId: number,
+  position: Position,
+): number {
+  return expectation(finalAppearances(points, playerId), position);
+}
+
+/**
+ * Preise Spieltag für Spieltag fortschreiben (4.3). Nur finale, gewertete Spieltage
+ * bewegen Preise; E nutzt alle bisherigen finalen Einsätze, auch die vor dem ersten
+ * gewerteten Spieltag. Spieler ohne Marktwert und ohne Einsatz behalten ihren Preis.
+ */
+export function priceTimeline(
+  players: readonly Player[],
+  points: readonly MatchdayPoints[],
+  firstScoredMatchday: number,
+): { history: MarketHistory; prices: Map<number, number> } {
+  const byId = new Map(players.map((p) => [p.id, p]));
+  const prices = new Map(players.map((p) => [p.id, p.price]));
+  const appearances = new Map<number, number[]>();
+  const history: MarketHistory = {};
+
+  for (const md of [...points].sort((a, b) => a.matchday - b.matchday)) {
+    if (md.status !== "final") continue;
+    for (const [key, pp] of Object.entries(md.players)) {
+      if (pp.minutes <= 0) continue;
+      const id = Number(key);
+      const past = appearances.get(id) ?? [];
+      const player = byId.get(id);
+      if (
+        isScoredMatchday(md.matchday, firstScoredMatchday) &&
+        player &&
+        player.valueSource !== "missing"
+      ) {
+        const price = nextPrice(
+          prices.get(id)!,
+          pp.base,
+          expectation(past, player.position),
+        );
+        prices.set(id, price);
+        (history[key] ??= []).push({ matchday: md.matchday, price });
+      }
+      appearances.set(id, [...past, pp.base]);
+    }
+  }
+  return { history, prices };
 }
