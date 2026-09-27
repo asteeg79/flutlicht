@@ -47,7 +47,12 @@ export default auth(async (req) => {
     ) {
       if (await isRateLimited(ip, "auth")) return tooMany();
     }
-    if (pathname !== "/api/health" && (await isRateLimited(ip)))
+    // Health und Tick nicht: öffentlich bzw. per Bearer geschützt; spart ein Redis-Kommando je Tick.
+    if (
+      pathname !== "/api/health" &&
+      pathname !== "/api/cron/tick" &&
+      (await isRateLimited(ip))
+    )
       return tooMany();
 
     // Riegel VOR den Handlern: eine Route, die withUser vergisst, ist trotzdem

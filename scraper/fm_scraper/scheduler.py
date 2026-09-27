@@ -17,6 +17,7 @@ from typing import Any, Callable
 from zoneinfo import ZoneInfo
 
 from . import config
+from .jobs.round_events import round_path
 
 log = logging.getLogger(__name__)
 BERLIN = ZoneInfo(config.TIMEZONE)
@@ -99,7 +100,7 @@ def plan(
         games = by_md[md]
         if all(f["status"] == "finished" for f in games):
             continue
-        if (raw_dir / "sofascore" / "rounds" / f"round-{md:02d}.json").exists():
+        if round_path(raw_dir, md).exists():
             break
         first = min(_kickoff(f) for f in games)
         if first - now > timedelta(days=8):
@@ -146,7 +147,7 @@ def plan(
         day = max(last + timedelta(days=1), local_now.date())
         t = when(key, lambda d=day: _random_between(rng, _at(d, 8), _at(d, 10)))
         if t <= now:
-            has_round = (raw_dir / "sofascore" / "rounds" / f"round-{md:02d}.json").exists()
+            has_round = round_path(raw_dir, md).exists()
             tasks.append(Task(key, "match-final" if has_round else "backfill", matchday=md))
         break
 

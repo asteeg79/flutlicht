@@ -4,7 +4,6 @@ import {
   MARKET,
   nextPrice,
   playerSeason,
-  playerStats,
   ratingPoints,
   SCORING,
   startPrice,
@@ -13,8 +12,13 @@ import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { PlayerPhoto } from "@/components/player-photo";
 import { formatRating } from "@/components/player-points-info";
-import { PartsLine, PartsTable, signed } from "@/components/points";
-import { gameData } from "@/lib/game-data";
+import {
+  formatNumber,
+  PartsLine,
+  PartsTable,
+  signed,
+} from "@/components/points";
+import { gameData, playerById, statsById, teamById } from "@/lib/game-data";
 
 export const metadata = { title: "Spieler" };
 
@@ -31,11 +35,10 @@ export default async function PlayerPage({
   params: Promise<{ id: string }>;
 }) {
   const id = Number((await params).id);
-  const player = gameData.players.find((p) => p.id === id);
+  const player = playerById.get(id);
   if (!player) notFound();
-  const club =
-    gameData.teams.find((t) => t.id === player.teamId)?.shortName ?? "";
-  const stats = playerStats(gameData.points).get(id);
+  const club = teamById.get(player.teamId)?.shortName ?? "";
+  const stats = statsById.get(id);
   const season = playerSeason(gameData.points, id);
   const history = gameData.history[String(id)] ?? [];
   const start =
@@ -65,11 +68,7 @@ export default async function PlayerPage({
         <Stat label="Punkte" value={String(stats?.points ?? 0)} />
         <Stat
           label="Form"
-          value={
-            stats?.form != null
-              ? stats.form.toLocaleString("de-DE", { maximumFractionDigits: 1 })
-              : "–"
-          }
+          value={stats?.form != null ? formatNumber(stats.form) : "–"}
         />
       </dl>
       {!player.active ? (
@@ -201,7 +200,6 @@ function RatingHint({
   const rating = example?.rating ?? 7.4;
   const minutes = example?.minutes ?? 90;
   const partial = minutes < fullMinutes;
-  const fmt = (n: number) => n.toLocaleString("de-DE");
   return (
     <div className="mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3 text-xs leading-relaxed text-kreide-matt">
       <p className="mb-1 font-semibold text-kreide">Wie die Note zählt</p>
@@ -212,12 +210,13 @@ function RatingHint({
         6 und 8: unter 6 ist schwach, ab 7 gut, ab 8 sehr gut.
       </p>
       <p className="mt-1">
-        Punkte: (Note − {fmt(baseline)}) × {factor}. Voll zählt die Note ab{" "}
-        {fullMinutes} Minuten, bei kürzeren Einsätzen anteilig.
+        Punkte: (Note − {formatNumber(baseline)}) × {factor}. Voll zählt die
+        Note ab {fullMinutes} Minuten, bei kürzeren Einsätzen anteilig.
       </p>
       <p className="mt-1 text-kreide">
         {example ? "Letzter Einsatz" : "Beispiel"}: Note {formatRating(rating)}{" "}
-        in {minutes}′ → ({formatRating(rating)} − {fmt(baseline)}) × {factor}
+        in {minutes}′ → ({formatRating(rating)} − {formatNumber(baseline)}) ×{" "}
+        {factor}
         {partial ? ` × ${minutes}/${fullMinutes}` : ""} ={" "}
         {signed(ratingPoints(rating, minutes))} Punkte
       </p>
@@ -256,8 +255,6 @@ function PriceHint({
   const mioEur = (v: number) =>
     `${(v / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 2 })} Mio. €`;
   const pct = (n: number) => `${(n * 100).toLocaleString("de-DE")} %`;
-  const fmt = (n: number) =>
-    n.toLocaleString("de-DE", { maximumFractionDigits: 1 });
   const perStep = MARKET.deltaFactor;
   const up = Math.round(E) + 10;
   const down = Math.round(E) - 10;
@@ -273,8 +270,8 @@ function PriceHint({
       <p>
         Grundlage ist der {SOURCE_TEXT[source]}. Damit Stars nicht unbezahlbar
         werden, wird er per Wurzel gestaucht: {MARKET.startPriceScale} × √(Wert
-        ÷ höchster Wert der Liga), zwischen {fmt(MARKET.startPriceMin)} und{" "}
-        {fmt(MARKET.startPriceMax)} Mio.
+        ÷ höchster Wert der Liga), zwischen {formatMio(MARKET.startPriceMin)}{" "}
+        und {formatMio(MARKET.startPriceMax)}
       </p>
       {valueEur !== undefined && start !== null ? (
         <p className="mt-1 text-kreide">
@@ -290,10 +287,10 @@ function PriceHint({
         über der Erwartung steigt der Preis um {pct(perStep)}, darunter fällt er
         entsprechend, höchstens um {pct(MARKET.deltaCap)} pro Spieltag. Ohne
         Einsatz bleibt er gleich. Der Preis bleibt zwischen{" "}
-        {fmt(MARKET.priceMin)} und {fmt(MARKET.priceMax)} Mio.
+        {formatMio(MARKET.priceMin)} und {formatMio(MARKET.priceMax)}
       </p>
       <p className="mt-1 text-kreide">
-        Hier: Erwartung {fmt(E)} Punkte. Mit {up} Punkten ginge es von{" "}
+        Hier: Erwartung {formatNumber(E)} Punkte. Mit {up} Punkten ginge es von{" "}
         {formatMio(price)} auf {formatMio(nextPrice(price, up, E))}, mit {down}{" "}
         auf {formatMio(nextPrice(price, down, E))}
       </p>

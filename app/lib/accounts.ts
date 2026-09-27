@@ -8,7 +8,7 @@ import {
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict } from "@/lib/api-route";
+import { BadRequest, Conflict, parse } from "@/lib/api-route";
 import { finals, gameData } from "@/lib/game-data";
 import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import {
@@ -51,15 +51,6 @@ export const ResetInput = z.object({
   code: z.string(),
   password: Password,
 });
-
-function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
-  const result = schema.safeParse(raw);
-  if (!result.success)
-    throw new BadRequest(
-      result.error.issues[0]?.message ?? "Ungültige Eingabe",
-    );
-  return result.data;
-}
 
 /** Admin ist, wer mit einer E-Mail aus ADMIN_EMAILS registriert (KONZEPT 8.3). */
 export function isAdminEmail(email: string): boolean {

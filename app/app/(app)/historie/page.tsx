@@ -1,8 +1,15 @@
-import { formatMio, priceBefore, startPrice, tradeHistory } from "@fm/core";
+import {
+  formatMio,
+  priceBefore,
+  startPrice,
+  sumPrices,
+  tradeHistory,
+} from "@fm/core";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { PlayerPhoto } from "@/components/player-photo";
-import { gameData } from "@/lib/game-data";
+import { signedMio } from "@/components/points";
+import { gameData, playerById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 
 export const metadata = { title: "Transfer-Historie" };
@@ -10,7 +17,6 @@ export const metadata = { title: "Transfer-Historie" };
 /** Gekaufte und verkaufte Spieler mit Preisdifferenz; Grundlage: Transfers im Manager-Dokument. */
 export default async function HistoryPage() {
   const me = await currentManager();
-  const byId = new Map(gameData.players.map((p) => [p.id, p]));
   if (me.squad.length === 0) {
     return (
       <>
@@ -29,7 +35,7 @@ export default async function HistoryPage() {
   const initialPrice = (id: number) => {
     const stored = me.initialPrices?.[String(id)];
     if (stored !== undefined) return stored;
-    const p = byId.get(id);
+    const p = playerById.get(id);
     const start =
       p?.startValueEur !== undefined
         ? startPrice(p.startValueEur, gameData.season.vMaxEur)
@@ -44,12 +50,9 @@ export default async function HistoryPage() {
     squad: me.squad,
     transfers: me.transfers,
     initialPrice,
-    currentPrice: (id) => byId.get(id)?.price ?? 0,
+    currentPrice: (id) => playerById.get(id)?.price ?? 0,
   });
-  const bonuses = Object.values(me.matchdayBonuses ?? {}).reduce(
-    (a, b) => a + b,
-    0,
-  );
+  const bonuses = sumPrices(Object.values(me.matchdayBonuses ?? {}));
   const when = (md: number | null) => (md === null ? "Erstkader" : `Sp. ${md}`);
 
   return (
@@ -100,11 +103,6 @@ export default async function HistoryPage() {
   );
 }
 
-function signedMio(n: number): string {
-  if (n === 0) return "±0";
-  return `${n > 0 ? "+" : "−"}${formatMio(Math.abs(n))}`;
-}
-
 function Summary({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-xl border border-nacht-linie bg-nacht-hoch p-3">
@@ -127,7 +125,7 @@ function Row({
   detail: string;
   diff: number;
 }) {
-  const p = gameData.players.find((x) => x.id === id);
+  const p = playerById.get(id);
   return (
     <li className="flex items-center gap-3 px-4 py-2.5">
       <PlayerPhoto src={p?.image} className="h-9 w-9" />

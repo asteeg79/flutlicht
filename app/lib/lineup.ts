@@ -9,10 +9,10 @@ import {
   type Player,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest } from "@/lib/api-route";
+import { BadRequest, parse } from "@/lib/api-route";
 import {
+  INVALID,
   loadFresh,
-  parse,
   publicManager,
   type GameContext,
   type PublicManager,
@@ -37,7 +37,7 @@ export async function updateLineup(
   raw: unknown,
   ctx: GameContext,
 ): Promise<PublicManager> {
-  const input = parse(LineupInput, raw);
+  const input = parse(LineupInput, raw, INVALID);
   const doc = await loadFresh(userId, input.updatedAt);
   if (doc.lineup === null)
     throw new BadRequest("Stelle zuerst deinen Erstkader auf.");

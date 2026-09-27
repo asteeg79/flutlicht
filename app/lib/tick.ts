@@ -50,6 +50,8 @@ export async function runTick(
   const at = now.toISOString();
 
   // Finalisierung zuerst; sie ist idempotent, der Schlüssel folgt erst danach.
+  const positions = new Map(game.players.map((p) => [p.id, p.position]));
+  const finalDates = finalsOf();
   for (const action of actions) {
     if (action.kind !== "finalize") continue;
     // Prämien vorab für alle, weil der Median alle Manager braucht (2.7).
@@ -58,18 +60,19 @@ export async function runTick(
       ? matchdayBonuses(
           managers,
           md,
-          new Map(game.players.map((p) => [p.id, p.position])),
+          positions,
           game.season.firstScoredMatchday,
         )
       : new Map();
     for (const m of managers) {
+      // Frisch laden: zwischen Liste und Speichern kann der Manager etwas geändert haben.
       const doc = await loadManager(m.userId);
       if (!doc) continue;
       const next = finalizeManager(
         doc,
         action.matchday,
         game.fixtures,
-        finalsOf(),
+        finalDates,
         {
           firstScoredMatchday: game.season.firstScoredMatchday,
           bonus: bonuses.get(m.userId)?.bonus ?? 0,

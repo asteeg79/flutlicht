@@ -14,7 +14,12 @@ export function fixtureCounts(
   );
 }
 
-const HAS_DATA = new Set(["provisional", "final", "manual"]);
+/** Datenstände, für die es Punkte gibt. */
+export const HAS_DATA: ReadonlySet<string> = new Set([
+  "provisional",
+  "final",
+  "manual",
+]);
 
 /**
  * Status aus Sicht der Daten: final, wenn alle gewerteten Spiele finale oder manuelle

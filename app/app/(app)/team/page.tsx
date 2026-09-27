@@ -1,7 +1,6 @@
 import {
   latestAppearance,
   playerSeason,
-  playerStats,
   currentMatchday,
   firstLock,
   formatKickoff,
@@ -15,7 +14,13 @@ import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import type { PointsInfo } from "@/components/player-points-info";
 import { TeamLineup, type SquadEntry } from "@/components/team-lineup";
-import { gameData } from "@/lib/game-data";
+import {
+  gameData,
+  playerById,
+  positionById,
+  statsById,
+  teamById,
+} from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 import { liveContext, publicManager } from "@/lib/squad";
 
@@ -51,12 +56,8 @@ export default async function TeamPage() {
     matchday === null
       ? []
       : ctx.fixtures.filter((f) => f.matchday === matchday);
-  const club = new Map(gameData.teams.map((t) => [t.id, t.shortName]));
-  const logo = new Map(gameData.teams.map((t) => [t.id, t.logo]));
-  const stats = playerStats(gameData.points);
-  const byId = new Map(gameData.players.map((p) => [p.id, p]));
   const squad: SquadEntry[] = manager.squad.flatMap((id) => {
-    const p = byId.get(id);
+    const p = playerById.get(id);
     if (!p) return [];
     const f = fixtures.find(
       (x) => x.homeTeamId === p.teamId || x.awayTeamId === p.teamId,
@@ -69,15 +70,15 @@ export default async function TeamPage() {
         shortName: p.shortName,
         position: p.position,
         price: p.price,
-        club: club.get(p.teamId) ?? "",
+        club: teamById.get(p.teamId)?.shortName ?? "",
         image: p.image,
-        clubLogo: logo.get(p.teamId) ?? "",
+        clubLogo: teamById.get(p.teamId)?.logo ?? "",
         opponent: f
-          ? `${club.get(home ? f.awayTeamId : f.homeTeamId)} (${home ? "H" : "A"})`
+          ? `${teamById.get(home ? f.awayTeamId : f.homeTeamId)?.shortName} (${home ? "H" : "A"})`
           : null,
         lockAt: f ? lockAt(f).toISOString() : null,
         points: pointsInfo(p.id),
-        form: stats.get(p.id)?.form ?? null,
+        form: statsById.get(p.id)?.form ?? null,
       },
     ];
   });
@@ -97,7 +98,7 @@ export default async function TeamPage() {
             lineup,
             points.players,
             manager.transfers,
-            new Map(gameData.players.map((p) => [p.id, p.position])),
+            positionById,
           ).total,
         }
       : null;

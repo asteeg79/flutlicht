@@ -6,8 +6,9 @@ import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fetchJson } from "./sources/http";
 import { RAW_DIR } from "./paths";
+import { SEASON_CONSTANTS } from "./steps/season";
 
-export const OPENLIGA_SEASON = 2026;
+const OPENLIGA_SEASON = SEASON_CONSTANTS.openligaSeason;
 
 export function openligaSeasonPath(rawDir = RAW_DIR): string {
   return join(rawDir, "openligadb", `season-${OPENLIGA_SEASON}.json`);

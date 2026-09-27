@@ -3,6 +3,8 @@
 import {
   formatKickoff,
   formatMio,
+  POSITION_LABELS,
+  POSITIONS,
   RULES,
   sumPrices,
   toTenths,
@@ -18,6 +20,7 @@ import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PlayerPhoto } from "@/components/player-photo";
+import { formatNumber } from "@/components/points";
 import { Button } from "@/components/ui";
 import { POS_LABEL } from "@/lib/positions";
 import type { PublicManager } from "@/lib/squad";
@@ -26,7 +29,6 @@ export type MarketWindow =
   | { open: false }
   | { open: true; matchday: number; closesAt: string; isBreak: boolean };
 
-const POS_ORDER: Position[] = ["GK", "DEF", "MID", "FWD"];
 type Sort = "price-desc" | "price-asc" | "points" | "form";
 
 interface Props {
@@ -107,7 +109,7 @@ export function Market({
       if ((posCount.get(p.position) ?? 0) >= RULES.squadComposition[p.position])
         return "Position voll";
       if ((clubCount.get(p.teamId) ?? 0) >= RULES.maxPerClub)
-        return `schon 5 von ${club.get(p.teamId)}`;
+        return `schon ${RULES.maxPerClub} von ${club.get(p.teamId)}`;
       if (p.price > remaining) return "zu teuer";
       return null;
     }
@@ -115,7 +117,7 @@ export function Market({
     const sameClub =
       (clubCount.get(p.teamId) ?? 0) - (sell.teamId === p.teamId ? 1 : 0);
     if (sameClub >= RULES.maxPerClub)
-      return `schon 5 von ${club.get(p.teamId)}`;
+      return `schon ${RULES.maxPerClub} von ${club.get(p.teamId)}`;
     if (toTenths(manager.cash) + toTenths(sell.price) - toTenths(p.price) < 0)
       return "Guthaben reicht nicht";
     return null;
@@ -208,7 +210,7 @@ export function Market({
               </p>
             </div>
             <ul className="mt-3 grid grid-cols-4 gap-2 text-center text-sm">
-              {POS_ORDER.map((p) => (
+              {POSITIONS.map((p) => (
                 <li key={p} className="rounded-lg bg-nacht px-2 py-1.5">
                   <span className="text-kreide-matt">{POS_LABEL[p]}</span>{" "}
                   <span className="font-semibold tabular-nums">
@@ -218,8 +220,10 @@ export function Market({
               ))}
             </ul>
             <p className="mt-3 text-xs text-kreide-matt">
-              2 Torhüter, 5 Abwehr, 5 Mittelfeld, 3 Sturm · höchstens 5 Spieler
-              je Verein
+              {RULES.squadComposition.GK} Torhüter, {RULES.squadComposition.DEF}{" "}
+              Abwehr, {RULES.squadComposition.MID} Mittelfeld,{" "}
+              {RULES.squadComposition.FWD} Sturm · höchstens {RULES.maxPerClub}{" "}
+              Spieler je Verein
             </p>
           </>
         ) : (
@@ -250,7 +254,7 @@ export function Market({
         <section className="mb-5">
           <h2 className="mb-2 text-sm font-semibold text-kreide-matt">
             {sell
-              ? `${sell.name} abgeben – wähle einen ${positionName(sell.position)}`
+              ? `${sell.name} abgeben – wähle einen ${POSITION_LABELS[sell.position]}`
               : "Dein Kader"}
           </h2>
           {sell ? (
@@ -293,7 +297,7 @@ export function Market({
             aria-label="Position"
             className="grid grid-cols-5 gap-1.5"
           >
-            {(["ALL", ...POS_ORDER] as const).map((p) => (
+            {(["ALL", ...POSITIONS] as const).map((p) => (
               <button
                 key={p}
                 type="button"
@@ -499,7 +503,7 @@ function PlayerRow({
         <p className="text-xs text-kreide-matt">
           {club} · {stats ? `${stats.points} P.` : "0 P."}
           {stats?.form !== null && stats?.form !== undefined
-            ? ` · Form ${stats.form.toLocaleString("de-DE", { maximumFractionDigits: 1 })}`
+            ? ` · Form ${formatNumber(stats.form)}`
             : ""}
           {!p.active ? " · nicht mehr in der Liga" : ""}
         </p>
@@ -568,7 +572,7 @@ function countBy<T, K>(
 }
 
 function byPosition(a: Player, b: Player): number {
-  return POS_ORDER.indexOf(a.position) - POS_ORDER.indexOf(b.position);
+  return POSITIONS.indexOf(a.position) - POSITIONS.indexOf(b.position);
 }
 
 function sorter(sort: Sort, stats: Record<string, PlayerStats>) {
@@ -588,15 +592,6 @@ function sorter(sort: Sort, stats: Record<string, PlayerStats>) {
   };
 }
 
-function positionName(p: Position): string {
-  return {
-    GK: "Torhüter",
-    DEF: "Abwehrspieler",
-    MID: "Mittelfeldspieler",
-    FWD: "Stürmer",
-  }[p];
-}
-
 type Quote = ReturnType<typeof transferQuote> | null;
 
 function windowText(
@@ -611,7 +606,7 @@ function windowText(
     return `Transfers für Spieltag ${window.matchday} unbegrenzt und ohne Abzug, ${until}.`;
   if (bankStale)
     return "Das Transferfenster wird gerade vorbereitet. Bitte schau in ein paar Minuten wieder vorbei.";
-  return `${quote.freeLeft} freie Transfers für Spieltag ${window.matchday}, ${until}. Jeder weitere kostet 5 Punkte.`;
+  return `${quote.freeLeft} freie Transfers für Spieltag ${window.matchday}, ${until}. Jeder weitere kostet ${RULES.extraTransferPenalty} Punkte.`;
 }
 
 function costText(quote: Quote): string {

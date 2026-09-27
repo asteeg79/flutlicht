@@ -5,11 +5,11 @@ Höchstens 60 Bilder pro Lauf, Läufe höchstens stündlich. Vorhandene Bilder w
 """
 
 import io
-import json
 from pathlib import Path
 
 from .. import config
 from ..client import Client, FetchError
+from ..raw import read_raw
 
 
 def wanted(raw_dir: Path, teams: list[dict]) -> list[tuple[str, int]]:
@@ -17,7 +17,7 @@ def wanted(raw_dir: Path, teams: list[dict]) -> list[tuple[str, int]]:
     items: list[tuple[str, int]] = [("clubs", t["id"]) for t in teams]
     player_ids: set[int] = set()
     for squad in sorted((raw_dir / "sofascore" / "squads").glob("*/*.json")):
-        data = json.loads(squad.read_text(encoding="utf-8"))["data"]
+        data = read_raw(squad)
         player_ids.update(p["player"]["id"] for p in data["players"])
     items += [("players", pid) for pid in sorted(player_ids)]
     return items

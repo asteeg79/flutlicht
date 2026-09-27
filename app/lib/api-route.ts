@@ -14,16 +14,12 @@ import { loadManager } from "@/lib/storage";
  * Client landete statt als JSON.
  *
  * `withUser` schluckt das. Der Handler bekommt die Identität gereicht und baut
- * seine Antwort weiter selbst — dadurch funktionieren auch die Sonderfälle
- * (CSV-Download mit Content-Disposition, Cookie-setzende Passkey-Routen), die
- * bei einem „Handler gibt Daten zurück"-Wrapper Ausnahmen gebraucht hätten.
+ * seine Antwort weiter selbst.
  *
  * Bewusst NICHT hier: Rate-Limiting (liegt in middleware.ts) und die Auth der
- * vier Routen, die absichtlich anders funktionieren — /api/health (öffentlich),
- * /api/auth/* (NextAuth), /api/passkey/authenticate/options (usernameless
- * Login, da gibt es per Definition noch keine Session) und /api/push/send
- * (CRON-Bearer). Für Letzteres kein eigener Wrapper: ein Wrapper für genau
- * einen Aufrufer wäre eine Naht mit nur einer Implementierung.
+ * Routen, die absichtlich anders funktionieren — /api/health (öffentlich),
+ * /api/auth/* (NextAuth) und /api/cron/tick (CRON-Bearer), siehe
+ * lib/public-api-paths.ts.
  */
 
 /** Fehler, die der Handler wirft, statt Status selbst zu kennen. */
@@ -36,12 +32,6 @@ export class ApiError extends Error {
   ) {
     super(message);
     this.name = "ApiError";
-  }
-}
-
-export class Unauthorized extends ApiError {
-  constructor(message = "Unauthorized") {
-    super(401, message);
   }
 }
 
@@ -155,6 +145,23 @@ async function handleErrors(
 }
 
 /**
+ * Validiert Eingaben; ohne `message` gilt die erste zod-Meldung (deutsch formulierte
+ * Schemas), mit `message` eine feste, wenn Details nicht nach außen sollen.
+ */
+export function parse<T>(
+  schema: z.ZodType<T>,
+  raw: unknown,
+  message?: string,
+): T {
+  const result = schema.safeParse(raw);
+  if (!result.success)
+    throw new BadRequest(
+      message ?? result.error.issues[0]?.message ?? "Ungültige Eingabe",
+    );
+  return result.data;
+}
+
+/**
  * Liest und validiert den Request-Body. Ersetzt das dreimal wortgleich
  * kopierte `safeParse(await request.json().catch(() => null))` — und deckt
  * dabei die zwei Handler mit ab, die bisher ungeprüftes JSON weiterreichten.
@@ -170,7 +177,5 @@ export async function parseBody<T>(
   } catch {
     throw new BadRequest(message);
   }
-  const parsed = schema.safeParse(raw);
-  if (!parsed.success) throw new BadRequest(message);
-  return parsed.data;
+  return parse(schema, raw, message);
 }

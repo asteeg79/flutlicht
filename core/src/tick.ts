@@ -2,12 +2,12 @@
 // sind. Jede Aktion hat einen Schlüssel und wird höchstens einmal ausgeführt; die App
 // führt aus, merkt sich die Schlüssel in system-state und sendet die Pushes.
 import { participation } from "./bonus";
-import { RULES } from "./config/rules";
 import { firstLock } from "./locks";
-import { fixtureCounts } from "./matchday";
+import { fixtureCounts, HAS_DATA } from "./matchday";
 import { round1 } from "./rounding";
 import { scoreLeague, standings } from "./standings";
-import { isBreakWindow, rollTransferBank } from "./transfers";
+import { TIMEZONE } from "./time";
+import { currentMatchday, isBreakWindow, rollTransferBank } from "./transfers";
 import type { Fixture, MatchdayPoints, Player } from "./schemas/data";
 import type { ManagerDoc } from "./schemas/manager";
 
@@ -39,26 +39,22 @@ export interface TickInput {
   firstScoredMatchday: number;
 }
 
-const berlinDate = (d: Date) =>
-  new Intl.DateTimeFormat("sv-SE", { timeZone: "Europe/Berlin" }).format(d);
+// Formatter einmal je Modul: der Tick läuft alle 10 Minuten über alle Spiele.
+const dateFormat = new Intl.DateTimeFormat("sv-SE", { timeZone: TIMEZONE });
 // formatToParts statt format: „de-DE“ schreibt sonst „20 Uhr“.
+const hourFormat = new Intl.DateTimeFormat("de-DE", {
+  timeZone: TIMEZONE,
+  hour: "numeric",
+  hourCycle: "h23",
+});
+const weekdayFormat = new Intl.DateTimeFormat("de-DE", {
+  timeZone: TIMEZONE,
+  weekday: "long",
+});
+const berlinDate = (d: Date) => dateFormat.format(d);
 const berlinHour = (d: Date) =>
-  Number(
-    new Intl.DateTimeFormat("de-DE", {
-      timeZone: "Europe/Berlin",
-      hour: "numeric",
-      hourCycle: "h23",
-    })
-      .formatToParts(d)
-      .find((p) => p.type === "hour")!.value,
-  );
-const berlinWeekday = (d: Date) =>
-  new Intl.DateTimeFormat("de-DE", {
-    timeZone: "Europe/Berlin",
-    weekday: "long",
-  }).format(d);
-
-const HAS_DATA = new Set(["provisional", "final", "manual"]);
+  Number(hourFormat.formatToParts(d).find((p) => p.type === "hour")!.value);
+const berlinWeekday = (d: Date) => weekdayFormat.format(d);
 
 export function planTick(input: TickInput): TickAction[] {
   const actions: TickAction[] = [];
@@ -89,13 +85,7 @@ export function planTick(input: TickInput): TickAction[] {
   const finalSet = new Set(
     input.points.filter((p) => p.status === "final").map((p) => p.matchday),
   );
-  let current: number | null = null;
-  for (let md = 1; md <= RULES.matchdays; md++) {
-    if (!finalSet.has(md)) {
-      current = md;
-      break;
-    }
-  }
+  const current = currentMatchday(finalSet);
 
   // Finalisierung aller finalen Spieltage, die noch nicht verbucht sind.
   for (const md of [...finalSet].sort((a, b) => a - b)) {
@@ -237,22 +227,17 @@ export function finalizeManager(
   fixtures: readonly Pick<Fixture, "matchday" | "kickoffUtc">[],
   finals: ReadonlyMap<number, Date>,
   /** Spieltagsprämie (2.7), vorab für alle Manager mit `matchdayBonuses` berechnet. */
-  bonus?: { firstScoredMatchday: number; bonus: number },
+  bonus: { firstScoredMatchday: number; bonus: number },
 ): ManagerDoc {
   const key = String(matchday);
-  const kind = bonus
-    ? participation(doc, matchday, bonus.firstScoredMatchday)
-    : matchday >= doc.firstMatchday
-      ? "scored"
-      : null;
+  const kind = participation(doc, matchday, bonus.firstScoredMatchday);
   // Eingefroren wird, was gewertet wird, und der Schattenbetrieb (zum Nachsehen).
   const lineupHistory =
     doc.lineup && kind !== null && doc.lineupHistory[key] === undefined
       ? { ...doc.lineupHistory, [key]: doc.lineup }
       : doc.lineupHistory;
   // Gutgeschrieben wird nur an gewerteten Spieltagen und nur einmal.
-  const credit =
-    bonus && kind === "scored" && doc.matchdayBonuses?.[key] === undefined;
+  const credit = kind === "scored" && doc.matchdayBonuses?.[key] === undefined;
   const money = credit
     ? {
         cash: round1(doc.cash + bonus.bonus),

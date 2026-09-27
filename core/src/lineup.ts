@@ -350,7 +350,11 @@ export function autoLineup(
   );
   const free = field.filter((id) => !squad.isLocked(id)).sort(better);
 
-  let best: { starters: number[]; key: [number, number] } | null = null;
+  let best: {
+    formation: Formation;
+    starters: number[];
+    key: [number, number];
+  } | null = null;
   for (const formation of FORMATIONS) {
     const need = formationCounts(formation);
     const starters: number[] = [];
@@ -376,7 +380,7 @@ export function autoLineup(
       (key[0] === best.key[0] &&
         (key[1] > best.key[1] ||
           (key[1] === best.key[1] && formation === lineup.formation)));
-    if (wins) best = { starters, key };
+    if (wins) best = { formation, starters, key };
   }
   if (!best) return { ok: true, lineup };
 
@@ -391,9 +395,13 @@ export function autoLineup(
   const captain = squad.isLocked(lineup.captain)
     ? lineup.captain
     : starters.filter((id) => !squad.isLocked(id)).sort(better)[0]!;
-  const formation = formationOf(starters.map((id) => squad.positionOf(id)!))!;
   return {
     ok: true,
-    lineup: { formation, starters, bench: { gk: gkBench, b }, captain },
+    lineup: {
+      formation: best.formation,
+      starters,
+      bench: { gk: gkBench, b },
+      captain,
+    },
   };
 }

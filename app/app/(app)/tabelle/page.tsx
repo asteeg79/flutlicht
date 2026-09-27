@@ -8,8 +8,11 @@ import { listAllManagers } from "@/lib/storage";
 export const metadata = { title: "Tabelle" };
 
 export default async function StandingsPage() {
-  const me = await currentManager();
-  const table = leagueTable(await listAllManagers());
+  const [me, managers] = await Promise.all([
+    currentManager(),
+    listAllManagers(),
+  ]);
+  const table = leagueTable(managers);
   const scored = table.matchdays.filter(
     (m) => m.matchday >= gameData.season.firstScoredMatchday,
   );

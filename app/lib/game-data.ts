@@ -11,6 +11,7 @@ import {
   MatchdayPoints,
   Meta,
   Players,
+  playerStats,
   Season,
   Teams,
 } from "@fm/core";
@@ -39,6 +40,14 @@ export const gameData = {
     manualNeeded: ManualNeeded.parse(reviewManual),
   },
 };
+
+// Einmal je Deployment abgeleitet: gameData ändert sich zur Laufzeit nicht.
+export const playerById = new Map(gameData.players.map((p) => [p.id, p]));
+export const teamById = new Map(gameData.teams.map((t) => [t.id, t]));
+export const positionById = new Map(
+  gameData.players.map((p) => [p.id, p.position]),
+);
+export const statsById = playerStats(gameData.points);
 
 /** Finalisierte Spieltage → Zeitpunkt der Finalisierung (Stand der finalen Daten). */
 export function finals(): Map<number, Date> {

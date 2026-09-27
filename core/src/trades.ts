@@ -1,12 +1,9 @@
 // Transfer-Historie eines Managers (Seite /historie): gekaufte und verkaufte Spieler mit
 // Preisdifferenz. Gewinne sind Guthaben-Veränderungen, gewertet werden nur Punkte (2.7).
-import { toTenths } from "./rounding";
+import { subtractMio as diff } from "./rounding";
 import type { MarketHistory } from "./schemas/data";
 import type { Transfer } from "./schemas/manager";
-
-const diff = (a: number, b: number) => (toTenths(a) - toTenths(b)) / 10;
-const sum = (xs: readonly number[]) =>
-  xs.reduce((s, x) => s + toTenths(x), 0) / 10;
+import { sumPrices as sum } from "./squad";
 
 /** Erstkader aus dem heutigen Kader, indem die Transfers rückwärts abgespielt werden. */
 export function initialSquad(

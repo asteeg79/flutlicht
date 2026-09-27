@@ -5,6 +5,7 @@ import {
   changeFormation,
   setCaptain,
   swapPlayers,
+  TIMEZONE,
   type Formation,
   type Lineup,
   type Position,
@@ -441,6 +442,13 @@ function useServerClock(serverNow: string): number {
 }
 
 /** "gesperrt", "in 23 Min.", "in 5 Std. 12 Min." oder "Sa., 14:00". */
+const LOCK_FORMAT = new Intl.DateTimeFormat("de-DE", {
+  timeZone: TIMEZONE,
+  weekday: "short",
+  hour: "2-digit",
+  minute: "2-digit",
+});
+
 function countdown(lockAtIso: string | null, now: number): string {
   if (lockAtIso === null) return "";
   const ms = Date.parse(lockAtIso) - now;
@@ -449,10 +457,5 @@ function countdown(lockAtIso: string | null, now: number): string {
   if (min < 60) return `Sperre in ${min} Min.`;
   if (min < 24 * 60)
     return `Sperre in ${Math.floor(min / 60)} Std. ${min % 60} Min.`;
-  return `Sperre ${new Intl.DateTimeFormat("de-DE", {
-    timeZone: "Europe/Berlin",
-    weekday: "short",
-    hour: "2-digit",
-    minute: "2-digit",
-  }).format(new Date(lockAtIso))}`;
+  return `Sperre ${LOCK_FORMAT.format(new Date(lockAtIso))}`;
 }

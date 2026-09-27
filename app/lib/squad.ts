@@ -14,7 +14,7 @@ import {
   type Player,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict, NotFound } from "@/lib/api-route";
+import { BadRequest, Conflict, NotFound, parse } from "@/lib/api-route";
 import { finals, gameData } from "@/lib/game-data";
 import { loadManager, saveManager } from "@/lib/storage";
 
@@ -59,11 +59,8 @@ export async function loadFresh(
   return doc;
 }
 
-export function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
-  const result = schema.safeParse(raw);
-  if (!result.success) throw new BadRequest("Ungültige Eingabe");
-  return result.data;
-}
+/** Feste Meldung: diese Schemas haben keine deutschen zod-Meldungen. */
+export const INVALID = "Ungültige Eingabe";
 
 const InitialInput = z.object({
   players: z.array(z.int().positive()).length(RULES.squadSize),
@@ -76,7 +73,7 @@ export async function buildInitialSquad(
   raw: unknown,
   ctx: GameContext,
 ): Promise<PublicManager> {
-  const input = parse(InitialInput, raw);
+  const input = parse(InitialInput, raw, INVALID);
   const doc = await loadFresh(userId, input.updatedAt);
   if (doc.squad.length > 0)
     throw new BadRequest(
@@ -133,7 +130,7 @@ export async function makeTransfer(
   raw: unknown,
   ctx: GameContext,
 ): Promise<{ manager: PublicManager; captainChanged: boolean; free: boolean }> {
-  const input = parse(TransferInput, raw);
+  const input = parse(TransferInput, raw, INVALID);
   const doc = await loadFresh(userId, input.updatedAt);
   const result = applyTransfer(doc, input.out, input.in, {
     players: new Map(ctx.players.map((p) => [p.id, p])),

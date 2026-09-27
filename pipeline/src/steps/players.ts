@@ -1,6 +1,7 @@
 // Pipeline-Schritt players (KONZEPT 6.5 Schritt 2): Kader + Positionen + Marktwerte → Startpreise.
 import {
   chooseStartValue,
+  MARKET,
   startPrice,
   type MappingReviewEntry,
   type MissingValueEntry,
@@ -51,9 +52,6 @@ export interface PlayersOutput {
   mappingReview: MappingReviewEntry[];
   missingValues: MissingValueEntry[];
 }
-
-/** Platzhalterpreis für Spieler ohne Marktwert (nicht kaufbar, KONZEPT 4.1). */
-const MISSING_PRICE = 0.5;
 
 export function buildPlayers(input: PlayersInput): PlayersOutput {
   const tmClubOf = new Map(input.teams.map((t) => [t.id, t.tmClubId]));
@@ -157,7 +155,8 @@ export function buildPlayers(input: PlayersInput): PlayersOutput {
       return {
         ...base,
         valueSource: "missing",
-        price: MISSING_PRICE,
+        // Platzhalterpreis für Spieler ohne Marktwert (nicht kaufbar, KONZEPT 4.1).
+        price: MARKET.priceMin,
         purchasable: false,
       };
     }

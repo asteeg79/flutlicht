@@ -1,7 +1,7 @@
 // Startpreise, Startbudget und Preisdynamik (KONZEPT 4).
 import { MARKET } from "./config/market";
 import type { Position } from "./config/rules";
-import { clamp, round1 } from "./rounding";
+import { clamp, median, round1 } from "./rounding";
 
 /** Startpreis in Mio. aus dem Marktwert v (Wurzelskala, 4.1). */
 export function startPrice(valueEur: number, vMaxEur: number): number {
@@ -55,14 +55,6 @@ export function startBudget(regularPrices: readonly number[]): number {
   if (regularPrices.length === 0) throw new Error("Keine Stammspieler-Preise");
   const step = MARKET.budgetStep;
   return Math.ceil((MARKET.budgetFactor * median(regularPrices)) / step) * step;
-}
-
-function median(values: readonly number[]): number {
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 1
-    ? sorted[mid]!
-    : (sorted[mid - 1]! + sorted[mid]!) / 2;
 }
 
 /**

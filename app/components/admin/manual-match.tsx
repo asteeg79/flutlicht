@@ -9,6 +9,7 @@ import {
   Section,
   SmallButton,
 } from "@/components/admin/common";
+import { POS_LABEL } from "@/lib/positions";
 
 export interface MatchOption {
   eventId: number;
@@ -23,12 +24,6 @@ export interface MatchOption {
 }
 
 type PlayerOption = { id: number; name: string; position: Position };
-const POS_LABEL: Record<Position, string> = {
-  GK: "TW",
-  DEF: "ABW",
-  MID: "MF",
-  FWD: "ST",
-};
 type Row = Omit<ManualMatchPlayer, "playerId">;
 type Card = "none" | "yellow" | "yellowRed" | "red" | "yellow+red";
 

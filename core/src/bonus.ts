@@ -3,18 +3,9 @@
 import { MARKET } from "./config/market";
 import type { Position } from "./config/rules";
 import { scoreManager } from "./points";
-import { clamp, round1 } from "./rounding";
+import { clamp, median, round1 } from "./rounding";
 import type { MatchdayPoints } from "./schemas/data";
 import { lineupForMatchday, type ScoringManager } from "./standings";
-
-export function median(values: readonly number[]): number {
-  if (values.length === 0) return 0;
-  const sorted = [...values].sort((a, b) => a - b);
-  const mid = Math.floor(sorted.length / 2);
-  return sorted.length % 2 === 1
-    ? sorted[mid]!
-    : (sorted[mid - 1]! + sorted[mid]!) / 2;
-}
 
 /** Prämie in Mio.: 0,02 je Punkt über dem Median aller Teilnehmer, 0 bis 2 Mio. */
 export function matchdayBonus(

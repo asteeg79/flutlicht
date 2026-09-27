@@ -1,8 +1,8 @@
-import { playerStats, transferWindow } from "@fm/core";
+import { transferWindow } from "@fm/core";
 import { Market, type MarketWindow } from "@/components/market";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
-import { gameData } from "@/lib/game-data";
+import { gameData, statsById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 import { liveContext, publicManager } from "@/lib/squad";
 
@@ -48,7 +48,7 @@ export default async function MarketPage() {
           id: t.id,
           shortName: t.shortName,
         }))}
-        stats={Object.fromEntries(playerStats(gameData.points))}
+        stats={Object.fromEntries(statsById)}
         initialManager={publicManager(manager)}
         budget={gameData.season.startBudget}
         window={window}

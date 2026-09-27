@@ -24,22 +24,13 @@ export function readManualMatch(
       );
       continue;
     }
+    const { playerId, ...stats } = p;
     const input: PlayerMatchInput = {
+      ...stats,
       position,
-      minutes: p.minutes,
-      started: p.started,
-      rating: p.rating,
-      goals: p.goals,
-      assists: p.assists,
-      ownGoals: p.ownGoals,
-      yellow: p.yellow,
-      yellowRed: p.yellowRed,
-      red: p.red,
-      penMissed: p.penMissed,
-      penSaved: p.penSaved,
       teamConceded: side.isHome ? match.score.away : match.score.home,
     };
-    players.push({ playerId: p.playerId, teamId: side.teamId, input });
+    players.push({ playerId, teamId: side.teamId, input });
   }
   return { players, warnings };
 }

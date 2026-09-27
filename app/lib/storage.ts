@@ -21,6 +21,7 @@ interface KvClient {
   set(key: string, value: string): Promise<unknown>;
   del(key: string): Promise<unknown>;
   keys(pattern: string): Promise<string[]>;
+  mget(...keys: string[]): Promise<(string | null)[]>;
 }
 
 // KV_REST_API_* setzt die Vercel-Marketplace-Integration „Upstash for Redis“.
@@ -98,7 +99,8 @@ async function backendListContents(
     const keys = (await kv.keys(`${prefix}*`)).filter((k) =>
       k.endsWith(suffix),
     );
-    const contents = await Promise.all(keys.map((k) => kv.get(k)));
+    // Ein MGET statt je Schlüssel ein GET: ein Befehl im Upstash-Kontingent.
+    const contents = keys.length > 0 ? await kv.mget(...keys) : [];
     return keys.flatMap((k, i) => {
       const content = contents[i];
       return content != null ? [{ pathname: k, content }] : [];

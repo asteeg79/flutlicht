@@ -15,7 +15,7 @@ const DAY_MS = 24 * 60 * 60 * 1000;
 
 /** Aktueller Spieltag: der kleinste, der noch nicht final ist (2.1). null nach dem 34. */
 export function currentMatchday(
-  finals: ReadonlyMap<number, Date>,
+  finals: Pick<ReadonlySet<number>, "has">,
 ): number | null {
   for (let md = 1; md <= RULES.matchdays; md++) if (!finals.has(md)) return md;
   return null;

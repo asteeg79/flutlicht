@@ -33,8 +33,10 @@ const SECTIONS = [
 
 export default async function AdminPage() {
   const me = await requireAdmin();
-  const managers = await listAllManagers();
-  const league = await loadLeague();
+  const [managers, league] = await Promise.all([
+    listAllManagers(),
+    loadLeague(),
+  ]);
   const clubs = Object.fromEntries(
     gameData.teams.map((t) => [t.id, t.shortName]),
   );

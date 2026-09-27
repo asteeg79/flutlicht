@@ -238,6 +238,7 @@ describe("Finalisierung und Endergebnis", () => {
 });
 
 describe("finalizeManager", () => {
+  const NO_BONUS = { firstScoredMatchday: 8, bonus: 0 };
   const md8 = [
     { matchday: 8, kickoffUtc: "2026-10-30T19:30:00Z" },
     { matchday: 9, kickoffUtc: SAT },
@@ -252,7 +253,7 @@ describe("finalizeManager", () => {
       firstMatchday: 7,
       transferBank: { matchday: 8, available: 1 },
     });
-    const next = finalizeManager(doc, 8, md8, finals);
+    const next = finalizeManager(doc, 8, md8, finals, NO_BONUS);
     expect(next.lineupHistory["8"]).toEqual(lineup442);
     expect(next.transferBank).toEqual({ matchday: 9, available: 3 });
     // Idempotent: zweiter Aufruf ändert nichts, auch nicht nach Änderung der Aufstellung.
@@ -261,6 +262,7 @@ describe("finalizeManager", () => {
       8,
       md8,
       finals,
+      NO_BONUS,
     );
     expect(again.lineupHistory["8"]).toEqual(lineup442);
     expect(again.transferBank).toEqual({ matchday: 9, available: 3 });
@@ -271,20 +273,25 @@ describe("finalizeManager", () => {
       firstMatchday: 8,
       transferBank: { matchday: 8, available: 2 },
     });
-    expect(finalizeManager(doc, 8, md8, finals).transferBank).toEqual({
-      matchday: 9,
-      available: 2,
-    });
+    expect(finalizeManager(doc, 8, md8, finals, NO_BONUS).transferBank).toEqual(
+      {
+        matchday: 9,
+        available: 2,
+      },
+    );
   });
 
   it("friert ohne Aufstellung und vor dem ersten gewerteten Spieltag nichts ein", () => {
-    expect(finalizeManager(cleo, 8, md8, finals).lineupHistory).toEqual({});
+    expect(
+      finalizeManager(cleo, 8, md8, finals, NO_BONUS).lineupHistory,
+    ).toEqual({});
     expect(
       finalizeManager(
         manager("a", "Anna", { firstMatchday: 9 }),
         8,
         md8,
         finals,
+        NO_BONUS,
       ).lineupHistory,
     ).toEqual({});
   });

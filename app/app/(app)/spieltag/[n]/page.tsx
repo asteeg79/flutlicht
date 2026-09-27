@@ -1,11 +1,17 @@
-import { formatKickoff, formatMio, RULES } from "@fm/core";
+import { formatKickoff, formatMio, MARKET, RULES } from "@fm/core";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClubLogo } from "@/components/club-logo";
 import { PageHeader } from "@/components/page-header";
-import { PartsLine, signed, STATUS_LABEL } from "@/components/points";
-import { gameData } from "@/lib/game-data";
+import {
+  formatNumber,
+  PartsLine,
+  signed,
+  signedMio,
+  STATUS_LABEL,
+} from "@/components/points";
+import { gameData, teamById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 import {
   matchdayView,
@@ -24,11 +30,13 @@ export default async function MatchdayPage({
 }) {
   const n = Number((await params).n);
   if (!Number.isInteger(n) || n < 1 || n > RULES.matchdays) notFound();
-  const me = await currentManager();
-  const view = matchdayView(n, await listAllManagers(), me.userId, new Date());
+  const [me, managers] = await Promise.all([
+    currentManager(),
+    listAllManagers(),
+  ]);
+  const view = matchdayView(n, managers, me.userId, new Date());
   const own = view.managers.find((m) => m.own);
   const others = view.managers.filter((m) => !m.own);
-  const club = new Map(gameData.teams.map((t) => [t.id, t]));
   const fixtures = gameData.fixtures.filter((f) => f.matchday === n);
 
   return (
@@ -99,13 +107,13 @@ export default async function MatchdayPage({
             >
               <span className="flex min-w-0 flex-wrap items-center gap-x-2">
                 <span className="flex items-center gap-2">
-                  <ClubLogo src={club.get(f.homeTeamId)?.logo} />
-                  {club.get(f.homeTeamId)?.shortName}
+                  <ClubLogo src={teamById.get(f.homeTeamId)?.logo} />
+                  {teamById.get(f.homeTeamId)?.shortName}
                 </span>
                 <span className="text-kreide-matt">–</span>
                 <span className="flex items-center gap-2">
-                  <ClubLogo src={club.get(f.awayTeamId)?.logo} />
-                  {club.get(f.awayTeamId)?.shortName}
+                  <ClubLogo src={teamById.get(f.awayTeamId)?.logo} />
+                  {teamById.get(f.awayTeamId)?.shortName}
                 </span>
               </span>
               {f.score ? (
@@ -204,13 +212,13 @@ function OwnScore({
             <dt className="text-kreide-matt">
               {BONUS_LABEL[state]}
               <span className="block text-xs">
-                Median der Liga {view.bonus.median} P. · 0,02 Mio. je Punkt
-                darüber, höchstens 2 Mio.
+                Median der Liga {formatNumber(view.bonus.median)} P. ·{" "}
+                {formatMio(MARKET.bonusPerPoint)} je Punkt darüber, höchstens{" "}
+                {formatMio(MARKET.bonusCap)}
               </span>
             </dt>
             <dd className={view.bonus.bonus > 0 ? "text-lampe" : undefined}>
-              {view.bonus.bonus > 0 ? "+" : ""}
-              {formatMio(view.bonus.bonus)}
+              {signedMio(view.bonus.bonus)}
             </dd>
           </div>
         ) : null}
@@ -291,7 +299,7 @@ function OtherScore({
       ) : null}
       {view.bonus && view.bonus.bonus > 0 ? (
         <p className="mt-1 text-xs text-lampe">
-          {BONUS_LABEL[state]}: +{formatMio(view.bonus.bonus)}
+          {BONUS_LABEL[state]}: {signedMio(view.bonus.bonus)}
         </p>
       ) : null}
       {view.hidden > 0 ? (

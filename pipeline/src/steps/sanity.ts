@@ -1,5 +1,6 @@
 // Sanity-Guard (KONZEPT 6.4): Abbruch ohne Schreiben bei offensichtlich kaputten Daten.
 import {
+  HAS_DATA,
   MARKET,
   type Fixture,
   type MatchdayPoints,
@@ -38,7 +39,7 @@ export function sanityCheck(out: {
   }
   for (const f of out.fixtures) {
     if (f.status !== "finished" || f.sofascoreEventId === undefined) continue;
-    if (!["provisional", "final", "manual"].includes(f.dataState)) continue;
+    if (!HAS_DATA.has(f.dataState)) continue;
     const n = played.get(f.sofascoreEventId) ?? 0;
     if (n < MIN_PLAYERS_WITH_MINUTES) {
       errors.push(

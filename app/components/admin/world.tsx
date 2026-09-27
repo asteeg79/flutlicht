@@ -2,6 +2,7 @@
 
 import {
   formatDate,
+  TIMEZONE,
   type MappingReviewEntry,
   type MissingValueEntry,
   type Position,
@@ -15,13 +16,7 @@ import {
   SmallButton,
 } from "@/components/admin/common";
 import type { AdminStatus } from "@/lib/admin";
-
-const POS_LABEL: Record<Position, string> = {
-  GK: "TW",
-  DEF: "ABW",
-  MID: "MF",
-  FWD: "ST",
-};
+import { POS_LABEL } from "@/lib/positions";
 
 /** Status: letzter Scraper-Commit, Pipeline-Läufe, offene Spiele, Tick (KONZEPT 11). */
 export function Status() {
@@ -33,7 +28,7 @@ export function Status() {
       ))();
   }, []);
   const when = (iso: string) =>
-    `${formatDate(iso)}, ${new Date(iso).toLocaleTimeString("de-DE", { timeZone: "Europe/Berlin", hour: "2-digit", minute: "2-digit" })}`;
+    `${formatDate(iso)}, ${new Date(iso).toLocaleTimeString("de-DE", { timeZone: TIMEZONE, hour: "2-digit", minute: "2-digit" })}`;
   const run = (r: AdminStatus["compute"]) =>
     r
       ? `${r.conclusion === "success" ? "✓" : r.conclusion === "failure" ? "✗" : "…"} ${when(r.createdAt)}`

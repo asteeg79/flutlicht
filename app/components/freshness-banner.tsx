@@ -1,5 +1,5 @@
 import { awaitingData } from "@fm/core";
-import { gameData } from "@/lib/game-data";
+import { gameData, teamById } from "@/lib/game-data";
 
 const HOUR_MS = 60 * 60 * 1000;
 
@@ -15,9 +15,9 @@ export function FreshnessBanner() {
     72 * HOUR_MS,
   );
   if (waiting.length === 0) return null;
-  const club = new Map(gameData.teams.map((t) => [t.id, t.shortName]));
   const names = waiting.map(
-    (f) => `${club.get(f.homeTeamId)} – ${club.get(f.awayTeamId)}`,
+    (f) =>
+      `${teamById.get(f.homeTeamId)?.shortName} – ${teamById.get(f.awayTeamId)?.shortName}`,
   );
   return (
     <div

@@ -18,7 +18,7 @@ import {
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Forbidden, NotFound } from "@/lib/api-route";
+import { BadRequest, Forbidden, NotFound, parse } from "@/lib/api-route";
 import type { GitHub } from "@/lib/github";
 import {
   deleteManager,
@@ -28,15 +28,6 @@ import {
   saveEmailIndex,
   saveLeague,
 } from "@/lib/storage";
-
-function parse<T>(schema: z.ZodType<T>, raw: unknown): T {
-  const result = schema.safeParse(raw);
-  if (!result.success)
-    throw new BadRequest(
-      result.error.issues[0]?.message ?? "Ungültige Eingabe",
-    );
-  return result.data;
-}
 
 // --- Codes (league.json.enc) ---
 

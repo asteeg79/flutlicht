@@ -1,4 +1,4 @@
-import type { PointParts } from "@fm/core";
+import { formatMio, type PointParts } from "@fm/core";
 
 const PART_LABELS: Record<keyof PointParts, string> = {
   rating: "Note",
@@ -12,9 +12,20 @@ const PART_LABELS: Record<keyof PointParts, string> = {
   cards: "Karten",
 };
 
+/** Deutsche Zahl mit höchstens einer Nachkommastelle („12,5“). */
+export function formatNumber(n: number): string {
+  return n.toLocaleString("de-DE", { maximumFractionDigits: 1 });
+}
+
 export function signed(n: number): string {
-  const s = n.toLocaleString("de-DE", { maximumFractionDigits: 1 });
+  const s = formatNumber(n);
   return n > 0 ? `+${s}` : s.replace("-", "−");
+}
+
+/** Mio.-Betrag mit Vorzeichen („+0,5 Mio.“, „−1,2 Mio.“, „±0“). */
+export function signedMio(n: number): string {
+  if (n === 0) return "±0";
+  return `${n > 0 ? "+" : "−"}${formatMio(Math.abs(n))}`;
 }
 
 /** Aufschlüsselung der Basispunkte (KONZEPT 3.4): nur die Teile, die etwas beitragen. */
