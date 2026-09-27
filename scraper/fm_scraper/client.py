@@ -71,8 +71,8 @@ class Client:
 
     def get_bytes(self, url: str) -> bytes:
         """Bilder: ohne Browser-Fallback, der kann keine Bilder laden. Ein einzelnes 403
-        heißt oft nur „kein Foto“ und wird als FetchError gemeldet; erst zwei 403
-        hintereinander lösen die Pause aus (KONZEPT 5.6)."""
+        wird als FetchError gemeldet; erst zwei 403 hintereinander lösen die Pause
+        aus (KONZEPT 5.6)."""
         response = self._send(self._request, url)
         if response.status == 200 and _looks_valid(response.body, expect_json=False):
             self._image_403s = 0

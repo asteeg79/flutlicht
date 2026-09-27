@@ -2,8 +2,9 @@
 
 Höchstens 60 Bilder pro Lauf, Läufe höchstens stündlich. Vorhandene Bilder werden
 übersprungen; Logos kommen zuerst. Die Spieler-IDs stammen aus den Kaderdateien.
-Jedes Bild wird nur einmal abgefragt (5.5 „einmalig“): Wer kein Foto hat (403/404),
+Jedes Bild wird nur einmal abgefragt (5.5 „einmalig“): Wer kein Foto hat (404),
 kommt nach `raw/sofascore/images-missing.json`. Löschen der Datei fragt erneut ab.
+Ein 403 heißt „Script gesperrt“, nicht „kein Foto“: Das Bild bleibt offen.
 """
 
 import io
@@ -65,11 +66,12 @@ def run(client: Client, raw_dir: Path, img_dir: Path, teams: list[dict]) -> list
         try:
             image = client.get_bytes(f"{config.IMAGE_API}/{'team' if kind == 'clubs' else 'player'}/{id_}/image")
         except FetchError as e:
-            # 404 oder ein einzelnes 403: kein Bild → die App zeigt eine Silhouette.
-            # Wiederholte 403 bricht der Client selbst mit einer Pause ab.
-            if e.status not in (403, 404):
+            # Ein einzelnes 403 überspringen, wiederholte bricht der Client mit Pause ab.
+            if e.status == 403:
+                continue
+            if e.status != 404:
                 raise
-            # Sofort schreiben: Das nächste 403 kann den Lauf mit einer Pause beenden.
+            # 404: kein Foto → die App zeigt eine Silhouette.
             missing.add(f"{kind}/{id_}")
             _missing_file(raw_dir).parent.mkdir(parents=True, exist_ok=True)
             _missing_file(raw_dir).write_text(json.dumps(sorted(missing), indent=2) + "\n")

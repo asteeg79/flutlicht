@@ -128,21 +128,22 @@ def test_images_ueberspringt_ein_einzelnes_403(make_client, tmp_path, monkeypatc
 
 
 def test_images_fragt_spieler_ohne_foto_nur_einmal_ab(make_client, tmp_path):
-    # Zwei Spieler ohne Foto hintereinander: Pause, der erste bleibt aber vermerkt.
+    write_squad(tmp_path, [1, 2])
+    request = FakeTransport(RawResponse(404, b""), ok(png(64)))
+    client, _ = make_client(request)
+    written = images.run(client, tmp_path / "raw", tmp_path / "img", [])
+    assert [p.name for p in written] == ["2.webp"]
+    missing = tmp_path / "raw" / "sofascore" / "images-missing.json"
+    assert json.loads(missing.read_text()) == ["players/1"]
+    assert images.todo(tmp_path / "raw", tmp_path / "img", []) == []
+
+
+def test_images_merkt_sich_ein_403_nicht_als_kein_foto(make_client, tmp_path):
+    # 403 heißt „Script gesperrt“ (das Bild gibt es im Browser): Es bleibt offen.
     write_squad(tmp_path, [1, 2, 3])
     request = FakeTransport(RawResponse(403, b""), RawResponse(403, b""))
     client, _ = make_client(request)
     with pytest.raises(PauseRequired):
         images.run(client, tmp_path / "raw", tmp_path / "img", [])
-    missing = tmp_path / "raw" / "sofascore" / "images-missing.json"
-    assert json.loads(missing.read_text()) == ["players/1"]
-
-    # Nach der Pause geht es bei Spieler 2 weiter, Spieler 1 wird nicht mehr abgefragt.
-    (tmp_path / "state.json").unlink()
-    request = FakeTransport(RawResponse(404, b""), ok(png(64)))
-    client, _ = make_client(request)
-    written = images.run(client, tmp_path / "raw", tmp_path / "img", [])
-    assert [u.split("/v1/")[1] for u in request.urls] == ["player/2/image", "player/3/image"]
-    assert [p.name for p in written] == ["3.webp"]
-    assert json.loads(missing.read_text()) == ["players/1", "players/2"]
-    assert images.todo(tmp_path / "raw", tmp_path / "img", []) == []
+    assert not (tmp_path / "raw" / "sofascore" / "images-missing.json").exists()
+    assert images.todo(tmp_path / "raw", tmp_path / "img", []) == [("players", i) for i in (1, 2, 3)]
