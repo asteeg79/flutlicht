@@ -1,7 +1,7 @@
 // Taktgeber (KONZEPT 9): entscheidet rein und deterministisch, welche Aktionen fällig
 // sind. Jede Aktion hat einen Schlüssel und wird höchstens einmal ausgeführt; die App
 // führt aus, merkt sich die Schlüssel in system-state und sendet die Pushes.
-import { participation } from "./bonus";
+import { isScoredMatchday, participation } from "./participation";
 import { firstLock } from "./locks";
 import { fixtureCounts, HAS_DATA } from "./matchday";
 import { round1 } from "./rounding";
@@ -115,7 +115,8 @@ export function planTick(input: TickInput): TickAction[] {
         const problem =
           m.lineup === null
             ? "du hast noch keinen Kader"
-            : current >= m.firstMatchday &&
+            : participation(m, current, input.firstScoredMatchday) ===
+                  "scored" &&
                 m.lineup.starters.some((id) => {
                   const p = byId.get(id);
                   return !p || !p.active || !playing.has(p.teamId);
@@ -148,7 +149,12 @@ export function planTick(input: TickInput): TickAction[] {
     const md = todays[0]!.matchday;
     const points = input.points.find((p) => p.matchday === md);
     if (points) {
-      const scores = scoreLeague(input.managers, [points], positions);
+      const scores = scoreLeague(
+        input.managers,
+        [points],
+        positions,
+        input.firstScoredMatchday,
+      );
       const totals = [...scores].flatMap(([id, byMd]) => {
         const s = byMd.get(md);
         return s ? [{ id, total: s.total }] : [];
@@ -172,10 +178,17 @@ export function planTick(input: TickInput): TickAction[] {
 
   // Endergebnis-Push nach der Finalisierung (nur gewertete Spieltage).
   const scored = input.points.filter(
-    (p) => p.status === "final" && p.matchday >= input.firstScoredMatchday,
+    (p) =>
+      p.status === "final" &&
+      isScoredMatchday(p.matchday, input.firstScoredMatchday),
   );
   if (scored.length > 0) {
-    const scores = scoreLeague(input.managers, input.points, positions);
+    const scores = scoreLeague(
+      input.managers,
+      input.points,
+      positions,
+      input.firstScoredMatchday,
+    );
     for (const md of scored) {
       const upTo = new Map(
         input.points

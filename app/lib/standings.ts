@@ -3,6 +3,8 @@
 // und gefiltert, was andere Manager sehen dürfen (2.8).
 import {
   isLocked,
+  isScoredMatchday,
+  isShadowMatchday,
   lineupForMatchday,
   matchdayBonuses,
   participation,
@@ -91,7 +93,8 @@ export function leagueTable(
   game: GameSlice = gameData,
 ): LeagueTable {
   const { positions } = refs(game);
-  const scores = scoreLeague(managers, game.points, positions);
+  const first = game.season.firstScoredMatchday;
+  const scores = scoreLeague(managers, game.points, positions, first);
   const statusOf = new Map(game.points.map((p) => [p.matchday, p.status]));
   const { rows, winners } = standings(scores, statusOf);
   const byId = new Map(managers.map((m) => [m.userId, m]));
@@ -111,10 +114,10 @@ export function leagueTable(
         },
       ]),
     ),
-    matchdays: game.points.map((p) => ({
-      matchday: p.matchday,
-      status: p.status,
-    })),
+    // Nur gewertete Spieltage; Backfill und Schattenbetrieb gehören nicht in die Tabelle.
+    matchdays: game.points
+      .filter((p) => isScoredMatchday(p.matchday, first))
+      .map((p) => ({ matchday: p.matchday, status: p.status })),
   };
 }
 
@@ -166,7 +169,7 @@ export function matchdayView(
   game: GameSlice = gameData,
 ): MatchdayView {
   const first = game.season.firstScoredMatchday;
-  const shadow = n === first - 1;
+  const shadow = isShadowMatchday(n, first);
   const md = game.points.find((p) => p.matchday === n);
   if (!md) return { matchday: n, status: "upcoming", shadow, managers: [] };
   const { byId, positions, ref } = refs(game);
@@ -174,8 +177,7 @@ export function matchdayView(
   const bonuses = matchdayBonuses(managers, md, positions, first);
 
   const views = managers.flatMap((m): ManagerMatchdayView[] => {
-    if (n < m.firstMatchday && participation(m, n, first) !== "shadow")
-      return [];
+    if (participation(m, n, first) === null) return [];
     const lineup = lineupForMatchday(m, n, md.status);
     if (!lineup) return [];
     const score = scoreManager(n, lineup, md.players, m.transfers, positions);

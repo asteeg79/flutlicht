@@ -1,6 +1,7 @@
 // Spieltagsprämie (KONZEPT 2.7): Geld für Spieltagspunkte über dem Median der Liga.
 // Der Spieltag vor dem ersten gewerteten läuft im Schattenbetrieb: berechnet, nicht gutgeschrieben.
 import { MARKET } from "./config/market";
+import { participation } from "./participation";
 import type { Position } from "./config/rules";
 import { scoreManager } from "./points";
 import { clamp, median, round1 } from "./rounding";
@@ -18,26 +19,6 @@ export function matchdayBonus(
     0,
     MARKET.bonusCap,
   );
-}
-
-/**
- * Wie ein Manager an einem Spieltag teilnimmt: gewertet ab seinem ersten Spieltag
- * (frühestens dem ersten gewerteten der Saison), im Schattenbetrieb am Spieltag davor,
- * sofern er schon zum Saisonstart dabei war.
- */
-export function participation(
-  manager: Pick<ScoringManager, "firstMatchday">,
-  matchday: number,
-  firstScoredMatchday: number,
-): "scored" | "shadow" | null {
-  if (matchday >= firstScoredMatchday && matchday >= manager.firstMatchday)
-    return "scored";
-  if (
-    matchday === firstScoredMatchday - 1 &&
-    manager.firstMatchday <= firstScoredMatchday
-  )
-    return "shadow";
-  return null;
 }
 
 export interface MatchdayBonus {

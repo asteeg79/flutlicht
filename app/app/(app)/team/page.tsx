@@ -7,6 +7,7 @@ import {
   formatMio,
   lineupForMatchday,
   lockAt,
+  participation,
   scoreManager,
 } from "@fm/core";
 import { STATUS_LABEL } from "@/components/points";
@@ -89,7 +90,13 @@ export default async function TeamPage() {
     ? lineupForMatchday(manager, points.matchday, points.status)
     : null;
   const live =
-    points && lineup && points.matchday >= manager.firstMatchday
+    points &&
+    lineup &&
+    participation(
+      manager,
+      points.matchday,
+      gameData.season.firstScoredMatchday,
+    ) === "scored"
       ? {
           matchday: points.matchday,
           status: points.status,

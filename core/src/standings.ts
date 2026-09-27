@@ -1,5 +1,6 @@
 // Wertung der Runde (KONZEPT 2.8, 8.4): Spieltagspunkte je Manager, Tabelle, Spieltagssieger.
 import type { Position } from "./config/rules";
+import { participation } from "./participation";
 import { scoreManager, type ManagerScore } from "./points";
 import type { MatchdayPoints } from "./schemas/data";
 import type { Lineup, ManagerDoc } from "./schemas/manager";
@@ -25,17 +26,19 @@ export function lineupForMatchday(
   return manager.lineup;
 }
 
-/** Punkte je Manager und Spieltag; nur ab dem ersten gewerteten Spieltag des Managers. */
+/** Punkte je Manager und Spieltag; nur gewertete Spieltage (`participation`). */
 export function scoreLeague(
   managers: readonly ScoringManager[],
   points: readonly MatchdayPoints[],
   positions: ReadonlyMap<number, Position>,
+  firstScoredMatchday: number,
 ): Map<string, Map<number, ManagerScore>> {
   const out = new Map<string, Map<number, ManagerScore>>();
   for (const m of managers) {
     const byMatchday = new Map<number, ManagerScore>();
     for (const md of points) {
-      if (md.matchday < m.firstMatchday) continue;
+      if (participation(m, md.matchday, firstScoredMatchday) !== "scored")
+        continue;
       const lineup = lineupForMatchday(m, md.matchday, md.status);
       if (!lineup) continue;
       byMatchday.set(

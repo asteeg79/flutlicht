@@ -142,7 +142,7 @@ const C: ScoringManager = {
 };
 
 describe("Szenario: 3 Manager über 2 Spieltage (Abnahme M8)", () => {
-  const scores = scoreLeague([A, B, C], [MD8, MD9], positions);
+  const scores = scoreLeague([A, B, C], [MD8, MD9], positions, 8);
   const table = standings(
     scores,
     new Map([
@@ -264,8 +264,15 @@ describe("lineupForMatchday (KONZEPT 8.4)", () => {
     expect(lineupForMatchday(C, 9, "final")!.captain).toBe(13);
   });
 
+  it("zählt erst ab dem Saisonstart, auch wenn der Manager früher begonnen hat", () => {
+    // Saisonstart nachträglich von 8 auf 9 verschoben: A (erster Spieltag 8) bekommt für 8 nichts.
+    const scores = scoreLeague([A, C], [MD8, MD9], positions, 9);
+    expect([...scores.get("A")!.keys()]).toEqual([9]);
+    expect([...scores.get("C")!.keys()]).toEqual([9]);
+  });
+
   it("wertet Manager ohne Aufstellung nicht", () => {
     const empty: ScoringManager = { ...C, lineup: null };
-    expect(scoreLeague([empty], [MD9], positions).get("C")!.size).toBe(0);
+    expect(scoreLeague([empty], [MD9], positions, 8).get("C")!.size).toBe(0);
   });
 });

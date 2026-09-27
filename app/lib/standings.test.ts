@@ -150,6 +150,14 @@ describe("matchdayView: Schattenbetrieb und Prämie (2.7)", () => {
 });
 
 describe("leagueTable", () => {
+  it("zählt Spieltage vor dem Saisonstart nicht, auch wenn der Manager früher begann", () => {
+    const g = { ...game("final"), season: { firstScoredMatchday: 10 } };
+    const t = leagueTable([tom, ida], g);
+    expect(t.matchdays).toEqual([]);
+    expect(t.rows.map((r) => r.total)).toEqual([0, 0]);
+    expect(t.winners).toEqual({});
+  });
+
   it("rechnet die Tabelle mit Namen und Spieltagssiegern", () => {
     const t = leagueTable([tom, ida], game("final"));
     expect(t.rows.map((r) => [r.rank, r.displayName, r.total])).toEqual([

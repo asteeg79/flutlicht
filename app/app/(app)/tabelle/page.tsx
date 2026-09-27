@@ -13,9 +13,7 @@ export default async function StandingsPage() {
     listAllManagers(),
   ]);
   const table = leagueTable(managers);
-  const scored = table.matchdays.filter(
-    (m) => m.matchday >= gameData.season.firstScoredMatchday,
-  );
+  const scored = table.matchdays;
   const last = scored.at(-1);
 
   if (scored.length === 0) {
@@ -80,7 +78,6 @@ export default async function StandingsPage() {
           </h2>
           <ul className="space-y-1 text-sm">
             {Object.values(table.winners)
-              .filter((w) => w.matchday >= gameData.season.firstScoredMatchday)
               .reverse()
               .map((w) => (
                 <li key={w.matchday} className="flex justify-between gap-3">

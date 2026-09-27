@@ -148,6 +148,9 @@ Preisformel zusätzlich nach Punkten der Vorsaison, öffentliche Version (Abschn
   Tie-Break: mehr Spieltagssiege → höchster Einzelspieltag → gleichauf.
 - **Spieltagssieger** ist die höchste Punktzahl des Spieltags. Bei Gleichstand gewinnen alle.
 - Nachzügler starten mit 0 Punkten ab ihrem ersten Spieltag.
+- Gewertet wird ein Spieltag für einen Manager ab dem späteren von seinem ersten
+  Spieltag und dem ersten gewerteten Spieltag der Saison (`core/participation`).
+  Verschiebt der Admin den Saisonstart, gilt das für Tabelle, Sieger und Prämie gleich.
 - Die Aufstellungen **anderer** Manager sind pro Spieler erst ab dessen Sperre
   sichtbar, danach dauerhaft.
 
