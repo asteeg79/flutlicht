@@ -133,6 +133,13 @@ Preisformel zusätzlich nach Punkten der Vorsaison, öffentliche Version (Abschn
 - Das Guthaben ergibt sich aus Startbudget − Käufe + Verkäufe (jeweils zum
   Transaktionspreis). Der Kaderwert ist die Summe der aktuellen Preise. Beides
   wird angezeigt, **gewertet werden nur Punkte**.
+- **Spieltagsprämie:** Bei der Finalisierung eines gewerteten Spieltags erhält jeder
+  Manager `clamp(round1(0.02 × (Spieltagspunkte − Median aller Manager)), 0, 2.0)` Mio.
+  aufs Guthaben (Spieltagspunkte inkl. Kapitän und Transferabzug; Median über alle
+  Manager mit Aufstellung an diesem Spieltag). Konstanten `bonusPerPoint`, `bonusCap`
+  in `core/src/config/market.ts`.
+- **Schattenbetrieb:** Der Spieltag vor dem ersten gewerteten zeigt Punkte und Prämie
+  zur Probe, ohne Wertung und ohne Gutschrift.
 
 ### 2.8 Wertung
 - Spieltagspunkte eines Managers:

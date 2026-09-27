@@ -22,4 +22,7 @@ export const MARKET = {
   deltaFactor: 0.02,
   deltaDivisor: 5,
   deltaCap: 0.08,
+  /** Spieltagsprämie (2.7): Mio. je Punkt über dem Median der Liga, Deckel je Spieltag. */
+  bonusPerPoint: 0.02,
+  bonusCap: 2,
 };

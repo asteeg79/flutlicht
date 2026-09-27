@@ -1,4 +1,4 @@
-import { formatKickoff, RULES } from "@fm/core";
+import { formatKickoff, formatMio, RULES } from "@fm/core";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -10,6 +10,7 @@ import { currentManager } from "@/lib/session";
 import {
   matchdayView,
   type ManagerMatchdayView,
+  type MatchdayView,
   type SlotView,
 } from "@/lib/standings";
 import { listAllManagers } from "@/lib/storage";
@@ -55,8 +56,16 @@ export default async function MatchdayPage({
         </nav>
       </div>
 
+      {view.shadow && view.managers.length > 0 ? (
+        <p className="mb-4 rounded-xl border border-lampe/60 bg-nacht-hoch px-4 py-3 text-sm">
+          <span className="font-semibold">Schattenbetrieb:</span> Dieser
+          Spieltag zählt noch nicht. Punkte und Prämie siehst du zur Probe,
+          gewertet und gutgeschrieben wird ab Spieltag{" "}
+          {gameData.season.firstScoredMatchday}.
+        </p>
+      ) : null}
       {own ? (
-        <OwnScore view={own} />
+        <OwnScore view={own} state={bonusState(view)} />
       ) : (
         <p className="mb-6 text-kreide-matt">
           {view.status === "upcoming"
@@ -74,7 +83,7 @@ export default async function MatchdayPage({
           </h2>
           <ul className="space-y-3">
             {others.map((m) => (
-              <OtherScore key={m.userId} view={m} />
+              <OtherScore key={m.userId} view={m} state={bonusState(view)} />
             ))}
           </ul>
         </section>
@@ -139,7 +148,26 @@ function NavLink({
   );
 }
 
-function OwnScore({ view }: { view: ManagerMatchdayView }) {
+type BonusState = "shadow" | "credited" | "expected";
+
+function bonusState(view: MatchdayView): BonusState {
+  if (view.shadow) return "shadow";
+  return view.status === "final" ? "credited" : "expected";
+}
+
+const BONUS_LABEL: Record<BonusState, string> = {
+  shadow: "Prämie (Schattenbetrieb, nicht gutgeschrieben)",
+  credited: "Prämie (gutgeschrieben)",
+  expected: "Prämie (voraussichtlich)",
+};
+
+function OwnScore({
+  view,
+  state,
+}: {
+  view: ManagerMatchdayView;
+  state: BonusState;
+}) {
   return (
     <section
       aria-label="Deine Punkte"
@@ -168,6 +196,21 @@ function OwnScore({ view }: { view: ManagerMatchdayView }) {
             <dt className="text-kreide-matt">Transferabzug</dt>
             <dd className="text-karte tabular-nums">
               {signed(-view.transferPenalty)}
+            </dd>
+          </div>
+        ) : null}
+        {view.bonus ? (
+          <div className="flex justify-between gap-3">
+            <dt className="text-kreide-matt">
+              {BONUS_LABEL[state]}
+              <span className="block text-xs">
+                Median der Liga {view.bonus.median} P. · 0,02 Mio. je Punkt
+                darüber, höchstens 2 Mio.
+              </span>
+            </dt>
+            <dd className={view.bonus.bonus > 0 ? "text-lampe" : undefined}>
+              {view.bonus.bonus > 0 ? "+" : ""}
+              {formatMio(view.bonus.bonus)}
             </dd>
           </div>
         ) : null}
@@ -218,7 +261,13 @@ function SlotRow({ slot }: { slot: SlotView }) {
   );
 }
 
-function OtherScore({ view }: { view: ManagerMatchdayView }) {
+function OtherScore({
+  view,
+  state,
+}: {
+  view: ManagerMatchdayView;
+  state: BonusState;
+}) {
   return (
     <li className="rounded-xl border border-nacht-linie bg-nacht-hoch p-4">
       <div className="flex items-baseline justify-between gap-3">
@@ -238,6 +287,11 @@ function OtherScore({ view }: { view: ManagerMatchdayView }) {
                 `${(s.player ?? s.starter).shortName}${s.captain ? " (C)" : ""} ${s.points}`,
             )
             .join(" · ")}
+        </p>
+      ) : null}
+      {view.bonus && view.bonus.bonus > 0 ? (
+        <p className="mt-1 text-xs text-lampe">
+          {BONUS_LABEL[state]}: +{formatMio(view.bonus.bonus)}
         </p>
       ) : null}
       {view.hidden > 0 ? (

@@ -73,6 +73,7 @@ const game = (status: MatchdayPoints["status"]) => ({
   teams: [],
   points: [points(status)],
   fixtures,
+  season: { firstScoredMatchday: 8 },
 });
 const FRIDAY_EVENING = new Date("2026-11-06T20:00:00Z");
 
@@ -113,8 +114,38 @@ describe("matchdayView: Sichtbarkeit fremder Aufstellungen (KONZEPT 2.8)", () =>
     ).toEqual({
       matchday: 10,
       status: "upcoming",
+      shadow: false,
       managers: [],
     });
+  });
+});
+
+describe("matchdayView: Schattenbetrieb und Prämie (2.7)", () => {
+  it("zeigt den Spieltag vor dem ersten gewerteten zur Probe, mit Prämie", () => {
+    const g = { ...game("final"), season: { firstScoredMatchday: 10 } };
+    const later = (m: ManagerDoc) => ({ ...m, firstMatchday: 10 });
+    const view = matchdayView(
+      9,
+      [later(tom), later(ida)],
+      tom.userId,
+      FRIDAY_EVENING,
+      g,
+    );
+    expect(view.shadow).toBe(true);
+    expect(view.managers.map((m) => m.displayName)).toEqual(["Tom", "Ida"]);
+    expect(view.managers[0]!.bonus).toMatchObject({ bonus: 0, shadow: true });
+  });
+
+  it("gewertete Spieltage sind kein Schattenbetrieb", () => {
+    const view = matchdayView(
+      9,
+      [tom],
+      tom.userId,
+      FRIDAY_EVENING,
+      game("final"),
+    );
+    expect(view.shadow).toBe(false);
+    expect(view.managers[0]!.bonus).toMatchObject({ shadow: false });
   });
 });
 

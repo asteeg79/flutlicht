@@ -153,6 +153,39 @@ describe("runTick (Abnahme M9)", () => {
     expect(saved.lineup!.captain).toBe(32);
   });
 
+  it("schreibt die Spieltagsprämie über dem Median gut, genau einmal (2.7)", async () => {
+    const a = await withSquad(SQUAD, {
+      transferBank: { matchday: 8, available: 2 },
+    });
+    const star = a.lineup!.captain;
+    const other = a.lineup!.starters.find((id) => id !== star)!;
+    const b = await withSquad(SQUAD, {
+      userId: "22222222-2222-4222-8222-222222222222",
+      email: "ben@example.org",
+      lineup: { ...a.lineup!, captain: other },
+      transferBank: { matchday: 8, available: 2 },
+    });
+    // Der Kapitän von a holt 30 statt 1: +29 Basis, doppelt gezählt → a liegt 29 Punkte vor b.
+    const md = {
+      ...md8,
+      players: {
+        ...md8.players,
+        [String(star)]: { ...md8.players[String(star)]!, base: 30 },
+      },
+    };
+    const g = { ...(game as object), points: [...earlier, md] } as never;
+    const send = vi.fn(async () => "sent" as const);
+    await runTick(NOW, g, send, finals);
+    // Median (a+b)/2 → a liegt 14,5 darüber → 0,29 → 0,3 Mio.
+    expect((await storage.loadManager(a.userId))!.cash).toBe(1.3);
+    expect((await storage.loadManager(a.userId))!.matchdayBonuses).toEqual({
+      "8": 0.3,
+    });
+    expect((await storage.loadManager(b.userId))!.cash).toBe(1);
+    await runTick(new Date(NOW.getTime() + 10 * 60_000), g, send, finals);
+    expect((await storage.loadManager(a.userId))!.cash).toBe(1.3);
+  });
+
   it("entfernt abgelaufene Subscriptions", async () => {
     const doc = await withSquad(SQUAD, { push: { subscription, prefs } });
     const r = await runTick(

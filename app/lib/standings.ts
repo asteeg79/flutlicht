@@ -4,6 +4,8 @@
 import {
   isLocked,
   lineupForMatchday,
+  matchdayBonuses,
+  participation,
   scoreLeague,
   scoreManager,
   standings,
@@ -11,8 +13,10 @@ import {
   type ManagerDoc,
   type MatchdayPoints,
   type Player,
+  type MatchdayBonus,
   type PointParts,
   type Position,
+  type Season,
   type Team,
 } from "@fm/core";
 import { gameData } from "@/lib/game-data";
@@ -22,6 +26,7 @@ export interface GameSlice {
   teams: readonly Team[];
   points: readonly MatchdayPoints[];
   fixtures: readonly Fixture[];
+  season: Pick<Season, "firstScoredMatchday">;
 }
 
 export interface PlayerRef {
@@ -137,11 +142,15 @@ export interface ManagerMatchdayView {
   slots: SlotView[];
   /** Starter, die noch nicht gesperrt und deshalb verdeckt sind. */
   hidden: number;
+  /** Spieltagsprämie (2.7); gutgeschrieben erst bei der Finalisierung. */
+  bonus: MatchdayBonus | null;
 }
 
 export interface MatchdayView {
   matchday: number;
   status: MatchdayPoints["status"] | "upcoming";
+  /** Spieltag vor dem ersten gewerteten: Punkte und Prämie nur zur Probe. */
+  shadow: boolean;
   managers: ManagerMatchdayView[];
 }
 
@@ -156,13 +165,17 @@ export function matchdayView(
   now: Date,
   game: GameSlice = gameData,
 ): MatchdayView {
+  const first = game.season.firstScoredMatchday;
+  const shadow = n === first - 1;
   const md = game.points.find((p) => p.matchday === n);
-  if (!md) return { matchday: n, status: "upcoming", managers: [] };
+  if (!md) return { matchday: n, status: "upcoming", shadow, managers: [] };
   const { byId, positions, ref } = refs(game);
   const fixtures = game.fixtures.filter((f) => f.matchday === n);
+  const bonuses = matchdayBonuses(managers, md, positions, first);
 
   const views = managers.flatMap((m): ManagerMatchdayView[] => {
-    if (n < m.firstMatchday) return [];
+    if (n < m.firstMatchday && participation(m, n, first) !== "shadow")
+      return [];
     const lineup = lineupForMatchday(m, n, md.status);
     if (!lineup) return [];
     const score = scoreManager(n, lineup, md.players, m.transfers, positions);
@@ -198,9 +211,10 @@ export function matchdayView(
         transferPenalty: score.transferPenalty,
         slots,
         hidden: score.slots.length - slots.length,
+        bonus: bonuses.get(m.userId) ?? null,
       },
     ];
   });
   views.sort((a, b) => Number(b.own) - Number(a.own) || b.total - a.total);
-  return { matchday: n, status: md.status, managers: views };
+  return { matchday: n, status: md.status, shadow, managers: views };
 }

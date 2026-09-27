@@ -1,9 +1,11 @@
 // Taktgeber (KONZEPT 9): entscheidet rein und deterministisch, welche Aktionen fällig
 // sind. Jede Aktion hat einen Schlüssel und wird höchstens einmal ausgeführt; die App
 // führt aus, merkt sich die Schlüssel in system-state und sendet die Pushes.
+import { participation } from "./bonus";
 import { RULES } from "./config/rules";
 import { firstLock } from "./locks";
 import { fixtureCounts } from "./matchday";
+import { round1 } from "./rounding";
 import { scoreLeague, standings } from "./standings";
 import { isBreakWindow, rollTransferBank } from "./transfers";
 import type { Fixture, MatchdayPoints, Player } from "./schemas/data";
@@ -234,15 +236,29 @@ export function finalizeManager(
   matchday: number,
   fixtures: readonly Pick<Fixture, "matchday" | "kickoffUtc">[],
   finals: ReadonlyMap<number, Date>,
+  /** Spieltagsprämie (2.7), vorab für alle Manager mit `matchdayBonuses` berechnet. */
+  bonus?: { firstScoredMatchday: number; bonus: number },
 ): ManagerDoc {
   const key = String(matchday);
-  // Eingefroren wird nur, was gewertet wird: ab dem ersten Spieltag des Managers.
+  const kind = bonus
+    ? participation(doc, matchday, bonus.firstScoredMatchday)
+    : matchday >= doc.firstMatchday
+      ? "scored"
+      : null;
+  // Eingefroren wird, was gewertet wird, und der Schattenbetrieb (zum Nachsehen).
   const lineupHistory =
-    doc.lineup &&
-    matchday >= doc.firstMatchday &&
-    doc.lineupHistory[key] === undefined
+    doc.lineup && kind !== null && doc.lineupHistory[key] === undefined
       ? { ...doc.lineupHistory, [key]: doc.lineup }
       : doc.lineupHistory;
+  // Gutgeschrieben wird nur an gewerteten Spieltagen und nur einmal.
+  const credit =
+    bonus && kind === "scored" && doc.matchdayBonuses?.[key] === undefined;
+  const money = credit
+    ? {
+        cash: round1(doc.cash + bonus.bonus),
+        matchdayBonuses: { ...doc.matchdayBonuses, [key]: bonus.bonus },
+      }
+    : {};
   let bank = doc.transferBank;
   while (bank.matchday <= matchday) {
     const lock = firstLock(
@@ -254,5 +270,5 @@ export function finalizeManager(
         isBreakWindow(finals.get(bank.matchday - 1) ?? null, lock));
     bank = rollTransferBank(bank, unlimited);
   }
-  return { ...doc, lineupHistory, transferBank: bank };
+  return { ...doc, ...money, lineupHistory, transferBank: bank };
 }

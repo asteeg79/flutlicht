@@ -75,6 +75,8 @@ export const ManagerDoc = z.object({
   lineupHistory: z.record(NumericKey, Lineup),
   transfers: z.array(Transfer),
   transferBank: TransferBank,
+  /** Gutgeschriebene Spieltagsprämien in Mio. je Spieltag (2.7); fehlt bei alten Dokumenten. */
+  matchdayBonuses: z.record(NumericKey, z.number()).optional(),
   push: z
     .object({ subscription: PushSubscriptionJson, prefs: PushPrefs })
     .optional(),
