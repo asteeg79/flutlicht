@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   playerMatchPoints,
+  ratingPoints,
   scoreManager,
   type Lineup,
   type PlayerMatchInput,
@@ -325,5 +326,14 @@ describe("scoreManager: Auto-Wechsel, Kapitän, Transferabzug", () => {
     const score = scoreManager(7, lineup442, {}, transfers, positions);
     expect(score.transferPenalty).toBe(5);
     expect(score.total).toBe(-5);
+  });
+});
+
+describe("ratingPoints (3.1, Beispiel im Spielerprofil)", () => {
+  it("Note 7,4: +9 ab 60 Minuten, anteilig darunter, ohne Note 0", () => {
+    expect(ratingPoints(7.4, 90)).toBe(9);
+    expect(ratingPoints(7.4, 30)).toBe(4.5);
+    expect(ratingPoints(6.0, 60)).toBe(-5);
+    expect(ratingPoints(null, 90)).toBe(0);
   });
 });

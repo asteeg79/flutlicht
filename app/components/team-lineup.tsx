@@ -1,6 +1,13 @@
 "use client";
 
-import { setCaptain, swapPlayers, type Lineup, type Position } from "@fm/core";
+import {
+  changeFormation,
+  setCaptain,
+  swapPlayers,
+  type Formation,
+  type Lineup,
+  type Position,
+} from "@fm/core";
 import { LoaderCircle, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
@@ -36,6 +43,8 @@ interface TipPlacement {
 }
 
 const ROWS: Position[] = ["FWD", "MID", "DEF", "GK"];
+/** Schnellwahl über dem Spielfeld; die übrigen erlaubten Formationen gehen per Tausch. */
+const QUICK_FORMATIONS: Formation[] = ["4-4-2", "4-3-3", "3-5-2", "3-4-3"];
 
 /**
  * Spielfeld mit Formation, Bank, Kapitän und Sperren (KONZEPT 2.3–2.5, 8.1).
@@ -106,6 +115,18 @@ export function TeamLineup({
     if (change.lineup !== lineup) void save(change.lineup);
   }
 
+  function pickFormation(target: Formation) {
+    if (saving) return;
+    setSelected(null);
+    const change = changeFormation(lineup, target, {
+      positionOf,
+      priceOf: (id) => byId.get(id)?.price ?? 0,
+      isLocked,
+    });
+    if (!change.ok) return void toast.error(change.message);
+    if (change.lineup !== lineup) void save(change.lineup);
+  }
+
   function makeCaptain() {
     if (selected === null) return;
     const change = setCaptain(lineup, selected);
@@ -135,6 +156,27 @@ export function TeamLineup({
 
   return (
     <div className={sel ? "pb-48" : undefined}>
+      <div
+        role="group"
+        aria-label="Formation wählen"
+        className="mb-3 grid grid-cols-4 gap-2"
+      >
+        {QUICK_FORMATIONS.map((f) => (
+          <button
+            key={f}
+            type="button"
+            onClick={() => pickFormation(f)}
+            aria-pressed={lineup.formation === f}
+            className={`h-10 rounded-lg border font-display text-lg font-bold ${
+              lineup.formation === f
+                ? "border-lampe bg-lampe text-nacht"
+                : "border-nacht-linie text-kreide"
+            }`}
+          >
+            {f}
+          </button>
+        ))}
+      </div>
       {/* Spielfeld: Mähstreifen quer, Kreidelinien, Sturm oben, Tor unten */}
       <section
         aria-label={`Startelf, ${lineup.formation}`}
@@ -152,9 +194,12 @@ export function TeamLineup({
           aria-hidden
           className="absolute bottom-0 left-1/2 h-16 w-44 -translate-x-1/2 border-2 border-b-0 border-kreide/50"
         />
-        <p className="absolute top-2 right-3 font-display text-2xl font-extrabold text-kreide/80">
-          {lineup.formation}
-        </p>
+        {/* Nur für Formationen ohne Schnellwahl-Knopf; sonst zeigt die Leiste sie an. */}
+        {QUICK_FORMATIONS.includes(lineup.formation) ? null : (
+          <p className="absolute top-2 right-3 font-display text-2xl font-extrabold text-kreide/80">
+            {lineup.formation}
+          </p>
+        )}
         <div className="relative flex flex-col gap-4 px-1 py-6">
           {ROWS.map((pos, row) => {
             const ids = lineup.starters.filter((id) => positionOf(id) === pos);

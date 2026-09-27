@@ -56,4 +56,15 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
   await expect(
     page.getByRole("region", { name: "Bank" }).getByRole("button"),
   ).toHaveCount(4);
+
+  // Formationswechsel per Schnellwahl, gespeichert auf dem Server.
+  await page.getByRole("button", { name: "3-5-2", exact: true }).click();
+  await expect(
+    page.getByRole("region", { name: "Startelf, 3-5-2" }),
+  ).toBeVisible();
+  await expect(page.getByText("speichert")).toHaveCount(0);
+  await page.reload();
+  await expect(
+    page.getByRole("button", { name: "3-5-2", exact: true }),
+  ).toHaveAttribute("aria-pressed", "true");
 });

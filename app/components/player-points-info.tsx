@@ -44,7 +44,7 @@ export function PlayerPointsInfo({
                 ? ` · Note ${formatRating(latest.rating)}`
                 : ""}
             </span>
-            <span className="font-semibold tabular-nums">{latest.base} P.</span>
+            <span className="font-semibold">{latest.base} P.</span>
           </p>
           {latest.minutes > 0 ? (
             <PartsLine parts={latest.parts} />

@@ -40,7 +40,7 @@ export function PartsTable({ parts }: { parts: PointParts }) {
     (k) => parts[k] !== 0,
   );
   return (
-    <ul className="space-y-1 text-sm tabular-nums">
+    <ul className="space-y-1 text-sm">
       {keys.map((k) => (
         <li key={k} className="flex justify-between">
           <span className="text-kreide-matt">{PART_LABELS[k]}</span>

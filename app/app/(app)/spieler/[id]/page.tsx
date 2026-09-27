@@ -1,9 +1,16 @@
-import { formatMio, playerSeason, playerStats, startPrice } from "@fm/core";
+import {
+  formatMio,
+  playerSeason,
+  playerStats,
+  ratingPoints,
+  SCORING,
+  startPrice,
+} from "@fm/core";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { PlayerPhoto } from "@/components/player-photo";
 import { formatRating } from "@/components/player-points-info";
-import { PartsLine, PartsTable } from "@/components/points";
+import { PartsLine, PartsTable, signed } from "@/components/points";
 import { gameData } from "@/lib/game-data";
 
 export const metadata = { title: "Spieler" };
@@ -82,10 +89,17 @@ export default async function PlayerPage({
               : ""}
           </p>
           <PartsTable parts={season.parts} />
-          <p className="mt-2 flex justify-between border-t border-nacht-linie pt-2 text-sm font-semibold tabular-nums">
+          <p className="mt-2 flex justify-between border-t border-nacht-linie pt-2 text-sm font-semibold">
             <span>Summe (je Spiel gerundet)</span>
             <span>{season.points} P.</span>
           </p>
+          <RatingHint
+            example={
+              appearances.find(
+                (a) => a.pp!.rating !== null && a.pp!.minutes > 0,
+              )?.pp ?? null
+            }
+          />
         </section>
       ) : null}
 
@@ -153,6 +167,43 @@ function Stat({ label, value }: { label: string; value: string }) {
     <div className="rounded-xl border border-nacht-linie bg-nacht-hoch p-3">
       <dt className="text-xs text-kreide-matt">{label}</dt>
       <dd className="font-display text-2xl font-bold tabular-nums">{value}</dd>
+    </div>
+  );
+}
+
+/**
+ * Woher die Note kommt und was sie in Punkten bedeutet (KONZEPT 3.1). Beispiel ist der
+ * jüngste Einsatz mit Note; ohne einen solchen eine Note von 7,4 über 90 Minuten.
+ */
+function RatingHint({
+  example,
+}: {
+  example: { rating: number | null; minutes: number } | null;
+}) {
+  const { baseline, factor, fullMinutes } = SCORING.rating;
+  const rating = example?.rating ?? 7.4;
+  const minutes = example?.minutes ?? 90;
+  const partial = minutes < fullMinutes;
+  const fmt = (n: number) => n.toLocaleString("de-DE");
+  return (
+    <div className="mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3 text-xs leading-relaxed text-kreide-matt">
+      <p className="mb-1 font-semibold text-kreide">Wie die Note zählt</p>
+      <p>
+        Die Note stammt von Sofascore und wird nach jedem Spiel automatisch aus
+        den Spielstatistiken berechnet, etwa Pässe, Zweikämpfe, Torschüsse und
+        Fehler. Die Skala reicht von 3 bis 10, die meisten Noten liegen zwischen
+        6 und 8: unter 6 ist schwach, ab 7 gut, ab 8 sehr gut.
+      </p>
+      <p className="mt-1">
+        Punkte: (Note − {fmt(baseline)}) × {factor}. Voll zählt die Note ab{" "}
+        {fullMinutes} Minuten, bei kürzeren Einsätzen anteilig.
+      </p>
+      <p className="mt-1 text-kreide">
+        {example ? "Letzter Einsatz" : "Beispiel"}: Note {formatRating(rating)}{" "}
+        in {minutes}′ → ({formatRating(rating)} − {fmt(baseline)}) × {factor}
+        {partial ? ` × ${minutes}/${fullMinutes}` : ""} ={" "}
+        {signed(ratingPoints(rating, minutes))} Punkte
+      </p>
     </div>
   );
 }
