@@ -19,18 +19,13 @@ import { useMemo, useState } from "react";
 import { toast } from "sonner";
 import { PlayerPhoto } from "@/components/player-photo";
 import { Button } from "@/components/ui";
+import { POS_LABEL } from "@/lib/positions";
 import type { PublicManager } from "@/lib/squad";
 
 export type MarketWindow =
   | { open: false }
   | { open: true; matchday: number; closesAt: string; isBreak: boolean };
 
-const POS_LABEL: Record<Position, string> = {
-  GK: "TW",
-  DEF: "ABW",
-  MID: "MF",
-  FWD: "ST",
-};
 const POS_ORDER: Position[] = ["GK", "DEF", "MID", "FWD"];
 type Sort = "price-desc" | "price-asc" | "points" | "form";
 

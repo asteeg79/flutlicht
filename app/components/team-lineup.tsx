@@ -17,6 +17,7 @@ import {
   PlayerPointsInfo,
   type PointsInfo,
 } from "@/components/player-points-info";
+import { POS_LABEL } from "@/lib/positions";
 import type { PublicManager } from "@/lib/squad";
 
 export interface SquadEntry {
@@ -317,8 +318,11 @@ function PlayerToken({
             alt=""
             className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-kreide p-0.5"
           />
+          <span className="absolute -top-1 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border border-kreide/60 bg-nacht px-1 text-[9px] font-bold text-kreide">
+            {POS_LABEL[player.position]}
+          </span>
           {captain ? (
-            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-lampe text-[11px] font-extrabold text-nacht">
+            <span className="absolute -bottom-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-lampe text-[11px] font-extrabold text-nacht">
               C
             </span>
           ) : null}
