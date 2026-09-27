@@ -80,6 +80,8 @@ class Client:
         if response.status == 429:
             self._start_pause("429 Too Many Requests")
         if _is_blocked(response, expect_json=False):
+            # Die Antwort zeigt, ob „kein Foto“ oder eine Sperre (die kam als JSON-Fehler).
+            log.warning("%s bei %s: %r", response.status, url, response.body[:200])
             self._image_403s += 1
             if self._image_403s >= 2:
                 self._start_pause(f"wiederholt 403 bei Bildern, zuletzt {url}")
