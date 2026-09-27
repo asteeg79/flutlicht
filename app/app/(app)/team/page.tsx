@@ -1,6 +1,7 @@
 import {
   latestAppearance,
   playerSeason,
+  playerStats,
   currentMatchday,
   firstLock,
   formatKickoff,
@@ -52,6 +53,7 @@ export default async function TeamPage() {
       : ctx.fixtures.filter((f) => f.matchday === matchday);
   const club = new Map(gameData.teams.map((t) => [t.id, t.shortName]));
   const logo = new Map(gameData.teams.map((t) => [t.id, t.logo]));
+  const stats = playerStats(gameData.points);
   const byId = new Map(gameData.players.map((p) => [p.id, p]));
   const squad: SquadEntry[] = manager.squad.flatMap((id) => {
     const p = byId.get(id);
@@ -75,6 +77,7 @@ export default async function TeamPage() {
           : null,
         lockAt: f ? lockAt(f).toISOString() : null,
         points: pointsInfo(p.id),
+        form: stats.get(p.id)?.form ?? null,
       },
     ];
   });

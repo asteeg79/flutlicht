@@ -67,4 +67,12 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
   await expect(
     page.getByRole("button", { name: "3-5-2", exact: true }),
   ).toHaveAttribute("aria-pressed", "true");
+
+  // Automatisch aufstellen nach Punkten: ergibt eine gültige Startelf.
+  await page.getByRole("radio", { name: "Punkte" }).click();
+  await page.getByRole("button", { name: "Automatisch aufstellen" }).click();
+  await expect(page.getByText("speichert")).toHaveCount(0);
+  await expect(
+    page.getByRole("region", { name: /^Startelf, / }).getByRole("button"),
+  ).toHaveCount(11);
 });

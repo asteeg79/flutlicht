@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  autoLineup,
   changeFormation,
   setCaptain,
   swapPlayers,
@@ -35,6 +36,8 @@ export interface SquadEntry {
   /** Sperrzeit (Anpfiff − 90 Min.) als ISO-String; null ohne Spiel. */
   lockAt: string | null;
   points: PointsInfo;
+  /** Ø Basispunkte der letzten 5 Einsätze; null ohne Einsatz. */
+  form: number | null;
 }
 
 /** Wo der Hover-Tooltip sitzt: unter/über dem Spieler, bündig am Rand der Reihe. */
@@ -65,6 +68,7 @@ export function TeamLineup({
   const [manager, setManager] = useState(initialManager);
   const [selected, setSelected] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
+  const [autoBy, setAutoBy] = useState<"form" | "points">("form");
   const now = useServerClock(serverNow);
 
   const byId = new Map(squad.map((p) => [p.id, p]));
@@ -116,6 +120,27 @@ export function TeamLineup({
     if (change.lineup !== lineup) void save(change.lineup);
   }
 
+  function autoPick() {
+    if (saving) return;
+    setSelected(null);
+    const change = autoLineup(lineup, {
+      positionOf,
+      score: (id) => {
+        const p = byId.get(id);
+        return autoBy === "form"
+          ? (p?.form ?? 0)
+          : (p?.points.season?.points ?? 0);
+      },
+      price: (id) => byId.get(id)?.price ?? 0,
+      hasMatch: (id) => byId.get(id)?.opponent != null,
+      isLocked,
+    });
+    if (!change.ok) return void toast.error(change.message);
+    if (JSON.stringify(change.lineup) === JSON.stringify(lineup))
+      return void toast.info("Die Aufstellung ist schon die beste.");
+    void save(change.lineup);
+  }
+
   function pickFormation(target: Formation) {
     if (saving) return;
     setSelected(null);
@@ -157,6 +182,40 @@ export function TeamLineup({
 
   return (
     <div className={sel ? "pb-48" : undefined}>
+      <div className="mb-3 flex items-center gap-2">
+        <button
+          type="button"
+          onClick={autoPick}
+          className="h-10 flex-1 rounded-lg bg-lampe px-3 text-sm font-semibold text-nacht"
+        >
+          Automatisch aufstellen
+        </button>
+        <div
+          role="radiogroup"
+          aria-label="Aufstellen nach"
+          className="flex h-10 overflow-hidden rounded-lg border border-nacht-linie text-sm"
+        >
+          {(
+            [
+              ["form", "Form"],
+              ["points", "Punkte"],
+            ] as const
+          ).map(([key, label]) => (
+            <button
+              key={key}
+              type="button"
+              role="radio"
+              aria-checked={autoBy === key}
+              onClick={() => setAutoBy(key)}
+              className={`px-3 font-semibold ${
+                autoBy === key ? "bg-kreide text-nacht" : "text-kreide-matt"
+              }`}
+            >
+              {label}
+            </button>
+          ))}
+        </div>
+      </div>
       <div
         role="group"
         aria-label="Formation wählen"

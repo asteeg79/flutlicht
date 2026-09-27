@@ -311,3 +311,89 @@ export function changeFormation(
     },
   };
 }
+
+/**
+ * Stellt automatisch auf (Knopf „Automatisch aufstellen“): Unter allen erlaubten
+ * Formationen gewinnt die mit den meisten Startern, die an diesem Spieltag spielen,
+ * dann mit der höchsten Summe von `score` (Form oder Punkte). Gesperrte Spieler
+ * behalten ihre Rolle, auch als Kapitän (2.5). Kapitän wird sonst der beste
+ * ungesperrte Starter, die Bank ist nach Stärke sortiert (B1 zuerst).
+ */
+export function autoLineup(
+  lineup: Lineup,
+  squad: {
+    positionOf: (id: number) => Position | undefined;
+    score: (id: number) => number;
+    price: (id: number) => number;
+    hasMatch: (id: number) => boolean;
+    isLocked: (id: number) => boolean;
+  },
+): LineupChange {
+  const better = (a: number, b: number) =>
+    Number(squad.hasMatch(b)) - Number(squad.hasMatch(a)) ||
+    squad.score(b) - squad.score(a) ||
+    squad.price(b) - squad.price(a) ||
+    a - b;
+  const value = (id: number) => (squad.hasMatch(id) ? squad.score(id) : 0);
+  const isGk = (id: number) => squad.positionOf(id) === "GK";
+
+  // Torhüter tauschen nur untereinander: ist einer gesperrt, bleiben beide.
+  const gkStarter = lineup.starters.find(isGk)!;
+  const keepGks = squad.isLocked(gkStarter) || squad.isLocked(lineup.bench.gk);
+  const gkSwap = !keepGks && better(lineup.bench.gk, gkStarter) < 0;
+  const gk = gkSwap ? lineup.bench.gk : gkStarter;
+  const gkBench = gkSwap ? gkStarter : lineup.bench.gk;
+
+  const field = lineupPlayers(lineup).filter((id) => !isGk(id));
+  const lockedStarters = lineup.starters.filter(
+    (id) => !isGk(id) && squad.isLocked(id),
+  );
+  const free = field.filter((id) => !squad.isLocked(id)).sort(better);
+
+  let best: { starters: number[]; key: [number, number] } | null = null;
+  for (const formation of FORMATIONS) {
+    const need = formationCounts(formation);
+    const starters: number[] = [];
+    let feasible = true;
+    for (const pos of ["DEF", "MID", "FWD"] as const) {
+      const fixed = lockedStarters.filter((id) => squad.positionOf(id) === pos);
+      const pool = free.filter((id) => squad.positionOf(id) === pos);
+      const missing = need[pos] - fixed.length;
+      if (missing < 0 || pool.length < missing) {
+        feasible = false;
+        break;
+      }
+      starters.push(...fixed, ...pool.slice(0, missing));
+    }
+    if (!feasible) continue;
+    const key: [number, number] = [
+      starters.filter(squad.hasMatch).length,
+      starters.reduce((sum, id) => sum + value(id), 0),
+    ];
+    const wins =
+      !best ||
+      key[0] > best.key[0] ||
+      (key[0] === best.key[0] &&
+        (key[1] > best.key[1] ||
+          (key[1] === best.key[1] && formation === lineup.formation)));
+    if (wins) best = { starters, key };
+  }
+  if (!best) return { ok: true, lineup };
+
+  const order = (id: number) => POSITIONS.indexOf(squad.positionOf(id)!);
+  const starters = [gk, ...best.starters].sort(
+    (a, b) => order(a) - order(b) || better(a, b),
+  );
+  const rest = free.filter((id) => !starters.includes(id));
+  const b = lineup.bench.b.map((id) =>
+    squad.isLocked(id) ? id : rest.shift()!,
+  ) as [number, number, number];
+  const captain = squad.isLocked(lineup.captain)
+    ? lineup.captain
+    : starters.filter((id) => !squad.isLocked(id)).sort(better)[0]!;
+  const formation = formationOf(starters.map((id) => squad.positionOf(id)!))!;
+  return {
+    ok: true,
+    lineup: { formation, starters, bench: { gk: gkBench, b }, captain },
+  };
+}
