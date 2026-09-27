@@ -1,5 +1,8 @@
 import {
+  expectation,
   formatMio,
+  MARKET,
+  nextPrice,
   playerSeason,
   playerStats,
   ratingPoints,
@@ -126,6 +129,20 @@ export default async function PlayerPage({
             <li className="text-kreide-matt">Seit Saisonstart unverändert.</li>
           ) : null}
         </ul>
+        <PriceHint
+          price={player.price}
+          start={start}
+          valueEur={player.startValueEur}
+          source={player.valueSource}
+          vMaxEur={gameData.season.vMaxEur}
+          E={expectation(
+            [...appearances]
+              .reverse()
+              .filter((a) => a.pp!.minutes > 0)
+              .map((a) => a.pp!.base),
+            player.position,
+          )}
+        />
       </section>
 
       <section>
@@ -205,5 +222,81 @@ function RatingHint({
         {signed(ratingPoints(rating, minutes))} Punkte
       </p>
     </div>
+  );
+}
+
+const SOURCE_TEXT = {
+  "tm-crawl": "Transfermarkt-Marktwert zum Saisonstart",
+  dcaribou: "Transfermarkt-Marktwert aus dem offenen Datensatz (Juni 2026)",
+  sofascore:
+    "Marktwert-Schätzung von Sofascore (kein Transfermarkt-Wert gefunden)",
+  manual: "Marktwert, vom Admin eingetragen",
+  missing: "noch kein Marktwert, deshalb vorerst nicht kaufbar",
+} as const;
+
+/**
+ * Wie der Preis entsteht und sich entwickelt (KONZEPT 4.1, 4.3), zugeklappt. Die
+ * Rechnungen kommen aus core (`startPrice`, `nextPrice`), Konstanten aus `MARKET`.
+ */
+function PriceHint({
+  price,
+  start,
+  valueEur,
+  source,
+  vMaxEur,
+  E,
+}: {
+  price: number;
+  start: number | null;
+  valueEur: number | undefined;
+  source: keyof typeof SOURCE_TEXT;
+  vMaxEur: number;
+  E: number;
+}) {
+  const mioEur = (v: number) =>
+    `${(v / 1e6).toLocaleString("de-DE", { maximumFractionDigits: 2 })} Mio. €`;
+  const pct = (n: number) => `${(n * 100).toLocaleString("de-DE")} %`;
+  const fmt = (n: number) =>
+    n.toLocaleString("de-DE", { maximumFractionDigits: 1 });
+  const perStep = MARKET.deltaFactor;
+  const up = Math.round(E) + 10;
+  const down = Math.round(E) - 10;
+  return (
+    <details className="group mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3 text-xs leading-relaxed text-kreide-matt">
+      <summary className="cursor-pointer list-none font-semibold text-kreide [&::-webkit-details-marker]:hidden">
+        <span className="inline-block transition-transform group-open:rotate-90">
+          ›
+        </span>{" "}
+        Wie sich der Preis berechnet
+      </summary>
+      <p className="mt-2 font-semibold text-kreide">Startpreis</p>
+      <p>
+        Grundlage ist der {SOURCE_TEXT[source]}. Damit Stars nicht unbezahlbar
+        werden, wird er per Wurzel gestaucht: {MARKET.startPriceScale} × √(Wert
+        ÷ höchster Wert der Liga), zwischen {fmt(MARKET.startPriceMin)} und{" "}
+        {fmt(MARKET.startPriceMax)} Mio.
+      </p>
+      {valueEur !== undefined && start !== null ? (
+        <p className="mt-1 text-kreide">
+          Hier: {MARKET.startPriceScale} × √({mioEur(valueEur)} ÷{" "}
+          {mioEur(vMaxEur)}) = {formatMio(start)}
+        </p>
+      ) : null}
+      <p className="mt-2 font-semibold text-kreide">Nach jedem Spieltag</p>
+      <p>
+        Wer gespielt hat, wird mit seiner Erwartung verglichen: dem Schnitt
+        seiner letzten {MARKET.formWindow} Einsätze (ohne Einsätze{" "}
+        {MARKET.defaultExpectation.MID} Punkte). Je {MARKET.deltaDivisor} Punkte
+        über der Erwartung steigt der Preis um {pct(perStep)}, darunter fällt er
+        entsprechend, höchstens um {pct(MARKET.deltaCap)} pro Spieltag. Ohne
+        Einsatz bleibt er gleich. Der Preis bleibt zwischen{" "}
+        {fmt(MARKET.priceMin)} und {fmt(MARKET.priceMax)} Mio.
+      </p>
+      <p className="mt-1 text-kreide">
+        Hier: Erwartung {fmt(E)} Punkte. Mit {up} Punkten ginge es von{" "}
+        {formatMio(price)} auf {formatMio(nextPrice(price, up, E))}, mit {down}{" "}
+        auf {formatMio(nextPrice(price, down, E))}
+      </p>
+    </details>
   );
 }
