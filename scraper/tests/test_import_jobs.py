@@ -119,12 +119,12 @@ def test_images_stoppt_nach_dem_limit(make_client, tmp_path, monkeypatch):
     assert len(request.urls) == 1
 
 
-def test_images_ueberspringt_ein_einzelnes_403(make_client, tmp_path, monkeypatch):
+def test_images_laedt_bei_403_ueber_den_browser(make_client, tmp_path):
     write_squad(tmp_path, [1, 2])
-    request = FakeTransport(RawResponse(403, b""), ok(png(64)))
-    client, _ = make_client(request)
+    browser = FakeTransport(ok(png(64)), ok(png(64)))
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), browser)
     written = images.run(client, tmp_path / "raw", tmp_path / "img", [])
-    assert [p.name for p in written] == ["2.webp"]
+    assert [p.name for p in written] == ["1.webp", "2.webp"]
 
 
 def test_images_fragt_spieler_ohne_foto_nur_einmal_ab(make_client, tmp_path):
@@ -141,8 +141,7 @@ def test_images_fragt_spieler_ohne_foto_nur_einmal_ab(make_client, tmp_path):
 def test_images_merkt_sich_ein_403_nicht_als_kein_foto(make_client, tmp_path):
     # 403 heißt „Script gesperrt“ (das Bild gibt es im Browser): Es bleibt offen.
     write_squad(tmp_path, [1, 2, 3])
-    request = FakeTransport(RawResponse(403, b""), RawResponse(403, b""))
-    client, _ = make_client(request)
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), FakeTransport(RawResponse(403, b"")))
     with pytest.raises(PauseRequired):
         images.run(client, tmp_path / "raw", tmp_path / "img", [])
     assert not (tmp_path / "raw" / "sofascore" / "images-missing.json").exists()

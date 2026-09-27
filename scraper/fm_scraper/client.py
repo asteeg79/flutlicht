@@ -1,12 +1,13 @@
 """Einzige Stelle für HTTP (KONZEPT 10): Pacing, request→browser-Fallback, Pausen.
 
 Scraping-Regeln (KONZEPT 5.6): keine Parallelität, 8–20 s Abstand, erst
-botasaurus.request, nur bei 403/Bot-Challenge botasaurus.browser, bei 429 oder
-wiederholtem 403 Abbruch und 6 h Pause, nachts keine Abrufe.
+botasaurus.request, nur bei 403/Bot-Challenge botasaurus.browser (JSON und Bilder),
+bei 429 oder wiederholtem 403 Abbruch und 6 h Pause, nachts keine Abrufe.
 """
 
 from __future__ import annotations
 
+import base64
 import json
 import logging
 import random
@@ -63,43 +64,27 @@ class Client:
         self._uniform = uniform
         self._pacing = pacing
         self._requests_made = 0
-        self._image_403s = 0
 
     def get_json(self, url: str) -> Any:
-        body = self._fetch(url)
-        return json.loads(body)
+        return json.loads(self._fetch(url, expect_json=True))
 
     def get_bytes(self, url: str) -> bytes:
-        """Bilder: ohne Browser-Fallback, der kann keine Bilder laden. Ein einzelnes 403
-        wird als FetchError gemeldet; erst zwei 403 hintereinander lösen die Pause
-        aus (KONZEPT 5.6)."""
-        response = self._send(self._request, url)
-        if response.status == 200 and _looks_valid(response.body, expect_json=False):
-            self._image_403s = 0
-            return response.body
-        if response.status == 429:
-            self._start_pause("429 Too Many Requests")
-        if _is_blocked(response, expect_json=False):
-            # Die Antwort zeigt, ob „kein Foto“ oder eine Sperre (die kam als JSON-Fehler).
-            log.warning("%s bei %s: %r", response.status, url, response.body[:200])
-            self._image_403s += 1
-            if self._image_403s >= 2:
-                self._start_pause(f"wiederholt 403 bei Bildern, zuletzt {url}")
-            raise FetchError(url, 403)
-        raise FetchError(url, response.status)
+        """Bilder: gleicher Ablauf wie JSON, der Browser-Modus liefert das Bild als PNG."""
+        return self._fetch(url, expect_json=False)
 
-    def _fetch(self, url: str) -> bytes:
+    def _fetch(self, url: str, expect_json: bool) -> bytes:
         in_browser = self._browser is not None
         response = self._send(self._browser or self._request, url)
-        if not in_browser and self._browser_factory and _is_blocked(response, expect_json=True):
+        if not in_browser and self._browser_factory and _is_blocked(response, expect_json):
             log.warning("403/Bot-Challenge bei %s, wechsle auf den Browser-Modus", url)
             self._browser = self._browser_factory()
             response = self._send(self._browser, url)
-        if response.status == 200 and _looks_valid(response.body, expect_json=True):
+        if response.status == 200 and _looks_valid(response.body, expect_json):
             return response.body
         if response.status == 429:
             self._start_pause("429 Too Many Requests")
-        if _is_blocked(response, expect_json=True):
+        if _is_blocked(response, expect_json):
+            log.warning("%s bei %s: %r", response.status, url, response.body[:200])
             self._start_pause(f"wiederholt 403/Bot-Challenge bei {url}")
         raise FetchError(url, response.status)
 
@@ -174,8 +159,26 @@ class BotasaurusRequestTransport:
         return RawResponse(r.status_code, r.content)
 
 
+# Status aus der Navigation (kein zweiter Abruf); ein Bild wird über ein Canvas zu PNG.
+_READ_PAGE_JS = """
+const nav = performance.getEntriesByType("navigation")[0];
+const status = (nav && nav.responseStatus) || 0;
+const img = document.contentType.startsWith("image/") ? document.images[0] : null;
+if (!img) return { status, text: document.body ? document.body.innerText : "" };
+if (!img.complete || !img.naturalWidth) return { status, text: "" };
+const canvas = document.createElement("canvas");
+canvas.width = img.naturalWidth;
+canvas.height = img.naturalHeight;
+canvas.getContext("2d").drawImage(img, 0, 0);
+return { status, png: canvas.toDataURL("image/png").split(",")[1] };
+"""
+
+
 class BotasaurusBrowserTransport:
-    """Browser-Modus (headless Chromium): ruft die API-URL direkt auf und liest den Text."""
+    """Browser-Modus (headless Chromium): ruft die API-URL direkt auf und liest Text oder Bild.
+
+    Das Blockieren wirkt über Dateiendungen: Es verhindert den Favicon-Abruf (kein
+    zusätzlicher Endpunkt, 5.6), die Bild-URL `.../image` hat keine Endung und lädt."""
 
     def __init__(self) -> None:
         from botasaurus_driver import Driver
@@ -184,13 +187,22 @@ class BotasaurusBrowserTransport:
 
     def get(self, url: str) -> RawResponse:
         self._driver.get(url)
-        text = self._driver.run_js("return document.body ? document.body.innerText : ''")
-        body = (text or "").encode()
-        # Den HTTP-Status liefert die Seite nicht; ungültiges JSON zählt als Sperre.
-        return RawResponse(200 if _looks_valid(body, True) else 403, body)
+        return _page_response(self._driver.run_js(_READ_PAGE_JS))
 
     def close(self) -> None:
         self._driver.close()
+
+
+def _page_response(page: dict[str, Any]) -> RawResponse:
+    if page.get("png"):
+        body = base64.b64decode(page["png"])
+    else:
+        body = (page.get("text") or "").encode()
+    status = page.get("status") or 0
+    if not status:
+        # Ältere Chromium-Versionen kennen responseStatus nicht: ungültige Antwort zählt als Sperre.
+        status = 200 if _looks_valid(body, expect_json=not page.get("png")) else 403
+    return RawResponse(status, body)
 
 
 class UrllibTransport:

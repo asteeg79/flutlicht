@@ -1,9 +1,10 @@
+import base64
 import json
 from datetime import datetime, timezone
 
 import pytest
 
-from fm_scraper.client import FetchError, PauseRequired, RawResponse
+from fm_scraper.client import FetchError, PauseRequired, RawResponse, _page_response
 from tests.conftest import FakeTransport, ok
 
 
@@ -93,33 +94,45 @@ def test_laedt_bilder_als_bytes(make_client):
     assert client.get_bytes("img") == b"RIFF....WEBP"
 
 
-def test_bilder_ohne_browser_einzelnes_403_wird_uebersprungen(make_client, tmp_path):
-    # Der Browser-Modus kann keine Bilder laden; ein 403 heißt oft nur „kein Foto“.
-    browser = FakeTransport(ok(b"RIFF"))
-    client, _ = make_client(FakeTransport(RawResponse(403, b"")), browser)
-    with pytest.raises(FetchError) as e:
-        client.get_bytes("img1")
-    assert e.value.status == 403
-    assert browser.urls == []
-    assert not (tmp_path / "state.json").exists()
+def test_bilder_wechseln_bei_403_auf_den_browser(make_client):
+    request = FakeTransport(RawResponse(403, b'{"error": {"code": 403}}'))
+    browser = FakeTransport(ok(b"PNG1"), ok(b"PNG2"))
+    client, _ = make_client(request, browser)
+    assert client.get_bytes("img1") == b"PNG1"
+    assert client.get_bytes("img2") == b"PNG2"
+    assert request.urls == ["img1"]
+    assert browser.urls == ["img1", "img2"]
 
 
-def test_bilder_zwei_403_hintereinander_pausieren(make_client, tmp_path):
-    client, _ = make_client(FakeTransport(RawResponse(403, b""), RawResponse(403, b"")))
-    with pytest.raises(FetchError):
-        client.get_bytes("img1")
+def test_bilder_pausieren_wenn_auch_der_browser_gesperrt_ist(make_client, tmp_path):
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), FakeTransport(RawResponse(403, b"")))
     with pytest.raises(PauseRequired):
-        client.get_bytes("img2")
+        client.get_bytes("img1")
     assert (tmp_path / "state.json").exists()
 
 
-def test_bilder_ein_treffer_setzt_die_403_zaehlung_zurueck(make_client, tmp_path):
-    client, _ = make_client(
-        FakeTransport(RawResponse(403, b""), ok(b"RIFF"), RawResponse(403, b""))
-    )
-    with pytest.raises(FetchError):
-        client.get_bytes("img1")
-    assert client.get_bytes("img2") == b"RIFF"
-    with pytest.raises(FetchError):
-        client.get_bytes("img3")
+def test_browser_json_fehler_mit_status_403_ist_eine_sperre(make_client, tmp_path):
+    # Die Sperre kommt als gültiges JSON; entscheidend ist der Status der Navigation.
+    blocked = _page_response({"status": 403, "text": '{"error": {"code": 403, "reason": "Forbidden"}}'})
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), FakeTransport(blocked))
+    with pytest.raises(PauseRequired):
+        client.get_json("u1")
+
+
+def test_browser_404_ist_keine_sperre(make_client, tmp_path):
+    missing = _page_response({"status": 404, "text": '{"error": {"code": 404}}'})
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), FakeTransport(missing))
+    with pytest.raises(FetchError) as e:
+        client.get_json("u1")
+    assert e.value.status == 404
     assert not (tmp_path / "state.json").exists()
+
+
+def test_browser_seite_wird_zu_status_und_inhalt():
+    png = base64.b64encode(b"\x89PNG").decode()
+    assert _page_response({"status": 200, "png": png}) == RawResponse(200, b"\x89PNG")
+    assert _page_response({"status": 200, "text": "{}"}) == RawResponse(200, b"{}")
+    # Ohne responseStatus (älteres Chromium): nur gültiger Inhalt zählt als 200.
+    assert _page_response({"status": 0, "text": "{}"}).status == 200
+    assert _page_response({"status": 0, "text": "<html>"}).status == 403
+    assert _page_response({"status": 0, "png": png}).status == 200
