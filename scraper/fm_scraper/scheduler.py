@@ -213,7 +213,7 @@ LOCK_FILE = config.STATE_DIR / "scheduler.lock"
 def _images_missing(raw_dir: Path, img_dir: Path, teams: list[dict]) -> bool:
     from .jobs import images
 
-    return any(not (img_dir / kind / f"{id_}.webp").exists() for kind, id_ in images.wanted(raw_dir, teams))
+    return bool(images.todo(raw_dir, img_dir, teams))
 
 
 def _execute(task: Task, client, raw_dir: Path) -> tuple[str, tuple[str, ...]]:
@@ -234,7 +234,7 @@ def _execute(task: Task, client, raw_dir: Path) -> tuple[str, tuple[str, ...]]:
         squads.run(client, raw_dir, load_teams(config.TEAMS_FILE), datetime.now(BERLIN).date())
     elif task.job == "images":
         images.run(client, raw_dir, config.IMG_DIR, load_teams(config.TEAMS_FILE))
-        return "ok", ("app/public/img",)
+        return "ok", ("app/public/img", "raw")
     return "ok", ("raw",)
 
 

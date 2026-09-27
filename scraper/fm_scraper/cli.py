@@ -79,6 +79,6 @@ def main(argv: list[str] | None = None) -> int:
     for path in written:
         logging.info("geschrieben: %s", path.relative_to(config.REPO_ROOT))
     if not args.no_sync:
-        paths = ("app/public/img",) if args.job == "images" else ("raw",)
+        paths = ("app/public/img", "raw") if args.job == "images" else ("raw",)
         gitsync.sync(config.REPO_ROOT, args.job, paths)
     return 0

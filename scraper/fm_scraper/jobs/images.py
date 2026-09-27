@@ -2,9 +2,12 @@
 
 Höchstens 60 Bilder pro Lauf, Läufe höchstens stündlich. Vorhandene Bilder werden
 übersprungen; Logos kommen zuerst. Die Spieler-IDs stammen aus den Kaderdateien.
+Jedes Bild wird nur einmal abgefragt (5.5 „einmalig“): Wer kein Foto hat (403/404),
+kommt nach `raw/sofascore/images-missing.json`. Löschen der Datei fragt erneut ab.
 """
 
 import io
+import json
 from pathlib import Path
 
 from .. import config
@@ -23,6 +26,25 @@ def wanted(raw_dir: Path, teams: list[dict]) -> list[tuple[str, int]]:
     return items
 
 
+def _missing_file(raw_dir: Path) -> Path:
+    return raw_dir / "sofascore" / "images-missing.json"
+
+
+def _read_missing(raw_dir: Path) -> set[str]:
+    path = _missing_file(raw_dir)
+    return set(json.loads(path.read_text())) if path.exists() else set()
+
+
+def todo(raw_dir: Path, img_dir: Path, teams: list[dict]) -> list[tuple[str, int]]:
+    """Bilder, die weder vorhanden noch als „kein Foto“ vermerkt sind."""
+    missing = _read_missing(raw_dir)
+    return [
+        (kind, id_)
+        for kind, id_ in wanted(raw_dir, teams)
+        if f"{kind}/{id_}" not in missing and not (img_dir / kind / f"{id_}.webp").exists()
+    ]
+
+
 def to_webp(image: bytes, size: int) -> bytes:
     from PIL import Image
 
@@ -36,12 +58,10 @@ def to_webp(image: bytes, size: int) -> bytes:
 
 def run(client: Client, raw_dir: Path, img_dir: Path, teams: list[dict]) -> list[Path]:
     written: list[Path] = []
-    for kind, id_ in wanted(raw_dir, teams):
-        if len(written) >= config.IMAGES_PER_RUN:
-            break
+    missing = _read_missing(raw_dir)
+    # Das Limit zählt Abrufe, auch die ohne Bild (5.5: höchstens 60 pro Stunde).
+    for kind, id_ in todo(raw_dir, img_dir, teams)[: config.IMAGES_PER_RUN]:
         path = img_dir / kind / f"{id_}.webp"
-        if path.exists():
-            continue
         try:
             image = client.get_bytes(f"{config.IMAGE_API}/{'team' if kind == 'clubs' else 'player'}/{id_}/image")
         except FetchError as e:
@@ -49,6 +69,10 @@ def run(client: Client, raw_dir: Path, img_dir: Path, teams: list[dict]) -> list
             # Wiederholte 403 bricht der Client selbst mit einer Pause ab.
             if e.status not in (403, 404):
                 raise
+            # Sofort schreiben: Das nächste 403 kann den Lauf mit einer Pause beenden.
+            missing.add(f"{kind}/{id_}")
+            _missing_file(raw_dir).parent.mkdir(parents=True, exist_ok=True)
+            _missing_file(raw_dir).write_text(json.dumps(sorted(missing), indent=2) + "\n")
             continue
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(to_webp(image, config.IMAGE_SIZE))
