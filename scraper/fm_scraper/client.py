@@ -63,26 +63,41 @@ class Client:
         self._uniform = uniform
         self._pacing = pacing
         self._requests_made = 0
+        self._image_403s = 0
 
     def get_json(self, url: str) -> Any:
-        body = self._fetch(url, expect_json=True)
+        body = self._fetch(url)
         return json.loads(body)
 
     def get_bytes(self, url: str) -> bytes:
-        return self._fetch(url, expect_json=False)
-
-    def _fetch(self, url: str, expect_json: bool) -> bytes:
-        in_browser = self._browser is not None
-        response = self._send(self._browser or self._request, url)
-        if not in_browser and self._browser_factory and _is_blocked(response, expect_json):
-            log.warning("403/Bot-Challenge bei %s, wechsle auf den Browser-Modus", url)
-            self._browser = self._browser_factory()
-            response = self._send(self._browser, url)
-        if response.status == 200 and _looks_valid(response.body, expect_json):
+        """Bilder: ohne Browser-Fallback, der kann keine Bilder laden. Ein einzelnes 403
+        heißt oft nur „kein Foto“ und wird als FetchError gemeldet; erst zwei 403
+        hintereinander lösen die Pause aus (KONZEPT 5.6)."""
+        response = self._send(self._request, url)
+        if response.status == 200 and _looks_valid(response.body, expect_json=False):
+            self._image_403s = 0
             return response.body
         if response.status == 429:
             self._start_pause("429 Too Many Requests")
-        if _is_blocked(response, expect_json):
+        if _is_blocked(response, expect_json=False):
+            self._image_403s += 1
+            if self._image_403s >= 2:
+                self._start_pause(f"wiederholt 403 bei Bildern, zuletzt {url}")
+            raise FetchError(url, 403)
+        raise FetchError(url, response.status)
+
+    def _fetch(self, url: str) -> bytes:
+        in_browser = self._browser is not None
+        response = self._send(self._browser or self._request, url)
+        if not in_browser and self._browser_factory and _is_blocked(response, expect_json=True):
+            log.warning("403/Bot-Challenge bei %s, wechsle auf den Browser-Modus", url)
+            self._browser = self._browser_factory()
+            response = self._send(self._browser, url)
+        if response.status == 200 and _looks_valid(response.body, expect_json=True):
+            return response.body
+        if response.status == 429:
+            self._start_pause("429 Too Many Requests")
+        if _is_blocked(response, expect_json=True):
             self._start_pause(f"wiederholt 403/Bot-Challenge bei {url}")
         raise FetchError(url, response.status)
 

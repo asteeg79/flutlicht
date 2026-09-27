@@ -45,9 +45,11 @@ def run(client: Client, raw_dir: Path, img_dir: Path, teams: list[dict]) -> list
         try:
             image = client.get_bytes(f"{config.IMAGE_API}/{'team' if kind == 'clubs' else 'player'}/{id_}/image")
         except FetchError as e:
-            if e.status != 404:
+            # 404 oder ein einzelnes 403: kein Bild → die App zeigt eine Silhouette.
+            # Wiederholte 403 bricht der Client selbst mit einer Pause ab.
+            if e.status not in (403, 404):
                 raise
-            continue  # kein Bild vorhanden → die App zeigt eine Silhouette
+            continue
         path.parent.mkdir(parents=True, exist_ok=True)
         path.write_bytes(to_webp(image, config.IMAGE_SIZE))
         written.append(path)

@@ -91,3 +91,35 @@ def test_meldet_andere_fehler_ohne_pause(make_client, tmp_path):
 def test_laedt_bilder_als_bytes(make_client):
     client, _ = make_client(FakeTransport(ok(b"RIFF....WEBP")))
     assert client.get_bytes("img") == b"RIFF....WEBP"
+
+
+def test_bilder_ohne_browser_einzelnes_403_wird_uebersprungen(make_client, tmp_path):
+    # Der Browser-Modus kann keine Bilder laden; ein 403 heißt oft nur „kein Foto“.
+    browser = FakeTransport(ok(b"RIFF"))
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), browser)
+    with pytest.raises(FetchError) as e:
+        client.get_bytes("img1")
+    assert e.value.status == 403
+    assert browser.urls == []
+    assert not (tmp_path / "state.json").exists()
+
+
+def test_bilder_zwei_403_hintereinander_pausieren(make_client, tmp_path):
+    client, _ = make_client(FakeTransport(RawResponse(403, b""), RawResponse(403, b"")))
+    with pytest.raises(FetchError):
+        client.get_bytes("img1")
+    with pytest.raises(PauseRequired):
+        client.get_bytes("img2")
+    assert (tmp_path / "state.json").exists()
+
+
+def test_bilder_ein_treffer_setzt_die_403_zaehlung_zurueck(make_client, tmp_path):
+    client, _ = make_client(
+        FakeTransport(RawResponse(403, b""), ok(b"RIFF"), RawResponse(403, b""))
+    )
+    with pytest.raises(FetchError):
+        client.get_bytes("img1")
+    assert client.get_bytes("img2") == b"RIFF"
+    with pytest.raises(FetchError):
+        client.get_bytes("img3")
+    assert not (tmp_path / "state.json").exists()

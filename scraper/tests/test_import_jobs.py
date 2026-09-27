@@ -117,3 +117,11 @@ def test_images_stoppt_nach_dem_limit(make_client, tmp_path, monkeypatch):
     client, _ = make_client(request)
     assert len(images.run(client, tmp_path / "raw", tmp_path / "img", [])) == 1
     assert len(request.urls) == 1
+
+
+def test_images_ueberspringt_ein_einzelnes_403(make_client, tmp_path, monkeypatch):
+    write_squad(tmp_path, [1, 2])
+    request = FakeTransport(RawResponse(403, b""), ok(png(64)))
+    client, _ = make_client(request)
+    written = images.run(client, tmp_path / "raw", tmp_path / "img", [])
+    assert [p.name for p in written] == ["2.webp"]
