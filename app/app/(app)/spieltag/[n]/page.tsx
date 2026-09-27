@@ -2,6 +2,7 @@ import { formatKickoff, RULES } from "@fm/core";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { ClubLogo } from "@/components/club-logo";
 import { PageHeader } from "@/components/page-header";
 import { PartsLine, signed, STATUS_LABEL } from "@/components/points";
 import { gameData } from "@/lib/game-data";
@@ -26,7 +27,7 @@ export default async function MatchdayPage({
   const view = matchdayView(n, await listAllManagers(), me.userId, new Date());
   const own = view.managers.find((m) => m.own);
   const others = view.managers.filter((m) => !m.own);
-  const club = new Map(gameData.teams.map((t) => [t.id, t.shortName]));
+  const club = new Map(gameData.teams.map((t) => [t.id, t]));
   const fixtures = gameData.fixtures.filter((f) => f.matchday === n);
 
   return (
@@ -87,8 +88,16 @@ export default async function MatchdayPage({
               key={f.openligaMatchId}
               className="flex items-center justify-between gap-3 px-4 py-3"
             >
-              <span>
-                {club.get(f.homeTeamId)} – {club.get(f.awayTeamId)}
+              <span className="flex min-w-0 flex-wrap items-center gap-x-2">
+                <span className="flex items-center gap-2">
+                  <ClubLogo src={club.get(f.homeTeamId)?.logo} />
+                  {club.get(f.homeTeamId)?.shortName}
+                </span>
+                <span className="text-kreide-matt">–</span>
+                <span className="flex items-center gap-2">
+                  <ClubLogo src={club.get(f.awayTeamId)?.logo} />
+                  {club.get(f.awayTeamId)?.shortName}
+                </span>
               </span>
               {f.score ? (
                 <span className="font-display text-2xl font-bold tabular-nums">
@@ -186,11 +195,19 @@ function SlotRow({ slot }: { slot: SlotView }) {
           ) : null}
         </p>
         <p className="text-xs text-kreide-matt">
-          {slot.subbedIn
-            ? `eingewechselt für ${slot.starter.shortName} · ${slot.minutes}′`
-            : slot.player === null
-              ? "kein Einsatz, niemand rückte nach"
-              : `${shown.club} · ${slot.minutes}′`}
+          {slot.subbedIn ? (
+            `eingewechselt für ${slot.starter.shortName} · ${slot.minutes}′`
+          ) : slot.player === null ? (
+            "kein Einsatz, niemand rückte nach"
+          ) : (
+            <>
+              <ClubLogo
+                src={shown.clubLogo}
+                className="mr-1 h-3.5 w-3.5 align-[-2px]"
+              />
+              {shown.club} · {slot.minutes}′
+            </>
+          )}
         </p>
         <PartsLine parts={slot.parts} startBonus={slot.startBonus} />
       </div>

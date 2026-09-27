@@ -1,4 +1,6 @@
 import {
+  latestAppearance,
+  playerSeason,
   currentMatchday,
   firstLock,
   formatKickoff,
@@ -10,6 +12,7 @@ import {
 import { STATUS_LABEL } from "@/components/points";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
+import type { PointsInfo } from "@/components/player-points-info";
 import { TeamLineup, type SquadEntry } from "@/components/team-lineup";
 import { gameData } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
@@ -71,6 +74,7 @@ export default async function TeamPage() {
           ? `${club.get(home ? f.awayTeamId : f.homeTeamId)} (${home ? "H" : "A"})`
           : null,
         lockAt: f ? lockAt(f).toISOString() : null,
+        points: pointsInfo(p.id),
       },
     ];
   });
@@ -125,4 +129,24 @@ export default async function TeamPage() {
       />
     </>
   );
+}
+
+/** Letzter Einsatz und Saison eines Spielers für Tooltip und Auswahlleiste. */
+function pointsInfo(id: number): PointsInfo {
+  const latest = latestAppearance(gameData.points, id);
+  const season = playerSeason(gameData.points, id);
+  return {
+    latest: latest && {
+      matchday: latest.matchday,
+      minutes: latest.entry.minutes,
+      rating: latest.entry.rating,
+      parts: latest.entry.parts,
+      base: latest.entry.base,
+    },
+    season: season && {
+      points: season.points,
+      appearances: season.appearances,
+      avgRating: season.avgRating,
+    },
+  };
 }

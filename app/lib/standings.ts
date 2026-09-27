@@ -29,11 +29,13 @@ export interface PlayerRef {
   name: string;
   shortName: string;
   club: string;
+  /** Pfad des Vereinslogos; fehlt bei unbekanntem Spieler. */
+  clubLogo?: string;
   position: Position;
 }
 
 function refs(game: GameSlice) {
-  const club = new Map(game.teams.map((t) => [t.id, t.shortName]));
+  const club = new Map(game.teams.map((t) => [t.id, t]));
   const byId = new Map(game.players.map((p) => [p.id, p]));
   const positions = new Map(game.players.map((p) => [p.id, p.position]));
   const ref = (id: number): PlayerRef => {
@@ -43,7 +45,8 @@ function refs(game: GameSlice) {
           id,
           name: p.name,
           shortName: p.shortName,
-          club: club.get(p.teamId) ?? "",
+          club: club.get(p.teamId)?.shortName ?? "",
+          clubLogo: club.get(p.teamId)?.logo,
           position: p.position,
         }
       : {

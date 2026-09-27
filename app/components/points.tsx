@@ -34,6 +34,23 @@ export function PartsLine({
   return <p className="text-xs text-kreide-matt">{items.join(" · ")}</p>;
 }
 
+/** Saisonsumme je Kategorie als Tabelle, nur Teile, die etwas beitragen. */
+export function PartsTable({ parts }: { parts: PointParts }) {
+  const keys = (Object.keys(PART_LABELS) as (keyof PointParts)[]).filter(
+    (k) => parts[k] !== 0,
+  );
+  return (
+    <ul className="space-y-1 text-sm tabular-nums">
+      {keys.map((k) => (
+        <li key={k} className="flex justify-between">
+          <span className="text-kreide-matt">{PART_LABELS[k]}</span>
+          <span>{signed(parts[k])}</span>
+        </li>
+      ))}
+    </ul>
+  );
+}
+
 export const STATUS_LABEL = {
   running: "läuft",
   provisional: "vorläufig",

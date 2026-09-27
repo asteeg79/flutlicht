@@ -1,8 +1,9 @@
-import { formatMio, playerStats, startPrice } from "@fm/core";
+import { formatMio, playerSeason, playerStats, startPrice } from "@fm/core";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
 import { PlayerPhoto } from "@/components/player-photo";
-import { PartsLine } from "@/components/points";
+import { formatRating } from "@/components/player-points-info";
+import { PartsLine, PartsTable } from "@/components/points";
 import { gameData } from "@/lib/game-data";
 
 export const metadata = { title: "Spieler" };
@@ -25,6 +26,7 @@ export default async function PlayerPage({
   const club =
     gameData.teams.find((t) => t.id === player.teamId)?.shortName ?? "";
   const stats = playerStats(gameData.points).get(id);
+  const season = playerSeason(gameData.points, id);
   const history = gameData.history[String(id)] ?? [];
   const start =
     player.startValueEur !== undefined
@@ -64,6 +66,27 @@ export default async function PlayerPage({
         <p className="mb-6 text-sm text-karte">
           Nicht mehr in der Bundesliga, kann nur noch verkauft werden.
         </p>
+      ) : null}
+
+      {season ? (
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
+            So kamen die Punkte zustande
+          </h2>
+          <p className="mb-2 text-sm">
+            {season.appearances}{" "}
+            {season.appearances === 1 ? "Einsatz" : "Einsätze"} ·{" "}
+            {season.minutes}′
+            {season.avgRating !== null
+              ? ` · Ø Note ${formatRating(season.avgRating)}`
+              : ""}
+          </p>
+          <PartsTable parts={season.parts} />
+          <p className="mt-2 flex justify-between border-t border-nacht-linie pt-2 text-sm font-semibold tabular-nums">
+            <span>Summe (je Spiel gerundet)</span>
+            <span>{season.points} P.</span>
+          </p>
+        </section>
       ) : null}
 
       <section className="mb-8">
@@ -106,6 +129,9 @@ export default async function PlayerPage({
                     {matchday}. Spieltag{" "}
                     <span className="text-sm text-kreide-matt">
                       · {pp!.minutes}′
+                      {pp!.rating !== null
+                        ? ` · Note ${formatRating(pp!.rating)}`
+                        : ""}
                     </span>
                   </p>
                   <PartsLine parts={pp!.parts} />

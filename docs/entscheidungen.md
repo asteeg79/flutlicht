@@ -4,6 +4,8 @@ Getroffene Annahmen und Abweichungen von KONZEPT.md. Neueste Einträge oben.
 
 | Datum | Frage | Entscheidung | Begründung |
 |---|---|---|---|
+| 2026-09-27 | Punkte-Statistik an der Aufstellung | Hover-Tooltip nur auf Geräten mit Maus (Tailwind v4 `hover:`); am Handy zeigt die Auswahlleiste nach dem ersten Antippen dieselben Zahlen und einen Link zum Profil. Inhalt: letzter Spieltag mit Eintrag (Minuten, Note, Teile, Punkte) und Saison (Punkte, Einsätze, Ø Note) | Touch-Geräte kennen kein Hover, und Tippen ist dort schon das Tauschen |
+| 2026-09-27 | Saisonstatistik im Profil | Summe der ungerundeten Teile je Kategorie, dazu die Summe der je Spiel gerundeten Punkte; Rechnung in `core/playerSeason` | Die Teile erklären die Punkte; die Summe muss zu „Punkte“ oben passen, die je Spiel gerundet werden |
 | 2026-09-26 | Redis-Variablen | Die App liest `UPSTASH_REDIS_REST_*` und ersatzweise `KV_REST_API_*` | Die Vercel-Marketplace-Integration „Upstash for Redis“ setzt nur `KV_*`; Muster aus Workgrid |
 | 2026-09-26 | Upstash-Datenbank | `flutlicht-redis` über die Vercel-Integration, Free-Plan, `fra1`, `autoUpgrade=false`, `eviction=false` | Kein automatischer Wechsel in einen Bezahltarif; Eviction würde Manager-Daten löschen |
 | 2026-09-26 | Vercel-Projekt | `flutlicht` im Team `apollon-projects`, Root `app/`, Node 22, Funktionen in `fra1`. Ignored Build Step zusätzlich mit `../scripts` und `../package.json` | Nutzer in Deutschland, Redis in Frankfurt. Änderungen an `stage-data`/`gen-version` betreffen den Build |

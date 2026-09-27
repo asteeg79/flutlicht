@@ -6,6 +6,10 @@ import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { PlayerPhoto } from "@/components/player-photo";
+import {
+  PlayerPointsInfo,
+  type PointsInfo,
+} from "@/components/player-points-info";
 import type { PublicManager } from "@/lib/squad";
 
 export interface SquadEntry {
@@ -22,6 +26,13 @@ export interface SquadEntry {
   opponent: string | null;
   /** Sperrzeit (Anpfiff − 90 Min.) als ISO-String; null ohne Spiel. */
   lockAt: string | null;
+  points: PointsInfo;
+}
+
+/** Wo der Hover-Tooltip sitzt: unter/über dem Spieler, bündig am Rand der Reihe. */
+interface TipPlacement {
+  below: boolean;
+  align: "start" | "center" | "end";
 }
 
 const ROWS: Position[] = ["FWD", "MID", "DEF", "GK"];
@@ -103,13 +114,14 @@ export function TeamLineup({
     void save(change.lineup);
   }
 
-  const token = (id: number, label?: string) => {
+  const token = (id: number, tip: TipPlacement, label?: string) => {
     const p = byId.get(id);
     if (!p) return null;
     return (
       <PlayerToken
         key={id}
         player={p}
+        tip={tip}
         label={label}
         captain={lineup.captain === id}
         locked={isLocked(id)}
@@ -122,7 +134,7 @@ export function TeamLineup({
   const sel = selected === null ? undefined : byId.get(selected);
 
   return (
-    <div className={sel ? "pb-28" : undefined}>
+    <div className={sel ? "pb-48" : undefined}>
       {/* Spielfeld: Mähstreifen quer, Kreidelinien, Sturm oben, Tor unten */}
       <section
         aria-label={`Startelf, ${lineup.formation}`}
@@ -144,13 +156,16 @@ export function TeamLineup({
           {lineup.formation}
         </p>
         <div className="relative flex flex-col gap-4 px-1 py-6">
-          {ROWS.map((pos) => (
-            <div key={pos} className="flex justify-evenly">
-              {lineup.starters
-                .filter((id) => positionOf(id) === pos)
-                .map((id) => token(id))}
-            </div>
-          ))}
+          {ROWS.map((pos, row) => {
+            const ids = lineup.starters.filter((id) => positionOf(id) === pos);
+            return (
+              <div key={pos} className="flex justify-evenly">
+                {ids.map((id, i) =>
+                  token(id, { below: row < 2, align: alignAt(i, ids.length) }),
+                )}
+              </div>
+            );
+          })}
         </div>
       </section>
 
@@ -162,8 +177,10 @@ export function TeamLineup({
           Bank · rückt in dieser Reihenfolge nach
         </h2>
         <div className="flex justify-evenly">
-          {token(lineup.bench.gk, "TW")}
-          {lineup.bench.b.map((id, i) => token(id, `B${i + 1}`))}
+          {token(lineup.bench.gk, { below: false, align: "start" }, "TW")}
+          {lineup.bench.b.map((id, i) =>
+            token(id, { below: false, align: alignAt(i + 1, 4) }, `B${i + 1}`),
+          )}
         </div>
       </section>
 
@@ -174,6 +191,9 @@ export function TeamLineup({
 
       {sel ? (
         <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t-2 border-lampe bg-nacht-hoch px-5 py-3">
+          <div className="mx-auto mb-2 max-w-lg">
+            <PlayerPointsInfo playerId={sel.id} info={sel.points} />
+          </div>
           <div className="mx-auto flex max-w-lg items-center gap-3">
             <p className="flex-1 text-sm">
               <span className="font-semibold">{sel.shortName}</span>: tippe
@@ -213,6 +233,7 @@ export function TeamLineup({
 
 function PlayerToken({
   player,
+  tip,
   label,
   captain,
   locked,
@@ -221,6 +242,7 @@ function PlayerToken({
   onTap,
 }: {
   player: SquadEntry;
+  tip: TipPlacement;
   label?: string;
   captain: boolean;
   locked: boolean;
@@ -229,47 +251,74 @@ function PlayerToken({
   onTap: () => void;
 }) {
   return (
-    <button
-      type="button"
-      onClick={onTap}
-      aria-pressed={selected}
-      aria-label={`${player.name} (${player.club})${captain ? ", Kapitän" : ""}${locked ? ", gesperrt" : ""}`}
-      className="flex w-[4.6rem] flex-col items-center gap-1 text-center"
-    >
-      <span
-        className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-nacht ${
-          selected
-            ? "border-lampe shadow-[0_0_14px_3px_rgb(255_213_74/0.5)]"
-            : "border-kreide/80"
-        } ${locked ? "opacity-80" : ""}`}
+    <div className="group relative">
+      <button
+        type="button"
+        onClick={onTap}
+        aria-pressed={selected}
+        aria-label={`${player.name} (${player.club})${captain ? ", Kapitän" : ""}${locked ? ", gesperrt" : ""}`}
+        className="flex w-[4.6rem] flex-col items-center gap-1 text-center"
       >
-        <PlayerPhoto src={player.image} className="h-full w-full" />
-        <img
-          src={player.clubLogo}
-          alt=""
-          className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-kreide p-0.5"
-        />
-        {captain ? (
-          <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-lampe text-[11px] font-extrabold text-nacht">
-            C
-          </span>
-        ) : null}
-        {locked ? (
-          <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-nacht-hoch">
-            <Lock aria-hidden className="h-3 w-3 text-kreide" />
-          </span>
-        ) : null}
-      </span>
-      <span className="w-full truncate rounded bg-nacht/85 px-1 text-[11px] leading-5 font-semibold">
-        {label ? `${label} · ` : ""}
-        {player.shortName}
-      </span>
-      <span className="text-[10px] leading-3 text-kreide/85">
-        {player.opponent ?? "kein Spiel"}
-      </span>
-      <span className="text-[10px] leading-3 text-kreide/70">{countdown}</span>
-    </button>
+        <span
+          className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-nacht ${
+            selected
+              ? "border-lampe shadow-[0_0_14px_3px_rgb(255_213_74/0.5)]"
+              : "border-kreide/80"
+          } ${locked ? "opacity-80" : ""}`}
+        >
+          <PlayerPhoto src={player.image} className="h-full w-full" />
+          <img
+            src={player.clubLogo}
+            alt=""
+            className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-kreide p-0.5"
+          />
+          {captain ? (
+            <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-lampe text-[11px] font-extrabold text-nacht">
+              C
+            </span>
+          ) : null}
+          {locked ? (
+            <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-nacht-hoch">
+              <Lock aria-hidden className="h-3 w-3 text-kreide" />
+            </span>
+          ) : null}
+        </span>
+        <span className="w-full truncate rounded bg-nacht/85 px-1 text-[11px] leading-5 font-semibold">
+          {label ? `${label} · ` : ""}
+          {player.shortName}
+        </span>
+        <span className="text-[10px] leading-3 text-kreide/85">
+          {player.opponent ?? "kein Spiel"}
+        </span>
+        <span className="text-[10px] leading-3 text-kreide/70">
+          {countdown}
+        </span>
+      </button>
+      {/* Nur mit Maus (Tailwind v4: hover nur bei hover-fähigen Geräten); am Handy zeigt die Auswahlleiste dasselbe. */}
+      <div
+        className={`absolute z-20 hidden w-60 group-hover:block ${
+          tip.below ? "top-full pt-1" : "bottom-full pb-1"
+        } ${
+          tip.align === "start"
+            ? "left-0"
+            : tip.align === "end"
+              ? "right-0"
+              : "left-1/2 -translate-x-1/2"
+        }`}
+      >
+        <div className="rounded-xl border border-nacht-linie bg-nacht-hoch px-3 py-2 shadow-lg">
+          <p className="mb-1 font-semibold">{player.name}</p>
+          <PlayerPointsInfo playerId={player.id} info={player.points} />
+        </div>
+      </div>
+    </div>
   );
+}
+
+function alignAt(index: number, count: number): TipPlacement["align"] {
+  if (count === 1) return "center";
+  if (index === 0) return "start";
+  return index === count - 1 ? "end" : "center";
 }
 
 /** Uhr im Takt der Serverzeit: der Versatz zur Geräteuhr wird beim Laden gemessen. */
