@@ -17,6 +17,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
 import { toast } from "sonner";
+import { PlayerPhoto } from "@/components/player-photo";
 import { Button } from "@/components/ui";
 import type { PublicManager } from "@/lib/squad";
 
@@ -490,6 +491,7 @@ function PlayerRow({
       <span className="w-9 shrink-0 rounded bg-nacht px-1 py-0.5 text-center text-[11px] font-semibold text-kreide-matt">
         {POS_LABEL[p.position]}
       </span>
+      <PlayerPhoto src={p.image} className="h-9 w-9" />
       <div className="min-w-0 flex-1">
         <p className="truncate font-medium">
           <Link

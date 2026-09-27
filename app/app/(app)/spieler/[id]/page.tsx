@@ -1,6 +1,7 @@
 import { formatMio, playerStats, startPrice } from "@fm/core";
 import { notFound } from "next/navigation";
 import { PageHeader } from "@/components/page-header";
+import { PlayerPhoto } from "@/components/player-photo";
 import { PartsLine } from "@/components/points";
 import { gameData } from "@/lib/game-data";
 
@@ -40,10 +41,13 @@ export default async function PlayerPage({
 
   return (
     <>
-      <PageHeader
-        context={`${club} · ${POSITION[player.position]}`}
-        title={player.name}
-      />
+      <div className="flex items-end gap-4">
+        <PlayerPhoto src={player.image} className="mb-6 h-20 w-20" />
+        <PageHeader
+          context={`${club} · ${POSITION[player.position]}`}
+          title={player.name}
+        />
+      </div>
       <dl className="mb-8 grid grid-cols-3 gap-3">
         <Stat label="Preis" value={formatMio(player.price)} />
         <Stat label="Punkte" value={String(stats?.points ?? 0)} />

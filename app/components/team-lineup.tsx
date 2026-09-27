@@ -5,6 +5,7 @@ import { LoaderCircle, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import { PlayerPhoto } from "@/components/player-photo";
 import type { PublicManager } from "@/lib/squad";
 
 export interface SquadEntry {
@@ -14,6 +15,9 @@ export interface SquadEntry {
   position: Position;
   price: number;
   club: string;
+  /** Pfad des Spielerfotos; fehlt, wenn es (noch) keins gibt. */
+  image?: string;
+  clubLogo: string;
   /** "Bremen (H)"; null, wenn der Verein an diesem Spieltag nicht spielt. */
   opponent: string | null;
   /** Sperrzeit (Anpfiff − 90 Min.) als ISO-String; null ohne Spiel. */
@@ -229,17 +233,22 @@ function PlayerToken({
       type="button"
       onClick={onTap}
       aria-pressed={selected}
-      aria-label={`${player.name}${captain ? ", Kapitän" : ""}${locked ? ", gesperrt" : ""}`}
+      aria-label={`${player.name} (${player.club})${captain ? ", Kapitän" : ""}${locked ? ", gesperrt" : ""}`}
       className="flex w-[4.6rem] flex-col items-center gap-1 text-center"
     >
       <span
-        className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-nacht font-display text-sm font-bold uppercase ${
+        className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-nacht ${
           selected
             ? "border-lampe shadow-[0_0_14px_3px_rgb(255_213_74/0.5)]"
             : "border-kreide/80"
         } ${locked ? "opacity-80" : ""}`}
       >
-        {player.club.slice(0, 3)}
+        <PlayerPhoto src={player.image} className="h-full w-full" />
+        <img
+          src={player.clubLogo}
+          alt=""
+          className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-kreide p-0.5"
+        />
         {captain ? (
           <span className="absolute -top-1 -right-1 flex h-5 w-5 items-center justify-center rounded-full bg-lampe text-[11px] font-extrabold text-nacht">
             C

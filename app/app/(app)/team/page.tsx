@@ -48,6 +48,7 @@ export default async function TeamPage() {
       ? []
       : ctx.fixtures.filter((f) => f.matchday === matchday);
   const club = new Map(gameData.teams.map((t) => [t.id, t.shortName]));
+  const logo = new Map(gameData.teams.map((t) => [t.id, t.logo]));
   const byId = new Map(gameData.players.map((p) => [p.id, p]));
   const squad: SquadEntry[] = manager.squad.flatMap((id) => {
     const p = byId.get(id);
@@ -64,6 +65,8 @@ export default async function TeamPage() {
         position: p.position,
         price: p.price,
         club: club.get(p.teamId) ?? "",
+        image: p.image,
+        clubLogo: logo.get(p.teamId) ?? "",
         opponent: f
           ? `${club.get(home ? f.awayTeamId : f.homeTeamId)} (${home ? "H" : "A"})`
           : null,
