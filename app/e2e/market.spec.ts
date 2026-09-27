@@ -75,4 +75,10 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
   await expect(
     page.getByRole("region", { name: /^Startelf, / }).getByRole("button"),
   ).toHaveCount(11);
+  // Transfer-Historie: der Erstkader steht mit Kaufpreis „Im Kader“.
+  await page.getByRole("link", { name: "Markt", exact: true }).click();
+  await page.getByRole("link", { name: "Transfer-Historie →" }).click();
+  await expect(page.getByRole("heading", { name: "Historie" })).toBeVisible();
+  await expect(page.getByText("Noch keine Verkäufe.")).toBeVisible();
+  await expect(page.getByText(/^Erstkader für /)).toHaveCount(15);
 });

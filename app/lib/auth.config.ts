@@ -10,6 +10,7 @@ export const PROTECTED_PREFIXES = [
   "/spieler",
   "/einstellungen",
   "/admin",
+  "/historie",
 ];
 
 /**

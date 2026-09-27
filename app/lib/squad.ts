@@ -105,6 +105,7 @@ export async function buildInitialSquad(
   const next: ManagerDoc = {
     ...doc,
     squad: squad.map((p) => p.id),
+    initialPrices: Object.fromEntries(squad.map((p) => [p.id, p.price])),
     cash:
       (toTenths(ctx.startBudget) -
         toTenths(sumPrices(squad.map((p) => p.price)))) /

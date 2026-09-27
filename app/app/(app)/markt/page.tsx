@@ -1,5 +1,6 @@
 import { playerStats, transferWindow } from "@fm/core";
 import { Market, type MarketWindow } from "@/components/market";
+import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { gameData } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
@@ -33,6 +34,14 @@ export default async function MarketPage() {
         }
         title="Markt"
       />
+      {manager.squad.length > 0 ? (
+        <Link
+          href="/historie"
+          className="-mt-3 mb-4 inline-block text-sm font-semibold text-lampe underline-offset-4 hover:underline"
+        >
+          Transfer-Historie →
+        </Link>
+      ) : null}
       <Market
         players={players}
         teams={gameData.teams.map((t) => ({

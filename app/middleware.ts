@@ -75,6 +75,7 @@ export const config = {
     "/spieler/:path*",
     "/einstellungen/:path*",
     "/admin/:path*",
+    "/historie/:path*",
     "/api/:path*",
   ],
 };

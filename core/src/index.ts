@@ -25,4 +25,5 @@ export * from "./stats";
 export * from "./standings";
 export * from "./tick";
 export * from "./bonus";
+export * from "./trades";
 export * from "./freshness";
