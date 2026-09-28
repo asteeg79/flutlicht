@@ -54,7 +54,7 @@ test("Abmelden und wieder anmelden", async ({ page }) => {
   await page.getByRole("button", { name: "Anmelden" }).click();
   await expect(page).toHaveURL(/\/team$/);
 
-  await page.getByRole("link", { name: "Einstellungen" }).click();
+  await page.getByRole("link", { name: "Optionen" }).click();
   await page.getByRole("button", { name: "Abmelden" }).click();
   await expect(page).toHaveURL(/\/login$/);
 

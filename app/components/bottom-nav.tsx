@@ -3,6 +3,7 @@
 import {
   ArrowLeftRight,
   CalendarDays,
+  History,
   ListOrdered,
   Settings,
   Shirt,
@@ -15,7 +16,8 @@ const ITEMS = [
   { href: "/markt", label: "Markt", Icon: ArrowLeftRight },
   { href: "/spieltag", label: "Spieltag", Icon: CalendarDays },
   { href: "/tabelle", label: "Tabelle", Icon: ListOrdered },
-  { href: "/einstellungen", label: "Einstellungen", Icon: Settings },
+  { href: "/historie", label: "Historie", Icon: History },
+  { href: "/einstellungen", label: "Optionen", Icon: Settings },
 ];
 
 /** Untere Navigation; die Kreidelinie oben ist die Seitenlinie, der aktive Punkt brennt gelb. */
@@ -26,7 +28,7 @@ export function BottomNav() {
       aria-label="Hauptnavigation"
       className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-kreide/25 bg-nacht-hoch/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
-      <ul className="mx-auto grid max-w-lg grid-cols-5">
+      <ul className="mx-auto grid max-w-lg grid-cols-6">
         {ITEMS.map(({ href, label, Icon }) => {
           const active = pathname === href || pathname.startsWith(`${href}/`);
           return (

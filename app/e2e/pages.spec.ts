@@ -40,7 +40,8 @@ test("Spieltag, Tabelle und Spielerprofil", async ({ page }) => {
 });
 
 test("Historie zeigt Verlauf, Verkäufe und Kader", async ({ page }) => {
-  await page.goto("/historie");
+  await page.getByRole("link", { name: "Historie", exact: true }).click();
+  await expect(page).toHaveURL(/\/historie$/);
   for (const name of ["Verlauf", "Verkauft", "Im Kader"]) {
     await expect(page.getByRole("heading", { name })).toBeVisible();
   }
@@ -48,7 +49,7 @@ test("Historie zeigt Verlauf, Verkäufe und Kader", async ({ page }) => {
 });
 
 test("Einstellungen zeigen die Push-Benachrichtigungen", async ({ page }) => {
-  await page.getByRole("link", { name: "Einstellungen", exact: true }).click();
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
   const push = page.getByRole("region", { name: "Benachrichtigungen" });
   await expect(
     push.getByRole("heading", { name: "Push-Benachrichtigungen" }),
