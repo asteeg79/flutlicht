@@ -1,5 +1,11 @@
 import { describe, expect, it } from "vitest";
-import { initialSquad, priceBefore, tradeHistory, type Transfer } from "../src";
+import {
+  initialSquad,
+  matchdayLedger,
+  priceBefore,
+  tradeHistory,
+  type Transfer,
+} from "../src";
 
 const t = (
   matchday: number,
@@ -123,5 +129,69 @@ describe("tradeHistory", () => {
     expect(r.held.map((h) => h.diff)).toEqual([0.9, 0.4, -0.4]);
     expect(r.realized).toBe(0);
     expect(r.unrealized).toBe(0.9);
+  });
+});
+
+describe("matchdayLedger (Verlauf je Spieltag)", () => {
+  // Erstkader 1, 2, 3 zum Preis 5; vor Spieltag 9 wird 1 gegen 20 getauscht.
+  const transfers = [t(9, 1, 20, 5.4, 4)];
+  const squad = [20, 2, 3];
+  // Spieler 1: 5 → 5,4 nach Sp. 8; Spieler 2: 5 → 5,2 nach Sp. 8 → 5,0 nach Sp. 9;
+  // Spieler 20: 4 → 4,3 nach Sp. 9; Spieler 3 bleibt bei 5.
+  const history: Record<number, { matchday: number; price: number }[]> = {
+    1: [{ matchday: 8, price: 5.4 }],
+    2: [
+      { matchday: 8, price: 5.2 },
+      { matchday: 9, price: 5 },
+    ],
+    20: [{ matchday: 9, price: 4.3 }],
+  };
+  const start: Record<number, number> = { 1: 5, 2: 5, 3: 5, 20: 4 };
+  const priceAt = (id: number, md: number) =>
+    priceBefore(history[id] ?? [], start[id]!, md);
+  const { sold } = tradeHistory({
+    squad,
+    transfers,
+    initialPrice: () => 5,
+    currentPrice: () => 0,
+  });
+  const scored = new Map([
+    [8, { points: 51, bonus: 0.4 }],
+    [9, { points: 38, bonus: 0 }],
+  ]);
+
+  it("rechnet Kaderwert, Prämie und Punkte je Spieltag, Transfers mit Gewinn", () => {
+    const rows = matchdayLedger({ squad, transfers, sold, priceAt, scored });
+    expect(rows).toEqual([
+      {
+        matchday: 9,
+        transfers: [{ out: 1, in: 20, priceOut: 5.4, priceIn: 4, gain: 0.4 }],
+        // 2: −0,2 · 3: 0 · 20: +0,3
+        result: { points: 38, valueChange: 0.1, bonus: 0, earned: 0.1 },
+      },
+      {
+        matchday: 8,
+        transfers: [],
+        // 1: +0,4 · 2: +0,2 · 3: 0
+        result: { points: 51, valueChange: 0.6, bonus: 0.4, earned: 1 },
+      },
+    ]);
+  });
+
+  it("zeigt Transfers auch vor dem ersten gewerteten Spieltag, ohne Ergebnis", () => {
+    const rows = matchdayLedger({
+      squad,
+      transfers,
+      sold,
+      priceAt,
+      scored: new Map(),
+    });
+    expect(rows).toEqual([
+      {
+        matchday: 9,
+        transfers: [{ out: 1, in: 20, priceOut: 5.4, priceIn: 4, gain: 0.4 }],
+        result: null,
+      },
+    ]);
   });
 });

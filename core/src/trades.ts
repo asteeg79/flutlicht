@@ -104,3 +104,82 @@ export function tradeHistory(input: {
     unrealized: sum(held.map((h) => h.diff)),
   };
 }
+
+export interface LedgerTransfer {
+  out: number;
+  in: number;
+  priceOut: number;
+  priceIn: number;
+  /** Realisierter Gewinn des verkauften Spielers (Verkaufs- minus Kaufpreis). */
+  gain: number;
+}
+
+export interface LedgerRow {
+  matchday: number;
+  /** Transfers im Fenster vor diesem Spieltag. */
+  transfers: LedgerTransfer[];
+  /**
+   * null, solange der Spieltag nicht final gewertet ist. earned = Kaderwert-Änderung +
+   * Prämie; Verkaufsgewinne stecken schon in früheren Kaderwert-Änderungen.
+   */
+  result: {
+    points: number;
+    valueChange: number;
+    bonus: number;
+    earned: number;
+  } | null;
+}
+
+/**
+ * Verlauf je Spieltag, neueste zuerst: wer kam und ging (mit Gewinn) und, für final
+ * gewertete Spieltage, Punkte, Kaderwert-Änderung der damals gehaltenen Spieler und Prämie.
+ * `priceAt(id, n)` = Preis vor Spieltag n; `sold` aus tradeHistory.
+ */
+export function matchdayLedger(input: {
+  squad: readonly number[];
+  transfers: readonly Transfer[];
+  sold: readonly SoldHolding[];
+  priceAt: (id: number, matchday: number) => number;
+  scored: ReadonlyMap<number, { points: number; bonus: number }>;
+}): LedgerRow[] {
+  const gain = new Map(
+    input.sold.map((s) => [`${s.playerId}@${s.soldMatchday}`, s.diff]),
+  );
+  const matchdays = [
+    ...new Set([
+      ...input.scored.keys(),
+      ...input.transfers.map((t) => t.matchday),
+    ]),
+  ].sort((a, b) => b - a);
+  const start = initialSquad(input.squad, input.transfers);
+  return matchdays.map((md): LedgerRow => {
+    const transfers = input.transfers
+      .filter((t) => t.matchday === md)
+      .map((t) => ({
+        out: t.out,
+        in: t.in,
+        priceOut: t.priceOut,
+        priceIn: t.priceIn,
+        gain: gain.get(`${t.out}@${md}`) ?? 0,
+      }));
+    const score = input.scored.get(md);
+    if (!score) return { matchday: md, transfers, result: null };
+    const held = [...start];
+    for (const t of input.transfers.filter((t) => t.matchday <= md)) {
+      held[held.indexOf(t.out)] = t.in;
+    }
+    const valueChange = sum(
+      held.map((id) => diff(input.priceAt(id, md + 1), input.priceAt(id, md))),
+    );
+    return {
+      matchday: md,
+      transfers,
+      result: {
+        points: score.points,
+        valueChange,
+        bonus: score.bonus,
+        earned: sum([valueChange, score.bonus]),
+      },
+    };
+  });
+}
