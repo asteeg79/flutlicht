@@ -3,49 +3,10 @@ bzw. python -m fm_scraper schedule (vom Timer alle 5 Min.)."""
 
 import argparse
 import logging
-from datetime import datetime
-from zoneinfo import ZoneInfo
 
 from . import config, gitsync
-from .client import Client, PauseRequired, default_client, tm_client
-from .jobs import (
-    backfill,
-    dcaribou,
-    images,
-    match_final,
-    match_provisional,
-    round_events,
-    squads,
-    tm_crawl,
-)
-from .teams import load_teams
-
-JOBS = ("round-events", "match-provisional", "match-final", "backfill", "squads", "dcaribou", "tm-crawl", "images")
-NEEDS_MATCHDAY = {"round-events", "match-final", "backfill"}
-
-
-def _run_job(args: argparse.Namespace, client: Client):
-    today = datetime.now(ZoneInfo(config.TIMEZONE)).date()
-    raw = config.RAW_DIR
-    match args.job:
-        case "round-events":
-            return round_events.run(client, raw, args.matchday)
-        case "match-provisional":
-            if args.event is None:
-                raise SystemExit("match-provisional braucht --event")
-            return match_provisional.run(client, raw, args.event)[0]
-        case "match-final":
-            return match_final.run(client, raw, args.matchday, args.event)
-        case "backfill":
-            return backfill.run(client, raw, args.matchday)
-        case "squads":
-            return squads.run(client, raw, load_teams(config.TEAMS_FILE), today)
-        case "dcaribou":
-            return dcaribou.run(client, raw)
-        case "tm-crawl":
-            return tm_crawl.run(client, raw, today)
-        case "images":
-            return images.run(client, raw, config.IMG_DIR, load_teams(config.TEAMS_FILE))
+from .client import PauseRequired, default_client, tm_client
+from .dispatch import JOBS, NEEDS_MATCHDAY, commit_paths, run_job
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -70,7 +31,7 @@ def main(argv: list[str] | None = None) -> int:
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
     client = tm_client() if args.job == "tm-crawl" else default_client()
     try:
-        written = _run_job(args, client)
+        written, _ = run_job(args.job, client, config.RAW_DIR, args.matchday, args.event)
     except PauseRequired as e:
         logging.warning("Abgebrochen: %s", e)
         return 2
@@ -79,6 +40,5 @@ def main(argv: list[str] | None = None) -> int:
     for path in written:
         logging.info("geschrieben: %s", path.relative_to(config.REPO_ROOT))
     if not args.no_sync:
-        paths = ("app/public/img", "raw") if args.job == "images" else ("raw",)
-        gitsync.sync(config.REPO_ROOT, args.job, paths)
+        gitsync.sync(config.REPO_ROOT, args.job, commit_paths(args.job))
     return 0

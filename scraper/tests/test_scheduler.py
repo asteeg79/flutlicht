@@ -43,7 +43,7 @@ def run_plan(now, fixtures, tmp_path, state=None, images_missing=False):
     week = now.astimezone(BERLIN).date()
     wednesday = week - timedelta(days=(week.weekday() - 2) % 7)
     state.setdefault("done", {})[f"squads:{wednesday.isocalendar().year}-W{wednesday.isocalendar().week:02d}"] = "x"
-    return plan(now, fixtures, state, tmp_path, images_missing, Earliest()), state
+    return plan(now, fixtures, state, tmp_path, lambda: images_missing, Earliest()), state
 
 
 def write_round(tmp_path, md):
@@ -102,8 +102,8 @@ def test_provisorisch_drei_versuche_im_abstand_von_15_minuten(tmp_path):
     task = tasks[0]
     record(state, task, now, "unfinished")
     assert state["attempts"]["prov:501"] == 1
-    assert "prov:501" not in keys(plan(now + timedelta(minutes=14), MD5, state, tmp_path, False, Earliest()))
-    assert "prov:501" in keys(plan(now + timedelta(minutes=15), MD5, state, tmp_path, False, Earliest()))
+    assert "prov:501" not in keys(plan(now + timedelta(minutes=14), MD5, state, tmp_path, lambda: False, Earliest()))
+    assert "prov:501" in keys(plan(now + timedelta(minutes=15), MD5, state, tmp_path, lambda: False, Earliest()))
     record(state, task, now + timedelta(minutes=15), "unfinished")
     record(state, task, now + timedelta(minutes=30), "unfinished")
     assert "prov:501" in state["done"]
@@ -125,8 +125,8 @@ def test_backfill_ein_spieltag_pro_tag(tmp_path):
     tasks, state = run_plan(now, old, tmp_path)
     assert tasks == [Task("final:3", "backfill", matchday=3)]
     record(state, tasks[0], now, "ok")
-    assert keys(plan(now + timedelta(hours=1), old, state, tmp_path, False, Earliest())) == []
-    assert "final:4" in keys(plan(at("2026-09-27 08:00"), old, state, tmp_path, False, Earliest()))
+    assert keys(plan(now + timedelta(hours=1), old, state, tmp_path, lambda: False, Earliest())) == []
+    assert "final:4" in keys(plan(at("2026-09-27 08:00"), old, state, tmp_path, lambda: False, Earliest()))
 
 
 def test_verlegte_spiele_halten_die_finalisierung_nicht_auf(tmp_path):
@@ -139,9 +139,9 @@ def test_verlegte_spiele_halten_die_finalisierung_nicht_auf(tmp_path):
 
 
 def test_squads_mittwochs_und_im_transferfenster_alle_zwei_tage(tmp_path):
-    assert keys(plan(at("2026-10-07 09:59"), [], {}, tmp_path, False, Earliest())) == []
-    assert keys(plan(at("2026-10-07 10:00"), [], {}, tmp_path, False, Earliest())) == ["squads:2026-W41"]
-    jan = plan(at("2027-01-12 10:00"), [], {}, tmp_path, False, Earliest())
+    assert keys(plan(at("2026-10-07 09:59"), [], {}, tmp_path, lambda: False, Earliest())) == []
+    assert keys(plan(at("2026-10-07 10:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-W41"]
+    jan = plan(at("2027-01-12 10:00"), [], {}, tmp_path, lambda: False, Earliest())
     assert keys(jan)[0].startswith("squads:2027-01-1")
 
 
@@ -150,8 +150,24 @@ def test_images_hoechstens_stuendlich(tmp_path):
     tasks, state = run_plan(now, [], tmp_path, images_missing=True)
     assert keys(tasks) == ["images:2026-10-07T09"]
     record(state, tasks[0], now, "ok")
-    assert keys(plan(at("2026-10-07 09:30"), [], state, tmp_path, True, Earliest())) == []
-    assert keys(plan(at("2026-10-07 10:00"), [], state, tmp_path, True, Earliest())) == ["images:2026-10-07T10"]
+    assert keys(plan(at("2026-10-07 09:30"), [], state, tmp_path, lambda: True, Earliest())) == []
+    assert keys(plan(at("2026-10-07 10:00"), [], state, tmp_path, lambda: True, Earliest())) == ["images:2026-10-07T10"]
+
+
+def test_bilder_werden_ohne_offene_bilder_nur_einmal_pro_stunde_geprueft(tmp_path):
+    checks = []
+
+    def nothing_missing():
+        checks.append(1)
+        return False
+
+    state = {}
+    for minute in ("09:00", "09:05", "09:55"):
+        plan(at(f"2026-10-07 {minute}"), [], state, tmp_path, nothing_missing, Earliest())
+    assert len(checks) == 1
+    plan(at("2026-10-07 10:00"), [], state, tmp_path, nothing_missing, Earliest())
+    assert len(checks) == 2
+    assert not any(k.startswith("images:") for k in state["planned"])
 
 
 def test_fehlgeschlagene_jobs_werden_nach_drei_versuchen_aufgegeben(tmp_path):
@@ -169,5 +185,5 @@ def test_round_events_auch_nach_dem_anpfiff(tmp_path):
 
 def test_squads_nicht_doppelt_wenn_schon_ein_stand_existiert(tmp_path):
     (tmp_path / "sofascore" / "squads" / "2026-10-07").mkdir(parents=True)
-    assert keys(plan(at("2026-10-07 12:00"), [], {}, tmp_path, False, Earliest())) == []
-    assert keys(plan(at("2026-10-14 12:00"), [], {}, tmp_path, False, Earliest())) == ["squads:2026-W42"]
+    assert keys(plan(at("2026-10-07 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == []
+    assert keys(plan(at("2026-10-14 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-W42"]

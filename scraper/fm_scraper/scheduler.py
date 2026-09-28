@@ -75,7 +75,7 @@ def plan(
     fixtures: list[dict],
     state: dict[str, Any],
     raw_dir: Path,
-    images_missing: bool,
+    images_missing: Callable[[], bool],
     rng: random.Random,
 ) -> list[Task]:
     """Fällige Aufgaben; ergänzt state["planned"] um neu gezogene Zeitpunkte."""
@@ -166,13 +166,17 @@ def plan(
     if key not in done and t <= now and latest < day.isoformat():
         tasks.append(Task(key, "squads"))
 
-    # images: fehlende Bilder, höchstens ein Lauf pro Stunde.
-    if images_missing:
-        key = f"images:{local_now.strftime('%Y-%m-%dT%H')}"
-        hour = local_now.replace(minute=0, second=0, microsecond=0)
-        t = when(key, lambda: _random_between(rng, hour, hour + timedelta(minutes=40)))
-        if key not in done and t <= now:
-            tasks.append(Task(key, "images"))
+    # images: fehlende Bilder, höchstens ein Lauf pro Stunde. Die Prüfung liest alle Kader;
+    # ist nichts offen, gilt das bis zur nächsten Stunde.
+    key = f"images:{local_now.strftime('%Y-%m-%dT%H')}"
+    if key not in done and state.get("imagesComplete") != key:
+        if images_missing():
+            hour = local_now.replace(minute=0, second=0, microsecond=0)
+            t = when(key, lambda: _random_between(rng, hour, hour + timedelta(minutes=40)))
+            if t <= now:
+                tasks.append(Task(key, "images"))
+        else:
+            state["imagesComplete"] = key
 
     return tasks
 
@@ -218,24 +222,10 @@ def _images_missing(raw_dir: Path, img_dir: Path, teams: list[dict]) -> bool:
 
 def _execute(task: Task, client, raw_dir: Path) -> tuple[str, tuple[str, ...]]:
     """Führt einen Job aus; Rückgabe: Ergebnis und die zu committenden Pfade."""
-    from .jobs import backfill, images, match_final, match_provisional, round_events, squads
-    from .teams import load_teams
+    from .dispatch import commit_paths, run_job
 
-    if task.job == "round-events":
-        round_events.run(client, raw_dir, task.matchday)
-    elif task.job == "match-provisional":
-        _, finished = match_provisional.run(client, raw_dir, task.event)
-        return ("ok" if finished else "unfinished"), ("raw",)
-    elif task.job == "match-final":
-        match_final.run(client, raw_dir, task.matchday)
-    elif task.job == "backfill":
-        backfill.run(client, raw_dir, task.matchday)
-    elif task.job == "squads":
-        squads.run(client, raw_dir, load_teams(config.TEAMS_FILE), datetime.now(BERLIN).date())
-    elif task.job == "images":
-        images.run(client, raw_dir, config.IMG_DIR, load_teams(config.TEAMS_FILE))
-        return "ok", ("app/public/img", "raw")
-    return "ok", ("raw",)
+    _, finished = run_job(task.job, client, raw_dir, task.matchday, task.event)
+    return ("ok" if finished else "unfinished"), commit_paths(task.job)
 
 
 def run_once(now: datetime | None = None) -> int:
@@ -263,8 +253,14 @@ def run_once(now: datetime | None = None) -> int:
 
         fixtures_path = config.REPO_ROOT / "data" / "fixtures.json"
         fixtures = json.loads(fixtures_path.read_text()) if fixtures_path.exists() else []
-        missing = _images_missing(config.RAW_DIR, config.IMG_DIR, load_teams(config.TEAMS_FILE))
-        tasks = plan(now, fixtures, state, config.RAW_DIR, missing, random.Random())
+        tasks = plan(
+            now,
+            fixtures,
+            state,
+            config.RAW_DIR,
+            lambda: _images_missing(config.RAW_DIR, config.IMG_DIR, load_teams(config.TEAMS_FILE)),
+            random.Random(),
+        )
         save_state(STATE_FILE, state)
         if not tasks:
             return 0
