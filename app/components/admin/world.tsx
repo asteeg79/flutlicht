@@ -16,6 +16,7 @@ import {
   SmallButton,
 } from "@/components/admin/common";
 import type { AdminStatus } from "@/lib/admin";
+import { parseDecimal } from "@/lib/decimal";
 import { POS_LABEL } from "@/lib/positions";
 
 /** Status: letzter Scraper-Commit, Pipeline-Läufe, offene Spiele, Tick (KONZEPT 11). */
@@ -88,10 +89,13 @@ export function Season({
   const [startBudget, setStartBudget] = useState("");
 
   async function save() {
+    const budgetMio = parseDecimal(startBudget);
+    if (startBudget.trim() && !(budgetMio > 0))
+      return toast.error("Bitte ein Startbudget in Mio. eingeben, z. B. 64,5.");
     const body = {
       kind: "season",
       firstScoredMatchday: Number(md),
-      ...(startBudget ? { startBudget: Number(startBudget) } : {}),
+      ...(startBudget.trim() ? { startBudget: budgetMio } : {}),
     };
     if (await adminCall("/api/admin/manual", "PUT", body))
       toast.success(COMMIT_HINT);
@@ -228,7 +232,7 @@ export function MissingValues({
   const [done, setDone] = useState<Set<number>>(new Set());
 
   async function save(playerId: number) {
-    const mio = Number((values[playerId] ?? "").replace(",", "."));
+    const mio = parseDecimal(values[playerId] ?? "");
     if (!(mio > 0))
       return toast.error("Bitte einen Marktwert in Mio. eingeben, z. B. 0,3.");
     if (

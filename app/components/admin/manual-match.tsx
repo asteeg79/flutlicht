@@ -9,6 +9,7 @@ import {
   Section,
   SmallButton,
 } from "@/components/admin/common";
+import { parseDecimal } from "@/lib/decimal";
 import { POS_LABEL } from "@/lib/positions";
 
 export interface MatchOption {
@@ -208,7 +209,7 @@ function PlayerFields({
           placeholder="–"
           defaultValue={row.rating ?? ""}
           onBlur={(e) => {
-            const v = Number(e.target.value.replace(",", "."));
+            const v = parseDecimal(e.target.value);
             onChange({
               rating: e.target.value.trim() === "" || !(v > 0) ? null : v,
             });
