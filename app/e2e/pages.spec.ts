@@ -87,6 +87,17 @@ test("Admin erzeugt einen Einladungscode, ein neuer Manager registriert sich dam
   const code = (await invites.locator("code").first().textContent())!;
   expect(code).toMatch(/^[A-HJ-NP-Z2-9]{8}$/);
 
+  // Zuordnung und fehlende Werte starten zugeklappt und lassen sich öffnen.
+  const values = page.getByRole("region", { name: "Fehlende Werte" });
+  await expect(values.getByText("ohne Marktwert")).toBeHidden();
+  await values.locator("summary").click();
+  await expect(values.getByText("ohne Marktwert")).toBeVisible();
+  await page
+    .getByRole("region", { name: "Zuordnung" })
+    .locator("summary")
+    .click();
+  await page.screenshot({ path: "test-results/admin.png", fullPage: true });
+
   await context.clearCookies();
   await page.goto("/registrieren");
   await page.getByLabel("Einladungscode").fill(code);

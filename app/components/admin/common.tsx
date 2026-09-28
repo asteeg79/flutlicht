@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
 import { toast } from "sonner";
 import { callApi } from "@/lib/api-client";
@@ -25,21 +26,47 @@ export function Section({
   id,
   title,
   children,
+  collapsible = false,
+  count,
 }: {
   id: string;
   title: string;
   children: ReactNode;
+  /** Zugeklappt starten; der Titel zeigt dann `count` offene Einträge. */
+  collapsible?: boolean;
+  count?: number;
 }) {
+  const heading = (
+    <h2 className="font-display text-2xl font-bold uppercase">
+      {title}
+      {count !== undefined ? (
+        <span className="ml-2 text-base text-kreide-matt">({count})</span>
+      ) : null}
+    </h2>
+  );
   return (
     <section
       id={id}
       aria-label={title}
       className="mb-6 scroll-mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch p-4"
     >
-      <h2 className="mb-3 font-display text-2xl font-bold uppercase">
-        {title}
-      </h2>
-      {children}
+      {collapsible ? (
+        <details className="group">
+          <summary className="flex cursor-pointer list-none items-center justify-between gap-3 [&::-webkit-details-marker]:hidden">
+            {heading}
+            <ChevronDown
+              aria-hidden
+              className="h-5 w-5 shrink-0 text-kreide-matt transition group-open:rotate-180"
+            />
+          </summary>
+          <div className="mt-3">{children}</div>
+        </details>
+      ) : (
+        <>
+          <div className="mb-3">{heading}</div>
+          {children}
+        </>
+      )}
     </section>
   );
 }

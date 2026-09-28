@@ -170,10 +170,11 @@ export function Mapping({
   }
 
   return (
-    <Section id="zuordnung" title="Zuordnung">
+    <Section id="zuordnung" title="Zuordnung" collapsible count={open.length}>
       <p className="mb-3 text-sm text-kreide-matt">
-        {open.length} Spieler ohne sichere Transfermarkt-Zuordnung. Ohne
-        Zuordnung gilt der Sofascore-Wert.
+        {open.length} Spieler ohne sichere Transfermarkt-Zuordnung. Sie bleiben
+        kaufbar, ihr Preis kommt dann aus dem Sofascore-Wert; wer auch den nicht
+        hat, steht unter „Fehlende Werte“.
       </p>
       <ul className="divide-y divide-nacht-linie">
         {open.map((e) => (
@@ -256,7 +257,7 @@ export function MissingValues({
 
   const open = entries.filter((e) => !done.has(e.playerId));
   return (
-    <Section id="werte" title="Fehlende Werte">
+    <Section id="werte" title="Fehlende Werte" collapsible count={open.length}>
       <p className="mb-3 text-sm text-kreide-matt">
         {open.length} Spieler ohne Marktwert sind nicht kaufbar.
       </p>
