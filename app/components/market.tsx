@@ -35,8 +35,22 @@ export type MarketWindow =
 
 type Sort = "price-desc" | "price-asc" | "points" | "form";
 
+/** Nur die Felder, die der Markt braucht; der Rest bleibt auf dem Server. */
+export type MarketPlayer = Pick<
+  Player,
+  | "id"
+  | "name"
+  | "shortName"
+  | "teamId"
+  | "position"
+  | "price"
+  | "purchasable"
+  | "active"
+  | "image"
+>;
+
 interface Props {
-  players: Player[];
+  players: MarketPlayer[];
   teams: { id: number; shortName: string }[];
   stats: Record<string, PlayerStats>;
   initialManager: PublicManager;
@@ -72,7 +86,7 @@ export function Market({
   const squadIds = draftMode ? draft : manager.squad;
   const squad = squadIds
     .map((id) => byId.get(id))
-    .filter((p): p is Player => p !== undefined);
+    .filter((p): p is MarketPlayer => p !== undefined);
   const posCount = countBy(squad, (p) => p.position);
   const remaining =
     (toTenths(budget) - toTenths(sumPrices(squad.map((p) => p.price)))) / 10;
@@ -94,18 +108,22 @@ export function Market({
 
   const activePos = sell ? sell.position : pos;
   const inSquad = new Set(squadIds);
-  const list = players
-    .filter(
-      (p) =>
-        (activePos === "ALL" || p.position === activePos) &&
-        (team === "ALL" || p.teamId === team),
-    )
-    .filter((p) => maxPrice === "ALL" || p.price <= maxPrice)
-    .filter((p) => !(sell && inSquad.has(p.id)))
-    .sort(sorter(sort, stats));
+  const list = useMemo(
+    () =>
+      players
+        .filter(
+          (p) =>
+            (activePos === "ALL" || p.position === activePos) &&
+            (team === "ALL" || p.teamId === team),
+        )
+        .filter((p) => maxPrice === "ALL" || p.price <= maxPrice)
+        .filter((p) => !(sell && squadIds.includes(p.id)))
+        .sort(sorter(sort, stats)),
+    [players, activePos, team, maxPrice, sell, squadIds, sort, stats],
+  );
 
   /** Warum ein Spieler gerade nicht gewählt werden kann; null = möglich. Die Regeln stehen in core. */
-  function blockReason(p: Player): string | null {
+  function blockReason(p: MarketPlayer): string | null {
     const v = draftMode
       ? draftAddViolation(squad, p, budget)
       : sell
@@ -471,7 +489,7 @@ function PlayerRow({
   picked = false,
   children,
 }: {
-  p: Player;
+  p: MarketPlayer;
   club: string | undefined;
   stats: PlayerStats | undefined;
   picked?: boolean;
@@ -565,12 +583,12 @@ function countBy<T, K>(
   return out;
 }
 
-function byPosition(a: Player, b: Player): number {
+function byPosition(a: MarketPlayer, b: MarketPlayer): number {
   return POSITIONS.indexOf(a.position) - POSITIONS.indexOf(b.position);
 }
 
 function sorter(sort: Sort, stats: Record<string, PlayerStats>) {
-  return (a: Player, b: Player): number => {
+  return (a: MarketPlayer, b: MarketPlayer): number => {
     if (sort === "price-asc") return a.price - b.price || a.id - b.id;
     if (sort === "points")
       return (

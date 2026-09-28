@@ -1,5 +1,9 @@
 import { transferWindow } from "@fm/core";
-import { Market, type MarketWindow } from "@/components/market";
+import {
+  Market,
+  type MarketPlayer,
+  type MarketWindow,
+} from "@/components/market";
 import Link from "next/link";
 import { PageHeader } from "@/components/page-header";
 import { gameData, statsById } from "@/lib/game-data";
@@ -21,8 +25,27 @@ export default async function MarketPage() {
       }
     : { open: false };
   // Auf dem Markt: aktive Spieler und alle, die schon im eigenen Kader stehen.
+  // Nur die Felder und Statistiken, die der Markt anzeigt (spart rund ein Drittel).
   const inSquad = new Set(manager.squad);
-  const players = gameData.players.filter((p) => p.active || inSquad.has(p.id));
+  const players: MarketPlayer[] = gameData.players
+    .filter((p) => p.active || inSquad.has(p.id))
+    .map((p) => ({
+      id: p.id,
+      name: p.name,
+      shortName: p.shortName,
+      teamId: p.teamId,
+      position: p.position,
+      price: p.price,
+      purchasable: p.purchasable,
+      active: p.active,
+      image: p.image,
+    }));
+  const stats = Object.fromEntries(
+    players.flatMap((p) => {
+      const s = statsById.get(p.id);
+      return s ? [[p.id, s]] : [];
+    }),
+  );
 
   return (
     <>
@@ -48,7 +71,7 @@ export default async function MarketPage() {
           id: t.id,
           shortName: t.shortName,
         }))}
-        stats={Object.fromEntries(statsById)}
+        stats={stats}
         initialManager={publicManager(manager)}
         budget={gameData.season.startBudget}
         window={window}
