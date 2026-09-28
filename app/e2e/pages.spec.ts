@@ -34,6 +34,14 @@ test("Spieltag, Tabelle und Spielerprofil", async ({ page }) => {
     .getByRole("link")
     .first();
   const name = await playerLink.textContent();
+  // Textsuche: Teil des Namens in Kleinbuchstaben findet den Spieler.
+  await page
+    .getByLabel("Spieler suchen")
+    .fill(name!.split(" ").at(-1)!.toLowerCase());
+  await expect(playerLink).toHaveText(name!);
+  await page.getByLabel("Spieler suchen").fill("xyzqq");
+  await expect(page.getByText("0 Spieler")).toBeVisible();
+  await page.getByLabel("Spieler suchen").fill("");
   await playerLink.click();
   await expect(page.getByRole("heading", { name: name! })).toBeVisible();
   await expect(page.getByText("Preisverlauf")).toBeVisible();

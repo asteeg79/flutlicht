@@ -2,6 +2,7 @@
 
 import {
   draftAddViolation,
+  foldDiacritics,
   formatKickoff,
   formatMio,
   POSITION_LABELS,
@@ -77,8 +78,17 @@ export function Market({
   const [team, setTeam] = useState<number | "ALL">("ALL");
   const [maxPrice, setMaxPrice] = useState<number | "ALL">("ALL");
   const [sort, setSort] = useState<Sort>("price-desc");
+  const [query, setQuery] = useState("");
 
   const byId = useMemo(() => new Map(players.map((p) => [p.id, p])), [players]);
+  // Suchschlüssel ohne Akzente: „kobbing“ findet „Köbbing“.
+  const searchKey = useMemo(
+    () =>
+      new Map(
+        players.map((p) => [p.id, foldDiacritics(`${p.name} ${p.shortName}`)]),
+      ),
+    [players],
+  );
   const club = useMemo(
     () => new Map(teams.map((t) => [t.id, t.shortName])),
     [teams],
@@ -119,8 +129,22 @@ export function Market({
         )
         .filter((p) => maxPrice === "ALL" || p.price <= maxPrice)
         .filter((p) => !(sell && squadIds.includes(p.id)))
+        .filter((p) =>
+          searchKey.get(p.id)!.includes(foldDiacritics(query.trim())),
+        )
         .sort(sorter(sort, stats)),
-    [players, activePos, team, maxPrice, sell, squadIds, sort, stats],
+    [
+      players,
+      activePos,
+      team,
+      maxPrice,
+      sell,
+      squadIds,
+      sort,
+      stats,
+      query,
+      searchKey,
+    ],
   );
 
   /** Warum ein Spieler gerade nicht gewählt werden kann; null = möglich. Die Regeln stehen in core. */
@@ -297,6 +321,14 @@ export function Market({
 
       {/* Filter */}
       <div className="mb-3 space-y-3">
+        <input
+          type="search"
+          aria-label="Spieler suchen"
+          placeholder="Spieler suchen"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="h-10 w-full rounded-lg border border-nacht-linie bg-nacht px-3 text-base text-kreide placeholder:text-kreide-matt/60 focus:border-lampe focus:outline-none"
+        />
         {!sell ? (
           <div
             role="group"
