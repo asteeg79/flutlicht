@@ -21,6 +21,42 @@ export function sumPrices(prices: readonly number[]): number {
   return prices.reduce((sum, p) => sum + toTenths(p), 0) / 10;
 }
 
+/** Warum `p` nicht in den entstehenden Erstkader passt; null = passt (2.2, 2.7). */
+export function draftAddViolation(
+  draft: readonly SquadCandidate[],
+  p: SquadCandidate,
+  budget: number,
+): Violation | null {
+  if (!p.purchasable || !p.active) {
+    return {
+      code: "not-purchasable",
+      message: "Dieser Spieler ist derzeit nicht kaufbar.",
+      playerId: p.id,
+    };
+  }
+  const need = RULES.squadComposition[p.position];
+  if (draft.filter((d) => d.position === p.position).length >= need) {
+    return {
+      code: "squad-composition",
+      message: `Du hast schon ${need} ${POSITION_LABELS[p.position]}.`,
+    };
+  }
+  if (draft.filter((d) => d.teamId === p.teamId).length >= RULES.maxPerClub) {
+    return {
+      code: "club-limit",
+      message: `Von einem Verein darfst du höchstens ${RULES.maxPerClub} Spieler haben.`,
+    };
+  }
+  const cost = sumPrices([...draft.map((d) => d.price), p.price]);
+  if (cost > budget) {
+    return {
+      code: "budget",
+      message: `Der Kader wäre zu teuer: ${formatMio(cost)} bei ${formatMio(budget)} Budget.`,
+    };
+  }
+  return null;
+}
+
 /** Prüft einen Erstkader: 15 Spieler, 2/5/5/3, Vereinslimit, kaufbar, Budget. */
 export function validateSquad(
   players: readonly SquadCandidate[],

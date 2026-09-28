@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  draftAddViolation,
   formatKickoff,
   formatMio,
   POSITION_LABELS,
@@ -9,10 +10,13 @@ import {
   sumPrices,
   toTenths,
   transferQuote,
+  transferViolation,
   validateSquad,
   type Player,
   type PlayerStats,
   type Position,
+  type TransferWindow,
+  type Violation,
 } from "@fm/core";
 import { ArrowRight, LoaderCircle } from "lucide-react";
 import Link from "next/link";
@@ -69,19 +73,17 @@ export function Market({
   const squad = squadIds
     .map((id) => byId.get(id))
     .filter((p): p is Player => p !== undefined);
-  const clubCount = countBy(squad, (p) => p.teamId);
   const posCount = countBy(squad, (p) => p.position);
   const remaining =
     (toTenths(budget) - toTenths(sumPrices(squad.map((p) => p.price)))) / 10;
   const sell = sellId === null ? undefined : byId.get(sellId);
   const buy = buyId === null ? undefined : byId.get(buyId);
 
-  const quote = window.open
-    ? transferQuote(
-        manager.transferBank,
-        { ...window, closesAt: new Date(window.closesAt) },
-        manager.firstMatchday,
-      )
+  const coreWindow: TransferWindow = window.open
+    ? { ...window, closesAt: new Date(window.closesAt) }
+    : window;
+  const quote = coreWindow.open
+    ? transferQuote(manager.transferBank, coreWindow, manager.firstMatchday)
     : null;
   const bankStale =
     quote !== null &&
@@ -102,25 +104,17 @@ export function Market({
     .filter((p) => !(sell && inSquad.has(p.id)))
     .sort(sorter(sort, stats));
 
-  /** Warum ein Spieler gerade nicht gewählt werden kann; null = möglich. */
+  /** Warum ein Spieler gerade nicht gewählt werden kann; null = möglich. Die Regeln stehen in core. */
   function blockReason(p: Player): string | null {
-    if (!p.purchasable || !p.active) return "nicht kaufbar";
-    if (draftMode) {
-      if ((posCount.get(p.position) ?? 0) >= RULES.squadComposition[p.position])
-        return "Position voll";
-      if ((clubCount.get(p.teamId) ?? 0) >= RULES.maxPerClub)
-        return `schon ${RULES.maxPerClub} von ${club.get(p.teamId)}`;
-      if (p.price > remaining) return "zu teuer";
-      return null;
-    }
-    if (!sell) return null;
-    const sameClub =
-      (clubCount.get(p.teamId) ?? 0) - (sell.teamId === p.teamId ? 1 : 0);
-    if (sameClub >= RULES.maxPerClub)
-      return `schon ${RULES.maxPerClub} von ${club.get(p.teamId)}`;
-    if (toTenths(manager.cash) + toTenths(sell.price) - toTenths(p.price) < 0)
-      return "Guthaben reicht nicht";
-    return null;
+    const v = draftMode
+      ? draftAddViolation(squad, p, budget)
+      : sell
+        ? transferViolation(manager, sell.id, p.id, {
+            players: byId,
+            window: coreWindow,
+          })
+        : null;
+    return v ? shortReason(v, club.get(p.teamId)) : null;
   }
 
   async function post<T>(url: string, body: unknown): Promise<T | null> {
@@ -615,4 +609,22 @@ function costText(quote: Quote): string {
   return quote.nextCost === 0
     ? "freier Transfer"
     : `kostet ${quote.nextCost} Punkte`;
+}
+
+/** Kurzform einer Regelverletzung für die Spielerzeile. */
+function shortReason(v: Violation, clubName: string | undefined): string {
+  switch (v.code) {
+    case "not-purchasable":
+      return "nicht kaufbar";
+    case "squad-composition":
+      return "Position voll";
+    case "club-limit":
+      return `schon ${RULES.maxPerClub} von ${clubName}`;
+    case "budget":
+      return "zu teuer";
+    case "cash":
+      return "Guthaben reicht nicht";
+    default:
+      return v.message;
+  }
 }

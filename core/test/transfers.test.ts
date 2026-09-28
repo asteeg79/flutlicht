@@ -6,6 +6,7 @@ import {
   rollTransferBank,
   scoreManager,
   transferQuote,
+  transferViolation,
   transferWindow,
   type OpenTransferWindow,
   type TransferPlayer,
@@ -221,6 +222,14 @@ describe("applyTransfer (KONZEPT 2.3, 2.6, 2.7)", () => {
   };
   const code = (r: ReturnType<typeof applyTransfer>) =>
     r.ok ? "ok" : r.violations[0]!.code;
+
+  it("transferViolation prüft wie applyTransfer, ohne zu buchen (Markt-Vorschau)", () => {
+    expect(transferViolation(state, 14, 101, ctx)).toBeNull();
+    expect(transferViolation({ ...state, cash: 0 }, 14, 101, ctx)?.code).toBe(
+      "cash",
+    );
+    expect(state.transferBank.available).toBe(2);
+  });
 
   it("tauscht auf denselben Platz, bucht Guthaben exakt und zählt einen freien Transfer", () => {
     const r = applyTransfer(state, 14, 101, ctx);

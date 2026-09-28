@@ -117,10 +117,75 @@ export type ApplyTransferResult<T> =
   | { ok: true; state: T; transfer: Transfer; captainChanged: boolean }
   | { ok: false; violations: Violation[] };
 
-const fail = (code: string, message: string) => ({
-  ok: false as const,
-  violations: [{ code, message }],
+const violation = (code: string, message: string): Violation => ({
+  code,
+  message,
 });
+
+/** Warum `outId` gerade nicht gegen `inId` getauscht werden kann; null = möglich (2.6, 2.7). */
+export function transferViolation(
+  state: TransferState,
+  outId: number,
+  inId: number,
+  { window, players }: Pick<TransferContext, "window" | "players">,
+): Violation | null {
+  if (!window.open) {
+    return violation("window-closed", "Das Transferfenster ist geschlossen.");
+  }
+  // Nur gezählte Transfers brauchen die fortgeschriebene Bank; unbegrenzte nicht.
+  if (
+    !isUnlimited(window, state.firstMatchday) &&
+    state.transferBank.matchday !== window.matchday
+  ) {
+    return violation(
+      "bank-stale",
+      "Das Transferfenster wird gerade vorbereitet. Bitte versuche es in ein paar Minuten erneut.",
+    );
+  }
+  if (state.lineup === null) {
+    return violation("no-squad", "Stelle zuerst deinen Erstkader auf.");
+  }
+  if (!state.squad.includes(outId)) {
+    return violation(
+      "not-in-squad",
+      "Der abzugebende Spieler ist nicht in deinem Kader.",
+    );
+  }
+  if (state.squad.includes(inId)) {
+    return violation(
+      "already-in-squad",
+      "Dieser Spieler ist bereits in deinem Kader.",
+    );
+  }
+  const pOut = players.get(outId);
+  const pIn = players.get(inId);
+  if (!pOut || !pIn) return violation("unknown-player", "Unbekannter Spieler.");
+  if (pOut.position !== pIn.position) {
+    return violation(
+      "position",
+      "Du kannst nur Spieler derselben Position tauschen.",
+    );
+  }
+  if (!pIn.purchasable || !pIn.active) {
+    return violation(
+      "not-purchasable",
+      "Dieser Spieler ist derzeit nicht kaufbar.",
+    );
+  }
+  const sameClub = state.squad.filter(
+    (id) => id !== outId && players.get(id)?.teamId === pIn.teamId,
+  ).length;
+  if (sameClub + 1 > RULES.maxPerClub) {
+    return violation(
+      "club-limit",
+      `Von einem Verein darfst du höchstens ${RULES.maxPerClub} Spieler haben.`,
+    );
+  }
+  if (toTenths(state.cash) + toTenths(pOut.price) - toTenths(pIn.price) < 0) {
+    return violation("cash", "Dein Guthaben reicht für diesen Transfer nicht.");
+  }
+  return null;
+}
 
 /** Tauscht `outId` gegen `inId` (gleiche Position, aktueller Preis, 2.6). */
 export function applyTransfer<T extends TransferState>(
@@ -129,59 +194,16 @@ export function applyTransfer<T extends TransferState>(
   inId: number,
   ctx: TransferContext,
 ): ApplyTransferResult<T> {
-  const { window, players } = ctx;
-  if (!window.open) {
-    return fail("window-closed", "Das Transferfenster ist geschlossen.");
-  }
+  const v = transferViolation(state, outId, inId, ctx);
+  if (v) return { ok: false, violations: [v] };
+  // Nach der Prüfung sicher: Fenster offen, Aufstellung und beide Spieler vorhanden.
+  const window = ctx.window as OpenTransferWindow;
+  const current = state.lineup!;
+  const pOut = ctx.players.get(outId)!;
+  const pIn = ctx.players.get(inId)!;
   const unlimited = isUnlimited(window, state.firstMatchday);
-  // Nur gezählte Transfers brauchen die fortgeschriebene Bank; unbegrenzte nicht.
-  if (!unlimited && state.transferBank.matchday !== window.matchday) {
-    return fail(
-      "bank-stale",
-      "Das Transferfenster wird gerade vorbereitet. Bitte versuche es in ein paar Minuten erneut.",
-    );
-  }
-  if (state.lineup === null) {
-    return fail("no-squad", "Stelle zuerst deinen Erstkader auf.");
-  }
-  if (!state.squad.includes(outId)) {
-    return fail(
-      "not-in-squad",
-      "Der abzugebende Spieler ist nicht in deinem Kader.",
-    );
-  }
-  if (state.squad.includes(inId)) {
-    return fail(
-      "already-in-squad",
-      "Dieser Spieler ist bereits in deinem Kader.",
-    );
-  }
-  const pOut = players.get(outId);
-  const pIn = players.get(inId);
-  if (!pOut || !pIn) return fail("unknown-player", "Unbekannter Spieler.");
-  if (pOut.position !== pIn.position) {
-    return fail(
-      "position",
-      "Du kannst nur Spieler derselben Position tauschen.",
-    );
-  }
-  if (!pIn.purchasable || !pIn.active) {
-    return fail("not-purchasable", "Dieser Spieler ist derzeit nicht kaufbar.");
-  }
-  const sameClub = state.squad.filter(
-    (id) => id !== outId && players.get(id)?.teamId === pIn.teamId,
-  ).length;
-  if (sameClub + 1 > RULES.maxPerClub) {
-    return fail(
-      "club-limit",
-      `Von einem Verein darfst du höchstens ${RULES.maxPerClub} Spieler haben.`,
-    );
-  }
   const cashTenths =
     toTenths(state.cash) + toTenths(pOut.price) - toTenths(pIn.price);
-  if (cashTenths < 0) {
-    return fail("cash", "Dein Guthaben reicht für diesen Transfer nicht.");
-  }
 
   let bank = state.transferBank;
   let free = true;
@@ -198,7 +220,7 @@ export function applyTransfer<T extends TransferState>(
     priceIn: pIn.price,
     free,
   };
-  const lineup = swapInLineup(state.lineup, outId, inId, players);
+  const lineup = swapInLineup(current, outId, inId, ctx.players);
   return {
     ok: true,
     state: {
@@ -210,7 +232,7 @@ export function applyTransfer<T extends TransferState>(
       transferBank: bank,
     },
     transfer,
-    captainChanged: state.lineup.captain !== lineup.captain,
+    captainChanged: current.captain !== lineup.captain,
   };
 }
 
