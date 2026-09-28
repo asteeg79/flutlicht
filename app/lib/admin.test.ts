@@ -12,6 +12,7 @@ vi.mock("@/lib/auth", () => ({ auth: async () => null }));
 
 const admin = await import("@/lib/admin");
 const storage = await import("@/lib/storage");
+const { Upstream } = await import("@/lib/api-route");
 const { saveDoc } = await import("@/test/fixtures");
 import type { GitHub } from "@/lib/github";
 
@@ -302,6 +303,29 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
       compute: { conclusion: "success" },
     });
     expect(status.tick.map((t) => t.key)).toEqual(["remind24:8:x", "final:7"]);
+  });
+
+  it("zeigt den Status auch ohne GitHub, mit Hinweis statt 502", async () => {
+    const { gh } = fakeGitHub();
+    const broken: GitHub = {
+      ...gh,
+      async lastCommit() {
+        throw new Upstream(
+          "GitHub ist nicht eingerichtet (GITHUB_PAT, GITHUB_REPO).",
+        );
+      },
+    };
+    const status = await admin.adminStatus(broken, fixtures, {
+      "final:7": "2026-10-12T08:00:00Z",
+    });
+    expect(status).toMatchObject({
+      github: "GitHub ist nicht eingerichtet (GITHUB_PAT, GITHUB_REPO).",
+      scraper: null,
+      compute: null,
+      fixtures: null,
+      pending: 1,
+    });
+    expect(status.tick).toHaveLength(1);
   });
 });
 

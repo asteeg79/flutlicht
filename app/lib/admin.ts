@@ -18,7 +18,13 @@ import {
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Forbidden, NotFound, parse } from "@/lib/api-route";
+import {
+  BadRequest,
+  Forbidden,
+  NotFound,
+  parse,
+  Upstream,
+} from "@/lib/api-route";
 import type { GitHub } from "@/lib/github";
 import {
   deleteManager,
@@ -262,6 +268,8 @@ export async function recompute(gh: GitHub): Promise<void> {
 }
 
 export interface AdminStatus {
+  /** Meldung, wenn GitHub nicht erreichbar oder nicht eingerichtet ist; dann fehlen die drei Läufe. */
+  github: string | null;
   scraper: { date: string; message: string } | null;
   compute: {
     status: string;
@@ -285,15 +293,26 @@ export async function adminStatus(
   fixtures: readonly Fixture[],
   tickDone: Record<string, string>,
 ): Promise<AdminStatus> {
-  const [scraper, compute, fixturesRun] = await Promise.all([
-    gh.lastCommit("raw/sofascore"),
-    gh.lastRun("compute.yml"),
-    gh.lastRun("fixtures.yml"),
-  ]);
+  // Ohne GitHub (etwa fehlender GITHUB_PAT) bleibt der Rest des Status sichtbar.
+  let github: Pick<AdminStatus, "github" | "scraper" | "compute" | "fixtures">;
+  try {
+    const [scraper, compute, fixturesRun] = await Promise.all([
+      gh.lastCommit("raw/sofascore"),
+      gh.lastRun("compute.yml"),
+      gh.lastRun("fixtures.yml"),
+    ]);
+    github = { github: null, scraper, compute, fixtures: fixturesRun };
+  } catch (err) {
+    if (!(err instanceof Upstream)) throw err;
+    github = {
+      github: err.message,
+      scraper: null,
+      compute: null,
+      fixtures: null,
+    };
+  }
   return {
-    scraper,
-    compute,
-    fixtures: fixturesRun,
+    ...github,
     pending: fixtures.filter((f) => f.dataState === "pending").length,
     tick: Object.entries(tickDone)
       .map(([key, at]) => ({ key, at }))

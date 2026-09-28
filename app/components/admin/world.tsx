@@ -41,26 +41,33 @@ export function Status() {
         <p className="text-sm text-kreide-matt">Lädt …</p>
       ) : status === "error" ? (
         <p className="text-sm text-kreide-matt">
-          GitHub ist nicht erreichbar oder nicht eingerichtet.
+          Der Status konnte nicht geladen werden.
         </p>
       ) : (
-        <dl className="space-y-1 text-sm">
-          <Row
-            label="Letzter Scraper-Commit"
-            value={
-              status.scraper
-                ? `${when(status.scraper.date)} · ${status.scraper.message}`
-                : "–"
-            }
-          />
-          <Row label="Pipeline (compute)" value={run(status.compute)} />
-          <Row label="Spielplan (fixtures)" value={run(status.fixtures)} />
-          <Row label="Spiele ohne Daten" value={String(status.pending)} />
-          <Row
-            label="Tick zuletzt"
-            value={status.tick.map((t) => t.key).join(", ") || "–"}
-          />
-        </dl>
+        <>
+          {status.github ? (
+            <p role="alert" className="mb-2 text-sm text-karte">
+              {status.github}
+            </p>
+          ) : null}
+          <dl className="space-y-1 text-sm">
+            <Row
+              label="Letzter Scraper-Commit"
+              value={
+                status.scraper
+                  ? `${when(status.scraper.date)} · ${status.scraper.message}`
+                  : "–"
+              }
+            />
+            <Row label="Pipeline (compute)" value={run(status.compute)} />
+            <Row label="Spielplan (fixtures)" value={run(status.fixtures)} />
+            <Row label="Spiele ohne Daten" value={String(status.pending)} />
+            <Row
+              label="Tick zuletzt"
+              value={status.tick.map((t) => t.key).join(", ") || "–"}
+            />
+          </dl>
+        </>
       )}
     </Section>
   );
