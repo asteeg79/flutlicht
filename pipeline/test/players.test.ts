@@ -60,14 +60,17 @@ describe("buildPlayers", () => {
   it("markiert Spieler, die aus dem neuesten Kader verschwunden sind, als inaktiv und nicht kaufbar", () => {
     const r = buildPlayers({
       ...base,
+      manualMapping: { "1": "11", "2": "12" },
       snapshots: [
-        { date: "2026-09-25", teamId: 10, players: [sp(1), sp(2)] },
-        { date: "2026-10-01", teamId: 10, players: [sp(1)] },
+        { date: "2026-09-25", teamId: 10, players: [sp(1), sp(2), sp(3)] },
+        { date: "2026-10-01", teamId: 10, players: [sp(1), sp(3)] },
       ],
     });
+    // 3 ist aktiv, aber ohne Transfermarkt-Zuordnung: nicht kaufbar.
     expect(r.players.map((p) => [p.id, p.active, p.purchasable])).toEqual([
       [1, true, true],
       [2, false, false],
+      [3, true, false],
     ]);
   });
 

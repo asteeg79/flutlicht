@@ -36,11 +36,13 @@ export function chooseStartValue(
 /**
  * Preis und Kaufbarkeit beim Import (4.1): Startpreis aus dem Marktwert, kaufbar nur
  * aktive Spieler. Ohne Marktwert gilt der Mindestpreis als Platzhalter, nicht kaufbar,
- * bis der Admin einen Wert einträgt.
+ * bis der Admin einen Wert einträgt. Ohne Transfermarkt-Zuordnung (meist Nachwuchs)
+ * ebenfalls nicht kaufbar, außer mit Admin-Wert.
  */
 export function initialPricing(
   value: { valueEur: number; source: ValueSourceName } | null,
   active: boolean,
+  tmMapped: boolean,
   vMaxEur: number,
 ): Pick<Player, "valueSource" | "price" | "purchasable"> {
   if (!value)
@@ -52,7 +54,7 @@ export function initialPricing(
   return {
     valueSource: value.source,
     price: startPrice(value.valueEur, vMaxEur),
-    purchasable: active,
+    purchasable: active && (tmMapped || value.source === "manual"),
   };
 }
 

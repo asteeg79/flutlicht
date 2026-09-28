@@ -151,7 +151,10 @@ export function buildPlayers(input: PlayersInput): PlayersOutput {
         teamId: base.teamId,
         position: base.position,
       });
-    return { ...base, ...initialPricing(value, base.active, vMaxEur) };
+    return {
+      ...base,
+      ...initialPricing(value, base.active, base.tmId !== undefined, vMaxEur),
+    };
   });
   return { players, vMaxEur, mappingReview, missingValues };
 }

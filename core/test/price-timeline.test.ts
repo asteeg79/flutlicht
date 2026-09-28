@@ -93,15 +93,43 @@ describe("expectationFor", () => {
 describe("initialPricing (KONZEPT 4.1)", () => {
   it("Startpreis aus dem Marktwert, kaufbar nur aktive Spieler", () => {
     expect(
-      initialPricing({ valueEur: 35e6, source: "tm-crawl" }, true, 140e6),
+      initialPricing({ valueEur: 35e6, source: "tm-crawl" }, true, true, 140e6),
     ).toEqual({ valueSource: "tm-crawl", price: 12.5, purchasable: true });
     expect(
-      initialPricing({ valueEur: 35e6, source: "dcaribou" }, false, 140e6),
+      initialPricing(
+        { valueEur: 35e6, source: "dcaribou" },
+        false,
+        true,
+        140e6,
+      ),
     ).toMatchObject({ purchasable: false });
   });
 
+  it("ohne Transfermarkt-Zuordnung nur mit Admin-Wert kaufbar", () => {
+    expect(
+      initialPricing(
+        { valueEur: 35e6, source: "sofascore" },
+        true,
+        false,
+        140e6,
+      ),
+    ).toEqual({ valueSource: "sofascore", price: 12.5, purchasable: false });
+    expect(
+      initialPricing({ valueEur: 35e6, source: "manual" }, true, false, 140e6),
+    ).toMatchObject({ purchasable: true });
+    // Zugeordnet, aber ohne TM-Wert: der Sofascore-Wert genügt.
+    expect(
+      initialPricing(
+        { valueEur: 35e6, source: "sofascore" },
+        true,
+        true,
+        140e6,
+      ),
+    ).toMatchObject({ purchasable: true });
+  });
+
   it("ohne Marktwert: Platzhalterpreis, nicht kaufbar", () => {
-    expect(initialPricing(null, true, 140e6)).toEqual({
+    expect(initialPricing(null, true, true, 140e6)).toEqual({
       valueSource: "missing",
       price: 0.5,
       purchasable: false,

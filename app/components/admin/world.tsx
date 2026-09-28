@@ -172,9 +172,9 @@ export function Mapping({
   return (
     <Section id="zuordnung" title="Zuordnung" collapsible count={open.length}>
       <p className="mb-3 text-sm text-kreide-matt">
-        {open.length} Spieler ohne sichere Transfermarkt-Zuordnung. Sie bleiben
-        kaufbar, ihr Preis kommt dann aus dem Sofascore-Wert; wer auch den nicht
-        hat, steht unter „Fehlende Werte“.
+        {open.length} Spieler ohne sichere Transfermarkt-Zuordnung. Sie sind
+        nicht kaufbar, bis sie eine TM-ID haben. „Ohne Transfermarkt“ bestätigt
+        das, etwa bei Nachwuchsspielern, und nimmt sie aus der Liste.
       </p>
       <ul className="divide-y divide-nacht-linie">
         {open.map((e) => (
