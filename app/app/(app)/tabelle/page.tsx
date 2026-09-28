@@ -1,5 +1,6 @@
 import { PageHeader } from "@/components/page-header";
 import { STATUS_LABEL } from "@/components/points";
+import { TableTabs } from "@/components/table-tabs";
 import { gameData } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 import { leagueTable } from "@/lib/standings";
@@ -20,6 +21,7 @@ export default async function StandingsPage() {
     return (
       <>
         <PageHeader title="Tabelle" />
+        <TableTabs active="/tabelle" />
         <p className="text-kreide-matt">
           Die Tabelle beginnt mit Spieltag {gameData.season.firstScoredMatchday}
           , dem ersten gewerteten Spieltag.
@@ -38,6 +40,7 @@ export default async function StandingsPage() {
         }
         title="Tabelle"
       />
+      <TableTabs active="/tabelle" />
 
       <ol
         aria-label="Gesamttabelle"

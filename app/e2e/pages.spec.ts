@@ -27,6 +27,15 @@ test("Spieltag, Tabelle und Spielerprofil", async ({ page }) => {
 
   await page.getByRole("link", { name: "Tabelle", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Tabelle" })).toBeVisible();
+  await page.getByRole("link", { name: "Bundesliga", exact: true }).click();
+  await expect(page).toHaveURL(/\/tabelle\/bundesliga$/);
+  await expect(
+    page.getByRole("table", { name: "Bundesliga" }).getByRole("row"),
+  ).toHaveCount(19);
+  await page.screenshot({
+    path: "test-results/bundesliga.png",
+    fullPage: true,
+  });
 
   await page.getByRole("link", { name: "Markt", exact: true }).click();
   const playerLink = page
