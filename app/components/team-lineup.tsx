@@ -19,6 +19,7 @@ import {
   PlayerPointsInfo,
   type PointsInfo,
 } from "@/components/player-points-info";
+import { callApi } from "@/lib/api-client";
 import { POS_LABEL } from "@/lib/positions";
 import type { PublicManager } from "@/lib/squad";
 
@@ -85,21 +86,19 @@ export function TeamLineup({
     setManager({ ...manager, lineup: next });
     setSaving(true);
     try {
-      const res = await fetch("/api/lineup", {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ lineup: next, updatedAt: previous.updatedAt }),
+      const r = await callApi<PublicManager>("/api/lineup", "PUT", {
+        lineup: next,
+        updatedAt: previous.updatedAt,
       });
-      const data = await res.json().catch(() => ({}));
-      if (!res.ok) {
+      if (!r.ok) {
         setManager(previous);
         toast.error(
-          data.error ?? "Die Aufstellung konnte nicht gespeichert werden.",
+          r.error ?? "Die Aufstellung konnte nicht gespeichert werden.",
         );
-        if (res.status === 409) router.refresh();
+        if (r.status === 409) router.refresh();
         return;
       }
-      setManager(data as PublicManager);
+      setManager(r.data);
     } finally {
       setSaving(false);
     }

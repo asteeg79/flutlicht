@@ -26,6 +26,7 @@ import { toast } from "sonner";
 import { PlayerPhoto } from "@/components/player-photo";
 import { formatNumber } from "@/components/points";
 import { Button } from "@/components/ui";
+import { callApi } from "@/lib/api-client";
 import { POS_LABEL } from "@/lib/positions";
 import type { PublicManager } from "@/lib/squad";
 
@@ -138,24 +139,17 @@ export function Market({
   async function post<T>(url: string, body: unknown): Promise<T | null> {
     setBusy(true);
     try {
-      const res = await fetch(url, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(body),
-      });
-      const data = await res.json().catch(() => ({}));
-      if (res.status === 409) {
-        toast.error(data.error ?? "Deine Daten haben sich geändert.");
+      const r = await callApi<T>(url, "POST", body);
+      if (r.ok) return r.data;
+      if (r.status === 409) {
+        toast.error(r.error ?? "Deine Daten haben sich geändert.");
         router.refresh();
-        return null;
-      }
-      if (!res.ok) {
+      } else {
         toast.error(
-          data.error ?? "Das hat nicht geklappt. Bitte versuche es erneut.",
+          r.error ?? "Das hat nicht geklappt. Bitte versuche es erneut.",
         );
-        return null;
       }
-      return data as T;
+      return null;
     } finally {
       setBusy(false);
     }

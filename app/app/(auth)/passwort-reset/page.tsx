@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import { Button, Field, FormError } from "@/components/ui";
+import { callApi } from "@/lib/api-client";
 
 export default function ResetPage() {
   const router = useRouter();
@@ -19,17 +20,10 @@ export default function ResetPage() {
     );
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/auth/reset", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const { error: message } = await res
-        .json()
-        .catch(() => ({ error: null }));
+    const r = await callApi("/api/auth/reset", "POST", body);
+    if (!r.ok) {
       setError(
-        message ??
+        r.error ??
           "Das Passwort konnte nicht geändert werden. Bitte versuche es erneut.",
       );
       setBusy(false);

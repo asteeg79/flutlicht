@@ -6,6 +6,7 @@ import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState, type FormEvent } from "react";
 import { Button, Field, FormError } from "@/components/ui";
+import { callApi } from "@/lib/api-client";
 
 export default function RegisterPage() {
   const router = useRouter();
@@ -18,17 +19,10 @@ export default function RegisterPage() {
     const body = Object.fromEntries(form.entries());
     setBusy(true);
     setError(null);
-    const res = await fetch("/api/auth/register", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(body),
-    });
-    if (!res.ok) {
-      const { error: message } = await res
-        .json()
-        .catch(() => ({ error: null }));
+    const r = await callApi("/api/auth/register", "POST", body);
+    if (!r.ok) {
       setError(
-        message ??
+        r.error ??
           "Das Konto konnte nicht angelegt werden. Bitte versuche es erneut.",
       );
       setBusy(false);

@@ -5,6 +5,7 @@ import { LoaderCircle } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
 import { toast } from "sonner";
 import { usePush } from "@/hooks/usePush";
+import { callApi } from "@/lib/api-client";
 
 type Prefs = NonNullable<ManagerDoc["push"]>["prefs"];
 
@@ -37,30 +38,19 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
 
   async function savePrefs(next: Prefs) {
     setPrefs(next);
-    const res = await fetch("/api/push/prefs", {
-      method: "PUT",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(next),
-    });
-    if (!res.ok) {
+    const r = await callApi("/api/push/prefs", "PUT", next);
+    if (!r.ok) {
       setPrefs(prefs);
-      toast.error(
-        (await res.json().catch(() => ({}))).error ??
-          "Speichern hat nicht geklappt.",
-      );
+      toast.error(r.error ?? "Speichern hat nicht geklappt.");
     }
   }
 
   async function sendTest() {
     setBusy(true);
-    const res = await fetch("/api/push/test", { method: "POST" });
+    const r = await callApi("/api/push/test", "POST");
     setBusy(false);
-    if (res.ok) toast.success("Test-Push ist unterwegs.");
-    else
-      toast.error(
-        (await res.json().catch(() => ({}))).error ??
-          "Der Test-Push hat nicht geklappt.",
-      );
+    if (r.ok) toast.success("Test-Push ist unterwegs.");
+    else toast.error(r.error ?? "Der Test-Push hat nicht geklappt.");
   }
 
   return (

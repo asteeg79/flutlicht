@@ -2,6 +2,7 @@
 
 import type { ReactNode } from "react";
 import { toast } from "sonner";
+import { callApi } from "@/lib/api-client";
 
 /** Aufruf einer Admin-Route; Fehler als Toast, Rückgabe null bei Fehler. */
 export async function adminCall<T = unknown>(
@@ -9,18 +10,12 @@ export async function adminCall<T = unknown>(
   method: string,
   body?: unknown,
 ): Promise<T | null> {
-  const res = await fetch(url, {
-    method,
-    headers:
-      body === undefined ? undefined : { "Content-Type": "application/json" },
-    body: body === undefined ? undefined : JSON.stringify(body),
-  });
-  const data = await res.json().catch(() => ({}));
-  if (!res.ok) {
-    toast.error(data.error ?? `Fehler (HTTP ${res.status})`);
+  const r = await callApi<T>(url, method, body);
+  if (!r.ok) {
+    toast.error(r.error ?? `Fehler (HTTP ${r.status})`);
     return null;
   }
-  return data as T;
+  return r.data;
 }
 
 export const COMMIT_HINT =
