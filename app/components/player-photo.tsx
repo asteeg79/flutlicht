@@ -16,7 +16,7 @@ export function PlayerPhoto({
         src={src}
         alt=""
         loading="lazy"
-        className={`${className} shrink-0 rounded-full bg-surface object-cover`}
+        className={`${className} shrink-0 rounded-full bg-white object-cover`}
       />
     );
   }

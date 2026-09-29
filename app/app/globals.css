@@ -16,6 +16,8 @@
   --color-kreide-matt: #9fb2ad;
   --color-lampe: #ffd54a;
   --color-karte: #e0533a;
+  /* Karte auf dunklem Grund (Tafel, Sheets): heller für Kontrast. */
+  --color-karte-hell: #ff7a61;
 
   --font-display: var(--font-big-shoulders), "Arial Narrow", sans-serif;
   --font-sans: var(--font-sans-body), system-ui, sans-serif;
@@ -23,7 +25,8 @@
 
 /*
  * „Arena“: semantische Farben, die zwischen dunkel und hell umschalten
- * (html[data-theme], gesetzt vom Inline-Script im Layout). Komponenten nutzen nur
+ * (data-theme am html, gesetzt vom Inline-Script im Layout; die Demo /dev/arena
+ * setzt es auch auf Unterbäume). Komponenten nutzen nur
  * diese Namen (bg-surface, text-muted, border-line …), nie Hex-Werte.
  */
 @theme inline {
@@ -78,7 +81,7 @@
 }
 
 :root,
-html[data-theme="dark"] {
+[data-theme="dark"] {
   color-scheme: dark;
   --bg: #0a141c;
   --surface: #13222d;
@@ -137,7 +140,7 @@ html[data-theme="dark"] {
   --me-row: rgb(255 213 74 / 0.12);
 }
 
-html[data-theme="light"] {
+[data-theme="light"] {
   color-scheme: light;
   --bg: #f2efe6;
   --surface: #ffffff;
@@ -236,6 +239,27 @@ body {
 @utility hero-bg {
   background: var(--hero-bg);
   color: var(--hero-text);
+}
+
+/* Mähstreifen des Aufstellungs-Spielfelds (46 px mobil, 60 px Desktop). */
+.pitch-stripes {
+  background: repeating-linear-gradient(
+    180deg,
+    var(--pitch-a) 0 46px,
+    var(--pitch-b) 46px 92px
+  );
+}
+@media (min-width: 1024px) {
+  .pitch-stripes {
+    background: repeating-linear-gradient(
+      180deg,
+      var(--pitch-a) 0 60px,
+      var(--pitch-b) 60px 120px
+    );
+  }
+}
+.pitch-light {
+  background: var(--pitch-light);
 }
 
 /* Blick von der Tribüne: Lichtkegel zweier Masten über dem Nachthimmel. */
