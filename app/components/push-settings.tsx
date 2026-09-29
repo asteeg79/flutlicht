@@ -3,7 +3,7 @@
 import type { ManagerDoc } from "@fm/core";
 import { LoaderCircle } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { usePush } from "@/hooks/usePush";
 import { callApi } from "@/lib/api-client";
 

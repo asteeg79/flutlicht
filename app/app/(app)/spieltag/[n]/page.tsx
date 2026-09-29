@@ -3,7 +3,8 @@ import { ChevronLeft, ChevronRight } from "lucide-react";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { ClubLogo } from "@/components/club-logo";
-import { PageHeader } from "@/components/page-header";
+import { HeroHeader } from "@/components/arena/hero-header";
+import { PageBody } from "@/components/arena/page-layout";
 import {
   formatNumber,
   PartsLine,
@@ -41,94 +42,98 @@ export default async function MatchdayPage({
 
   return (
     <>
-      <div className="flex items-start justify-between gap-3">
-        <PageHeader
-          context={STATUS_LABEL[view.status]}
-          title={`${n}. Spieltag`}
-        />
-        <nav aria-label="Spieltage" className="flex gap-1 pt-6">
-          {n > 1 ? (
-            <NavLink
-              href={`/spieltag/${n - 1}`}
-              label="Vorheriger Spieltag"
-              icon="prev"
-            />
-          ) : null}
-          {n < RULES.matchdays ? (
-            <NavLink
-              href={`/spieltag/${n + 1}`}
-              label="Nächster Spieltag"
-              icon="next"
-            />
-          ) : null}
-        </nav>
-      </div>
+      <HeroHeader
+        tag={STATUS_LABEL[view.status]}
+        title={`${n}. Spieltag`}
+        compact={{ title: `${n}. Spieltag` }}
+        right={
+          <nav aria-label="Spieltage" className="flex gap-2">
+            {n > 1 ? (
+              <NavLink
+                href={`/spieltag/${n - 1}`}
+                label="Vorheriger Spieltag"
+                icon="prev"
+              />
+            ) : null}
+            {n < RULES.matchdays ? (
+              <NavLink
+                href={`/spieltag/${n + 1}`}
+                label="Nächster Spieltag"
+                icon="next"
+              />
+            ) : null}
+          </nav>
+        }
+      />
+      <PageBody>
+        {view.shadow && view.managers.length > 0 ? (
+          <p className="mb-4 rounded-xl border border-lampe/60 bg-surface px-4 py-3 text-sm">
+            <span className="font-semibold">Schattenbetrieb:</span> Dieser
+            Spieltag zählt noch nicht. Punkte und Prämie siehst du zur Probe,
+            gewertet und gutgeschrieben wird ab Spieltag{" "}
+            {gameData.season.firstScoredMatchday}.
+          </p>
+        ) : null}
+        {own ? (
+          <OwnScore view={own} state={bonusState(view)} />
+        ) : (
+          <p className="mb-6 text-muted">
+            {view.status === "upcoming"
+              ? "Für diesen Spieltag gibt es noch keine Punkte."
+              : n < me.firstMatchday
+                ? `Für dich zählt erst Spieltag ${me.firstMatchday}.`
+                : "Ohne Kader gibt es keine Punkte. Stell ihn auf dem Markt zusammen."}
+          </p>
+        )}
 
-      {view.shadow && view.managers.length > 0 ? (
-        <p className="mb-4 rounded-xl border border-lampe/60 bg-surface px-4 py-3 text-sm">
-          <span className="font-semibold">Schattenbetrieb:</span> Dieser
-          Spieltag zählt noch nicht. Punkte und Prämie siehst du zur Probe,
-          gewertet und gutgeschrieben wird ab Spieltag{" "}
-          {gameData.season.firstScoredMatchday}.
-        </p>
-      ) : null}
-      {own ? (
-        <OwnScore view={own} state={bonusState(view)} />
-      ) : (
-        <p className="mb-6 text-muted">
-          {view.status === "upcoming"
-            ? "Für diesen Spieltag gibt es noch keine Punkte."
-            : n < me.firstMatchday
-              ? `Für dich zählt erst Spieltag ${me.firstMatchday}.`
-              : "Ohne Kader gibt es keine Punkte. Stell ihn auf dem Markt zusammen."}
-        </p>
-      )}
+        {others.length > 0 ? (
+          <section className="mb-8">
+            <h2 className="mb-3 text-sm font-semibold text-muted">
+              Die anderen
+            </h2>
+            <ul className="space-y-3">
+              {others.map((m) => (
+                <OtherScore key={m.userId} view={m} state={bonusState(view)} />
+              ))}
+            </ul>
+          </section>
+        ) : null}
 
-      {others.length > 0 ? (
-        <section className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold text-muted">Die anderen</h2>
-          <ul className="space-y-3">
-            {others.map((m) => (
-              <OtherScore key={m.userId} view={m} state={bonusState(view)} />
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-muted">Spiele</h2>
+          <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
+            {fixtures.map((f) => (
+              <li
+                key={f.openligaMatchId}
+                className="flex items-center justify-between gap-3 px-4 py-3"
+              >
+                <span className="flex min-w-0 flex-wrap items-center gap-x-2">
+                  <span className="flex items-center gap-2">
+                    <ClubLogo src={teamById.get(f.homeTeamId)?.logo} />
+                    {teamById.get(f.homeTeamId)?.shortName}
+                  </span>
+                  <span className="text-muted">–</span>
+                  <span className="flex items-center gap-2">
+                    <ClubLogo src={teamById.get(f.awayTeamId)?.logo} />
+                    {teamById.get(f.awayTeamId)?.shortName}
+                  </span>
+                </span>
+                {f.score ? (
+                  <span className="font-display text-2xl font-bold tabular-nums">
+                    {f.score.home}:{f.score.away}
+                  </span>
+                ) : (
+                  <span className="text-sm text-muted">
+                    {f.status === "postponed"
+                      ? "verlegt"
+                      : formatKickoff(f.kickoffUtc)}
+                  </span>
+                )}
+              </li>
             ))}
           </ul>
         </section>
-      ) : null}
-
-      <section>
-        <h2 className="mb-3 text-sm font-semibold text-muted">Spiele</h2>
-        <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
-          {fixtures.map((f) => (
-            <li
-              key={f.openligaMatchId}
-              className="flex items-center justify-between gap-3 px-4 py-3"
-            >
-              <span className="flex min-w-0 flex-wrap items-center gap-x-2">
-                <span className="flex items-center gap-2">
-                  <ClubLogo src={teamById.get(f.homeTeamId)?.logo} />
-                  {teamById.get(f.homeTeamId)?.shortName}
-                </span>
-                <span className="text-muted">–</span>
-                <span className="flex items-center gap-2">
-                  <ClubLogo src={teamById.get(f.awayTeamId)?.logo} />
-                  {teamById.get(f.awayTeamId)?.shortName}
-                </span>
-              </span>
-              {f.score ? (
-                <span className="font-display text-2xl font-bold tabular-nums">
-                  {f.score.home}:{f.score.away}
-                </span>
-              ) : (
-                <span className="text-sm text-muted">
-                  {f.status === "postponed"
-                    ? "verlegt"
-                    : formatKickoff(f.kickoffUtc)}
-                </span>
-              )}
-            </li>
-          ))}
-        </ul>
-      </section>
+      </PageBody>
     </>
   );
 }
@@ -147,7 +152,7 @@ function NavLink({
     <Link
       href={href}
       aria-label={label}
-      className="flex h-10 w-10 items-center justify-center rounded-lg border border-line"
+      className="flex h-11 w-11 items-center justify-center border-2 border-hero-muted/60"
     >
       <Icon aria-hidden className="h-5 w-5" />
     </Link>

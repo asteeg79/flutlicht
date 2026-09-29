@@ -4,7 +4,7 @@ import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { Button, Field, FormError } from "@/components/ui";
 import { callApi } from "@/lib/api-client";
 

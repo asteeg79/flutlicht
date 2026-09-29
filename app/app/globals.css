@@ -68,6 +68,7 @@
   --color-chip-on-text: var(--chip-on-text);
   --color-save-bg: var(--save-bg);
   --color-save-text: var(--save-text);
+  --color-save-ok: var(--save-ok);
   --color-picked-row: var(--picked-row);
   --color-live: var(--live);
   --color-up: var(--up);
@@ -127,6 +128,7 @@ html[data-theme="dark"] {
   --chip-on-text: #0a141c;
   --save-bg: #f1f4f2;
   --save-text: #0a141c;
+  --save-ok: #1f7a3a;
   --picked-row: rgb(255 213 74 / 0.08);
   --live: #e0533a;
   --up: #6fdc8c;
@@ -184,6 +186,7 @@ html[data-theme="light"] {
   --chip-on-text: #ffd54a;
   --save-bg: #0f1c26;
   --save-text: #ffffff;
+  --save-ok: #6fdc8c;
   --picked-row: rgb(255 213 74 / 0.25);
   --live: #c8412b;
   --up: #1f7a3a;
@@ -214,6 +217,10 @@ body {
 }
 @utility slant-sm {
   clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+/* Nur rechts schräg (Toast, Kapitäns-Leiste, Team-Karte). */
+@utility slant-r {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
 }
 /* Karte mit abgeschnittener Ecke unten rechts. */
 @utility cut-corner {
@@ -273,5 +280,377 @@ body {
     100% {
       opacity: 1;
     }
+  }
+}
+
+/*
+ * Arena-Animationen (README 8): nur transform/opacity/filter/box-shadow.
+ * Einmal-Animationen gibt es doppelt (…0/…1), damit ein Wechsel des Namens sie neu startet.
+ * Alles mit der Klasse arena-anim steht bei prefers-reduced-motion still.
+ */
+@keyframes arena-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+@keyframes arena-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes arena-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes arena-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes arena-rise {
+  from {
+    transform: translateY(22px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-sheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes arena-modal {
+  from {
+    transform: translateY(24px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-page {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes arena-list0 {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes arena-list1 {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes arena-swap0 {
+  0% {
+    transform: scale(0.3) rotate(-24deg);
+    filter: brightness(2.2);
+  }
+  60% {
+    transform: scale(1.22) rotate(5deg);
+  }
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes arena-swap1 {
+  0% {
+    transform: scale(0.3) rotate(24deg);
+    filter: brightness(2.2);
+  }
+  60% {
+    transform: scale(1.22) rotate(-5deg);
+  }
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes arena-pop {
+  0% {
+    transform: translateY(16px) scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(-3px) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-stamp {
+  0% {
+    transform: scale(3.4) rotate(-40deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.8) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+@keyframes arena-float {
+  0% {
+    transform: translate(-50%, 14px) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, 0) scale(1.06);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -4px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -26px);
+    opacity: 0;
+  }
+}
+@keyframes arena-slam {
+  0% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-burst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+  }
+}
+@keyframes arena-zoom {
+  0% {
+    transform: scale(0.2) rotate(-25deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12) rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-out {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-90px) scale(0.7);
+    opacity: 0;
+  }
+}
+@keyframes arena-beam-l {
+  0%,
+  100% {
+    transform: rotate(-26deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+@keyframes arena-beam-r {
+  0%,
+  100% {
+    transform: rotate(26deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes arena-shard {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--r));
+    opacity: 0;
+  }
+}
+@keyframes arena-flash {
+  0% {
+    transform: scale(1.25);
+    text-shadow: 0 0 26px var(--color-lampe);
+  }
+  100% {
+    transform: none;
+    text-shadow: none;
+  }
+}
+@keyframes arena-deny {
+  0%,
+  100% {
+    transform: none;
+    box-shadow: inset 0 0 0 0 var(--color-karte);
+  }
+  25% {
+    transform: translateX(-4px);
+    box-shadow: inset 0 0 0 3px var(--color-karte);
+  }
+  50% {
+    transform: translateX(4px);
+    box-shadow: inset 0 0 0 3px var(--color-karte);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+@keyframes arena-flip {
+  0% {
+    transform: rotateX(0);
+  }
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+@keyframes arena-drop {
+  0% {
+    transform: translateY(-22px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-tick {
+  0% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-snap {
+  0% {
+    transform: translateY(-7px) scale(1.8);
+    opacity: 0;
+  }
+  45% {
+    transform: translateY(1px) scale(0.85);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-row {
+  0% {
+    transform: translateY(var(--from));
+    box-shadow: inset 0 0 0 999px rgb(255 213 74 / 0.55);
+  }
+  65% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: none;
+    box-shadow: inset 0 0 0 999px rgb(255 213 74 / 0);
+  }
+}
+@keyframes arena-sink {
+  0% {
+    transform: translateY(var(--from));
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .arena-anim,
+  .arena-anim * {
+    animation: none !important;
+    transition: none !important;
   }
 }

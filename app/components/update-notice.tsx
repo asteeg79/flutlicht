@@ -8,13 +8,13 @@ export function UpdateNotice() {
   return (
     <div
       role="status"
-      className="mx-auto mb-4 flex max-w-lg items-center justify-between gap-3 rounded-xl border border-lampe/60 bg-surface px-4 py-2 text-sm"
+      className="flex items-center justify-between gap-3 border-b-2 border-lampe bg-surface px-[18px] pt-[calc(env(safe-area-inset-top)+8px)] pb-2 text-sm lg:px-9 lg:pt-2"
     >
       <span>Neuer Stand verfügbar.</span>
       <button
         type="button"
         onClick={() => window.location.reload()}
-        className="font-semibold text-accent"
+        className="min-h-11 font-display text-base font-black tracking-[0.04em] text-accent uppercase"
       >
         Neu laden
       </button>

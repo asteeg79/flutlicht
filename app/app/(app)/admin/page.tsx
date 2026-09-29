@@ -12,7 +12,8 @@ import {
   Season,
   Status,
 } from "@/components/admin/world";
-import { PageHeader } from "@/components/page-header";
+import { HeroHeader } from "@/components/arena/hero-header";
+import { PageBody } from "@/components/arena/page-layout";
 import { gameData } from "@/lib/game-data";
 import { requireAdmin } from "@/lib/session";
 import { listAllManagers, loadLeague } from "@/lib/storage";
@@ -105,44 +106,53 @@ export default async function AdminPage() {
 
   return (
     <>
-      <PageHeader context={`Angemeldet als ${me.displayName}`} title="Admin" />
-      <nav aria-label="Bereiche" className="mb-6 flex flex-wrap gap-2 text-sm">
-        {SECTIONS.map(([id, label]) => (
-          <a
-            key={id}
-            href={`#${id}`}
-            className="rounded-lg border border-line px-3 py-1.5 text-muted hover:text-text"
-          >
-            {label}
-          </a>
-        ))}
-      </nav>
-      <Status />
-      <Invites
-        initial={league.invites}
-        names={Object.fromEntries(
-          managers.map((m) => [m.userId, m.displayName]),
-        )}
+      <HeroHeader
+        tag={`Angemeldet als ${me.displayName}`}
+        title="Admin"
+        compact={{ title: "Admin" }}
       />
-      <Managers initial={rows} selfId={me.userId} />
-      <Season
-        firstScored={firstScored}
-        budget={gameData.season.startBudget}
-        editable={seasonEditable}
-      />
-      <Mapping entries={gameData.review.mapping} clubs={clubs} />
-      <MissingValues entries={gameData.review.missingValues} clubs={clubs} />
-      <Positions
-        players={gameData.players.map((p) => ({
-          id: p.id,
-          name: p.name,
-          teamId: p.teamId,
-          position: p.position,
-        }))}
-        clubs={clubs}
-      />
-      <ManualMatchForm matches={matches} squads={squads} />
-      <Recompute />
+      <PageBody>
+        <nav
+          aria-label="Bereiche"
+          className="mb-6 flex flex-wrap gap-2 text-sm"
+        >
+          {SECTIONS.map(([id, label]) => (
+            <a
+              key={id}
+              href={`#${id}`}
+              className="rounded-lg border border-line px-3 py-1.5 text-muted hover:text-text"
+            >
+              {label}
+            </a>
+          ))}
+        </nav>
+        <Status />
+        <Invites
+          initial={league.invites}
+          names={Object.fromEntries(
+            managers.map((m) => [m.userId, m.displayName]),
+          )}
+        />
+        <Managers initial={rows} selfId={me.userId} />
+        <Season
+          firstScored={firstScored}
+          budget={gameData.season.startBudget}
+          editable={seasonEditable}
+        />
+        <Mapping entries={gameData.review.mapping} clubs={clubs} />
+        <MissingValues entries={gameData.review.missingValues} clubs={clubs} />
+        <Positions
+          players={gameData.players.map((p) => ({
+            id: p.id,
+            name: p.name,
+            teamId: p.teamId,
+            position: p.position,
+          }))}
+          clubs={clubs}
+        />
+        <ManualMatchForm matches={matches} squads={squads} />
+        <Recompute />
+      </PageBody>
     </>
   );
 }

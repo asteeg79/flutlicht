@@ -9,7 +9,8 @@ import {
   type LedgerRow,
 } from "@fm/core";
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { HeroHeader } from "@/components/arena/hero-header";
+import { PageBody } from "@/components/arena/page-layout";
 import { PlayerPhoto } from "@/components/player-photo";
 import { signedMio } from "@/components/points";
 import { gameData, playerById, positionById } from "@/lib/game-data";
@@ -23,14 +24,20 @@ export default async function HistoryPage() {
   if (me.squad.length === 0) {
     return (
       <>
-        <PageHeader context="Transfers" title="Historie" />
-        <p className="text-muted">
-          Noch kein Kader. Stell ihn auf dem{" "}
-          <Link href="/markt" className="text-accent underline">
-            Markt
-          </Link>{" "}
-          zusammen.
-        </p>
+        <HeroHeader
+          tag="Transfers"
+          title="Historie"
+          compact={{ title: "Historie" }}
+        />
+        <PageBody>
+          <p className="text-muted">
+            Noch kein Kader. Stell ihn auf dem{" "}
+            <Link href="/markt" className="text-accent underline">
+              Markt
+            </Link>{" "}
+            zusammen.
+          </p>
+        </PageBody>
       </>
     );
   }
@@ -79,69 +86,75 @@ export default async function HistoryPage() {
 
   return (
     <>
-      <PageHeader context="Transfers" title="Historie" />
-      <dl className="mb-8 grid grid-cols-3 gap-3">
-        <Summary label="Verkäufe" value={h.realized} />
-        <Summary label="Im Kader" value={h.unrealized} />
-        <Summary label="Prämien" value={bonuses} />
-      </dl>
+      <HeroHeader
+        tag="Transfers"
+        title="Historie"
+        compact={{ title: "Historie" }}
+      />
+      <PageBody>
+        <dl className="mb-8 grid grid-cols-3 gap-3">
+          <Summary label="Verkäufe" value={h.realized} />
+          <Summary label="Im Kader" value={h.unrealized} />
+          <Summary label="Prämien" value={bonuses} />
+        </dl>
 
-      <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-muted">Verlauf</h2>
-        {ledger.length === 0 ? (
-          <p className="text-sm text-muted">
-            Noch keine Transfers und kein gewerteter Spieltag. Gewertet wird ab
-            Spieltag {first}.
-          </p>
-        ) : (
-          <>
-            <ul
-              aria-label="Verlauf"
-              className="divide-y divide-line rounded-xl border border-line bg-surface"
-            >
-              {ledger.map((row) => (
-                <LedgerItem key={row.matchday} row={row} />
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold text-muted">Verlauf</h2>
+          {ledger.length === 0 ? (
+            <p className="text-sm text-muted">
+              Noch keine Transfers und kein gewerteter Spieltag. Gewertet wird
+              ab Spieltag {first}.
+            </p>
+          ) : (
+            <>
+              <ul
+                aria-label="Verlauf"
+                className="divide-y divide-line rounded-xl border border-line bg-surface"
+              >
+                {ledger.map((row) => (
+                  <LedgerItem key={row.matchday} row={row} />
+                ))}
+              </ul>
+              <p className="mt-2 text-xs text-muted">
+                Verdient = Kaderwert-Änderung + Prämie. Der Gewinn eines
+                Verkaufs steckt schon in den Kaderwert-Änderungen davor.
+              </p>
+            </>
+          )}
+        </section>
+
+        <section className="mb-8">
+          <h2 className="mb-3 text-sm font-semibold text-muted">Verkauft</h2>
+          {h.sold.length === 0 ? (
+            <p className="text-sm text-muted">Noch keine Verkäufe.</p>
+          ) : (
+            <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
+              {h.sold.map((s) => (
+                <Row
+                  key={`${s.playerId}-${s.soldMatchday}`}
+                  id={s.playerId}
+                  detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} → Sp. ${s.soldMatchday} für ${formatMio(s.sellPrice)}`}
+                  diff={s.diff}
+                />
               ))}
             </ul>
-            <p className="mt-2 text-xs text-muted">
-              Verdient = Kaderwert-Änderung + Prämie. Der Gewinn eines Verkaufs
-              steckt schon in den Kaderwert-Änderungen davor.
-            </p>
-          </>
-        )}
-      </section>
+          )}
+        </section>
 
-      <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-muted">Verkauft</h2>
-        {h.sold.length === 0 ? (
-          <p className="text-sm text-muted">Noch keine Verkäufe.</p>
-        ) : (
+        <section>
+          <h2 className="mb-3 text-sm font-semibold text-muted">Im Kader</h2>
           <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
-            {h.sold.map((s) => (
+            {h.held.map((s) => (
               <Row
-                key={`${s.playerId}-${s.soldMatchday}`}
+                key={s.playerId}
                 id={s.playerId}
-                detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} → Sp. ${s.soldMatchday} für ${formatMio(s.sellPrice)}`}
+                detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} · jetzt ${formatMio(s.currentPrice)}`}
                 diff={s.diff}
               />
             ))}
           </ul>
-        )}
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-sm font-semibold text-muted">Im Kader</h2>
-        <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
-          {h.held.map((s) => (
-            <Row
-              key={s.playerId}
-              id={s.playerId}
-              detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} · jetzt ${formatMio(s.currentPrice)}`}
-              diff={s.diff}
-            />
-          ))}
-        </ul>
-      </section>
+        </section>
+      </PageBody>
     </>
   );
 }

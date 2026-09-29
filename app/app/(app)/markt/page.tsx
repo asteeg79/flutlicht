@@ -5,7 +5,8 @@ import {
   type MarketWindow,
 } from "@/components/market";
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { HeroHeader } from "@/components/arena/hero-header";
+import { PageBody } from "@/components/arena/page-layout";
 import { gameData, statsById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 import { liveContext, publicManager } from "@/lib/squad";
@@ -49,33 +50,36 @@ export default async function MarketPage() {
 
   return (
     <>
-      <PageHeader
-        context={
+      <HeroHeader
+        tag={
           manager.squad.length === 0
             ? "Erstkader"
             : `Spieltag ${window.open ? window.matchday : "läuft"}`
         }
         title="Markt"
+        compact={{ title: "Markt" }}
       />
-      {manager.squad.length > 0 ? (
-        <Link
-          href="/historie"
-          className="-mt-3 mb-4 inline-block text-sm font-semibold text-accent underline-offset-4 hover:underline"
-        >
-          Transfer-Historie →
-        </Link>
-      ) : null}
-      <Market
-        players={players}
-        teams={gameData.teams.map((t) => ({
-          id: t.id,
-          shortName: t.shortName,
-        }))}
-        stats={stats}
-        initialManager={publicManager(manager)}
-        budget={gameData.season.startBudget}
-        window={window}
-      />
+      <PageBody>
+        {manager.squad.length > 0 ? (
+          <Link
+            href="/historie"
+            className="-mt-3 mb-4 inline-block text-sm font-semibold text-accent underline-offset-4 hover:underline"
+          >
+            Transfer-Historie →
+          </Link>
+        ) : null}
+        <Market
+          players={players}
+          teams={gameData.teams.map((t) => ({
+            id: t.id,
+            shortName: t.shortName,
+          }))}
+          stats={stats}
+          initialManager={publicManager(manager)}
+          budget={gameData.season.startBudget}
+          window={window}
+        />
+      </PageBody>
     </>
   );
 }

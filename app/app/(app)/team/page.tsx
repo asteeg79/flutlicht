@@ -12,7 +12,8 @@ import {
 } from "@fm/core";
 import { STATUS_LABEL } from "@/components/points";
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { HeroHeader } from "@/components/arena/hero-header";
+import { PageBody } from "@/components/arena/page-layout";
 import type { PointsInfo } from "@/components/player-points-info";
 import { TeamLineup, type SquadEntry } from "@/components/team-lineup";
 import {
@@ -33,20 +34,23 @@ export default async function TeamPage() {
   if (manager.lineup === null) {
     return (
       <>
-        <PageHeader
-          context={`Gewertet ab Spieltag ${manager.firstMatchday}`}
+        <HeroHeader
+          tag={`Gewertet ab Spieltag ${manager.firstMatchday}`}
           title={manager.teamName}
+          compact={{ title: manager.teamName }}
         />
-        <p className="mb-6 text-muted">
-          Dein Kader ist noch leer. Stell auf dem Markt 15 Spieler zusammen,
-          danach steht hier deine Elf.
-        </p>
-        <Link
-          href="/markt"
-          className="inline-flex h-12 items-center rounded-xl bg-lampe px-5 font-semibold text-nacht"
-        >
-          Zum Markt · {formatMio(manager.cash)} Budget
-        </Link>
+        <PageBody>
+          <p className="mb-6 text-muted">
+            Dein Kader ist noch leer. Stell auf dem Markt 15 Spieler zusammen,
+            danach steht hier deine Elf.
+          </p>
+          <Link
+            href="/markt"
+            className="inline-flex h-12 items-center rounded-xl bg-lampe px-5 font-semibold text-nacht"
+          >
+            Zum Markt · {formatMio(manager.cash)} Budget
+          </Link>
+        </PageBody>
       </>
     );
   }
@@ -112,32 +116,35 @@ export default async function TeamPage() {
 
   return (
     <>
-      <PageHeader
-        context={
+      <HeroHeader
+        tag={
           matchday === null
             ? "Saison beendet"
             : `Spieltag ${matchday}${first ? ` · erste Sperre ${formatKickoff(first.toISOString())}` : ""}`
         }
         title={manager.teamName}
+        compact={{ title: manager.teamName }}
       />
-      {live ? (
-        <Link
-          href={`/spieltag/${live.matchday}`}
-          className="mb-4 flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
-        >
-          <span className="text-sm">
-            Spieltag {live.matchday} · {STATUS_LABEL[live.status]}
-          </span>
-          <span className="font-display text-3xl font-bold text-accent tabular-nums">
-            {live.total} P.
-          </span>
-        </Link>
-      ) : null}
-      <TeamLineup
-        initialManager={publicManager(manager)}
-        squad={squad}
-        serverNow={ctx.now.toISOString()}
-      />
+      <PageBody>
+        {live ? (
+          <Link
+            href={`/spieltag/${live.matchday}`}
+            className="mb-4 flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
+          >
+            <span className="text-sm">
+              Spieltag {live.matchday} · {STATUS_LABEL[live.status]}
+            </span>
+            <span className="font-display text-3xl font-bold text-accent tabular-nums">
+              {live.total} P.
+            </span>
+          </Link>
+        ) : null}
+        <TeamLineup
+          initialManager={publicManager(manager)}
+          squad={squad}
+          serverNow={ctx.now.toISOString()}
+        />
+      </PageBody>
     </>
   );
 }

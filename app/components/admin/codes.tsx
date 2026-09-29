@@ -2,7 +2,7 @@
 
 import type { InviteCode } from "@fm/core";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { adminCall, Section, SmallButton } from "@/components/admin/common";
 
 export interface ManagerRow {

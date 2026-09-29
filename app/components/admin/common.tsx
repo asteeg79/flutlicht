@@ -2,7 +2,7 @@
 
 import { ChevronDown } from "lucide-react";
 import type { ReactNode } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { callApi } from "@/lib/api-client";
 
 /** Aufruf einer Admin-Route; Fehler als Toast, Rückgabe null bei Fehler. */

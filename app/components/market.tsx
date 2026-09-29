@@ -23,7 +23,7 @@ import { ArrowRight, LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useMemo, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { PlayerPhoto } from "@/components/player-photo";
 import { formatNumber } from "@/components/points";
 import { Button } from "@/components/ui";

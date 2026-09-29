@@ -1,8 +1,8 @@
 import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Schibsted_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
-import { Toaster } from "sonner";
 import { ThemeWatcher } from "@/components/arena/theme-watcher";
+import { Toaster } from "@/components/arena/toast";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -52,7 +52,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className="min-h-dvh antialiased">
         <ThemeWatcher />
         {children}
-        <Toaster theme="dark" position="top-center" richColors />
+        <Toaster />
         <ServiceWorkerRegister />
       </body>
     </html>

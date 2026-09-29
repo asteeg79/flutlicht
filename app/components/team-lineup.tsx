@@ -13,7 +13,7 @@ import {
 import { LoaderCircle, Lock } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { PlayerPhoto } from "@/components/player-photo";
 import {
   PlayerPointsInfo,

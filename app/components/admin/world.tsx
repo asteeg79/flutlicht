@@ -8,7 +8,7 @@ import {
   type Position,
 } from "@fm/core";
 import { useEffect, useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import {
   adminCall,
   COMMIT_HINT,
