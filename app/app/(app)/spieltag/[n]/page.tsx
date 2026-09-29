@@ -65,7 +65,7 @@ export default async function MatchdayPage({
       </div>
 
       {view.shadow && view.managers.length > 0 ? (
-        <p className="mb-4 rounded-xl border border-lampe/60 bg-nacht-hoch px-4 py-3 text-sm">
+        <p className="mb-4 rounded-xl border border-lampe/60 bg-surface px-4 py-3 text-sm">
           <span className="font-semibold">Schattenbetrieb:</span> Dieser
           Spieltag zählt noch nicht. Punkte und Prämie siehst du zur Probe,
           gewertet und gutgeschrieben wird ab Spieltag{" "}
@@ -75,7 +75,7 @@ export default async function MatchdayPage({
       {own ? (
         <OwnScore view={own} state={bonusState(view)} />
       ) : (
-        <p className="mb-6 text-kreide-matt">
+        <p className="mb-6 text-muted">
           {view.status === "upcoming"
             ? "Für diesen Spieltag gibt es noch keine Punkte."
             : n < me.firstMatchday
@@ -86,9 +86,7 @@ export default async function MatchdayPage({
 
       {others.length > 0 ? (
         <section className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
-            Die anderen
-          </h2>
+          <h2 className="mb-3 text-sm font-semibold text-muted">Die anderen</h2>
           <ul className="space-y-3">
             {others.map((m) => (
               <OtherScore key={m.userId} view={m} state={bonusState(view)} />
@@ -98,8 +96,8 @@ export default async function MatchdayPage({
       ) : null}
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">Spiele</h2>
-        <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch">
+        <h2 className="mb-3 text-sm font-semibold text-muted">Spiele</h2>
+        <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
           {fixtures.map((f) => (
             <li
               key={f.openligaMatchId}
@@ -110,7 +108,7 @@ export default async function MatchdayPage({
                   <ClubLogo src={teamById.get(f.homeTeamId)?.logo} />
                   {teamById.get(f.homeTeamId)?.shortName}
                 </span>
-                <span className="text-kreide-matt">–</span>
+                <span className="text-muted">–</span>
                 <span className="flex items-center gap-2">
                   <ClubLogo src={teamById.get(f.awayTeamId)?.logo} />
                   {teamById.get(f.awayTeamId)?.shortName}
@@ -121,7 +119,7 @@ export default async function MatchdayPage({
                   {f.score.home}:{f.score.away}
                 </span>
               ) : (
-                <span className="text-sm text-kreide-matt">
+                <span className="text-sm text-muted">
                   {f.status === "postponed"
                     ? "verlegt"
                     : formatKickoff(f.kickoffUtc)}
@@ -149,7 +147,7 @@ function NavLink({
     <Link
       href={href}
       aria-label={label}
-      className="flex h-10 w-10 items-center justify-center rounded-lg border border-nacht-linie"
+      className="flex h-10 w-10 items-center justify-center rounded-lg border border-line"
     >
       <Icon aria-hidden className="h-5 w-5" />
     </Link>
@@ -179,37 +177,37 @@ function OwnScore({
   return (
     <section
       aria-label="Deine Punkte"
-      className="mb-8 rounded-2xl border border-nacht-linie bg-nacht-hoch p-4"
+      className="mb-8 rounded-2xl border border-line bg-surface p-4"
     >
       <div className="mb-3 flex items-end justify-between">
-        <h2 className="text-sm font-semibold text-kreide-matt">Deine Punkte</h2>
-        <p className="font-display text-5xl leading-none font-extrabold text-lampe tabular-nums">
+        <h2 className="text-sm font-semibold text-muted">Deine Punkte</h2>
+        <p className="font-display text-5xl leading-none font-extrabold text-accent tabular-nums">
           {view.total}
         </p>
       </div>
-      <ul className="divide-y divide-nacht-linie">
+      <ul className="divide-y divide-line">
         {view.slots.map((s) => (
           <SlotRow key={s.starter.id} slot={s} />
         ))}
       </ul>
-      <dl className="mt-3 space-y-1 border-t border-nacht-linie pt-3 text-sm">
+      <dl className="mt-3 space-y-1 border-t border-line pt-3 text-sm">
         {view.captainBonus !== 0 ? (
           <div className="flex justify-between">
-            <dt className="text-kreide-matt">Kapitän doppelt</dt>
+            <dt className="text-muted">Kapitän doppelt</dt>
             <dd className="tabular-nums">{signed(view.captainBonus)}</dd>
           </div>
         ) : null}
         {view.transferPenalty !== 0 ? (
           <div className="flex justify-between">
-            <dt className="text-kreide-matt">Transferabzug</dt>
-            <dd className="text-karte tabular-nums">
+            <dt className="text-muted">Transferabzug</dt>
+            <dd className="text-down tabular-nums">
               {signed(-view.transferPenalty)}
             </dd>
           </div>
         ) : null}
         {view.bonus ? (
           <div className="flex justify-between gap-3">
-            <dt className="text-kreide-matt">
+            <dt className="text-muted">
               {BONUS_LABEL[state]}
               <span className="block text-xs">
                 Median der Liga {formatNumber(view.bonus.median)} P. ·{" "}
@@ -217,7 +215,7 @@ function OwnScore({
                 {formatMio(MARKET.bonusCap)}
               </span>
             </dt>
-            <dd className={view.bonus.bonus > 0 ? "text-lampe" : undefined}>
+            <dd className={view.bonus.bonus > 0 ? "text-accent" : undefined}>
               {signedMio(view.bonus.bonus)}
             </dd>
           </div>
@@ -245,7 +243,7 @@ function SlotRow({ slot }: { slot: SlotView }) {
             </span>
           ) : null}
         </p>
-        <p className="text-xs text-kreide-matt">
+        <p className="text-xs text-muted">
           {slot.subbedIn ? (
             `eingewechselt für ${slot.starter.shortName} · ${slot.minutes}′`
           ) : slot.player === null ? (
@@ -277,18 +275,18 @@ function OtherScore({
   state: BonusState;
 }) {
   return (
-    <li className="rounded-xl border border-nacht-linie bg-nacht-hoch p-4">
+    <li className="rounded-xl border border-line bg-surface p-4">
       <div className="flex items-baseline justify-between gap-3">
         <p className="min-w-0 truncate">
           <span className="font-semibold">{view.displayName}</span>{" "}
-          <span className="text-sm text-kreide-matt">{view.teamName}</span>
+          <span className="text-sm text-muted">{view.teamName}</span>
         </p>
         <p className="font-display text-3xl font-bold tabular-nums">
           {view.total}
         </p>
       </div>
       {view.slots.length > 0 ? (
-        <p className="mt-2 text-sm text-kreide-matt">
+        <p className="mt-2 text-sm text-muted">
           {view.slots
             .map(
               (s) =>
@@ -298,12 +296,12 @@ function OtherScore({
         </p>
       ) : null}
       {view.bonus && view.bonus.bonus > 0 ? (
-        <p className="mt-1 text-xs text-lampe">
+        <p className="mt-1 text-xs text-accent">
           {BONUS_LABEL[state]}: {signedMio(view.bonus.bonus)}
         </p>
       ) : null}
       {view.hidden > 0 ? (
-        <p className="mt-1 text-xs text-kreide-matt/80">
+        <p className="mt-1 text-xs text-muted/80">
           {view.hidden} {view.hidden === 1 ? "Spieler ist" : "Spieler sind"}{" "}
           noch verdeckt, sichtbar ab der Sperre.
         </p>

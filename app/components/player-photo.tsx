@@ -16,7 +16,7 @@ export function PlayerPhoto({
         src={src}
         alt=""
         loading="lazy"
-        className={`${className} shrink-0 rounded-full bg-nacht-hoch object-cover`}
+        className={`${className} shrink-0 rounded-full bg-surface object-cover`}
       />
     );
   }
@@ -24,7 +24,7 @@ export function PlayerPhoto({
     <svg
       viewBox="0 0 40 40"
       aria-hidden
-      className={`${className} shrink-0 rounded-full bg-nacht-hoch text-kreide-matt/60`}
+      className={`${className} shrink-0 rounded-full bg-surface text-muted/60`}
     >
       <circle cx="20" cy="15" r="7" fill="currentColor" />
       <path d="M6 38c1.5-8 7-12 14-12s12.5 4 14 12z" fill="currentColor" />

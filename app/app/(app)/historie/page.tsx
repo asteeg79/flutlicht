@@ -24,9 +24,9 @@ export default async function HistoryPage() {
     return (
       <>
         <PageHeader context="Transfers" title="Historie" />
-        <p className="text-kreide-matt">
+        <p className="text-muted">
           Noch kein Kader. Stell ihn auf dem{" "}
-          <Link href="/markt" className="text-lampe underline">
+          <Link href="/markt" className="text-accent underline">
             Markt
           </Link>{" "}
           zusammen.
@@ -87,9 +87,9 @@ export default async function HistoryPage() {
       </dl>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">Verlauf</h2>
+        <h2 className="mb-3 text-sm font-semibold text-muted">Verlauf</h2>
         {ledger.length === 0 ? (
-          <p className="text-sm text-kreide-matt">
+          <p className="text-sm text-muted">
             Noch keine Transfers und kein gewerteter Spieltag. Gewertet wird ab
             Spieltag {first}.
           </p>
@@ -97,13 +97,13 @@ export default async function HistoryPage() {
           <>
             <ul
               aria-label="Verlauf"
-              className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch"
+              className="divide-y divide-line rounded-xl border border-line bg-surface"
             >
               {ledger.map((row) => (
                 <LedgerItem key={row.matchday} row={row} />
               ))}
             </ul>
-            <p className="mt-2 text-xs text-kreide-matt">
+            <p className="mt-2 text-xs text-muted">
               Verdient = Kaderwert-Änderung + Prämie. Der Gewinn eines Verkaufs
               steckt schon in den Kaderwert-Änderungen davor.
             </p>
@@ -112,13 +112,11 @@ export default async function HistoryPage() {
       </section>
 
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
-          Verkauft
-        </h2>
+        <h2 className="mb-3 text-sm font-semibold text-muted">Verkauft</h2>
         {h.sold.length === 0 ? (
-          <p className="text-sm text-kreide-matt">Noch keine Verkäufe.</p>
+          <p className="text-sm text-muted">Noch keine Verkäufe.</p>
         ) : (
-          <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch">
+          <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
             {h.sold.map((s) => (
               <Row
                 key={`${s.playerId}-${s.soldMatchday}`}
@@ -132,10 +130,8 @@ export default async function HistoryPage() {
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
-          Im Kader
-        </h2>
-        <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch">
+        <h2 className="mb-3 text-sm font-semibold text-muted">Im Kader</h2>
+        <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
           {h.held.map((s) => (
             <Row
               key={s.playerId}
@@ -167,11 +163,11 @@ function LedgerItem({ row }: { row: LedgerRow }) {
             {signedMio(r.earned)}
           </span>
         ) : (
-          <span className="text-xs text-kreide-matt">noch nicht gewertet</span>
+          <span className="text-xs text-muted">noch nicht gewertet</span>
         )}
       </div>
       {r ? (
-        <p className="text-xs text-kreide-matt">
+        <p className="text-xs text-muted">
           {r.points} Punkte · Kaderwert {signedMio(r.valueChange)} · Prämie{" "}
           {signedMio(r.bonus)}
         </p>
@@ -188,15 +184,15 @@ function LedgerItem({ row }: { row: LedgerRow }) {
 }
 
 function tone(n: number): string {
-  return n > 0 ? "text-lampe" : n < 0 ? "text-karte" : "text-kreide-matt";
+  return n > 0 ? "text-accent" : n < 0 ? "text-down" : "text-muted";
 }
 
 function Summary({ label, value }: { label: string; value: number }) {
   return (
-    <div className="rounded-xl border border-nacht-linie bg-nacht-hoch p-3">
-      <dt className="text-xs text-kreide-matt">{label}</dt>
+    <div className="rounded-xl border border-line bg-surface p-3">
+      <dt className="text-xs text-muted">{label}</dt>
       <dd
-        className={`font-display text-2xl font-bold ${value > 0 ? "text-lampe" : value < 0 ? "text-karte" : ""}`}
+        className={`font-display text-2xl font-bold ${value > 0 ? "text-accent" : value < 0 ? "text-down" : ""}`}
       >
         {signedMio(value)}
       </dd>
@@ -226,10 +222,10 @@ function Row({
             {p?.name ?? `Spieler ${id}`}
           </Link>
         </p>
-        <p className="text-xs text-kreide-matt">{detail}</p>
+        <p className="text-xs text-muted">{detail}</p>
       </div>
       <span
-        className={`font-semibold ${diff > 0 ? "text-lampe" : diff < 0 ? "text-karte" : "text-kreide-matt"}`}
+        className={`font-semibold ${diff > 0 ? "text-accent" : diff < 0 ? "text-down" : "text-muted"}`}
       >
         {signedMio(diff)}
       </span>

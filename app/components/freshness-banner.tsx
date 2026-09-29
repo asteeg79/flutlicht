@@ -22,7 +22,7 @@ export function FreshnessBanner() {
   return (
     <div
       role="status"
-      className="mb-4 rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-2 text-sm text-kreide-matt"
+      className="mb-4 rounded-xl border border-line bg-surface px-4 py-2 text-sm text-muted"
     >
       ⏳ Daten ausstehend für {names.join(", ")}. Die Punkte erscheinen, sobald
       sie da sind.

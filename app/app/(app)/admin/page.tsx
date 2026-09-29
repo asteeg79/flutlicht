@@ -111,7 +111,7 @@ export default async function AdminPage() {
           <a
             key={id}
             href={`#${id}`}
-            className="rounded-lg border border-nacht-linie px-3 py-1.5 text-kreide-matt hover:text-kreide"
+            className="rounded-lg border border-line px-3 py-1.5 text-muted hover:text-text"
           >
             {label}
           </a>

@@ -81,11 +81,11 @@ export default function RegisterPage() {
         ) : null}
         Konto anlegen
       </Button>
-      <p className="text-sm text-kreide-matt">
+      <p className="text-sm text-muted">
         Schon dabei?{" "}
         <Link
           href="/login"
-          className="text-kreide underline-offset-4 hover:underline"
+          className="text-text underline-offset-4 hover:underline"
         >
           Anmelden
         </Link>

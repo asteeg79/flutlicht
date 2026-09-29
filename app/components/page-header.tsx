@@ -11,11 +11,11 @@ export function PageHeader({
   return (
     <header className="mb-6">
       {context ? (
-        <p className="mb-1 text-xs font-semibold tracking-[0.18em] text-lampe uppercase">
+        <p className="mb-1 text-xs font-semibold tracking-[0.18em] text-accent uppercase">
           {context}
         </p>
       ) : null}
-      <h1 className="font-display text-5xl leading-none font-extrabold text-kreide uppercase">
+      <h1 className="font-display text-5xl leading-none font-extrabold text-text uppercase">
         {title}
       </h1>
     </header>

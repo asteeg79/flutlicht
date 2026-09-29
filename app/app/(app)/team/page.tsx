@@ -37,7 +37,7 @@ export default async function TeamPage() {
           context={`Gewertet ab Spieltag ${manager.firstMatchday}`}
           title={manager.teamName}
         />
-        <p className="mb-6 text-kreide-matt">
+        <p className="mb-6 text-muted">
           Dein Kader ist noch leer. Stell auf dem Markt 15 Spieler zusammen,
           danach steht hier deine Elf.
         </p>
@@ -123,12 +123,12 @@ export default async function TeamPage() {
       {live ? (
         <Link
           href={`/spieltag/${live.matchday}`}
-          className="mb-4 flex items-center justify-between rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3"
+          className="mb-4 flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
         >
           <span className="text-sm">
             Spieltag {live.matchday} · {STATUS_LABEL[live.status]}
           </span>
-          <span className="font-display text-3xl font-bold text-lampe tabular-nums">
+          <span className="font-display text-3xl font-bold text-accent tabular-nums">
             {live.total} P.
           </span>
         </Link>

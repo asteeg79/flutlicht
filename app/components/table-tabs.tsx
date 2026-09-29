@@ -20,8 +20,8 @@ export function TableTabs({
           aria-current={t.href === active ? "page" : undefined}
           className={`flex h-9 items-center justify-center rounded-lg text-sm font-semibold ${
             t.href === active
-              ? "bg-kreide text-nacht"
-              : "border border-nacht-linie text-kreide-matt"
+              ? "bg-text text-bg"
+              : "border border-line text-muted"
           }`}
         >
           {t.label}

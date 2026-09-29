@@ -91,7 +91,7 @@ export function ManualMatchForm({
           setRows({});
           setScore({ home: 0, away: 0 });
         }}
-        className="mb-3 h-10 w-full rounded-lg border border-nacht-linie bg-nacht px-2"
+        className="mb-3 h-10 w-full rounded-lg border border-line bg-bg px-2"
       >
         <option value="">Spiel wählen …</option>
         {matches.map((m) => (
@@ -105,7 +105,7 @@ export function ManualMatchForm({
       {match ? (
         <>
           <div className="mb-4 flex items-center gap-2">
-            <span className="text-sm text-kreide-matt">Endstand</span>
+            <span className="text-sm text-muted">Endstand</span>
             <NumberInput
               label="Tore Heim"
               value={score.home}
@@ -124,7 +124,7 @@ export function ManualMatchForm({
           ].map(([teamId, name]) => (
             <div key={teamId} className="mb-4">
               <h3 className="mb-1 text-sm font-semibold">{name}</h3>
-              <ul className="divide-y divide-nacht-linie rounded-lg border border-nacht-linie">
+              <ul className="divide-y divide-line rounded-lg border border-line">
                 {(squads[teamId as number] ?? []).map((p) => {
                   const r = rows[p.id];
                   return (
@@ -136,7 +136,7 @@ export function ManualMatchForm({
                           onChange={() => toggle(p.id)}
                         />
                         <span className="flex-1">{p.name}</span>
-                        <span className="text-xs text-kreide-matt">
+                        <span className="text-xs text-muted">
                           {POS_LABEL[p.position]}
                         </span>
                       </label>
@@ -214,7 +214,7 @@ function PlayerFields({
               rating: e.target.value.trim() === "" || !(v > 0) ? null : v,
             });
           }}
-          className="h-8 rounded border border-nacht-linie bg-nacht px-1"
+          className="h-8 rounded border border-line bg-bg px-1"
         />
       </label>
       <NumberInput
@@ -237,7 +237,7 @@ function PlayerFields({
         <select
           value={card}
           onChange={(e) => setCard(e.target.value as Card)}
-          className="h-8 rounded border border-nacht-linie bg-nacht"
+          className="h-8 rounded border border-line bg-bg"
         >
           <option value="none">–</option>
           <option value="yellow">Gelb</option>
@@ -281,7 +281,7 @@ function NumberInput({
         onChange={(e) =>
           onChange(Math.max(0, Number(e.target.value.replace(/\D/g, "")) || 0))
         }
-        className="h-8 w-full rounded border border-nacht-linie bg-nacht px-1"
+        className="h-8 w-full rounded border border-line bg-bg px-1"
       />
     </label>
   );

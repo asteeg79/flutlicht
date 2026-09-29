@@ -72,14 +72,14 @@ export default async function PlayerPage({
         />
       </dl>
       {!player.active ? (
-        <p className="mb-6 text-sm text-karte">
+        <p className="mb-6 text-sm text-down">
           Nicht mehr in der Bundesliga, kann nur noch verkauft werden.
         </p>
       ) : null}
 
       {season ? (
         <section className="mb-8">
-          <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
+          <h2 className="mb-3 text-sm font-semibold text-muted">
             So kamen die Punkte zustande
           </h2>
           <p className="mb-2 text-sm">
@@ -91,7 +91,7 @@ export default async function PlayerPage({
               : ""}
           </p>
           <PartsTable parts={season.parts} />
-          <p className="mt-2 flex justify-between border-t border-nacht-linie pt-2 text-sm font-semibold">
+          <p className="mt-2 flex justify-between border-t border-line pt-2 text-sm font-semibold">
             <span>Summe (je Spiel gerundet)</span>
             <span>{season.points} P.</span>
           </p>
@@ -106,26 +106,22 @@ export default async function PlayerPage({
       ) : null}
 
       <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
-          Preisverlauf
-        </h2>
+        <h2 className="mb-3 text-sm font-semibold text-muted">Preisverlauf</h2>
         <ul className="space-y-1 text-sm tabular-nums">
           {start !== null ? (
             <li className="flex justify-between">
-              <span className="text-kreide-matt">Startpreis</span>
+              <span className="text-muted">Startpreis</span>
               <span>{formatMio(start)}</span>
             </li>
           ) : null}
           {history.map((h) => (
             <li key={h.matchday} className="flex justify-between">
-              <span className="text-kreide-matt">
-                nach {h.matchday}. Spieltag
-              </span>
+              <span className="text-muted">nach {h.matchday}. Spieltag</span>
               <span>{formatMio(h.price)}</span>
             </li>
           ))}
           {history.length === 0 ? (
-            <li className="text-kreide-matt">Seit Saisonstart unverändert.</li>
+            <li className="text-muted">Seit Saisonstart unverändert.</li>
           ) : null}
         </ul>
         <PriceHint
@@ -139,19 +135,19 @@ export default async function PlayerPage({
       </section>
 
       <section>
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
+        <h2 className="mb-3 text-sm font-semibold text-muted">
           Punkte je Spieltag
         </h2>
         {appearances.length === 0 ? (
-          <p className="text-sm text-kreide-matt">Noch keine Einsätze.</p>
+          <p className="text-sm text-muted">Noch keine Einsätze.</p>
         ) : (
-          <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch">
+          <ul className="divide-y divide-line rounded-xl border border-line bg-surface">
             {appearances.map(({ matchday, pp }) => (
               <li key={matchday} className="flex items-start gap-3 px-4 py-2.5">
                 <div className="flex-1">
                   <p className="font-medium">
                     {matchday}. Spieltag{" "}
-                    <span className="text-sm text-kreide-matt">
+                    <span className="text-sm text-muted">
                       · {pp!.minutes}′
                       {pp!.rating !== null
                         ? ` · Note ${formatRating(pp!.rating)}`
@@ -174,8 +170,8 @@ export default async function PlayerPage({
 
 function Stat({ label, value }: { label: string; value: string }) {
   return (
-    <div className="rounded-xl border border-nacht-linie bg-nacht-hoch p-3">
-      <dt className="text-xs text-kreide-matt">{label}</dt>
+    <div className="rounded-xl border border-line bg-surface p-3">
+      <dt className="text-xs text-muted">{label}</dt>
       <dd className="font-display text-2xl font-bold tabular-nums">{value}</dd>
     </div>
   );
@@ -195,8 +191,8 @@ function RatingHint({
   const minutes = example?.minutes ?? 90;
   const partial = minutes < fullMinutes;
   return (
-    <div className="mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3 text-xs leading-relaxed text-kreide-matt">
-      <p className="mb-1 font-semibold text-kreide">Wie die Note zählt</p>
+    <div className="mt-4 rounded-xl border border-line bg-surface px-4 py-3 text-xs leading-relaxed text-muted">
+      <p className="mb-1 font-semibold text-text">Wie die Note zählt</p>
       <p>
         Die Note stammt von Sofascore und wird nach jedem Spiel automatisch aus
         den Spielstatistiken berechnet, etwa Pässe, Zweikämpfe, Torschüsse und
@@ -207,7 +203,7 @@ function RatingHint({
         Punkte: (Note − {formatNumber(baseline)}) × {factor}. Voll zählt die
         Note ab {fullMinutes} Minuten, bei kürzeren Einsätzen anteilig.
       </p>
-      <p className="mt-1 text-kreide">
+      <p className="mt-1 text-text">
         {example ? "Letzter Einsatz" : "Beispiel"}: Note {formatRating(rating)}{" "}
         in {minutes}′ → ({formatRating(rating)} − {formatNumber(baseline)}) ×{" "}
         {factor}
@@ -253,14 +249,14 @@ function PriceHint({
   const up = Math.round(E) + 10;
   const down = Math.round(E) - 10;
   return (
-    <details className="group mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch px-4 py-3 text-xs leading-relaxed text-kreide-matt">
-      <summary className="cursor-pointer list-none font-semibold text-kreide [&::-webkit-details-marker]:hidden">
+    <details className="group mt-4 rounded-xl border border-line bg-surface px-4 py-3 text-xs leading-relaxed text-muted">
+      <summary className="cursor-pointer list-none font-semibold text-text [&::-webkit-details-marker]:hidden">
         <span className="inline-block transition-transform group-open:rotate-90">
           ›
         </span>{" "}
         Wie sich der Preis berechnet
       </summary>
-      <p className="mt-2 font-semibold text-kreide">Startpreis</p>
+      <p className="mt-2 font-semibold text-text">Startpreis</p>
       <p>
         Grundlage ist der {SOURCE_TEXT[source]}. Damit Stars nicht unbezahlbar
         werden, wird er per Wurzel gestaucht: {MARKET.startPriceScale} × √(Wert
@@ -268,12 +264,12 @@ function PriceHint({
         und {formatMio(MARKET.startPriceMax)}
       </p>
       {valueEur !== undefined && start !== null ? (
-        <p className="mt-1 text-kreide">
+        <p className="mt-1 text-text">
           Hier: {MARKET.startPriceScale} × √({mioEur(valueEur)} ÷{" "}
           {mioEur(vMaxEur)}) = {formatMio(start)}
         </p>
       ) : null}
-      <p className="mt-2 font-semibold text-kreide">Nach jedem Spieltag</p>
+      <p className="mt-2 font-semibold text-text">Nach jedem Spieltag</p>
       <p>
         Wer gespielt hat, wird mit seiner Erwartung verglichen: dem Schnitt
         seiner letzten {MARKET.formWindow} Einsätze (ohne Einsätze{" "}
@@ -283,7 +279,7 @@ function PriceHint({
         Einsatz bleibt er gleich. Der Preis bleibt zwischen{" "}
         {formatMio(MARKET.priceMin)} und {formatMio(MARKET.priceMax)}
       </p>
-      <p className="mt-1 text-kreide">
+      <p className="mt-1 text-text">
         Hier: Erwartung {formatNumber(E)} Punkte. Mit {up} Punkten ginge es von{" "}
         {formatMio(price)} auf {formatMio(nextPrice(price, up, E))}, mit {down}{" "}
         auf {formatMio(nextPrice(price, down, E))}

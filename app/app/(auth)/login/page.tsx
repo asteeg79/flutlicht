@@ -65,13 +65,13 @@ export default function LoginPage() {
       <div className="flex justify-between text-sm">
         <Link
           href="/registrieren"
-          className="text-kreide underline-offset-4 hover:underline"
+          className="text-text underline-offset-4 hover:underline"
         >
           Konto anlegen
         </Link>
         <Link
           href="/passwort-reset"
-          className="text-kreide-matt underline-offset-4 hover:underline"
+          className="text-muted underline-offset-4 hover:underline"
         >
           Passwort vergessen?
         </Link>

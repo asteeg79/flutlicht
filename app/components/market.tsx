@@ -225,12 +225,12 @@ export function Market({
   return (
     <div className={draftMode || buy ? "pb-24" : undefined}>
       {/* Stand: im Erstkader-Modus Budget und Positionen, sonst Guthaben und Transfers */}
-      <section className="mb-5 rounded-xl border border-nacht-linie bg-nacht-hoch p-4">
+      <section className="mb-5 rounded-xl border border-line bg-surface p-4">
         {draftMode ? (
           <>
             <div className="flex items-end justify-between">
               <div>
-                <p className="text-xs text-kreide-matt">Budget übrig</p>
+                <p className="text-xs text-muted">Budget übrig</p>
                 <p className="font-display text-4xl font-bold tabular-nums">
                   {formatMio(remaining)}
                 </p>
@@ -241,15 +241,15 @@ export function Market({
             </div>
             <ul className="mt-3 grid grid-cols-4 gap-2 text-center text-sm">
               {POSITIONS.map((p) => (
-                <li key={p} className="rounded-lg bg-nacht px-2 py-1.5">
-                  <span className="text-kreide-matt">{POS_LABEL[p]}</span>{" "}
+                <li key={p} className="rounded-lg bg-bg px-2 py-1.5">
+                  <span className="text-muted">{POS_LABEL[p]}</span>{" "}
                   <span className="font-semibold tabular-nums">
                     {posCount.get(p) ?? 0}/{RULES.squadComposition[p]}
                   </span>
                 </li>
               ))}
             </ul>
-            <p className="mt-3 text-xs text-kreide-matt">
+            <p className="mt-3 text-xs text-muted">
               {RULES.squadComposition.GK} Torhüter, {RULES.squadComposition.DEF}{" "}
               Abwehr, {RULES.squadComposition.MID} Mittelfeld,{" "}
               {RULES.squadComposition.FWD} Sturm · höchstens {RULES.maxPerClub}{" "}
@@ -260,13 +260,13 @@ export function Market({
           <>
             <dl className="grid grid-cols-2 gap-3">
               <div>
-                <dt className="text-xs text-kreide-matt">Guthaben</dt>
+                <dt className="text-xs text-muted">Guthaben</dt>
                 <dd className="font-display text-3xl font-bold tabular-nums">
                   {formatMio(manager.cash)}
                 </dd>
               </div>
               <div>
-                <dt className="text-xs text-kreide-matt">Kaderwert</dt>
+                <dt className="text-xs text-muted">Kaderwert</dt>
                 <dd className="font-display text-3xl font-bold tabular-nums">
                   {formatMio(squadValue)}
                 </dd>
@@ -282,7 +282,7 @@ export function Market({
       {/* Tausch-Modus: erst abgeben, dann passenden Ersatz wählen */}
       {!draftMode ? (
         <section className="mb-5">
-          <h2 className="mb-2 text-sm font-semibold text-kreide-matt">
+          <h2 className="mb-2 text-sm font-semibold text-muted">
             {sell
               ? `${sell.name} abgeben – wähle einen ${POSITION_LABELS[sell.position]}`
               : "Dein Kader"}
@@ -296,7 +296,7 @@ export function Market({
               Abgabe abbrechen
             </Button>
           ) : (
-            <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie">
+            <ul className="divide-y divide-line rounded-xl border border-line">
               {[...squad]
                 .sort(sorter("price-desc", stats))
                 .sort(byPosition)
@@ -327,7 +327,7 @@ export function Market({
           placeholder="Spieler suchen"
           value={query}
           onChange={(e) => setQuery(e.target.value)}
-          className="h-10 w-full rounded-lg border border-nacht-linie bg-nacht px-3 text-base text-kreide placeholder:text-kreide-matt/60 focus:border-lampe focus:outline-none"
+          className="h-10 w-full rounded-lg border border-line bg-bg px-3 text-base text-text placeholder:text-muted/60 focus:border-lampe focus:outline-none"
         />
         {!sell ? (
           <div
@@ -343,8 +343,8 @@ export function Market({
                 onClick={() => setPos(p)}
                 className={`h-9 rounded-lg text-sm font-semibold ${
                   pos === p
-                    ? "bg-kreide text-nacht"
-                    : "border border-nacht-linie text-kreide-matt"
+                    ? "bg-text text-bg"
+                    : "border border-line text-muted"
                 }`}
               >
                 {p === "ALL" ? "Alle" : POS_LABEL[p]}
@@ -392,10 +392,10 @@ export function Market({
         </div>
       </div>
 
-      <p className="mb-2 text-xs text-kreide-matt">{list.length} Spieler</p>
+      <p className="mb-2 text-xs text-muted">{list.length} Spieler</p>
       <ul
         aria-label="Spielerliste"
-        className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie"
+        className="divide-y divide-line rounded-xl border border-line"
       >
         {list.map((p) => {
           const picked = draftMode && inSquad.has(p.id);
@@ -436,7 +436,7 @@ export function Market({
                 </RowButton>
               ) : null}
               {reason && (draftMode ? !picked : sell) ? (
-                <span className="text-[11px] text-kreide-matt">{reason}</span>
+                <span className="text-[11px] text-muted">{reason}</span>
               ) : null}
             </PlayerRow>
           );
@@ -445,9 +445,9 @@ export function Market({
 
       {/* Leiste über der Navigation: Erstkader speichern oder Tausch bestätigen */}
       {draftMode ? (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t border-nacht-linie bg-nacht/95 px-5 py-3 backdrop-blur">
+        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t border-line bg-bg/95 px-5 py-3 backdrop-blur">
           <div className="mx-auto flex max-w-lg items-center gap-3">
-            <p className="flex-1 text-sm text-kreide-matt">
+            <p className="flex-1 text-sm text-muted">
               {draft.length < RULES.squadSize
                 ? `Noch ${RULES.squadSize - draft.length} Spieler`
                 : draftValid
@@ -472,15 +472,15 @@ export function Market({
         <div
           role="dialog"
           aria-label="Tausch bestätigen"
-          className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t-2 border-lampe bg-nacht-hoch px-5 py-4"
+          className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t-2 border-lampe bg-surface px-5 py-4"
         >
           <div className="mx-auto max-w-lg space-y-3">
             <p className="flex items-center gap-2 font-semibold">
               {sell.shortName}{" "}
-              <ArrowRight aria-hidden className="h-4 w-4 text-lampe" />{" "}
+              <ArrowRight aria-hidden className="h-4 w-4 text-accent" />{" "}
               {buy.shortName}
             </p>
-            <p className="text-sm text-kreide-matt">
+            <p className="text-sm text-muted">
               Guthaben danach{" "}
               {formatMio(
                 (toTenths(manager.cash) +
@@ -523,9 +523,9 @@ function PlayerRow({
 }) {
   return (
     <li
-      className={`flex items-center gap-3 px-3 py-2.5 ${picked ? "bg-rasen/25" : ""}`}
+      className={`flex items-center gap-3 px-3 py-2.5 ${picked ? "bg-me-row" : ""}`}
     >
-      <span className="w-9 shrink-0 rounded bg-nacht px-1 py-0.5 text-center text-[11px] font-semibold text-kreide-matt">
+      <span className="w-9 shrink-0 rounded bg-bg px-1 py-0.5 text-center text-[11px] font-semibold text-muted">
         {POS_LABEL[p.position]}
       </span>
       <PlayerPhoto src={p.image} className="h-9 w-9" />
@@ -538,7 +538,7 @@ function PlayerRow({
             {p.name}
           </Link>
         </p>
-        <p className="text-xs text-kreide-matt">
+        <p className="text-xs text-muted">
           {club} · {stats ? `${stats.points} P.` : "0 P."}
           {stats?.form !== null && stats?.form !== undefined
             ? ` · Form ${formatNumber(stats.form)}`
@@ -566,8 +566,8 @@ function RowButton({
       type="button"
       className={`h-8 w-full rounded-lg text-xs font-semibold disabled:opacity-70 ${
         primary
-          ? "bg-lampe text-nacht disabled:border disabled:border-nacht-linie disabled:bg-transparent disabled:text-kreide-matt"
-          : "border border-kreide/40 text-kreide"
+          ? "bg-lampe text-nacht disabled:border disabled:border-line disabled:bg-transparent disabled:text-muted"
+          : "border border-text/40 text-text"
       } ${className}`}
       {...props}
     />
@@ -592,7 +592,7 @@ function Select({
         aria-label={label}
         value={value}
         onChange={(e) => onChange(e.target.value)}
-        className="h-10 w-full rounded-lg border border-nacht-linie bg-nacht px-2 text-sm text-kreide"
+        className="h-10 w-full rounded-lg border border-line bg-bg px-2 text-sm text-text"
       >
         {children}
       </select>

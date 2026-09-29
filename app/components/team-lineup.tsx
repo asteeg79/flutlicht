@@ -193,7 +193,7 @@ export function TeamLineup({
         <div
           role="radiogroup"
           aria-label="Aufstellen nach"
-          className="flex h-10 overflow-hidden rounded-lg border border-nacht-linie text-sm"
+          className="flex h-10 overflow-hidden rounded-lg border border-line text-sm"
         >
           {(
             [
@@ -208,7 +208,7 @@ export function TeamLineup({
               aria-checked={autoBy === key}
               onClick={() => setAutoBy(key)}
               className={`px-3 font-semibold ${
-                autoBy === key ? "bg-kreide text-nacht" : "text-kreide-matt"
+                autoBy === key ? "bg-text text-bg" : "text-muted"
               }`}
             >
               {label}
@@ -230,7 +230,7 @@ export function TeamLineup({
             className={`h-10 rounded-lg border font-display text-lg font-bold ${
               lineup.formation === f
                 ? "border-lampe bg-lampe text-nacht"
-                : "border-nacht-linie text-kreide"
+                : "border-line text-text"
             }`}
           >
             {f}
@@ -240,7 +240,7 @@ export function TeamLineup({
       {/* Spielfeld: Mähstreifen quer, Kreidelinien, Sturm oben, Tor unten */}
       <section
         aria-label={`Startelf, ${lineup.formation}`}
-        className="relative overflow-hidden rounded-2xl border-2 border-kreide/60"
+        className="relative overflow-hidden rounded-2xl border-2 border-text/60"
         style={{
           background:
             "repeating-linear-gradient(180deg, var(--color-rasen) 0 44px, var(--color-rasen-hell) 44px 88px)",
@@ -248,15 +248,15 @@ export function TeamLineup({
       >
         <div
           aria-hidden
-          className="absolute top-0 left-1/2 h-16 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-kreide/50"
+          className="absolute top-0 left-1/2 h-16 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-text/50"
         />
         <div
           aria-hidden
-          className="absolute bottom-0 left-1/2 h-16 w-44 -translate-x-1/2 border-2 border-b-0 border-kreide/50"
+          className="absolute bottom-0 left-1/2 h-16 w-44 -translate-x-1/2 border-2 border-b-0 border-text/50"
         />
         {/* Nur für Formationen ohne Schnellwahl-Knopf; sonst zeigt die Leiste sie an. */}
         {QUICK_FORMATIONS.includes(lineup.formation) ? null : (
-          <p className="absolute top-2 right-3 font-display text-2xl font-extrabold text-kreide/80">
+          <p className="absolute top-2 right-3 font-display text-2xl font-extrabold text-text/80">
             {lineup.formation}
           </p>
         )}
@@ -276,9 +276,9 @@ export function TeamLineup({
 
       <section
         aria-label="Bank"
-        className="mt-4 rounded-2xl border border-nacht-linie bg-nacht-hoch px-1 pt-3 pb-4"
+        className="mt-4 rounded-2xl border border-line bg-surface px-1 pt-3 pb-4"
       >
-        <h2 className="mb-2 px-3 text-xs font-semibold tracking-[0.18em] text-kreide-matt uppercase">
+        <h2 className="mb-2 px-3 text-xs font-semibold tracking-[0.18em] text-muted uppercase">
           Bank · rückt in dieser Reihenfolge nach
         </h2>
         <div className="flex justify-evenly">
@@ -289,13 +289,13 @@ export function TeamLineup({
         </div>
       </section>
 
-      <p className="mt-4 text-sm text-kreide-matt">
+      <p className="mt-4 text-sm text-muted">
         Tippe einen Spieler an und dann einen zweiten, um sie zu tauschen.
         Gesperrte Spieler (Schloss) bleiben, wo sie sind.
       </p>
 
       {sel ? (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t-2 border-lampe bg-nacht-hoch px-5 py-3">
+        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t-2 border-lampe bg-surface px-5 py-3">
           <div className="mx-auto mb-2 max-w-lg">
             <PlayerPointsInfo playerId={sel.id} info={sel.points} />
           </div>
@@ -316,7 +316,7 @@ export function TeamLineup({
             <button
               type="button"
               onClick={() => setSelected(null)}
-              className="h-10 rounded-lg border border-kreide/40 px-3 text-sm font-semibold"
+              className="h-10 rounded-lg border border-text/40 px-3 text-sm font-semibold"
             >
               Abbrechen
             </button>
@@ -326,7 +326,7 @@ export function TeamLineup({
       {saving ? (
         <p
           role="status"
-          className="fixed top-3 right-4 z-20 flex items-center gap-2 text-xs text-kreide-matt"
+          className="fixed top-3 right-4 z-20 flex items-center gap-2 text-xs text-muted"
         >
           <LoaderCircle aria-hidden className="h-3.5 w-3.5 animate-spin" />{" "}
           speichert
@@ -365,10 +365,10 @@ function PlayerToken({
         className="flex w-[4.6rem] flex-col items-center gap-1 text-center"
       >
         <span
-          className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-nacht ${
+          className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-bg ${
             selected
               ? "border-lampe shadow-[0_0_14px_3px_rgb(255_213_74/0.5)]"
-              : "border-kreide/80"
+              : "border-text/80"
           } ${locked ? "opacity-80" : ""}`}
         >
           <PlayerPhoto src={player.image} className="h-full w-full" />
@@ -377,7 +377,7 @@ function PlayerToken({
             alt=""
             className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-kreide p-0.5"
           />
-          <span className="absolute -top-1 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border border-kreide/60 bg-nacht px-1 text-[9px] font-bold text-kreide">
+          <span className="absolute -top-1 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border border-text/60 bg-bg px-1 text-[9px] font-bold text-text">
             {POS_LABEL[player.position]}
           </span>
           {captain ? (
@@ -386,21 +386,19 @@ function PlayerToken({
             </span>
           ) : null}
           {locked ? (
-            <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-nacht-hoch">
-              <Lock aria-hidden className="h-3 w-3 text-kreide" />
+            <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-surface">
+              <Lock aria-hidden className="h-3 w-3 text-text" />
             </span>
           ) : null}
         </span>
-        <span className="w-full truncate rounded bg-nacht/85 px-1 text-[11px] leading-5 font-semibold">
+        <span className="w-full truncate rounded bg-bg/85 px-1 text-[11px] leading-5 font-semibold">
           {label ? `${label} · ` : ""}
           {player.shortName}
         </span>
-        <span className="text-[10px] leading-3 text-kreide/85">
+        <span className="text-[10px] leading-3 text-text/85">
           {player.opponent ?? "kein Spiel"}
         </span>
-        <span className="text-[10px] leading-3 text-kreide/70">
-          {countdown}
-        </span>
+        <span className="text-[10px] leading-3 text-text/70">{countdown}</span>
       </button>
       {/* Nur mit Maus (Tailwind v4: hover nur bei hover-fähigen Geräten); am Handy zeigt die Auswahlleiste dasselbe. */}
       <div
@@ -414,7 +412,7 @@ function PlayerToken({
               : "left-1/2 -translate-x-1/2"
         }`}
       >
-        <div className="rounded-xl border border-nacht-linie bg-nacht-hoch px-3 py-2 shadow-lg">
+        <div className="rounded-xl border border-line bg-surface px-3 py-2 shadow-lg">
           <p className="mb-1 font-semibold">{player.name}</p>
           <PlayerPointsInfo playerId={player.id} info={player.points} />
         </div>

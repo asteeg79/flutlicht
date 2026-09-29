@@ -26,7 +26,7 @@ export function BottomNav() {
   return (
     <nav
       aria-label="Hauptnavigation"
-      className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-kreide/25 bg-nacht-hoch/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-text/25 bg-surface/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
     >
       <ul className="mx-auto grid max-w-lg grid-cols-6">
         {ITEMS.map(({ href, label, Icon }) => {
@@ -37,7 +37,7 @@ export function BottomNav() {
                 href={href}
                 aria-current={active ? "page" : undefined}
                 className={`relative flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium ${
-                  active ? "text-lampe" : "text-kreide-matt hover:text-kreide"
+                  active ? "text-accent" : "text-muted hover:text-text"
                 }`}
               >
                 {active ? (

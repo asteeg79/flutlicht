@@ -38,15 +38,15 @@ export function Status() {
   return (
     <Section id="status" title="Status">
       {status === null ? (
-        <p className="text-sm text-kreide-matt">Lädt …</p>
+        <p className="text-sm text-muted">Lädt …</p>
       ) : status === "error" ? (
-        <p className="text-sm text-kreide-matt">
+        <p className="text-sm text-muted">
           Der Status konnte nicht geladen werden.
         </p>
       ) : (
         <>
           {status.github ? (
-            <p role="alert" className="mb-2 text-sm text-karte">
+            <p role="alert" className="mb-2 text-sm text-down">
               {status.github}
             </p>
           ) : null}
@@ -76,7 +76,7 @@ export function Status() {
 function Row({ label, value }: { label: string; value: string }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className="text-kreide-matt">{label}</dt>
+      <dt className="text-muted">{label}</dt>
       <dd className="text-right">{value}</dd>
     </div>
   );
@@ -110,30 +110,30 @@ export function Season({
 
   return (
     <Section id="saison" title="Saison">
-      <p className="mb-3 text-sm text-kreide-matt">
+      <p className="mb-3 text-sm text-muted">
         Gewertet ab Spieltag {firstScored}, Startbudget {budget} Mio.
         {editable ? "" : " Die Saison läuft; beides ist fest."}
       </p>
       {editable ? (
         <div className="flex flex-wrap items-end gap-2">
           <label className="text-sm">
-            <span className="block text-kreide-matt">Erster Spieltag</span>
+            <span className="block text-muted">Erster Spieltag</span>
             <input
               value={md}
               onChange={(e) => setMd(e.target.value)}
               inputMode="numeric"
-              className="h-9 w-20 rounded-lg border border-nacht-linie bg-nacht px-2"
+              className="h-9 w-20 rounded-lg border border-line bg-bg px-2"
             />
           </label>
           <label className="text-sm">
-            <span className="block text-kreide-matt">
+            <span className="block text-muted">
               Startbudget (Mio., leer = berechnet)
             </span>
             <input
               value={startBudget}
               onChange={(e) => setStartBudget(e.target.value)}
               inputMode="decimal"
-              className="h-9 w-28 rounded-lg border border-nacht-linie bg-nacht px-2"
+              className="h-9 w-28 rounded-lg border border-line bg-bg px-2"
             />
           </label>
           <SmallButton variant="primary" onClick={save}>
@@ -171,17 +171,17 @@ export function Mapping({
 
   return (
     <Section id="zuordnung" title="Zuordnung" collapsible count={open.length}>
-      <p className="mb-3 text-sm text-kreide-matt">
+      <p className="mb-3 text-sm text-muted">
         {open.length} Spieler ohne sichere Transfermarkt-Zuordnung. Sie sind
         nicht kaufbar, bis sie eine TM-ID haben. „Ohne Transfermarkt“ bestätigt
         das, etwa bei Nachwuchsspielern, und nimmt sie aus der Liste.
       </p>
-      <ul className="divide-y divide-nacht-linie">
+      <ul className="divide-y divide-line">
         {open.map((e) => (
           <li key={e.playerId} className="py-3">
             <p className="font-semibold">
               {e.name}{" "}
-              <span className="text-sm font-normal text-kreide-matt">
+              <span className="text-sm font-normal text-muted">
                 {clubs[e.teamId]} · geb.{" "}
                 {formatDate(`${e.birthDate}T12:00:00Z`)}
               </span>
@@ -219,7 +219,7 @@ function TmIdInput({ onSave }: { onSave: (tmId: string) => void }) {
         placeholder="TM-ID"
         value={value}
         onChange={(e) => setValue(e.target.value.replace(/\D/g, ""))}
-        className="h-9 w-24 rounded-lg border border-nacht-linie bg-nacht px-2 text-sm"
+        className="h-9 w-24 rounded-lg border border-line bg-bg px-2 text-sm"
       />
       <SmallButton disabled={!value} onClick={() => onSave(value)}>
         Zuordnen
@@ -258,7 +258,7 @@ export function MissingValues({
   const open = entries.filter((e) => !done.has(e.playerId));
   return (
     <Section id="werte" title="Fehlende Werte" collapsible count={open.length}>
-      <p className="mb-3 text-sm text-kreide-matt">
+      <p className="mb-3 text-sm text-muted">
         {open.length} Spieler ohne Marktwert sind nicht kaufbar.
       </p>
       <ul className="space-y-2">
@@ -266,7 +266,7 @@ export function MissingValues({
           <li key={e.playerId} className="flex flex-wrap items-center gap-2">
             <span className="min-w-0 flex-1 truncate text-sm">
               {e.name}{" "}
-              <span className="text-kreide-matt">
+              <span className="text-muted">
                 {clubs[e.teamId]} · {POS_LABEL[e.position]}
               </span>
             </span>
@@ -278,7 +278,7 @@ export function MissingValues({
               onChange={(ev) =>
                 setValues({ ...values, [e.playerId]: ev.target.value })
               }
-              className="h-9 w-20 rounded-lg border border-nacht-linie bg-nacht px-2 text-sm"
+              className="h-9 w-20 rounded-lg border border-line bg-bg px-2 text-sm"
             />
             <SmallButton onClick={() => save(e.playerId)}>Setzen</SmallButton>
           </li>
@@ -321,20 +321,19 @@ export function Positions({
         placeholder="Spieler suchen (ab 3 Zeichen)"
         value={query}
         onChange={(e) => setQuery(e.target.value)}
-        className="mb-3 h-10 w-full rounded-lg border border-nacht-linie bg-nacht px-3"
+        className="mb-3 h-10 w-full rounded-lg border border-line bg-bg px-3"
       />
       <ul className="space-y-2">
         {hits.map((p) => (
           <li key={p.id} className="flex items-center gap-2">
             <span className="min-w-0 flex-1 truncate text-sm">
-              {p.name}{" "}
-              <span className="text-kreide-matt">{clubs[p.teamId]}</span>
+              {p.name} <span className="text-muted">{clubs[p.teamId]}</span>
             </span>
             <select
               aria-label={`Position ${p.name}`}
               defaultValue={p.position}
               onChange={(e) => save(p.id, e.target.value as Position)}
-              className="h-9 rounded-lg border border-nacht-linie bg-nacht px-2 text-sm"
+              className="h-9 rounded-lg border border-line bg-bg px-2 text-sm"
             >
               {(Object.keys(POS_LABEL) as Position[]).map((pos) => (
                 <option key={pos} value={pos}>
@@ -356,7 +355,7 @@ export function Recompute() {
   }
   return (
     <Section id="neuberechnung" title="Neuberechnung">
-      <p className="mb-3 text-sm text-kreide-matt">
+      <p className="mb-3 text-sm text-muted">
         Rechnet data/ komplett aus raw/ neu, etwa nach einer Korrektur.
       </p>
       <SmallButton variant="primary" onClick={run}>

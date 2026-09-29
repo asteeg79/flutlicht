@@ -40,7 +40,7 @@ export function Section({
     <h2 className="font-display text-2xl font-bold uppercase">
       {title}
       {count !== undefined ? (
-        <span className="ml-2 text-base text-kreide-matt">({count})</span>
+        <span className="ml-2 text-base text-muted">({count})</span>
       ) : null}
     </h2>
   );
@@ -48,7 +48,7 @@ export function Section({
     <section
       id={id}
       aria-label={title}
-      className="mb-6 scroll-mt-4 rounded-xl border border-nacht-linie bg-nacht-hoch p-4"
+      className="mb-6 scroll-mt-4 rounded-xl border border-line bg-surface p-4"
     >
       {collapsible ? (
         <details className="group">
@@ -56,7 +56,7 @@ export function Section({
             {heading}
             <ChevronDown
               aria-hidden
-              className="h-5 w-5 shrink-0 text-kreide-matt transition group-open:rotate-180"
+              className="h-5 w-5 shrink-0 text-muted transition group-open:rotate-180"
             />
           </summary>
           <div className="mt-3">{children}</div>
@@ -82,8 +82,8 @@ export function SmallButton({
     variant === "primary"
       ? "bg-lampe text-nacht"
       : variant === "danger"
-        ? "border border-karte text-karte"
-        : "border border-kreide/40 text-kreide";
+        ? "border border-karte text-down"
+        : "border border-text/40 text-text";
   return (
     <button
       type="button"

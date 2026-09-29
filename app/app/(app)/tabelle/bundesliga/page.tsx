@@ -22,10 +22,10 @@ export default function BundesligaPage() {
         title="Tabelle"
       />
       <TableTabs active="/tabelle/bundesliga" />
-      <div className="overflow-x-auto rounded-xl border border-nacht-linie bg-nacht-hoch">
+      <div className="overflow-x-auto rounded-xl border border-line bg-surface">
         <table aria-label="Bundesliga" className="w-full text-sm tabular-nums">
           <thead>
-            <tr className="text-xs text-kreide-matt">
+            <tr className="text-xs text-muted">
               <th scope="col" className="w-8 px-2 py-2 text-right font-medium">
                 #
               </th>
@@ -49,15 +49,13 @@ export default function BundesligaPage() {
               </th>
             </tr>
           </thead>
-          <tbody className="divide-y divide-nacht-linie">
+          <tbody className="divide-y divide-line">
             {rows.map((r) => {
               const team = teamById.get(r.teamId);
               const diff = r.goalsFor - r.goalsAgainst;
               return (
                 <tr key={r.teamId}>
-                  <td className="px-2 py-2 text-right text-kreide-matt">
-                    {r.rank}
-                  </td>
+                  <td className="px-2 py-2 text-right text-muted">{r.rank}</td>
                   <th scope="row" className="px-2 py-2 text-left font-medium">
                     <span className="flex items-center gap-2">
                       <ClubLogo src={team?.logo} />
@@ -65,7 +63,7 @@ export default function BundesligaPage() {
                     </span>
                   </th>
                   <td className="px-1 py-2 text-right">{r.played}</td>
-                  <td className="px-1 py-2 text-right whitespace-nowrap text-kreide-matt">
+                  <td className="px-1 py-2 text-right whitespace-nowrap text-muted">
                     {r.won}-{r.drawn}-{r.lost}
                   </td>
                   <td className="px-1 py-2 text-right whitespace-nowrap">
@@ -81,7 +79,7 @@ export default function BundesligaPage() {
           </tbody>
         </table>
       </div>
-      <p className="mt-2 text-xs text-kreide-matt">
+      <p className="mt-2 text-xs text-muted">
         Nur beendete Spiele. Bei Gleichstand nach Punkten, Tordifferenz und
         Toren teilen sich Vereine den Platz; den direkten Vergleich rechnen wir
         nicht.

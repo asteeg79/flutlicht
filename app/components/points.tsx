@@ -42,7 +42,7 @@ export function PartsLine({
     .map((k) => `${PART_LABELS[k]} ${signed(parts[k])}`);
   if (startBonus) items.push(`Startelf ${signed(startBonus)}`);
   if (items.length === 0) return null;
-  return <p className="text-xs text-kreide-matt">{items.join(" · ")}</p>;
+  return <p className="text-xs text-muted">{items.join(" · ")}</p>;
 }
 
 /** Saisonsumme je Kategorie als Tabelle, nur Teile, die etwas beitragen. */
@@ -54,7 +54,7 @@ export function PartsTable({ parts }: { parts: PointParts }) {
     <ul className="space-y-1 text-sm">
       {keys.map((k) => (
         <li key={k} className="flex justify-between">
-          <span className="text-kreide-matt">{PART_LABELS[k]}</span>
+          <span className="text-muted">{PART_LABELS[k]}</span>
           <span>{signed(parts[k])}</span>
         </li>
       ))}

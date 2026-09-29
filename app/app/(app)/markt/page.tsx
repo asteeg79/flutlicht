@@ -60,7 +60,7 @@ export default async function MarketPage() {
       {manager.squad.length > 0 ? (
         <Link
           href="/historie"
-          className="-mt-3 mb-4 inline-block text-sm font-semibold text-lampe underline-offset-4 hover:underline"
+          className="-mt-3 mb-4 inline-block text-sm font-semibold text-accent underline-offset-4 hover:underline"
         >
           Transfer-Historie →
         </Link>
