@@ -75,6 +75,24 @@ test("Historie zeigt Verlauf, Verkäufe und Kader", async ({ page }) => {
   await page.screenshot({ path: "test-results/historie.png", fullPage: true });
 });
 
+test("Anleitung aus der App: „?“ im Markt und Eintrag in den Optionen", async ({
+  page,
+}) => {
+  await page.getByRole("link", { name: "Markt", exact: true }).click();
+  await page
+    .getByRole("link", { name: "So funktionieren Markt und Transfers" })
+    .click();
+  const guide = page.getByRole("dialog", { name: "Markt & Transfers" });
+  await expect(guide).toBeVisible();
+  await guide.getByRole("button", { name: "Anleitung schließen" }).click();
+  await expect(guide).toHaveCount(0);
+  await expect(page).toHaveURL(/\/markt$/);
+
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
+  await page.getByRole("link", { name: "Anleitung und Regeln" }).click();
+  await expect(page.getByRole("dialog", { name: "Die Idee" })).toBeVisible();
+});
+
 test("Einstellungen zeigen die Push-Benachrichtigungen", async ({ page }) => {
   await page.getByRole("link", { name: "Optionen", exact: true }).click();
   const push = page.getByRole("region", { name: "Benachrichtigungen" });
@@ -116,7 +134,8 @@ test("Admin erzeugt einen Einladungscode, ein neuer Manager registriert sich dam
   await page.getByLabel("Anzeigename").fill("Neu");
   await page.getByLabel("Teamname").fill("Neu FC");
   await page.getByRole("button", { name: "Konto anlegen" }).click();
-  await expect(page).toHaveURL(/\/team$/);
+  await expect(page).toHaveURL(/\/team\?anleitung=idee$/);
+  await page.getByRole("button", { name: "Anleitung schließen" }).click();
 
   // Spieler ohne Admin-Rolle sehen /admin nicht.
   await page.goto("/admin");

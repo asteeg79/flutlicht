@@ -2,6 +2,8 @@ import Link from "next/link";
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
 import { ThemePicker } from "@/components/arena/theme-picker";
+import { GuideLink } from "@/components/guide/guide-link";
+import { ArrowRight, CircleHelp } from "lucide-react";
 import { PushSettings } from "@/components/push-settings";
 import { signOut } from "@/lib/auth";
 import { currentManager } from "@/lib/session";
@@ -32,6 +34,17 @@ export default async function SettingsPage() {
       </HeroHeader>
       <PageBody>
         <div className="flex flex-col gap-5 lg:max-w-[720px]">
+          <section>
+            <h2 className={H2}>Hilfe</h2>
+            <GuideLink
+              chapter="idee"
+              className="flex min-h-[52px] items-center gap-3 bg-surface px-3.5 text-[15px] font-semibold"
+            >
+              <CircleHelp aria-hidden className="h-5 w-5 text-muted" />
+              <span className="flex-1">Anleitung und Regeln</span>
+              <ArrowRight aria-hidden className="h-4 w-4 text-muted" />
+            </GuideLink>
+          </section>
           <section>
             <h2 className={H2}>Konto</h2>
             <dl className="bg-surface px-3.5 py-1">

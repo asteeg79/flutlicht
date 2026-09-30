@@ -33,7 +33,8 @@ export default function RegisterPage() {
       password: body.password,
       redirect: false,
     });
-    router.replace("/team");
+    // Erster Besuch: Anleitung öffnet sich einmal von selbst.
+    router.replace("/team?anleitung=idee");
     router.refresh();
   }
 

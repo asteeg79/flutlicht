@@ -24,6 +24,7 @@ export default async function StandingsPage() {
 
   const hero = (
     <HeroHeader
+      guide={{ chapter: "tabelle", label: "So wird die Tabelle gewertet" }}
       tag={
         last
           ? `Nach Spieltag ${last.matchday} · ${STATUS_LABEL[last.status]}`

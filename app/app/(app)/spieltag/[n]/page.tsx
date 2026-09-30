@@ -129,6 +129,7 @@ export default async function MatchdayPage({
       : [];
     hero = (
       <HeroHeader
+        guide={{ chapter: "punkte", label: "So entstehen Punkte" }}
         tag={STATUS_LABEL.upcoming}
         right={nav}
         title={`${n}. Spieltag`}
@@ -170,6 +171,7 @@ export default async function MatchdayPage({
     const bonus = own?.bonus;
     hero = (
       <HeroHeader
+        guide={{ chapter: "punkte", label: "So entstehen Punkte" }}
         tag={live ? "Live · läuft" : STATUS_LABEL[view.status]}
         tagVariant={live ? "live" : "hero"}
         right={nav}

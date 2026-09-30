@@ -1,9 +1,11 @@
 import type { Metadata, Viewport } from "next";
 import { Big_Shoulders, Schibsted_Grotesk } from "next/font/google";
-import type { ReactNode } from "react";
+import { Suspense, type ReactNode } from "react";
 import { ThemeWatcher } from "@/components/arena/theme-watcher";
 import { Toaster } from "@/components/arena/toast";
+import { GuideDialog } from "@/components/guide/guide-dialog";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
+import { gameData } from "@/lib/game-data";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 
@@ -53,6 +55,15 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <ThemeWatcher />
         {children}
         <Toaster />
+        {/* Anleitung über ?anleitung=…, auch auf Login und Registrieren. */}
+        <Suspense>
+          <GuideDialog
+            facts={{
+              startBudget: gameData.season.startBudget,
+              firstScoredMatchday: gameData.season.firstScoredMatchday,
+            }}
+          />
+        </Suspense>
         <ServiceWorkerRegister />
       </body>
     </html>

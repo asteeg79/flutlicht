@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { AuthIntro } from "@/components/guide/auth-intro";
 import { Wordmark } from "@/components/wordmark";
 
 /**
@@ -8,9 +9,11 @@ import { Wordmark } from "@/components/wordmark";
  */
 export function Stadium({
   season,
+  startBudget,
   children,
 }: {
   season: string;
+  startBudget: number;
   children: ReactNode;
 }) {
   return (
@@ -21,6 +24,7 @@ export function Stadium({
           <p className="mt-[18px] text-xs font-bold tracking-[0.16em] text-hero-muted uppercase">
             Saison {season} · Private Bundesliga-Managerrunde
           </p>
+          <AuthIntro startBudget={startBudget} />
         </header>
         <div className="min-h-8 flex-1 lg:min-h-10 lg:flex-none" />
         <section className="cut-corner bg-surface p-5 text-text">

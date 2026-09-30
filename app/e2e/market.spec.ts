@@ -21,7 +21,8 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
   await page.getByLabel("Anzeigename").fill("Alex");
   await page.getByLabel("Teamname").fill("Rasenschach 04");
   await page.getByRole("button", { name: "Konto anlegen" }).click();
-  await expect(page).toHaveURL(/\/team$/);
+  await expect(page).toHaveURL(/\/team\?anleitung=idee$/);
+  await page.getByRole("button", { name: "Anleitung schließen" }).click();
 
   await page.getByRole("link", { name: "Markt", exact: true }).click();
   await expect(page.getByRole("heading", { name: "Dein Kader" })).toBeVisible();
