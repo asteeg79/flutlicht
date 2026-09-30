@@ -64,9 +64,18 @@ jobs:
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Playwright-Browser
-        run: pnpm --filter @fm/app exec playwright install --with-deps chromium
-      - name: E2E (Playwright)
+        # WebKit für die iPhone-Profile (Safari-Engine), Chromium für Android.
+        run: pnpm --filter @fm/app exec playwright install --with-deps chromium webkit
+      - name: E2E (Playwright, inkl. emulierter iPhones und Android-Geräte)
         run: pnpm --filter @fm/app test:e2e
+      - name: Geräte-Screenshots
+        if: always()
+        uses: actions/upload-artifact@v7
+        with:
+          name: geraete-screenshots
+          path: app/test-results/devices/
+          retention-days: 14
+          if-no-files-found: ignore
 
   scraper:
     runs-on: ubuntu-latest

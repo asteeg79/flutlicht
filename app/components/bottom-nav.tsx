@@ -28,7 +28,7 @@ export function BottomNav() {
             <Link
               href={href}
               aria-current={i === active ? "page" : undefined}
-              className={`flex h-full flex-col items-center justify-center gap-[3px] font-display text-[13px] font-extrabold tracking-[0.06em] uppercase transition-colors duration-300 ${
+              className={`flex h-full flex-col items-center justify-center gap-[3px] font-display text-[clamp(11px,3.4vw,13px)] font-extrabold tracking-[0.04em] whitespace-nowrap uppercase transition-colors duration-300 ${
                 i === active ? "text-nav-active" : "text-nav-muted"
               }`}
             >

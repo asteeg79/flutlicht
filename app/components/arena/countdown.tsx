@@ -20,7 +20,7 @@ export function CountdownText({
   return (
     <span
       key={urgency === "tick" ? Math.ceil(left / 1000) : undefined}
-      className={`arena-anim inline-block tabular-nums transition-colors duration-400 ${urgency === "normal" ? "" : "text-urgent"} ${urgency === "tick" ? "animate-[arena-tick_.35s_ease-out_both]" : ""} ${className}`}
+      className={`arena-anim inline-block whitespace-nowrap tabular-nums transition-colors duration-400 ${urgency === "normal" ? "" : "text-urgent"} ${urgency === "tick" ? "animate-[arena-tick_.35s_ease-out_both]" : ""} ${className}`}
     >
       {formatCountdown(left)}
     </span>
@@ -42,7 +42,7 @@ export function HeroCountdown({
   return (
     <>
       <PulseDot fast={fast} />
-      <span className="min-w-0">{label}</span>
+      <span className="whitespace-nowrap">{label}</span>
       <CountdownText
         target={target}
         serverNow={serverNow}

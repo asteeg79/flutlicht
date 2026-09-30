@@ -588,7 +588,7 @@ export function Market({
 
   const filters = (
     <div className="mb-1">
-      <div className="grid grid-cols-[minmax(0,1fr)_128px] gap-2 lg:grid-cols-[minmax(0,1fr)_180px]">
+      <div className="grid grid-cols-[minmax(0,1fr)_128px] gap-2 max-[359px]:grid-cols-[minmax(0,1fr)_108px] lg:grid-cols-[minmax(0,1fr)_180px]">
         <label className="flex h-[46px] items-center gap-2 border-2 border-line bg-surface px-3 lg:h-11">
           <Search
             aria-hidden
@@ -601,7 +601,7 @@ export function Market({
             placeholder="Spieler suchen"
             value={query}
             onChange={(e) => setQuery(e.target.value)}
-            className="min-w-0 flex-1 bg-transparent text-[15px] font-medium text-text outline-none placeholder:text-muted"
+            className="min-w-0 flex-1 bg-transparent text-[15px] font-medium text-text outline-none placeholder:text-muted max-[359px]:text-sm"
           />
         </label>
         <select

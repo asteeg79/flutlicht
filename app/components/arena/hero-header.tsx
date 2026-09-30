@@ -70,14 +70,14 @@ export function HeroHeader({
           <div className="min-w-0">
             {above}
             {tag || right ? (
-              <div className="mb-2 flex items-center justify-between gap-2.5 lg:mb-2.5 lg:justify-start lg:gap-3">
+              <div className="mb-2 flex flex-wrap items-center justify-between gap-x-2.5 gap-y-1.5 lg:mb-2.5 lg:justify-start lg:gap-3">
                 {tag ? (
                   <SlantTag variant={tagVariant}>{tag}</SlantTag>
                 ) : (
                   <span />
                 )}
                 {right ? (
-                  <div className="flex min-w-0 items-center gap-[7px] text-xs font-bold tracking-[0.06em] uppercase">
+                  <div className="flex min-w-0 items-center gap-[7px] text-xs font-bold tracking-[0.06em] whitespace-nowrap uppercase">
                     {right}
                   </div>
                 ) : null}

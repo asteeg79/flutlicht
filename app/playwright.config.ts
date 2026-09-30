@@ -16,6 +16,14 @@ export const testEnv = {
   PORT: String(PORT),
 };
 
+/** Geräte für e2e/devices.spec.ts (Projektname → Playwright-Profil). */
+const DEVICES = [
+  ["iphone-15", "iPhone 15"],
+  ["iphone-se", "iPhone SE"],
+  ["pixel-7", "Pixel 7"],
+  ["galaxy-s8", "Galaxy S8"],
+] as const;
+
 export default defineConfig({
   testDir: "./e2e",
   globalSetup: "./e2e/global-setup.ts",
@@ -29,7 +37,22 @@ export default defineConfig({
     baseURL: BASE_URL,
     trace: "on-first-retry",
   },
-  projects: [{ name: "mobile", use: { ...devices["Pixel 7"] } }],
+  projects: [
+    // Abläufe mit Zustand (Konten, Kader, Transfers) laufen einmal durch.
+    {
+      name: "mobile",
+      use: { ...devices["Pixel 7"] },
+      testIgnore: /devices\.spec\.ts/,
+    },
+    // Danach die Oberfläche auf emulierten Handys: iPhones mit WebKit (wie Safari),
+    // Android mit Chromium (wie Chrome), je ein großes und ein schmales Gerät.
+    ...DEVICES.map(([name, device]) => ({
+      name,
+      use: { ...devices[device] },
+      testMatch: /devices\.spec\.ts/,
+      dependencies: ["mobile"],
+    })),
+  ],
   webServer: {
     // In der CI gegen den Produktions-Build: schneller und näher am Betrieb als next dev,
     // dessen Kompilieren beim ersten Seitenaufruf die Zeitgrenzen reißen kann.

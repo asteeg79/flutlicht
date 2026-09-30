@@ -36,6 +36,7 @@ export function PosBadge({
   return (
     <span
       key={state === "error" ? errorKey : undefined}
+      data-state={state}
       className={`slant-sm px-1.5 pt-0.5 pb-px font-display text-xs leading-[13px] font-black tracking-[0.05em] ${PITCH[state]} ${className}`}
     >
       {label}
