@@ -38,6 +38,9 @@ export interface PlayerRef {
   club: string;
   /** Pfad des Vereinslogos; fehlt bei unbekanntem Spieler. */
   clubLogo?: string;
+  /** Pfad des Spielerfotos, falls vorhanden. */
+  image?: string;
+  teamId?: number;
   position: Position;
 }
 
@@ -54,6 +57,8 @@ function refs(game: GameSlice) {
           shortName: p.shortName,
           club: club.get(p.teamId)?.shortName ?? "",
           clubLogo: club.get(p.teamId)?.logo,
+          image: p.image,
+          teamId: p.teamId,
           position: p.position,
         }
       : {
@@ -132,6 +137,8 @@ export interface SlotView {
   points: number;
   captain: boolean;
   parts: PointParts | null;
+  /** Sofascore-Note des gewerteten Spielers; null ohne Note. */
+  rating: number | null;
 }
 
 export interface ManagerMatchdayView {
@@ -201,6 +208,8 @@ export function matchdayView(
         captain: s.starterId === lineup.captain,
         parts:
           s.playerId === null ? null : (md.players[s.playerId]?.parts ?? null),
+        rating:
+          s.playerId === null ? null : (md.players[s.playerId]?.rating ?? null),
       }));
     return [
       {
@@ -219,4 +228,20 @@ export function matchdayView(
   });
   views.sort((a, b) => Number(b.own) - Number(a.own) || b.total - a.total);
   return { matchday: n, status: md.status, shadow, managers: views };
+}
+
+/**
+ * Rang je Manager an einem Spieltag nach Punkten (Arena „Im Spieltag Platz 2 von 8“);
+ * Gleichstand teilt sich den Rang (1, 1, 3 …), wie in der Tabelle.
+ */
+export function matchdayRanks(
+  managers: readonly Pick<ManagerMatchdayView, "userId" | "total">[],
+): Map<string, number> {
+  const totals = managers.map((m) => m.total);
+  return new Map(
+    managers.map((m) => [
+      m.userId,
+      totals.filter((t) => t > m.total).length + 1,
+    ]),
+  );
 }

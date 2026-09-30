@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { defaultLineup, type ManagerDoc, type MatchdayPoints } from "@fm/core";
 
 vi.mock("@/lib/auth", () => ({ auth: async () => null }));
-const { leagueTable, matchdayView } = await import("@/lib/standings");
+const { leagueTable, matchdayRanks, matchdayView } =
+  await import("@/lib/standings");
 const { players, SQUAD } = await import("@/test/fixtures");
 
 // Standardaufstellung des Test-Kaders: Starter 1 (Verein 1), 11–14, 21–24, 31 (Verein 2), 32 (Verein 3).
@@ -169,5 +170,22 @@ describe("leagueTable", () => {
       names: ["Tom", "Ida"],
       points: 7,
     });
+  });
+});
+
+describe("matchdayRanks", () => {
+  it("Rang nach Punkten, Gleichstand teilt sich den Platz", () => {
+    const ranks = matchdayRanks([
+      { userId: "a", total: 40 },
+      { userId: "b", total: 55 },
+      { userId: "c", total: 40 },
+      { userId: "d", total: 12 },
+    ]);
+    expect([...ranks]).toEqual([
+      ["a", 2],
+      ["b", 1],
+      ["c", 2],
+      ["d", 4],
+    ]);
   });
 });
