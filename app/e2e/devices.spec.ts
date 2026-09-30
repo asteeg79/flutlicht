@@ -129,3 +129,49 @@ test("Team: rote Badges nach ungültigem Tausch verschwinden wieder", async ({
   await expect(errors).toHaveCount(2);
   await expect(errors).toHaveCount(0, { timeout: 3000 });
 });
+
+test("App installieren: iPhone mit Anleitung, Android mit Knopf", async ({
+  page,
+  context,
+}, info) => {
+  const iphone = info.project.name.startsWith("iphone");
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
+  const settings = page.getByRole("region", { name: "App installieren" });
+  await expect(settings).toBeVisible();
+
+  await context.clearCookies();
+  await page.goto("/login");
+  const login = page.getByRole("region", { name: "App installieren" });
+  if (iphone) {
+    await expect(login).toContainText("Zum Home-Bildschirm");
+    await expect(login.getByRole("button")).toHaveCount(0);
+  } else {
+    // Ohne Angebot des Browsers: Hinweis aufs Browsermenü.
+    await expect(login).toContainText("Browsermenü");
+    // Chrome bietet die Installation an (hier simuliert): Knopf öffnet den Dialog.
+    await page.evaluate(() => {
+      const w = window as unknown as { promptCalls: number };
+      w.promptCalls = 0;
+      const event = Object.assign(new Event("beforeinstallprompt"), {
+        prompt: async () => void w.promptCalls++,
+        userChoice: Promise.resolve({ outcome: "accepted" }),
+      });
+      window.dispatchEvent(event);
+    });
+    await login.getByRole("button", { name: "App installieren" }).click();
+    await expect(
+      page.getByRole("status").filter({ hasText: "Home-Bildschirm" }),
+    ).toBeVisible();
+    expect(
+      await page.evaluate(
+        () => (window as unknown as { promptCalls: number }).promptCalls,
+      ),
+    ).toBe(1);
+    // Das Angebot gilt einmal: danach wieder nur der Hinweis.
+    await expect(login.getByRole("button")).toHaveCount(0);
+  }
+  await page.screenshot({
+    path: `test-results/devices/${info.project.name}/login-installieren.png`,
+    fullPage: true,
+  });
+});

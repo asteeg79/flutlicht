@@ -3,6 +3,7 @@ import { Big_Shoulders, Schibsted_Grotesk } from "next/font/google";
 import type { ReactNode } from "react";
 import { ThemeWatcher } from "@/components/arena/theme-watcher";
 import { Toaster } from "@/components/arena/toast";
+import { InstallPromptCatcher } from "@/components/pwa/InstallPromptCatcher";
 import { ServiceWorkerRegister } from "@/components/pwa/ServiceWorkerRegister";
 import { THEME_SCRIPT } from "@/lib/theme";
 import "./globals.css";
@@ -54,6 +55,7 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         {children}
         <Toaster />
         <ServiceWorkerRegister />
+        <InstallPromptCatcher />
       </body>
     </html>
   );

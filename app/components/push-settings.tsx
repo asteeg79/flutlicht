@@ -2,8 +2,9 @@
 
 import type { ManagerDoc } from "@fm/core";
 import { LoaderCircle } from "lucide-react";
-import { useState, useSyncExternalStore } from "react";
+import { useState } from "react";
 import { toast } from "@/components/arena/toast";
+import { useInstall } from "@/hooks/useInstall";
 import { usePush } from "@/hooks/usePush";
 import { callApi } from "@/lib/api-client";
 
@@ -34,7 +35,7 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
     initialPrefs ?? { reminder: true, daily: true, final: true },
   );
   const [busy, setBusy] = useState(false);
-  const iosHint = useIosInstallHint();
+  const iosHint = useInstall().mode === "ios";
 
   async function savePrefs(next: Prefs) {
     setPrefs(next);
@@ -87,11 +88,8 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
 
       {iosHint ? (
         <p className="mb-2 border-l-4 border-lampe bg-bg px-3 py-2 text-sm">
-          Auf dem iPhone kommen Benachrichtigungen nur an, wenn du die App
-          installierst: in Safari auf{" "}
-          <span className="font-semibold">Teilen</span> tippen, dann{" "}
-          <span className="font-semibold">„Zum Home-Bildschirm“</span>, und die
-          App von dort öffnen.
+          Auf dem iPhone kommen Benachrichtigungen nur an, wenn Flutlicht als
+          App auf dem Home-Bildschirm liegt – so geht’s: siehe „App“ oben.
         </p>
       ) : null}
 
@@ -157,20 +155,5 @@ function Switch({
         className={`absolute top-1 left-1 h-[22px] w-[22px] rounded-full bg-nacht transition-transform duration-150 ${checked ? "translate-x-[22px]" : ""}`}
       />
     </button>
-  );
-}
-
-/** iPhone/iPad in Safari, aber nicht als installierte App (navigator.standalone / display-mode). */
-function useIosInstallHint(): boolean {
-  return useSyncExternalStore(
-    () => () => {},
-    () => {
-      const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
-      const standalone =
-        (navigator as Navigator & { standalone?: boolean }).standalone ===
-          true || window.matchMedia("(display-mode: standalone)").matches;
-      return ios && !standalone;
-    },
-    () => false,
   );
 }

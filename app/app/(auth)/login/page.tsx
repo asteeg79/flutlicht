@@ -6,6 +6,7 @@ import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { signIn } from "next-auth/react";
 import { useState, type FormEvent } from "react";
+import { InstallApp } from "@/components/install-app";
 import { Button, Field, FormError } from "@/components/ui";
 
 export default function LoginPage() {
@@ -37,45 +38,48 @@ export default function LoginPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="flex flex-col gap-3.5" noValidate>
-      <h1 className="font-display text-[34px] leading-none font-black uppercase">
-        Anmelden
-      </h1>
-      <Field
-        label="E-Mail"
-        name="email"
-        type="email"
-        autoComplete="email"
-        required
-      />
-      <Field
-        label="Passwort"
-        name="password"
-        type="password"
-        autoComplete="current-password"
-        required
-      />
-      <FormError>{error}</FormError>
-      <Button type="submit" disabled={busy}>
-        {busy ? (
-          <LoaderCircle aria-hidden className="h-4 w-4 animate-spin" />
-        ) : null}
-        Anmelden
-      </Button>
-      <div className="flex justify-between text-sm">
-        <Link
-          href="/registrieren"
-          className="inline-flex min-h-11 items-center font-semibold text-text underline-offset-4 hover:underline"
-        >
-          Konto anlegen
-        </Link>
-        <Link
-          href="/passwort-reset"
-          className="inline-flex min-h-11 items-center font-semibold text-muted underline-offset-4 hover:underline"
-        >
-          Passwort vergessen?
-        </Link>
-      </div>
-    </form>
+    <>
+      <form onSubmit={onSubmit} className="flex flex-col gap-3.5" noValidate>
+        <h1 className="font-display text-[34px] leading-none font-black uppercase">
+          Anmelden
+        </h1>
+        <Field
+          label="E-Mail"
+          name="email"
+          type="email"
+          autoComplete="email"
+          required
+        />
+        <Field
+          label="Passwort"
+          name="password"
+          type="password"
+          autoComplete="current-password"
+          required
+        />
+        <FormError>{error}</FormError>
+        <Button type="submit" disabled={busy}>
+          {busy ? (
+            <LoaderCircle aria-hidden className="h-4 w-4 animate-spin" />
+          ) : null}
+          Anmelden
+        </Button>
+        <div className="flex justify-between text-sm">
+          <Link
+            href="/registrieren"
+            className="inline-flex min-h-11 items-center font-semibold text-text underline-offset-4 hover:underline"
+          >
+            Konto anlegen
+          </Link>
+          <Link
+            href="/passwort-reset"
+            className="inline-flex min-h-11 items-center font-semibold text-muted underline-offset-4 hover:underline"
+          >
+            Passwort vergessen?
+          </Link>
+        </div>
+      </form>
+      <InstallApp variant="login" />
+    </>
   );
 }

@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
 import { ThemePicker } from "@/components/arena/theme-picker";
+import { InstallApp } from "@/components/install-app";
 import { ProfileSettings } from "@/components/profile-settings";
 import { PushSettings } from "@/components/push-settings";
 import { signOut } from "@/lib/auth";
@@ -42,6 +43,7 @@ export default async function SettingsPage() {
             <h2 className={H2}>Darstellung</h2>
             <ThemePicker />
           </section>
+          <InstallApp variant="settings" />
           <section>
             <h2 className={H2}>Benachrichtigungen</h2>
             <PushSettings initialPrefs={manager.push?.prefs ?? null} />
