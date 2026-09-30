@@ -5,25 +5,39 @@ appId: com.apple.mobilesafari
 env:
   BASE: http://localhost:3100
 ---
-- openLink: ${BASE}/login
+# Mit bestehender Sitzung landet /team direkt auf der Aufstellung, sonst auf /login.
+- openLink: ${BASE}/team
 - extendedWaitUntil:
-    visible: "Passwort vergessen?"
+    visible: "Passwort vergessen\\?|Fixiert in.*|Nächste fixiert in.*|Gewertet ab.*"
     timeout: 60000
-# Schon angemeldet (Sitzung aus einem früheren Lauf)? Dann leitet /login nicht um –
-# das Formular erscheint trotzdem; ausfüllen schadet nicht.
-# Erst tippen, wenn die Tastatur steht; sonst gehen die ersten Zeichen verloren.
-- tapOn: "E-Mail"
-- waitForAnimationToEnd
-- eraseText
-- inputText: admin@e2e.test
-- tapOn: "Passwort"
-- waitForAnimationToEnd
-- eraseText
-- inputText: flutlicht-an
-- pressKey: Enter
-- tapOn:
-    text: "Nicht jetzt|Not Now|Nie für diese Website|Never for This Website"
-    optional: true
+- runFlow:
+    when:
+      visible: "Passwort vergessen?"
+    commands:
+      # Im Simulator geht Tastatureingabe gelegentlich verloren: bis zu dreimal versuchen.
+      - retry:
+          maxRetries: 2
+          commands:
+            - tapOn: "E-Mail"
+            - waitForAnimationToEnd
+            - eraseText
+            - inputText: admin@e2e.test
+            - tapOn: "Passwort"
+            - waitForAnimationToEnd
+            - eraseText
+            - inputText: flutlicht-an
+            - pressKey: Enter
+            # iOS fragt nach dem Anmelden „Passwort sichern?“ (Wortlaut je nach Version).
+            - extendedWaitUntil:
+                visible: "Später|Not Now|Nicht jetzt"
+                timeout: 5000
+                optional: true
+            - tapOn:
+                text: "Später|Nicht jetzt|Not Now|Niemals für diese Website|Nie für diese Website|Never for This Website"
+                optional: true
+            - extendedWaitUntil:
+                visible: "Fixiert in.*|Nächste fixiert in.*|Gewertet ab.*"
+                timeout: 20000
 - extendedWaitUntil:
     visible: "Fixiert in.*|Nächste fixiert in.*|Gewertet ab.*"
     timeout: 60000
@@ -53,3 +67,7 @@ env:
     visible: "Darstellung"
     timeout: 30000
 - takeScreenshot: optionen
+- tapOn: "Namen ändern"
+- waitForAnimationToEnd
+- takeScreenshot: optionen-namen
+- tapOn: "Abbrechen"

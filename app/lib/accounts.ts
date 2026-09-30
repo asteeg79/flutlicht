@@ -8,7 +8,7 @@ import {
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict, parse } from "@/lib/api-route";
+import { BadRequest, Conflict, NotFound, parse } from "@/lib/api-route";
 import { finals, gameData } from "@/lib/game-data";
 import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import {
@@ -31,20 +31,27 @@ const Password = z
     MIN_PASSWORD_LENGTH,
     `Das Passwort braucht mindestens ${MIN_PASSWORD_LENGTH} Zeichen.`,
   );
-const Name = (what: string) =>
+/** Name mit Meldungen im richtigen Fall: „einen Anzeigenamen“, „der Anzeigename“. */
+const Name = (accusative: string, nominative: string) =>
   z
     .string()
     .trim()
-    .min(1, `Bitte gib einen ${what} ein.`)
-    .max(40, `Der ${what} darf höchstens 40 Zeichen haben.`);
+    .min(1, `Bitte gib einen ${accusative} ein.`)
+    .max(40, `Der ${nominative} darf höchstens 40 Zeichen haben.`);
+
+const Profile = {
+  displayName: Name("Anzeigenamen", "Anzeigename"),
+  teamName: Name("Teamnamen", "Teamname"),
+};
 
 export const RegisterInput = z.object({
   email: Email,
   password: Password,
-  displayName: Name("Anzeigenamen"),
-  teamName: Name("Teamnamen"),
+  ...Profile,
   inviteCode: z.string().optional(),
 });
+
+export const ProfileInput = z.object(Profile);
 
 export const ResetInput = z.object({
   email: Email,
@@ -124,6 +131,23 @@ export async function registerManager(
     });
   }
   return doc;
+}
+
+/**
+ * Anzeige- und Teamnamen ändern. Die Namen werden überall live aus dem Dokument gelesen
+ * (Tabelle, Spieltag, Pushes), eine Änderung gilt also sofort, auch rückwirkend.
+ * Ohne updatedAt-Sperre wie die Push-Einstellungen: berührt Kader und Aufstellung nicht.
+ */
+export async function updateProfile(
+  userId: string,
+  raw: unknown,
+): Promise<ManagerDoc> {
+  const input = parse(ProfileInput, raw);
+  const doc = await loadManager(userId);
+  if (!doc) throw new NotFound("Konto nicht gefunden");
+  const next = { ...doc, ...input };
+  await saveManager(next);
+  return next;
 }
 
 export async function resetPassword(raw: unknown, now: Date): Promise<void> {

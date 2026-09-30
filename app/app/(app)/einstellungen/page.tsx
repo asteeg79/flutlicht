@@ -2,6 +2,7 @@ import Link from "next/link";
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
 import { ThemePicker } from "@/components/arena/theme-picker";
+import { ProfileSettings } from "@/components/profile-settings";
 import { PushSettings } from "@/components/push-settings";
 import { signOut } from "@/lib/auth";
 import { currentManager } from "@/lib/session";
@@ -18,11 +19,6 @@ const H2 = "mb-2 font-display text-2xl font-black uppercase";
 
 export default async function SettingsPage() {
   const manager = await currentManager();
-  const account = [
-    ["Anzeigename", manager.displayName],
-    ["E-Mail", manager.email],
-    ["Team", manager.teamName],
-  ];
   return (
     <>
       <HeroHeader title="Optionen" compact={{ title: "Optionen" }}>
@@ -34,17 +30,13 @@ export default async function SettingsPage() {
         <div className="flex flex-col gap-5 lg:max-w-[720px]">
           <section>
             <h2 className={H2}>Konto</h2>
-            <dl className="bg-surface px-3.5 py-1">
-              {account.map(([label, value], i) => (
-                <div
-                  key={label}
-                  className={`flex justify-between gap-3 py-2.5 text-sm ${i > 0 ? "border-t border-line" : ""}`}
-                >
-                  <dt className="text-muted">{label}</dt>
-                  <dd className="truncate font-semibold">{value}</dd>
-                </div>
-              ))}
-            </dl>
+            <ProfileSettings
+              email={manager.email}
+              initial={{
+                displayName: manager.displayName,
+                teamName: manager.teamName,
+              }}
+            />
           </section>
           <section>
             <h2 className={H2}>Darstellung</h2>

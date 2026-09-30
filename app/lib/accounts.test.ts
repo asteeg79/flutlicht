@@ -16,7 +16,8 @@ beforeEach(async () => {
 // NextAuth selbst wird hier nicht gebraucht, nur authorizeCredentials.
 vi.mock("next-auth", () => ({ default: () => ({}) }));
 
-const { registerManager, resetPassword } = await import("@/lib/accounts");
+const { registerManager, resetPassword, updateProfile } =
+  await import("@/lib/accounts");
 const { authorizeCredentials } = await import("@/lib/auth");
 const storage = await import("@/lib/storage");
 const { gameData } = await import("@/lib/game-data");
@@ -112,6 +113,55 @@ describe("registerManager (KONZEPT 8.2)", () => {
       NOW,
     );
     expect(doc.role).toBe("admin");
+  });
+});
+
+describe("updateProfile: Anzeige- und Teamname ändern", () => {
+  it("speichert beide Namen getrimmt, der Rest des Kontos bleibt", async () => {
+    await seedInvites();
+    const doc = await registerManager(input(), NOW);
+    const updated = await updateProfile(doc.userId, {
+      displayName: "  Tommy ",
+      teamName: "Kreidelinie FC",
+    });
+    expect(updated).toMatchObject({
+      displayName: "Tommy",
+      teamName: "Kreidelinie FC",
+    });
+    const saved = await storage.loadManager(doc.userId);
+    expect(saved).toMatchObject({
+      displayName: "Tommy",
+      teamName: "Kreidelinie FC",
+      email: doc.email,
+      passwordHash: doc.passwordHash,
+      updatedAt: doc.updatedAt,
+    });
+  });
+
+  it("weist leere und zu lange Namen mit verständlicher Meldung ab", async () => {
+    await seedInvites();
+    const doc = await registerManager(input(), NOW);
+    await expect(
+      updateProfile(doc.userId, { displayName: "   ", teamName: "X" }),
+    ).rejects.toMatchObject({
+      status: 400,
+      message: "Bitte gib einen Anzeigenamen ein.",
+    });
+    await expect(
+      updateProfile(doc.userId, {
+        displayName: "Tom",
+        teamName: "x".repeat(41),
+      }),
+    ).rejects.toMatchObject({
+      status: 400,
+      message: "Der Teamname darf höchstens 40 Zeichen haben.",
+    });
+  });
+
+  it("antwortet ohne Konto mit 404", async () => {
+    await expect(
+      updateProfile("fehlt", { displayName: "A", teamName: "B" }),
+    ).rejects.toMatchObject({ status: 404 });
   });
 });
 

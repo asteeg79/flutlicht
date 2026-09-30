@@ -144,3 +144,34 @@ test("Darstellung: Hell und Dunkel schalten sofort um und bleiben nach dem Neula
     "true",
   );
 });
+
+test("Optionen: Anzeige- und Teamnamen ändern, gilt sofort überall", async ({
+  page,
+}) => {
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
+  await page.getByRole("button", { name: "Namen ändern" }).click();
+  const form = page.getByRole("form", { name: "Namen ändern" });
+  await form.getByLabel("Anzeigename").fill("Alexander");
+  await form.getByLabel("Teamname").fill("Kreidelinie FC");
+  await form.getByRole("button", { name: "Speichern" }).click();
+  await expect(page.getByTestId("profile")).toContainText("Kreidelinie FC");
+  await expect(page.locator("header.hero-bg")).toContainText(
+    "Alexander · Kreidelinie FC",
+  );
+  // Nach dem Neuladen und auf dem Team-Kopf gespeichert.
+  await page.getByRole("link", { name: "Team", exact: true }).click();
+  await expect(
+    page.getByRole("heading", { name: "Kreidelinie FC" }),
+  ).toBeVisible();
+
+  // Leer ist nicht erlaubt; zurück zum alten Namen für die übrigen Tests.
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
+  await page.getByRole("button", { name: "Namen ändern" }).click();
+  await form.getByLabel("Teamname").fill("  ");
+  await form.getByRole("button", { name: "Speichern" }).click();
+  await expect(form).toBeVisible();
+  await form.getByLabel("Anzeigename").fill("Alex");
+  await form.getByLabel("Teamname").fill("Rasenschach 04");
+  await form.getByRole("button", { name: "Speichern" }).click();
+  await expect(page.getByTestId("profile")).toContainText("Rasenschach 04");
+});

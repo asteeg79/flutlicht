@@ -93,6 +93,11 @@ async function main() {
   ] as const)
     await visit(page, name, path);
 
+  await page.getByRole("button", { name: "Namen ändern" }).click();
+  await page.waitForTimeout(500);
+  shot("optionen-namen");
+  await page.getByRole("button", { name: "Abbrechen" }).click();
+
   await visit(page, "team-oben", "/team");
   await page.getByTestId("player-token").first().click();
   await page.waitForTimeout(500);
