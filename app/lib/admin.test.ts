@@ -233,6 +233,62 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
     ).rejects.toMatchObject({ status: 403 });
   });
 
+  it("Saisonstart vorziehen: alle Konten zählen ab dem neuen Spieltag (KONZEPT 2.8)", async () => {
+    // Laufend ist Spieltag 5 (1–4 final), Saisonstart war 8; beide Konten stehen deshalb auf 8.
+    const early = {
+      now: new Date("2026-10-01T12:00:00Z"),
+      fixtures: [
+        fixture(5, "2026-10-09T18:30:00Z"),
+        fixture(8, "2026-10-30T19:30:00Z"),
+      ],
+      finals: new Map(
+        [1, 2, 3, 4].map((n) => [n, new Date("2026-09-28T07:00:00Z")]),
+      ),
+      firstScoredMatchday: 8,
+    };
+    const tom = await saveDoc();
+    await saveDoc({
+      userId: "22222222-2222-4222-8222-222222222222",
+      email: "ida@example.org",
+      displayName: "Ida",
+    });
+    const { gh, commits } = fakeGitHub({
+      "raw/manual/season.json": { firstScoredMatchday: 8 },
+    });
+    await admin.applyManualChange(
+      gh,
+      { kind: "season", firstScoredMatchday: 5 },
+      tom,
+      early,
+    );
+    expect(commits[0]).toMatchObject({ data: { firstScoredMatchday: 5 } });
+    const docs = await storage.listAllManagers();
+    expect(docs).toHaveLength(2);
+    for (const d of docs) {
+      expect(d.firstMatchday).toBe(5);
+      expect(d.transferBank).toEqual({ matchday: 5, available: 2 });
+      expect(d.updatedAt).toBe(early.now.toISOString());
+    }
+  });
+
+  it("Saisonstart nach hinten: Konten ziehen mit", async () => {
+    const doc = await saveDoc();
+    const { gh } = fakeGitHub({
+      "raw/manual/season.json": { firstScoredMatchday: 8 },
+    });
+    await admin.applyManualChange(
+      gh,
+      { kind: "season", firstScoredMatchday: 9 },
+      doc,
+      season(),
+    );
+    const [d] = await storage.listAllManagers();
+    expect(d).toMatchObject({
+      firstMatchday: 9,
+      transferBank: { matchday: 9, available: 2 },
+    });
+  });
+
   it("trägt ein Spiel nach und vermerkt, wer und wann", async () => {
     const doc = await saveDoc();
     const { gh, commits } = fakeGitHub();

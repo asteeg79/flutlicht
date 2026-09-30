@@ -5,6 +5,7 @@ import {
   CODE_ALPHABET,
   currentMatchday,
   firstLock,
+  firstMatchdayFor,
   ManualMapping,
   ManualMatch,
   ManualPositions,
@@ -28,11 +29,13 @@ import {
 import type { GitHub } from "@/lib/github";
 import {
   deleteManager,
+  listAllManagers,
   loadEmailIndex,
   loadLeague,
   loadManager,
   saveEmailIndex,
   saveLeague,
+  saveManager,
 } from "@/lib/storage";
 
 // --- Codes (league.json.enc) ---
@@ -199,7 +202,7 @@ export async function applyManualChange(
         firstScoredMatchday: change.firstScoredMatchday,
         ...(change.startBudget ? { startBudget: change.startBudget } : {}),
       };
-      return updateFile(
+      await updateFile(
         gh,
         "raw/manual/season.json",
         ManualSeason,
@@ -207,7 +210,37 @@ export async function applyManualChange(
         () => next,
         `raw(manual): Saisonstart Spieltag ${change.firstScoredMatchday}${change.startBudget ? `, Startbudget ${change.startBudget} Mio.` : ""}${by(admin)}`,
       );
+      return moveManagersToSeasonStart(season, change.firstScoredMatchday);
     }
+  }
+}
+
+/**
+ * Der Startspieltag jedes Kontos hängt am Saisonstart (bei der Registrierung nie davor).
+ * Verschiebt der Admin ihn, ziehen alle Konten mit (KONZEPT 2.8), sonst bliebe ein
+ * vorgezogener Start wirkungslos. Die Transferbank beginnt dort neu; vor dem ersten
+ * gewerteten Spieltag sind alle Transfers unbegrenzt, es geht also nichts verloren.
+ */
+async function moveManagersToSeasonStart(
+  ctx: SeasonContext,
+  firstScoredMatchday: number,
+): Promise<void> {
+  const firstMatchday = firstMatchdayFor(
+    ctx.fixtures,
+    ctx.finals,
+    ctx.now,
+    firstScoredMatchday,
+  );
+  for (const doc of await listAllManagers()) {
+    await saveManager({
+      ...doc,
+      firstMatchday,
+      transferBank: {
+        matchday: firstMatchday,
+        available: RULES.freeTransfersPerMatchday,
+      },
+      updatedAt: ctx.now.toISOString(),
+    });
   }
 }
 
