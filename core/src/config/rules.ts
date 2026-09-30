@@ -15,6 +15,18 @@ export const FORMATIONS = [
 ] as const;
 export type Formation = (typeof FORMATIONS)[number];
 
+/**
+ * Per Knopf wählbar; die Auto-Aufstellung wählt nur unter diesen (oder behält die
+ * aktuelle Formation). Die übrigen erlaubten entstehen nur durch bewussten Tausch.
+ */
+export const SELECTABLE_FORMATIONS = [
+  "4-4-2",
+  "4-3-3",
+  "3-5-2",
+  "3-4-3",
+  "5-3-2",
+] as const satisfies readonly Formation[];
+
 export const RULES = {
   matchdays: 34,
   squadSize: 15,

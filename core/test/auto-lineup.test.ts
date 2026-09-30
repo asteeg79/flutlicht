@@ -1,5 +1,10 @@
 import { describe, expect, it } from "vitest";
-import { autoLineup, validateLineup, type Lineup } from "../src";
+import {
+  autoLineup,
+  SELECTABLE_FORMATIONS,
+  validateLineup,
+  type Lineup,
+} from "../src";
 import { lineup442, positionOf, squadPlayers } from "./helpers";
 
 // IDs 1–2 TW, 3–7 ABW, 8–12 MF, 13–15 ST. Preis = ID (Gleichstand: teurer zuerst).
@@ -47,13 +52,30 @@ describe("autoLineup (Automatisch aufstellen)", () => {
     expect(r.ok && validateLineup(r.lineup, squadPlayers)).toEqual([]);
   });
 
-  it("stellt möglichst nur Spieler mit Spiel auf", () => {
+  it("stellt möglichst nur Spieler mit Spiel auf, aber nur in wählbaren Formationen", () => {
+    // Kein Stürmer spielt: 4-5-1 hätte 10 Spieler mit Spiel, ist aber nicht wählbar.
+    // Unter den wählbaren haben 4-4-2, 3-5-2 und 5-3-2 nur zwei Stürmer; 3-5-2 punktet am meisten.
     const r = auto(lineup442, { noMatch: [13, 14, 15] });
-    expect(r.ok && r.lineup.formation).toBe("4-5-1");
+    expect(r.ok && r.lineup.formation).toBe("3-5-2");
     expect(r.ok && r.lineup.starters).toEqual([
-      2, 7, 6, 5, 4, 12, 11, 10, 9, 8, 15,
+      2, 7, 6, 5, 12, 11, 10, 9, 8, 15, 14,
     ]);
     expect(r.ok && r.lineup.captain).toBe(12);
+  });
+
+  it("erfindet keine Formation, behält aber die aktuelle, auch wenn sie nicht wählbar ist", () => {
+    const lineup451: Lineup = {
+      formation: "4-5-1",
+      starters: [1, 3, 4, 5, 6, 8, 9, 10, 11, 12, 13],
+      bench: { gk: 2, b: [7, 14, 15] },
+      captain: 13,
+    };
+    const r = auto(lineup451, { noMatch: [13, 14, 15] });
+    expect(r.ok && r.lineup.formation).toBe("4-5-1");
+    for (const n of [[], [13], [3, 4, 5]]) {
+      const x = auto(lineup442, { noMatch: n });
+      expect(SELECTABLE_FORMATIONS).toContain(x.ok && x.lineup.formation);
+    }
   });
 
   it("lässt gesperrte Spieler, wo sie sind, auch den gesperrten Kapitän", () => {

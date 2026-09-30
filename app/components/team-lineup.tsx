@@ -5,6 +5,7 @@ import {
   changeFormation,
   POSITION_LABELS,
   SCORING,
+  SELECTABLE_FORMATIONS,
   setCaptain,
   swapPlayers,
   type Formation,
@@ -61,8 +62,8 @@ export interface SquadEntry {
 }
 
 const ROWS: Position[] = ["FWD", "MID", "DEF", "GK"];
-/** Schnellwahl über dem Spielfeld; die übrigen erlaubten Formationen gehen per Tausch. */
-const QUICK_FORMATIONS: Formation[] = ["4-4-2", "4-3-3", "3-5-2", "3-4-3"];
+/** Schnellwahl über dem Spielfeld (core); die übrigen erlaubten Formationen gehen per Tausch. */
+const QUICK_FORMATIONS: readonly Formation[] = SELECTABLE_FORMATIONS;
 
 let seq = 0;
 const nextKey = () => ++seq;
@@ -351,7 +352,7 @@ export function TeamLineup({
               <div
                 role="group"
                 aria-label="Formation wählen"
-                className="grid flex-1 grid-cols-4 gap-1.5 lg:flex-none lg:grid-cols-[repeat(4,96px)]"
+                className="grid flex-1 grid-cols-5 gap-1.5 lg:flex-none lg:grid-cols-[repeat(5,88px)]"
               >
                 {QUICK_FORMATIONS.map((f) => (
                   <button
@@ -359,7 +360,7 @@ export function TeamLineup({
                     type="button"
                     onClick={() => pickFormation(f)}
                     aria-pressed={lineup.formation === f}
-                    className={`slant h-11 font-display text-[21px] font-black tracking-[0.02em] lg:text-[22px] ${
+                    className={`slant h-11 font-display text-lg font-black min-[400px]:text-xl lg:text-[22px] ${
                       lineup.formation === f
                         ? "bg-lampe text-nacht"
                         : "bg-surface text-muted"

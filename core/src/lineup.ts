@@ -2,6 +2,7 @@
 import {
   FORMATIONS,
   POSITIONS,
+  SELECTABLE_FORMATIONS,
   type Formation,
   type Position,
 } from "./config/rules";
@@ -313,8 +314,8 @@ export function changeFormation(
 }
 
 /**
- * Stellt automatisch auf (Knopf „Automatisch aufstellen“): Unter allen erlaubten
- * Formationen gewinnt die mit den meisten Startern, die an diesem Spieltag spielen,
+ * Stellt automatisch auf (Knopf „Auto-Aufstellung“): Unter den wählbaren Formationen
+ * (`SELECTABLE_FORMATIONS`) und der aktuellen gewinnt die mit den meisten Startern, die an diesem Spieltag spielen,
  * dann mit der höchsten Summe von `score` (Form oder Punkte). Gesperrte Spieler
  * behalten ihre Rolle, auch als Kapitän (2.5). Kapitän wird sonst der beste
  * ungesperrte Starter, die Bank ist nach Stärke sortiert (B1 zuerst).
@@ -355,7 +356,11 @@ export function autoLineup(
     starters: number[];
     key: [number, number];
   } | null = null;
-  for (const formation of FORMATIONS) {
+  // Keine neuen Formationen erfinden: nur die wählbaren, dazu die aktuelle.
+  const candidates = [
+    ...new Set<Formation>([...SELECTABLE_FORMATIONS, lineup.formation]),
+  ];
+  for (const formation of candidates) {
     const need = formationCounts(formation);
     const starters: number[] = [];
     let feasible = true;
