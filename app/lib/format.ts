@@ -27,4 +27,9 @@ export function signedInt(n: number): string {
   return n < 0 ? `−${-n}` : "0";
 }
 
+/** Nachname fürs Namensschild: „J. Friedrich“ → „Friedrich“, „E.Duarte“ → „Duarte“, „Rômulo“ bleibt. */
+export function lastName(shortName: string): string {
+  return shortName.replace(/^\p{Lu}[\p{L}-]*\.\s*/u, "") || shortName;
+}
+
 export { formatMio };

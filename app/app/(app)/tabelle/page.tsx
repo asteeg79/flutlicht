@@ -3,17 +3,13 @@ import { PageBody } from "@/components/arena/page-layout";
 import { STATUS_LABEL } from "@/components/points";
 import { TableTabs } from "@/components/table-tabs";
 import { gameData } from "@/lib/game-data";
-import { currentManager } from "@/lib/session";
+import { allManagers, currentManager } from "@/lib/session";
 import { leagueTable } from "@/lib/standings";
-import { listAllManagers } from "@/lib/storage";
 
 export const metadata = { title: "Tabelle" };
 
 export default async function StandingsPage() {
-  const [me, managers] = await Promise.all([
-    currentManager(),
-    listAllManagers(),
-  ]);
+  const [me, managers] = await Promise.all([currentManager(), allManagers()]);
   const table = leagueTable(managers);
   const scored = table.matchdays;
   const last = scored.at(-1);

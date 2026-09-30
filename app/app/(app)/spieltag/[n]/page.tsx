@@ -13,14 +13,13 @@ import {
   STATUS_LABEL,
 } from "@/components/points";
 import { gameData, teamById } from "@/lib/game-data";
-import { currentManager } from "@/lib/session";
+import { allManagers, currentManager } from "@/lib/session";
 import {
   matchdayView,
   type ManagerMatchdayView,
   type MatchdayView,
   type SlotView,
 } from "@/lib/standings";
-import { listAllManagers } from "@/lib/storage";
 
 export const metadata = { title: "Spieltag" };
 
@@ -31,10 +30,7 @@ export default async function MatchdayPage({
 }) {
   const n = Number((await params).n);
   if (!Number.isInteger(n) || n < 1 || n > RULES.matchdays) notFound();
-  const [me, managers] = await Promise.all([
-    currentManager(),
-    listAllManagers(),
-  ]);
+  const [me, managers] = await Promise.all([currentManager(), allManagers()]);
   const view = matchdayView(n, managers, me.userId, new Date());
   const own = view.managers.find((m) => m.own);
   const others = view.managers.filter((m) => !m.own);

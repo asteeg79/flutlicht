@@ -1,21 +1,23 @@
 import {
-  latestAppearance,
-  playerSeason,
   currentMatchday,
-  firstLock,
-  formatKickoff,
   formatMio,
+  latestAppearance,
   lineupForMatchday,
   lockAt,
+  pad2,
   participation,
+  playerSeason,
   scoreManager,
 } from "@fm/core";
-import { STATUS_LABEL } from "@/components/points";
 import Link from "next/link";
+import { BoardTile } from "@/components/arena/board-tile";
+import { CountdownText, HeroCountdown } from "@/components/arena/countdown";
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
 import type { PointsInfo } from "@/components/player-points-info";
+import { STATUS_LABEL } from "@/components/points";
 import { TeamLineup, type SquadEntry } from "@/components/team-lineup";
+import { lastName, signedInt } from "@/lib/format";
 import {
   gameData,
   playerById,
@@ -23,13 +25,19 @@ import {
   statsById,
   teamById,
 } from "@/lib/game-data";
-import { currentManager } from "@/lib/session";
+import { POS_LABEL } from "@/lib/positions";
+import { allManagers, currentManager } from "@/lib/session";
+import { lockLabel, nextLock } from "@/lib/shell";
 import { liveContext, publicManager } from "@/lib/squad";
+import { leagueTable } from "@/lib/standings";
 
 export const metadata = { title: "Team" };
 
 export default async function TeamPage() {
-  const manager = await currentManager();
+  const [manager, managers] = await Promise.all([
+    currentManager(),
+    allManagers(),
+  ]);
 
   if (manager.lineup === null) {
     return (
@@ -46,7 +54,7 @@ export default async function TeamPage() {
           </p>
           <Link
             href="/markt"
-            className="inline-flex h-12 items-center rounded-xl bg-lampe px-5 font-semibold text-nacht"
+            className="slant inline-flex h-12 items-center bg-lampe px-5 font-display text-xl font-black text-nacht uppercase"
           >
             Zum Markt · {formatMio(manager.cash)} Budget
           </Link>
@@ -61,6 +69,7 @@ export default async function TeamPage() {
     matchday === null
       ? []
       : ctx.fixtures.filter((f) => f.matchday === matchday);
+  const name = (id: number) => teamById.get(id)?.shortName ?? "";
   const squad: SquadEntry[] = manager.squad.flatMap((id) => {
     const p = playerById.get(id);
     if (!p) return [];
@@ -73,22 +82,29 @@ export default async function TeamPage() {
         id: p.id,
         name: p.name,
         shortName: p.shortName,
+        lastName: lastName(p.shortName),
         position: p.position,
+        posLabel: POS_LABEL[p.position],
         price: p.price,
-        club: teamById.get(p.teamId)?.shortName ?? "",
+        club: name(p.teamId),
         image: p.image,
         clubLogo: teamById.get(p.teamId)?.logo ?? "",
         opponent: f
-          ? `${teamById.get(home ? f.awayTeamId : f.homeTeamId)?.shortName} (${home ? "H" : "A"})`
+          ? `${name(home ? f.awayTeamId : f.homeTeamId)} (${home ? "H" : "A"})`
           : null,
+        match: f ? `${name(f.homeTeamId)} – ${name(f.awayTeamId)}` : null,
         lockAt: f ? lockAt(f).toISOString() : null,
         points: pointsInfo(p.id),
         form: statsById.get(p.id)?.form ?? null,
       },
     ];
   });
-  const first = firstLock(fixtures);
-  // Punkte des laufenden Spieltags (8.1), sobald es welche gibt und er für den Manager zählt.
+
+  // Tafel: Platz und Saison wie auf /tabelle; dazu der letzte finale oder der laufende Spieltag.
+  const table = leagueTable(managers);
+  const row = table.rows.find((r) => r.userId === manager.userId);
+  const scored = table.matchdays.length > 0 && row !== undefined;
+  const lastFinal = table.matchdays.filter((m) => m.status === "final").at(-1);
   const points = gameData.points.find((p) => p.matchday === matchday);
   const lineup = points
     ? lineupForMatchday(manager, points.matchday, points.status)
@@ -114,42 +130,92 @@ export default async function TeamPage() {
         }
       : null;
 
+  const now = ctx.now;
+  const lock = nextLock(ctx.fixtures, ctx.finals, now);
+  const serverNow = now.toISOString();
+
   return (
     <>
       <HeroHeader
         tag={
           matchday === null
             ? "Saison beendet"
-            : `Spieltag ${matchday}${first ? ` · erste Sperre ${formatKickoff(first.toISOString())}` : ""}`
+            : `Spieltag ${pad2(matchday)}${lock?.running ? " · läuft" : ""}`
+        }
+        right={
+          lock ? (
+            <HeroCountdown
+              label={lockLabel(lock)}
+              target={lock.at.toISOString()}
+              serverNow={serverNow}
+            />
+          ) : undefined
         }
         title={manager.teamName}
-        compact={{ title: manager.teamName }}
-      />
-      <PageBody>
+        compact={{
+          title: manager.teamName,
+          right: lock ? (
+            <>
+              {lock.running ? "Nächste" : "Fixiert in"}{" "}
+              <CountdownText
+                target={lock.at.toISOString()}
+                serverNow={serverNow}
+              />
+            </>
+          ) : undefined,
+        }}
+      >
+        <BoardTile
+          plainOnMobile
+          label="Platz"
+          value={scored ? row.rank : "–"}
+          unit={scored ? `/${table.rows.length}` : undefined}
+        />
+        <BoardTile
+          plainOnMobile
+          label="Saison"
+          value={scored ? row.total : 0}
+          unit=" P."
+        />
         {live ? (
-          <Link
-            href={`/spieltag/${live.matchday}`}
-            className="mb-4 flex items-center justify-between rounded-xl border border-line bg-surface px-4 py-3"
-          >
-            <span className="text-sm">
-              Spieltag {live.matchday} · {STATUS_LABEL[live.status]}
-            </span>
-            <span className="font-display text-3xl font-bold text-accent tabular-nums">
-              {live.total} P.
-            </span>
+          <Link href={`/spieltag/${live.matchday}`} className="min-w-0">
+            <BoardTile
+              plainOnMobile
+              accent
+              label={`${live.matchday}. Spieltag · ${STATUS_LABEL[live.status]}`}
+              value={live.total}
+              unit=" P."
+            />
           </Link>
-        ) : null}
+        ) : scored && lastFinal ? (
+          <Link href={`/spieltag/${lastFinal.matchday}`} className="min-w-0">
+            <BoardTile
+              plainOnMobile
+              accent
+              label={`${lastFinal.matchday}. Spieltag`}
+              value={signedInt(row.byMatchday[lastFinal.matchday] ?? 0)}
+            />
+          </Link>
+        ) : (
+          <BoardTile
+            plainOnMobile
+            label="Gewertet ab"
+            value={`Sp. ${manager.firstMatchday}`}
+          />
+        )}
+      </HeroHeader>
+      <PageBody>
         <TeamLineup
           initialManager={publicManager(manager)}
           squad={squad}
-          serverNow={ctx.now.toISOString()}
+          serverNow={serverNow}
         />
       </PageBody>
     </>
   );
 }
 
-/** Letzter Einsatz und Saison eines Spielers für Tooltip und Auswahlleiste. */
+/** Letzter Einsatz und Saison eines Spielers für Punkte-Chip und Auswahl. */
 function pointsInfo(id: number): PointsInfo {
   const latest = latestAppearance(gameData.points, id);
   const season = playerSeason(gameData.points, id);

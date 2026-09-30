@@ -62,7 +62,7 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
   await expect(
     page.getByRole("region", { name: "Startelf, 3-5-2" }),
   ).toBeVisible();
-  await expect(page.getByText("speichert")).toHaveCount(0);
+  await expect(page.getByTestId("save-pill")).toHaveCount(0);
   await page.reload();
   await expect(
     page.getByRole("button", { name: "3-5-2", exact: true }),
@@ -70,11 +70,23 @@ test("Erstkader zusammenstellen und speichern", async ({ page }) => {
 
   // Automatisch aufstellen nach Punkten: ergibt eine gültige Startelf.
   await page.getByRole("radio", { name: "Punkte" }).click();
-  await page.getByRole("button", { name: "Automatisch aufstellen" }).click();
-  await expect(page.getByText("speichert")).toHaveCount(0);
+  await page.getByRole("button", { name: "Auto-Aufstellung" }).click();
+  await expect(page.getByTestId("save-pill")).toHaveCount(0);
   await expect(
     page.getByRole("region", { name: /^Startelf, / }).getByRole("button"),
   ).toHaveCount(11);
+
+  // Auswählen: das Sheet zeigt den Spieler, gültige Partner sind gelb, Esc schließt.
+  await page.getByTestId("player-token").first().click();
+  const sheet = page.getByRole("dialog");
+  await expect(sheet).toBeVisible();
+  await expect(page.getByTestId("player-token").first()).toHaveAttribute(
+    "aria-pressed",
+    "true",
+  );
+  await page.keyboard.press("Escape");
+  await expect(sheet).toHaveCount(0);
+
   // Transfer-Historie: der Erstkader steht mit Kaufpreis „Im Kader“.
   await page.getByRole("link", { name: "Markt", exact: true }).click();
   await page.getByRole("link", { name: "Transfer-Historie →" }).click();

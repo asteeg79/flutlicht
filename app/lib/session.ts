@@ -3,7 +3,7 @@ import { cache } from "react";
 import { notFound, redirect } from "next/navigation";
 import type { ManagerDoc } from "@fm/core";
 import { auth } from "@/lib/auth";
-import { loadManager } from "@/lib/storage";
+import { listAllManagers, loadManager } from "@/lib/storage";
 
 /**
  * Manager der aktuellen Session für Server-Komponenten; ohne Konto zurück zur Anmeldung.
@@ -15,6 +15,9 @@ export const currentManager = cache(async (): Promise<ManagerDoc> => {
   if (!doc) redirect("/login");
   return doc;
 });
+
+/** Alle Manager-Dokumente, je Request nur einmal gelesen (Layout, Tabelle, Spieltag). */
+export const allManagers = cache(listAllManagers);
 
 /** Nur für Admins; alle anderen sehen eine 404, nicht einmal die Existenz der Seite. */
 export async function requireAdmin(): Promise<ManagerDoc> {
