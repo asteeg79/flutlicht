@@ -43,6 +43,16 @@ test("Spieltag, Tabelle und Spielerprofil", async ({ page }) => {
     .getByRole("link")
     .first();
   const name = await playerLink.textContent();
+  // Liste lädt seitenweise: 100 Zeilen, „Mehr anzeigen“ holt die nächsten, Filtern setzt zurück.
+  const rows = page
+    .getByRole("list", { name: "Spielerliste" })
+    .getByTestId("market-row");
+  await expect(rows).toHaveCount(100);
+  await page.getByRole("button", { name: "Mehr anzeigen" }).click();
+  await expect(rows).toHaveCount(200);
+  await page.getByRole("button", { name: "MF", exact: true }).click();
+  await page.getByRole("button", { name: "ALLE", exact: true }).click();
+  await expect(rows).toHaveCount(100);
   // Textsuche: Teil des Namens in Kleinbuchstaben findet den Spieler.
   await page
     .getByLabel("Spieler suchen")

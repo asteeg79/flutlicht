@@ -109,6 +109,9 @@ const GROUP_TITLE: Record<Position, string> = {
 let seq = 0;
 const nextKey = () => ++seq;
 
+/** Spieler je Seite der Liste; „Mehr anzeigen“ lädt die nächsten nach. */
+const PAGE_SIZE = 100;
+
 /**
  * Transfermarkt (KONZEPT 2.2, 2.6, 2.7; Arena 5–7). Kaufen ist immer ein Tausch
  * gleicher Position: „Holen“ → „Wen gibst du ab?“ → Bestätigung, oder wie bisher
@@ -220,6 +223,13 @@ export function Market({
     query,
     searchKey,
   ]);
+  // Nur die ersten PAGE_SIZE rendern; jede Filteränderung beginnt wieder oben.
+  const filterKey = `${listKey}|${query}`;
+  const [page, setPage] = useState({ key: filterKey, size: PAGE_SIZE });
+  // Beim Wechsel sofort zurücksetzen, auch wenn später derselbe Filter wiederkommt.
+  if (page.key !== filterKey) setPage({ key: filterKey, size: PAGE_SIZE });
+  const visibleCount = page.key === filterKey ? page.size : PAGE_SIZE;
+  const visible = list.slice(0, visibleCount);
 
   const toRow = (p: MarketPlayer): RowPlayer => ({
     id: p.id,
@@ -668,7 +678,7 @@ export function Market({
     >
       {desktop ? (
         <MarketTable count={list.length}>
-          {list.map((p) => (
+          {visible.map((p) => (
             <MarketTableRow
               key={p.id}
               p={toRow(p)}
@@ -679,7 +689,7 @@ export function Market({
         </MarketTable>
       ) : (
         <ul aria-label="Spielerliste">
-          {list.map((p) => (
+          {visible.map((p) => (
             <MarketRow
               key={p.id}
               p={toRow(p)}
@@ -689,6 +699,22 @@ export function Market({
           ))}
         </ul>
       )}
+      {list.length > visibleCount ? (
+        <div className="mt-4 flex flex-col items-center gap-1.5">
+          <button
+            type="button"
+            onClick={() =>
+              setPage({ key: filterKey, size: visibleCount + PAGE_SIZE })
+            }
+            className="h-11 w-full border-2 border-text font-display text-lg font-black uppercase lg:w-auto lg:px-8"
+          >
+            Mehr anzeigen
+          </button>
+          <p className="text-xs font-medium text-muted">
+            {visibleCount} von {list.length} Spielern
+          </p>
+        </div>
+      ) : null}
     </div>
   );
 
@@ -891,7 +917,7 @@ export function Market({
             <span className="font-display text-[22px] leading-none font-black uppercase">
               {sell.lastName}
             </span>
-            <span className="font-display text-[15px] font-extrabold text-karte-hell">
+            <span className="font-display text-[15px] font-extrabold text-gruen-hell">
               +{mioNumber(sell.price)}
             </span>
           </div>
@@ -909,7 +935,7 @@ export function Market({
             <span className="font-display text-[22px] leading-none font-black uppercase">
               {buy.lastName}
             </span>
-            <span className="font-display text-[15px] font-extrabold text-gruen-hell">
+            <span className="font-display text-[15px] font-extrabold text-karte-hell">
               −{mioNumber(buy.price)}
             </span>
           </div>

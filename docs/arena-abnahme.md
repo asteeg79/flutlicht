@@ -55,6 +55,8 @@ Alle Phasen noch einmal gelesen und im laufenden System mit Grenzfällen geprüf
 | Team: Tipp auf einen zweiten Starter hob die Auswahl stumm auf | der zweite Starter wird ausgewählt |
 | Team: Auto-Aufstellung wechselte den Kapitän ohne Hinweis | Toast und Stempel-Animation |
 | Team Desktop: Teamname und Countdown doppelt (Kopf und Seitenleiste) | Kopf zeigt „Aufstellung“ wie im Entwurf, Countdown nur in der Seitenleiste |
+| Marktliste renderte alle rund 520 Spieler auf einmal | 100 Spieler, „Mehr anzeigen“ lädt je 100 nach; jede Filteränderung beginnt wieder bei 100 (E2E) |
+| Deal-Bestätigung: Verkauf „+Preis“ rot, Kauf „−Preis“ grün (wie Prototyp) | gedreht: Verkauf bringt Geld und ist grün, Kauf rot (Wunsch von Alex) |
 
 Geprüft und in Ordnung: fixierte Spieler (Schloss, „fixiert“, Hinweisleiste, Schütteln,
 Toast), „Nächste fixiert in“ in Kopf, Leiste und Seitenleiste, Speicherfehler (optimistische
@@ -62,11 +64,6 @@ Toast), „Nächste fixiert in“ in Kopf, Leiste und Seitenleiste, Speicherfehl
 
 **Offen zur Entscheidung**
 
-- Die Marktliste rendert alle rund 520 Spieler ohne Virtualisierung. Auf dem Mac flüssig;
-  auf älteren Handys könnte die Suche beim Tippen stocken. Abhilfe wäre „erste 100 +
-  Mehr anzeigen“.
-- Deal-Bestätigung: Abgang „+Preis“ in Rot, Zugang „−Preis“ in Grün wie im Prototyp. Die
-  Farben passen zur Person (weg/neu), nicht zum Geld; umgekehrt wäre es auch vertretbar.
 - „Fenster zu“ zeigt „Zu“ statt der freien Transfers des nächsten Spieltags; die stehen erst
   nach der Finalisierung fest (`rollTransferBank` im Tick).
 - Die Demo `/dev/arena` bleibt im Repo (in Produktion 404); sie ist nur für die Entwicklung.
