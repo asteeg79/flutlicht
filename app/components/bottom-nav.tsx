@@ -19,22 +19,24 @@ export function BottomNav() {
         <span
           aria-hidden
           className="arena-anim absolute -top-0.5 z-[1] -ml-5 h-[3px] w-10 bg-lampe shadow-[0_0_12px_2px_rgb(255_213_74/0.6)] transition-[left] duration-[380ms] ease-[cubic-bezier(.3,1.35,.5,1)]"
-          style={{ left: `${((active + 0.5) * 100) / NAV_ITEMS.length}%` }}
+          style={{
+            left: `calc(0.5rem + (100% - 1rem) * ${(active + 0.5) / NAV_ITEMS.length})`,
+          }}
         />
       ) : null}
-      <ul className="grid h-[62px] grid-cols-6">
+      <ul className="grid h-[62px] grid-cols-6 px-2">
         {NAV_ITEMS.map(({ href, label, Icon }, i) => (
           <li key={href}>
             <Link
               href={href}
               aria-current={i === active ? "page" : undefined}
-              className={`flex h-full flex-col items-center justify-center gap-[3px] font-display text-[clamp(11px,3.4vw,13px)] font-extrabold tracking-[0.04em] whitespace-nowrap uppercase transition-colors duration-300 ${
+              className={`flex h-full flex-col items-center justify-center gap-[3px] font-display text-[clamp(10px,2.9vw,12px)] font-extrabold tracking-[0.02em] whitespace-nowrap uppercase transition-colors duration-300 ${
                 i === active ? "text-nav-active" : "text-nav-muted"
               }`}
             >
               <Icon
                 aria-hidden
-                className="h-[22px] w-[22px]"
+                className="h-5 w-5"
                 strokeWidth={i === active ? 2.2 : 2}
               />
               {label}

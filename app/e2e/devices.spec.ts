@@ -43,8 +43,15 @@ async function expectSingleLine(page: Page) {
     };
     const tooWide = (e: HTMLElement) =>
       textRects(e).box.width > e.getBoundingClientRect().width + 1;
+    // Untere Navigation: mindestens 12 px zum Bildschirmrand (runde iPhone-Ecken).
+    const nearEdge = (e: HTMLElement) => {
+      const { left, right } = textRects(e).box;
+      return left < 12 || window.innerWidth - right < 12;
+    };
     return [
-      ...visible('nav[aria-label="Hauptnavigation"] a').filter(tooWide),
+      ...visible('nav[aria-label="Hauptnavigation"] a').filter(
+        (e) => tooWide(e) || nearEdge(e),
+      ),
       ...visible(
         "header.hero-bg .whitespace-nowrap, header.hero-bg .tabular-nums",
       ).filter((e) => wraps(e) || tooWide(e)),
