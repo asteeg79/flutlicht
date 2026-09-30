@@ -4,7 +4,7 @@ const PITCH: Record<PosState, string> = {
   normal: "bg-kreide text-nacht",
   partner: "bg-lampe text-nacht",
   error:
-    "arena-anim animate-[arena-shake_.45s_ease-in-out_both] bg-karte text-white",
+    "arena-anim animate-[arena-shake_.45s_ease-in-out_both] bg-karte-tief text-white",
 };
 
 /**

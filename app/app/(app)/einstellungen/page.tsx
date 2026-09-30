@@ -54,8 +54,8 @@ export default async function SettingsPage() {
             <h2 className={H2}>Benachrichtigungen</h2>
             <PushSettings initialPrefs={manager.push?.prefs ?? null} />
           </section>
-          <section className="flex flex-col gap-3.5">
-            <form action={logout}>
+          <section className="flex flex-col gap-1">
+            <form action={logout} className="mb-2.5">
               <button
                 type="submit"
                 className="h-[50px] w-full border-2 border-text font-display text-xl font-black uppercase"
@@ -66,14 +66,14 @@ export default async function SettingsPage() {
             {manager.role === "admin" ? (
               <Link
                 href="/admin"
-                className="text-[13px] font-semibold text-accent underline-offset-4 hover:underline"
+                className="inline-flex min-h-11 items-center self-start text-[13px] font-semibold text-accent underline-offset-4 hover:underline"
               >
                 Admin
               </Link>
             ) : null}
             <Link
               href="/impressum"
-              className="text-[13px] font-semibold text-muted underline-offset-4 hover:underline"
+              className="inline-flex min-h-11 items-center self-start text-[13px] font-semibold text-muted underline-offset-4 hover:underline"
             >
               Impressum und Datenschutz
             </Link>

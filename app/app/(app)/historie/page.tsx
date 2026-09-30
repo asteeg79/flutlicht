@@ -102,6 +102,7 @@ export default async function HistoryPage() {
           {signedNumber(value)}
         </span>
       }
+      unit=" MIO"
     />
   );
 
@@ -118,9 +119,6 @@ export default async function HistoryPage() {
           {tile("Im Kader", h.unrealized)}
           {tile("Prämien", bonuses)}
         </div>
-        <p className="col-span-2 text-[11px] font-semibold text-hero-muted lg:hidden">
-          Beträge in Mio.
-        </p>
       </HeroHeader>
       <PageBody>
         <TwoCol

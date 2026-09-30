@@ -16,7 +16,7 @@ export function BackLink() {
           router.back();
         }
       }}
-      className="mb-1.5 inline-flex min-h-11 items-center gap-1 font-display text-[15px] font-extrabold tracking-[0.06em] uppercase"
+      className="-mt-2.5 mb-0.5 inline-flex min-h-11 items-center gap-1 font-display text-[15px] font-extrabold tracking-[0.06em] uppercase"
     >
       <ChevronLeft aria-hidden className="h-4 w-4" strokeWidth={2.6} />
       Zurück

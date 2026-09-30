@@ -18,6 +18,8 @@
   --color-karte: #e0533a;
   /* Karte auf dunklem Grund (Tafel, Sheets): heller für Kontrast. */
   --color-karte-hell: #ff7a61;
+  /* Karte mit weißer Schrift darauf (Live-Tag, Fehler, Abgabe): ≥ 4,5 : 1. */
+  --color-karte-tief: #bf3a24;
   /* Plus auf dunklem Grund (Sheets, Tafel). */
   --color-gruen-hell: #6fdc8c;
   --color-bronze: #c98a4b;
@@ -220,7 +222,7 @@
   --pos-open-bg: rgb(15 28 38 / 0.75);
   --live: #c8412b;
   --up: #1f7a3a;
-  --down: #c8412b;
+  --down: #bf3a24;
   --urgent: #b3261e;
   --me-row: rgb(255 213 74 / 0.35);
   --podium-2: #0f1c26;
@@ -666,8 +668,10 @@ body {
 }
 
 @media (prefers-reduced-motion: reduce) {
-  .arena-anim,
-  .arena-anim * {
+  /* README 8: keine Bewegung außer sofortigen Zustandswechseln, auch keine Übergänge. */
+  *,
+  *::before,
+  *::after {
     animation: none !important;
     transition: none !important;
   }

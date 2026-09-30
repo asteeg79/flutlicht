@@ -276,7 +276,7 @@ export default async function PlayerPage({
                           </div>
                         </div>
                         <span
-                          className={`slant justify-self-end px-1.5 pt-[3px] pb-0.5 text-center font-display text-2xl leading-none font-black min-w-10 ${pp.base >= 10 ? "bg-lampe text-nacht" : pp.base < 0 ? "bg-karte text-white" : "bg-surface"}`}
+                          className={`slant justify-self-end px-1.5 pt-[3px] pb-0.5 text-center font-display text-2xl leading-none font-black min-w-10 ${pp.base >= 10 ? "bg-lampe text-nacht" : pp.base < 0 ? "bg-karte-tief text-white" : "bg-surface"}`}
                         >
                           {signed(pp.base)}
                         </span>
@@ -394,7 +394,7 @@ export default async function PlayerPage({
 }
 
 const RATING_STEPS = [
-  { range: "3–6", label: "schwach", look: "bg-karte text-white" },
+  { range: "3–6", label: "schwach", look: "bg-karte-tief text-white" },
   { range: "6–7", label: "solide", look: "bg-line text-text" },
   { range: "7–8", label: "gut", look: "bg-gruen-hell text-nacht" },
   { range: "8–10", label: "sehr gut", look: "bg-lampe text-nacht" },

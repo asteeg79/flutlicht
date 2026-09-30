@@ -667,7 +667,7 @@ export function Market({
   );
 
   const sellBanner = sell ? (
-    <div className="arena-anim mb-3 flex animate-[arena-rise_.3s_ease-out_both] items-center gap-3 bg-karte px-3 py-2.5 text-white lg:px-3.5">
+    <div className="arena-anim mb-3 flex animate-[arena-rise_.3s_ease-out_both] items-center gap-3 bg-karte-tief px-3 py-2.5 text-white lg:px-3.5">
       <PlayerPhoto
         src={sell.image}
         className="h-[42px] w-[42px] border-2 border-white lg:h-10 lg:w-10"

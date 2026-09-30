@@ -2,7 +2,7 @@ import type { Chip, ChipKind } from "@/components/arena/transfer-chips";
 
 const LOOK: Record<ChipKind, string> = {
   used: "border-transparent bg-white/15 text-white/80",
-  paid: "border-karte bg-karte text-white",
+  paid: "border-karte-tief bg-karte-tief text-white",
   free: "border-lampe bg-lampe text-nacht",
   next: "border-dashed border-karte-hell text-karte-hell",
   closed: "border-white/35 text-white/75",

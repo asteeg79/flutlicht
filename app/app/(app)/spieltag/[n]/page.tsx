@@ -543,11 +543,11 @@ const BONUS_SHORT: Record<BonusState, string> = {
 function pointsTag(points: number | null): string {
   if (points === null) return "bg-surface text-muted";
   if (points >= 10) return "bg-lampe text-nacht";
-  return points < 0 ? "bg-karte text-white" : "bg-surface text-text";
+  return points < 0 ? "bg-karte-tief text-white" : "bg-surface text-text";
 }
 
 const STATUS_CHIP: Record<SlotStatus, string> = {
-  live: "bg-karte text-white",
+  live: "bg-karte-tief text-white",
   done: "bg-nacht text-kreide",
   open: "border border-muted text-muted",
 };

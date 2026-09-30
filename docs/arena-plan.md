@@ -6,6 +6,8 @@ eine Phase je Commit `feat(arena): Phase N – …`. Jede Phase endet mit
 `pnpm lint && pnpm typecheck && pnpm test && pnpm format:check`; ab Phase 4 zusätzlich
 `pnpm --filter @fm/app test:e2e`.
 
+**Stand 30.09.2026:** Phasen 1–8 umgesetzt, Abnahme in `docs/arena-abnahme.md`.
+
 ## Leitlinien
 
 - `core/` bleibt maßgeblich. Wo der Prototyp vereinfacht, gilt `core` (Liste unten).
@@ -40,3 +42,6 @@ eine Phase je Commit `feat(arena): Phase N – …`. Jede Phase endet mit
 | Live-Minute „63′“ je Spieler | Chip „läuft“ (rot, pulsierend), „Ende“, „offen“ aus Spielstatus und Punkten | Die Daten enthalten keine Spielminute; Punkte kommen erst nach Spielende |
 | Live-Punkte zählen „bei neuen Daten“ hoch | Beim nächsten Laden: vorheriger Stand liegt in `localStorage`, Differenz ergibt Banner und Hochzählen | Neue Daten kommen als neuer Build (Update-Hinweis) |
 | Startbudget ≈ 180 Mio. | 85 Mio. aus `season.json` | Beispieldaten |
+| Weiß auf `#e0533a`, `down` hell `#c8412b` | `karte-tief` `#bf3a24` unter weißer Schrift, `down` hell `#bf3a24` | Kontrast ≥ 4,5 : 1 (README 9) |
+| Preisfilter im Markt | entfällt | im Entwurf nicht vorgesehen |
+| Startelf-Balken bei „So kamen die Punkte“ | kein eigener Balken | Saisonpunkte (`playerSeason`) enthalten den Startelf-Bonus nicht |

@@ -38,7 +38,7 @@ export function FixtureRow({
         ) : (
           <>
             <span
-              className={`w-full pt-1 pb-0.5 text-center font-display text-[22px] leading-none font-black ${state.kind === "live" ? "bg-karte text-white" : "bg-nacht text-kreide"}`}
+              className={`w-full pt-1 pb-0.5 text-center font-display text-[22px] leading-none font-black ${state.kind === "live" ? "bg-karte-tief text-white" : "bg-nacht text-kreide"}`}
             >
               {state.score}
             </span>

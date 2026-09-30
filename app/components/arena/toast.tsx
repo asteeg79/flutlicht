@@ -38,7 +38,7 @@ export function Toaster() {
           onClick={() => store.dismiss(current.id)}
           className={`arena-anim pointer-events-auto w-full max-w-[560px] animate-[arena-rise_.2s_ease-out_both] px-3.5 py-3 pr-5 text-left text-[13px] leading-snug font-bold shadow-[0_10px_30px_rgb(0_0_0/0.35)] slant-r lg:w-auto lg:max-w-[460px] ${
             current.kind === "error"
-              ? "bg-karte text-white"
+              ? "bg-karte-tief text-white"
               : "bg-lampe text-nacht"
           }`}
         >

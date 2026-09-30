@@ -85,7 +85,7 @@ export default function RegisterPage() {
         Schon dabei?{" "}
         <Link
           href="/login"
-          className="text-text underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center font-semibold text-text underline-offset-4 hover:underline"
         >
           Anmelden
         </Link>

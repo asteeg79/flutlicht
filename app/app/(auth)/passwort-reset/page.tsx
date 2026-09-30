@@ -77,7 +77,7 @@ export default function ResetPage() {
       </Button>
       <Link
         href="/login"
-        className="block text-sm text-muted underline-offset-4 hover:underline"
+        className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-muted underline-offset-4 hover:underline"
       >
         Zurück zur Anmeldung
       </Link>

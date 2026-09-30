@@ -6,7 +6,7 @@ const LOOK: Record<TagVariant, string> = {
   hero: "bg-tag-bg text-tag-text",
   lampe: "bg-lampe text-nacht",
   nacht: "bg-nacht text-lampe",
-  live: "bg-karte text-white",
+  live: "bg-karte-tief text-white",
   off: "bg-tag-off-bg text-tag-off-text",
 };
 

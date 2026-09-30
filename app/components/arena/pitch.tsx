@@ -34,7 +34,7 @@ export interface TokenPlayer {
 /** Punkte-Chip am Foto: ab 10 gelb, negativ rot, sonst dunkel. */
 function pointsLook(points: number): string {
   if (points >= 10) return "bg-lampe text-nacht";
-  return points < 0 ? "bg-karte text-white" : "bg-plate-bg text-white";
+  return points < 0 ? "bg-karte-tief text-white" : "bg-plate-bg text-white";
 }
 
 /**

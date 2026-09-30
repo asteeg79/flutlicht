@@ -21,7 +21,7 @@ export function TableTabs({
           key={t.href}
           href={t.href}
           aria-current={t.href === active ? "page" : undefined}
-          className={`slant flex h-[42px] flex-1 items-center justify-center font-display text-[19px] font-black uppercase lg:h-11 lg:flex-none lg:px-[22px] ${
+          className={`slant flex h-11 flex-1 items-center justify-center font-display text-[19px] font-black uppercase lg:h-11 lg:flex-none lg:px-[22px] ${
             t.href === active
               ? "bg-tag-bg text-tag-text"
               : "bg-surface-alt text-muted"
