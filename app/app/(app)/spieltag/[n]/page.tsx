@@ -297,9 +297,10 @@ export default async function MatchdayPage({
                   >
                     <PlayerPhoto src={p.image} className="h-9 w-9" />
                     <span className="min-w-0">
-                      <span className="block truncate font-display text-lg leading-none font-black uppercase">
-                        {p.name}
-                        <span className="ml-1.5 text-[13px] text-muted">
+                      <span className="flex min-w-0 items-baseline gap-1.5 font-display text-lg leading-none font-black uppercase">
+                        <span className="truncate">{p.name}</span>
+                        {/* Position steht außerhalb der Kürzung, auch bei langen Namen. */}
+                        <span className="shrink-0 text-[13px] text-muted">
                           {POS_LABEL[p.position]}
                           {lineup.captain === id ? " · C" : ""}
                         </span>
