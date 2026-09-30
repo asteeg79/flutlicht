@@ -55,13 +55,28 @@ Seite verschiebt. Das Abbild enthält Chrome 124; echte Geräte haben meist ein 
 
 ## Stufe 2: iOS-Simulator (echtes Mobile Safari)
 
-Voraussetzung: **Xcode aus dem App Store** (braucht die Apple-ID, ca. 15 GB), danach einmal:
+Einmalige Einrichtung (Xcode aus dem App Store, ca. 15 GB, dazu iOS-Umgebung ca. 8 GB):
 
 ```sh
 sudo xcode-select -s /Applications/Xcode.app
 sudo xcodebuild -license accept
+xcodebuild -runFirstLaunch
 xcodebuild -downloadPlatform iOS
 ```
 
-Steuerung und Screenshots im Simulator werden eingerichtet, sobald Xcode installiert ist
-(geplant: `xcrun simctl` für Start, Öffnen und Screenshots, Maestro für Abläufe).
+Für die Abläufe [Maestro](https://maestro.mobile.dev) (braucht Java, s. o.): das offizielle
+Release `maestro.zip` von GitHub nach `~/.maestro` entpacken. Das Skript schaltet die
+Nutzungsstatistik von Maestro ab (`MAESTRO_CLI_NO_ANALYTICS=1`).
+
+Durchlauf (Dev-Server wie bei Android):
+
+```sh
+scripts/mobile/ios.sh start             # Standard iPhone 17 (iOS 27), IOS_DEVICE=… für andere
+pnpm --filter @fm/app emulator:ios      # e2e/emulator/ios.yaml: anmelden, Seiten, Screenshots
+scripts/mobile/ios.sh stop
+```
+
+Screenshots liegen in `app/test-results/emulator/ios/<Zeitpunkt>/ios/takeScreenshot/`.
+Der Simulator erreicht `localhost` des Macs direkt. Läuft gleichzeitig der Android-Emulator,
+wählt `--platform ios` das richtige Gerät. Vor dem Tippen wartet der Ablauf, bis die
+Tastatur steht, sonst gehen im Simulator die ersten Zeichen verloren.

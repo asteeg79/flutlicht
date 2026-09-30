@@ -1,0 +1,55 @@
+# Durchlauf im echten Mobile Safari des iOS-Simulators (docs/mobil-testen.md).
+# Aufruf über `pnpm --filter @fm/app emulator:ios`;
+# Screenshots in test-results/emulator/ios/ios/takeScreenshot/.
+appId: com.apple.mobilesafari
+env:
+  BASE: http://localhost:3100
+---
+- openLink: ${BASE}/login
+- extendedWaitUntil:
+    visible: "Passwort vergessen?"
+    timeout: 60000
+# Schon angemeldet (Sitzung aus einem früheren Lauf)? Dann leitet /login nicht um –
+# das Formular erscheint trotzdem; ausfüllen schadet nicht.
+# Erst tippen, wenn die Tastatur steht; sonst gehen die ersten Zeichen verloren.
+- tapOn: "E-Mail"
+- waitForAnimationToEnd
+- eraseText
+- inputText: admin@e2e.test
+- tapOn: "Passwort"
+- waitForAnimationToEnd
+- eraseText
+- inputText: flutlicht-an
+- pressKey: Enter
+- tapOn:
+    text: "Nicht jetzt|Not Now|Nie für diese Website|Never for This Website"
+    optional: true
+- extendedWaitUntil:
+    visible: "Fixiert in.*|Nächste fixiert in.*|Gewertet ab.*"
+    timeout: 60000
+- takeScreenshot: team
+- openLink: ${BASE}/markt
+- extendedWaitUntil:
+    visible: "Transfermarkt|Dein Kader"
+    timeout: 30000
+- takeScreenshot: markt
+- openLink: ${BASE}/spieltag
+- extendedWaitUntil:
+    visible: ".*Spieltag.*"
+    timeout: 30000
+- takeScreenshot: spieltag
+- openLink: ${BASE}/tabelle
+- extendedWaitUntil:
+    visible: "Managerrunde"
+    timeout: 30000
+- takeScreenshot: tabelle
+- openLink: ${BASE}/historie
+- extendedWaitUntil:
+    visible: "Historie"
+    timeout: 30000
+- takeScreenshot: historie
+- openLink: ${BASE}/einstellungen
+- extendedWaitUntil:
+    visible: "Darstellung"
+    timeout: 30000
+- takeScreenshot: optionen
