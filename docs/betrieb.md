@@ -12,7 +12,7 @@ Heim-Rechners: [`scraper/README.md`](../scraper/README.md).
 | Event-IDs eines Spieltags | Sofascore `round` | niedrig | Scheduler `round-events`, Di 10–14 Uhr |
 | Vorläufige Punkte | Sofascore lineups + incidents | **hoch** (≤ 60 Min. nach Abpfiff) | Scheduler `match-provisional`, Anpfiff + 135–155 Min. |
 | Finale Punkte, Preise | Sofascore, dann Pipeline | mittel (Folgetag) | Scheduler `match-final`, 08–10 Uhr am Folgetag |
-| Kader, Positionen | Sofascore `team/players` | niedrig | Scheduler `squads`, mittwochs (Jan., Juli, Aug. alle 2 Tage) |
+| Kader, Positionen | Sofascore `team/players` | niedrig | Scheduler `squads`, montags und donnerstags (Jan., Juli, Aug. alle 2 Tage) |
 | Bilder | Sofascore | niedrig | Scheduler `images`, höchstens stündlich, ≤ 60 je Lauf |
 | Marktwerte | transfermarkt-api (lokal), dcaribou | einmal pro Saison | `tm-crawl`/`dcaribou` von Hand |
 | Erinnerungen, Finalisierung, Pushes | App-Zustand + `data/` | mittel | Cloudflare-Worker → `/api/cron/tick` alle 10 Min. |
@@ -56,7 +56,7 @@ höchstens 3-mal.
 | Heim-Rechner | `round-events` | Di 10–14 Uhr vor dem nächsten Spieltag (auch später nachgeholt) | Event-IDs |
 | Heim-Rechner | `match-provisional` | Anpfiff + 135–155 Min., bis 24 h nach Anpfiff | vorläufige Daten eines Spiels |
 | Heim-Rechner | `match-final` / `backfill` | Folgetag nach dem letzten Spiel 08–10 Uhr; höchstens ein Spieltag pro Tag | finale Daten aller Spiele |
-| Heim-Rechner | `squads` | mittwochs 10–18 Uhr, im Transferfenster alle 2 Tage | Kader |
+| Heim-Rechner | `squads` | montags und donnerstags 10–18 Uhr, im Transferfenster alle 2 Tage | Kader |
 | Heim-Rechner | `images` | fehlende Bilder, stündlich | Logos, Spielerfotos |
 | GitHub | `compute` | Push `raw/**`, Dispatch | `pipeline build` → `data/` |
 | GitHub | `fixtures` | Cron (s. o.) | OpenLigaDB, `pipeline build`, Überfällig-Alarm |

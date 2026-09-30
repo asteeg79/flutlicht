@@ -372,12 +372,12 @@ die 5-Minuten-Prüfung selbst ist rein lokal.
 | `round-events` | Di 10–14 Uhr zufällig, für den nächsten Spieltag | 1 |
 | `match-provisional` | Anpfiff + 135–155 Min. (zufällig). Ist das Spiel nicht `finished`: +15 Min., höchstens 3 Versuche | 2 (lineups, incidents) |
 | `match-final` | Finalisierungstag 08:00–10:00 Uhr zufällig, alle Spiele des Spieltags nacheinander | 2 × 9 |
-| `squads` | Mi 10–18 Uhr zufällig; im Transferfenster (Juli–Aug., Jan.) alle 2 Tage | 18 |
+| `squads` | Mo und Do 10–18 Uhr zufällig; im Transferfenster (Juli–Aug., Jan.) alle 2 Tage | 18 |
 | `backfill` | einmalig beim Start: bereits gespielte Spieltage, über 2–3 Tage verteilt | 2 × 9 × n |
 | `images` | einmalig + bei neuen Spielern; höchstens 60 pro Stunde | je 1 |
 | `tm-crawl` | einmal pro Saison, manuell ausgelöst | 19 |
 
-Das ergibt etwa **40–55 Sofascore-Abrufe pro Spieltag**. Innerhalb eines Jobs liegen
+Das ergibt etwa **60–75 Sofascore-Abrufe pro Spieltag** (Woche mit zwei Kader-Abrufen). Innerhalb eines Jobs liegen
 **8–20 s zufälliger Abstand** zwischen den Abrufen. Es gibt keine Parallelität und
 nachts keine Abrufe (00–07 Uhr). Nach jedem Job: `git add raw/ && git commit && git pull --rebase && git push`
 (3 Versuche, siehe 6.4).

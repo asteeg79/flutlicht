@@ -39,10 +39,10 @@ def keys(tasks):
 
 def run_plan(now, fixtures, tmp_path, state=None, images_missing=False):
     state = state if state is not None else {}
-    # squads der Woche als erledigt markieren, damit es die übrigen Fälle nicht stört
-    week = now.astimezone(BERLIN).date()
-    wednesday = week - timedelta(days=(week.weekday() - 2) % 7)
-    state.setdefault("done", {})[f"squads:{wednesday.isocalendar().year}-W{wednesday.isocalendar().week:02d}"] = "x"
+    # squads der letzten Tage als erledigt markieren, damit es die übrigen Fälle nicht stört
+    today = now.astimezone(BERLIN).date()
+    for i in range(7):
+        state.setdefault("done", {})[f"squads:{(today - timedelta(days=i)).isoformat()}"] = "x"
     return plan(now, fixtures, state, tmp_path, lambda: images_missing, Earliest()), state
 
 
@@ -138,9 +138,12 @@ def test_verlegte_spiele_halten_die_finalisierung_nicht_auf(tmp_path):
     assert "final:5" in keys(run_plan(at("2026-10-10 09:00"), games, tmp_path)[0])
 
 
-def test_squads_mittwochs_und_im_transferfenster_alle_zwei_tage(tmp_path):
-    assert keys(plan(at("2026-10-07 09:59"), [], {}, tmp_path, lambda: False, Earliest())) == []
-    assert keys(plan(at("2026-10-07 10:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-W41"]
+def test_squads_montags_und_donnerstags_und_im_transferfenster_alle_zwei_tage(tmp_path):
+    assert keys(plan(at("2026-10-05 09:59"), [], {}, tmp_path, lambda: False, Earliest())) == []
+    assert keys(plan(at("2026-10-05 10:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-05"]
+    monday_done = {"done": {"squads:2026-10-05": "x"}}
+    assert keys(plan(at("2026-10-07 12:00"), [], monday_done, tmp_path, lambda: False, Earliest())) == []
+    assert keys(plan(at("2026-10-08 10:00"), [], monday_done, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-08"]
     jan = plan(at("2027-01-12 10:00"), [], {}, tmp_path, lambda: False, Earliest())
     assert keys(jan)[0].startswith("squads:2027-01-1")
 
@@ -184,6 +187,6 @@ def test_round_events_auch_nach_dem_anpfiff(tmp_path):
 
 
 def test_squads_nicht_doppelt_wenn_schon_ein_stand_existiert(tmp_path):
-    (tmp_path / "sofascore" / "squads" / "2026-10-07").mkdir(parents=True)
-    assert keys(plan(at("2026-10-07 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == []
-    assert keys(plan(at("2026-10-14 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-W42"]
+    (tmp_path / "sofascore" / "squads" / "2026-10-05").mkdir(parents=True)
+    assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == []
+    assert keys(plan(at("2026-10-08 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-08"]

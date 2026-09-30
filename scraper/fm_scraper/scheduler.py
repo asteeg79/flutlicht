@@ -27,6 +27,7 @@ PROVISIONAL_RETRY = timedelta(minutes=15)
 PROVISIONAL_ATTEMPTS = 3
 FAILED_ATTEMPTS = 3
 TRANSFER_MONTHS = {1, 7, 8}
+SQUAD_WEEKDAYS = (0, 3)  # Montag, Donnerstag
 POSTPONED_GRACE = timedelta(days=3)
 # Vorläufige Daten nur bis zur Finalisierung am Folgemorgen; ältere Lücken füllt match-final/backfill.
 PROVISIONAL_WINDOW = timedelta(hours=24)
@@ -151,14 +152,13 @@ def plan(
             tasks.append(Task(key, "match-final" if has_round else "backfill", matchday=md))
         break
 
-    # squads: mittwochs 10–18 Uhr; im Transferfenster (Jan., Juli, Aug.) alle 2 Tage.
+    # squads: montags und donnerstags 10–18 Uhr; im Transferfenster (Jan., Juli, Aug.) alle 2 Tage.
     today = local_now.date()
     if today.month in TRANSFER_MONTHS:
         day = date.fromordinal(today.toordinal() - today.toordinal() % 2)
-        key = f"squads:{day.isoformat()}"
     else:
-        day = today - timedelta(days=(today.weekday() - 2) % 7)
-        key = f"squads:{day.isocalendar().year}-W{day.isocalendar().week:02d}"
+        day = max(today - timedelta(days=(today.weekday() - wd) % 7) for wd in SQUAD_WEEKDAYS)
+    key = f"squads:{day.isoformat()}"
     t = when(key, lambda: _random_between(rng, _at(day, 10), _at(day, 18)))
     snapshots = raw_dir / "sofascore" / "squads"
     latest = max((p.name for p in snapshots.iterdir() if p.is_dir()), default="") if snapshots.exists() else ""
