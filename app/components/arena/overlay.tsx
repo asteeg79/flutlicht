@@ -15,14 +15,17 @@ function useDialogFocus(onClose: () => void) {
   useEffect(() => {
     const previous = document.activeElement as HTMLElement | null;
     const el = ref.current;
-    (el?.querySelector<HTMLElement>(FOCUSABLE) ?? el)?.focus();
+    // preventScroll: Fokus verschieben darf die Seite unter dem Dialog nicht bewegen.
+    (el?.querySelector<HTMLElement>(FOCUSABLE) ?? el)?.focus({
+      preventScroll: true,
+    });
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") close.current();
     };
     document.addEventListener("keydown", onKey);
     return () => {
       document.removeEventListener("keydown", onKey);
-      if (previous?.isConnected) previous.focus();
+      if (previous?.isConnected) previous.focus({ preventScroll: true });
     };
   }, []);
   return ref;

@@ -1,12 +1,16 @@
-import { transferWindow } from "@fm/core";
+import {
+  currentMatchday,
+  lastPricedMatchday,
+  priceChange,
+  startPrice,
+  transferWindow,
+} from "@fm/core";
 import {
   Market,
   type MarketPlayer,
   type MarketWindow,
 } from "@/components/market";
-import Link from "next/link";
-import { HeroHeader } from "@/components/arena/hero-header";
-import { PageBody } from "@/components/arena/page-layout";
+import { lastName } from "@/lib/format";
 import { gameData, statsById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 import { liveContext, publicManager } from "@/lib/squad";
@@ -24,22 +28,32 @@ export default async function MarketPage() {
         closesAt: w.closesAt.toISOString(),
         isBreak: w.isBreak,
       }
-    : { open: false };
+    : { open: false, reopensAfter: currentMatchday(ctx.finals) };
   // Auf dem Markt: aktive Spieler und alle, die schon im eigenen Kader stehen.
   // Nur die Felder und Statistiken, die der Markt anzeigt (spart rund ein Drittel).
   const inSquad = new Set(manager.squad);
+  const priced = lastPricedMatchday(gameData.history);
   const players: MarketPlayer[] = gameData.players
     .filter((p) => p.active || inSquad.has(p.id))
     .map((p) => ({
       id: p.id,
       name: p.name,
       shortName: p.shortName,
+      lastName: lastName(p.shortName),
       teamId: p.teamId,
       position: p.position,
       price: p.price,
       purchasable: p.purchasable,
       active: p.active,
       image: p.image,
+      delta: priceChange(
+        gameData.history[String(p.id)],
+        p.price,
+        p.startValueEur !== undefined
+          ? startPrice(p.startValueEur, gameData.season.vMaxEur)
+          : p.price,
+        priced,
+      ),
     }));
   const stats = Object.fromEntries(
     players.flatMap((p) => {
@@ -49,37 +63,18 @@ export default async function MarketPage() {
   );
 
   return (
-    <>
-      <HeroHeader
-        tag={
-          manager.squad.length === 0
-            ? "Erstkader"
-            : `Spieltag ${window.open ? window.matchday : "läuft"}`
-        }
-        title="Markt"
-        compact={{ title: "Markt" }}
-      />
-      <PageBody>
-        {manager.squad.length > 0 ? (
-          <Link
-            href="/historie"
-            className="-mt-3 mb-4 inline-block text-sm font-semibold text-accent underline-offset-4 hover:underline"
-          >
-            Transfer-Historie →
-          </Link>
-        ) : null}
-        <Market
-          players={players}
-          teams={gameData.teams.map((t) => ({
-            id: t.id,
-            shortName: t.shortName,
-          }))}
-          stats={stats}
-          initialManager={publicManager(manager)}
-          budget={gameData.season.startBudget}
-          window={window}
-        />
-      </PageBody>
-    </>
+    <Market
+      players={players}
+      teams={gameData.teams.map((t) => ({
+        id: t.id,
+        shortName: t.shortName,
+        logo: t.logo,
+      }))}
+      stats={stats}
+      initialManager={publicManager(manager)}
+      budget={gameData.season.startBudget}
+      window={window}
+      serverNow={ctx.now.toISOString()}
+    />
   );
 }

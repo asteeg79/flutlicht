@@ -1,5 +1,12 @@
 import { describe, expect, it } from "vitest";
-import { expectation, nextPrice, startBudget, startPrice } from "../src";
+import {
+  expectation,
+  lastPricedMatchday,
+  nextPrice,
+  priceChange,
+  startBudget,
+  startPrice,
+} from "../src";
 
 describe("startPrice (KONZEPT 4.1)", () => {
   const vMax = 140_000_000;
@@ -61,5 +68,33 @@ describe("expectation (KONZEPT 4.3)", () => {
   });
   it("mittelt weniger als 5 Einsätze vollständig", () => {
     expect(expectation([2, 7], "DEF")).toBe(4.5);
+  });
+});
+
+describe("Kursänderung seit dem letzten Spieltag", () => {
+  const history = {
+    "1": [
+      { matchday: 8, price: 10.4 },
+      { matchday: 9, price: 10.9 },
+    ],
+    "2": [{ matchday: 8, price: 5.1 }],
+  };
+
+  it("letzter Spieltag mit Preisdaten über alle Spieler", () => {
+    expect(lastPricedMatchday(history)).toBe(9);
+    expect(lastPricedMatchday({})).toBeNull();
+  });
+
+  it("aktueller Preis minus Preis vor dem letzten Spieltag, ohne Fließkomma-Rest", () => {
+    expect(priceChange(history["1"], 10.9, 10, 9)).toBe(0.5);
+    // Kein Eintrag am letzten Spieltag: unverändert.
+    expect(priceChange(history["2"], 5.1, 5.4, 9)).toBe(0);
+    // Erster Spieltag mit Preisen: gegenüber dem Startpreis.
+    expect(priceChange([{ matchday: 8, price: 5.1 }], 5.1, 5.4, 8)).toBe(-0.3);
+  });
+
+  it("ohne Historie oder ohne Einträge des Spielers 0", () => {
+    expect(priceChange(undefined, 8, 8, null)).toBe(0);
+    expect(priceChange(undefined, 8, 8, 9)).toBe(0);
   });
 });

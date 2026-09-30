@@ -18,6 +18,8 @@
   --color-karte: #e0533a;
   /* Karte auf dunklem Grund (Tafel, Sheets): heller für Kontrast. */
   --color-karte-hell: #ff7a61;
+  /* Plus auf dunklem Grund (Sheets, Tafel). */
+  --color-gruen-hell: #6fdc8c;
 
   --font-display: var(--font-big-shoulders), "Arial Narrow", sans-serif;
   --font-sans: var(--font-sans-body), system-ui, sans-serif;
@@ -73,6 +75,7 @@
   --color-save-text: var(--save-text);
   --color-save-ok: var(--save-ok);
   --color-picked-row: var(--picked-row);
+  --color-pos-open-bg: var(--pos-open-bg);
   --color-live: var(--live);
   --color-up: var(--up);
   --color-down: var(--down);
@@ -133,6 +136,7 @@
   --save-text: #0a141c;
   --save-ok: #1f7a3a;
   --picked-row: rgb(255 213 74 / 0.08);
+  --pos-open-bg: rgb(255 255 255 / 0.08);
   --live: #e0533a;
   --up: #6fdc8c;
   --down: #ff7a61;
@@ -191,6 +195,8 @@
   --save-text: #ffffff;
   --save-ok: #6fdc8c;
   --picked-row: rgb(255 213 74 / 0.25);
+  /* Im Entwurf weiß auf Gelb (unlesbar); dunkel für Kontrast. */
+  --pos-open-bg: rgb(15 28 38 / 0.75);
   --live: #c8412b;
   --up: #1f7a3a;
   --down: #c8412b;
