@@ -3,7 +3,7 @@
 // Zählung und Abzug stammen aus core (transferQuote, RULES.extraTransferPenalty).
 import { RULES, type Transfer, type TransferQuote } from "@fm/core";
 
-export type ChipKind = "used" | "paid" | "free" | "next" | "closed";
+export type ChipKind = "used" | "paid" | "free" | "next";
 export interface Chip {
   kind: ChipKind;
   label: string;
@@ -29,7 +29,7 @@ export function transferBoard(
 ): TransferBoard {
   if (!window.open || !quote)
     return {
-      chips: [{ kind: "closed", label: "Zu" }],
+      chips: [],
       big: "Zu",
       unit: "",
       note:

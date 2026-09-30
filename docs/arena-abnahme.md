@@ -38,3 +38,35 @@ Dafür zwei Abweichungen vom Entwurf:
 Mobil 390 px und Desktop 1440 px, jeweils hell und dunkel, für Anmelden, Team, Markt,
 Spieltag (final und Vorschau), Tabelle, Bundesliga, Historie, Spieler und Optionen.
 Aufgenommen mit lokalen Testdaten, bei denen Spieltag 3 und 4 als gewertet gelten.
+
+## Eigenes Review (30.09.2026)
+
+Alle Phasen noch einmal gelesen und im laufenden System mit Grenzfällen geprüft
+(Spiel läuft, Spieler fixiert, Fenster zu, Speichern schlägt fehl; lokal simuliert).
+
+**Behoben**
+
+| Befund | Korrektur |
+|---|---|
+| Fehler-Toast erschien erst nach der vorigen Meldung; schnelle Taps stauten Meldungen auf | Fehler verdrängen sofort, höchstens eine Meldung wartet (`toast-store.test.ts`) |
+| „Zurück“ in der Deal-Bestätigung ließ nach „Holen“ unvermittelt im Abgabe-Modus (rotes Banner) | Beim Weg über „Holen“ führt „Zurück“ zu „Wen gibst du ab?“, dahinter bleibt der Markt unverändert |
+| „Heiß gerade“ konnte nicht kaufbare Spieler zeigen | nur kaufbare, aktive Spieler |
+| „Fenster zu“: doppeltes „Zu“ (Zahl und Chip) | nur noch die Zahl |
+| Team: Tipp auf einen zweiten Starter hob die Auswahl stumm auf | der zweite Starter wird ausgewählt |
+| Team: Auto-Aufstellung wechselte den Kapitän ohne Hinweis | Toast und Stempel-Animation |
+| Team Desktop: Teamname und Countdown doppelt (Kopf und Seitenleiste) | Kopf zeigt „Aufstellung“ wie im Entwurf, Countdown nur in der Seitenleiste |
+
+Geprüft und in Ordnung: fixierte Spieler (Schloss, „fixiert“, Hinweisleiste, Schütteln,
+Toast), „Nächste fixiert in“ in Kopf, Leiste und Seitenleiste, Speicherfehler (optimistische
+Änderung, Pille, Rücksprung, roter Toast), Fenster zu (kein Holen, „Zu“, Hinweiszeile).
+
+**Offen zur Entscheidung**
+
+- Die Marktliste rendert alle rund 520 Spieler ohne Virtualisierung. Auf dem Mac flüssig;
+  auf älteren Handys könnte die Suche beim Tippen stocken. Abhilfe wäre „erste 100 +
+  Mehr anzeigen“.
+- Deal-Bestätigung: Abgang „+Preis“ in Rot, Zugang „−Preis“ in Grün wie im Prototyp. Die
+  Farben passen zur Person (weg/neu), nicht zum Geld; umgekehrt wäre es auch vertretbar.
+- „Fenster zu“ zeigt „Zu“ statt der freien Transfers des nächsten Spieltags; die stehen erst
+  nach der Finalisierung fest (`rollTransferBank` im Tick).
+- Die Demo `/dev/arena` bleibt im Repo (in Produktion 404); sie ist nur für die Entwicklung.

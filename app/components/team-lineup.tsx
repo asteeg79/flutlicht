@@ -188,7 +188,8 @@ export function TeamLineup({
       toast.error(change.message);
       return;
     }
-    if (change.lineup === lineup) return;
+    // Kein Tausch (zwei Starter): dann gilt der zweite Tipp als neue Auswahl.
+    if (change.lineup === lineup) return setSelected(id);
     setFx({
       kind: "swap",
       ids: [first, id],
@@ -220,6 +221,12 @@ export function TeamLineup({
     toast(
       `Aufgestellt nach ${autoBy === "form" ? "Form" : "Punkten"} – die beste Elf steht.${lockedIds.length > 0 ? " Fixierte blieben, wo sie sind." : ""}`,
     );
+    if (change.lineup.captain !== lineup.captain) {
+      setStamp({ id: change.lineup.captain, key: nextKey() });
+      toast(
+        `${byId.get(change.lineup.captain)?.shortName} trägt jetzt die Binde – Punkte ×${SCORING.captainMultiplier}.`,
+      );
+    }
     void persist(change.lineup);
   }
 

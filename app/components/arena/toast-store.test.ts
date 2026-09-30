@@ -31,6 +31,20 @@ describe("Toast-Warteschlange", () => {
     expect(timers).toHaveLength(2);
   });
 
+  it("höchstens eine wartet, ein Fehler erscheint sofort", () => {
+    const { store, timers } = setup();
+    store.push("info", "a");
+    store.push("info", "b");
+    store.push("info", "c");
+    timers[0]!.fn();
+    expect(store.current()?.message).toBe("c");
+    store.push("error", "Speichern fehlgeschlagen");
+    expect(store.current()).toMatchObject({ kind: "error" });
+    // Der alte Zeitgeber von „c“ schließt den Fehler nicht vorzeitig.
+    timers[1]!.fn();
+    expect(store.current()).toMatchObject({ kind: "error" });
+  });
+
   it("benachrichtigt Abonnenten", () => {
     const { store } = setup();
     let calls = 0;

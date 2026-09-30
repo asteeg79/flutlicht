@@ -39,15 +39,16 @@ export function HeroHeader({
 }) {
   const sentinel = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState(false);
+  const hasCompact = compact !== undefined;
   useEffect(() => {
     const el = sentinel.current;
-    if (!el || !compact) return;
+    if (!el || !hasCompact) return;
     const io = new IntersectionObserver(([entry]) =>
       setCollapsed(!entry!.isIntersecting && entry!.boundingClientRect.top < 0),
     );
     io.observe(el);
     return () => io.disconnect();
-  }, [compact]);
+  }, [hasCompact]);
 
   return (
     <div className="relative">

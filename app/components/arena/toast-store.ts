@@ -1,5 +1,6 @@
-// Meldungen (Arena 4 „Toast“): eine Warteschlange, gezeigt wird immer die älteste,
-// jede für 2,8 s. So gehen zwei Meldungen nacheinander (Deal + Kapitänswechsel) nicht unter.
+// Meldungen (Arena 4 „Toast“): gezeigt wird eine, jede für 2,8 s. Höchstens eine weitere
+// wartet (Deal + Kapitänswechsel gehen so nicht unter, schnelle Taps stauen sich nicht);
+// ein Fehler verdrängt alles und erscheint sofort.
 
 export type ToastKind = "info" | "error";
 export interface ToastItem {
@@ -31,9 +32,11 @@ export function createToastStore(
   }
 
   function push(kind: ToastKind, message: string) {
-    queue = [...queue, { id: nextId++, kind, message }];
+    const item = { id: nextId++, kind, message };
+    const current = queue[0];
+    queue = kind === "error" || !current ? [item] : [current, item];
     emit();
-    if (queue.length === 1) startCurrent();
+    if (queue[0] === item) startCurrent();
   }
 
   return {

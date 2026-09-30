@@ -5,7 +5,6 @@ const LOOK: Record<ChipKind, string> = {
   paid: "border-karte-tief bg-karte-tief text-white",
   free: "border-lampe bg-lampe text-nacht",
   next: "border-dashed border-karte-hell text-karte-hell",
-  closed: "border-white/35 text-white/75",
 };
 
 /**

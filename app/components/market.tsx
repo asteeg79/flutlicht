@@ -132,6 +132,8 @@ export function Market({
   const [pickId, setPickId] = useState<number | null>(initialPick);
   const [sellId, setSellId] = useState<number | null>(null);
   const [buyId, setBuyId] = useState<number | null>(null);
+  /** Bestätigung kam über „Holen“ (nicht über „Abgeben“): „Zurück“ führt zur Abgabe-Auswahl. */
+  const [fromPick, setFromPick] = useState(false);
   const [busy, setBusy] = useState(false);
   const [pos, setPos] = useState<Position | "ALL">("ALL");
   const [team, setTeam] = useState<number | "ALL">("ALL");
@@ -192,8 +194,10 @@ export function Market({
   const ctx = { players: byId, window: coreWindow };
   const clubName = (p: MarketPlayer) => club.get(p.teamId)?.shortName;
 
-  const activePos = sell ? sell.position : pos;
-  const listKey = `${activePos}|${team}|${sort}|${sell?.id ?? ""}`;
+  // Abgabe-Modus (rotes Banner, Liste gefiltert) nur beim Weg „Abgeben zuerst“.
+  const selling = sell && !fromPick ? sell : undefined;
+  const activePos = selling ? selling.position : pos;
+  const listKey = `${activePos}|${team}|${sort}|${selling?.id ?? ""}`;
   const list = useMemo(() => {
     const q = foldDiacritics(query.trim());
     return players
@@ -201,11 +205,21 @@ export function Market({
         (p) =>
           (activePos === "ALL" || p.position === activePos) &&
           (team === "ALL" || p.teamId === team) &&
-          !(sell && squadIds.includes(p.id)) &&
+          !(selling && squadIds.includes(p.id)) &&
           searchKey.get(p.id)!.includes(q),
       )
       .sort(sorter(sort, stats));
-  }, [players, activePos, team, sell, squadIds, sort, stats, query, searchKey]);
+  }, [
+    players,
+    activePos,
+    team,
+    selling,
+    squadIds,
+    sort,
+    stats,
+    query,
+    searchKey,
+  ]);
 
   const toRow = (p: MarketPlayer): RowPlayer => ({
     id: p.id,
@@ -317,6 +331,13 @@ export function Market({
     setPickId(null);
     setSellId(null);
     setBuyId(null);
+    setFromPick(false);
+  }
+  function backFromConfirm() {
+    if (fromPick && buy) {
+      cancelDeal();
+      setPickId(buy.id);
+    } else setBuyId(null);
   }
 
   async function confirmTransfer() {
@@ -380,14 +401,14 @@ export function Market({
         );
       return <PrimaryAction onClick={() => addToDraft(p)}>Holen</PrimaryAction>;
     }
-    if (sell) {
-      const v = transferViolation(manager, sell.id, p.id, ctx);
+    if (selling) {
+      const v = transferViolation(manager, selling.id, p.id, ctx);
       if (v)
         return (
           <ReasonAction onClick={() => toast(v.message)}>
             {shortReason(v, {
               club: clubName(p),
-              missing: missingCash(manager.cash, sell.price, p.price),
+              missing: missingCash(manager.cash, selling.price, p.price),
             })}
           </ReasonAction>
         );
@@ -546,7 +567,12 @@ export function Market({
   );
 
   // ——— Bausteine ———
-  const hot = draftMode ? [] : hotPlayers(players, inSquad);
+  const hot = draftMode
+    ? []
+    : hotPlayers(
+        players.filter((p) => p.purchasable && p.active),
+        inSquad,
+      );
   const ticker = draftMode ? [] : tickerPlayers(players);
   const onHot = (p: MarketPlayer) => startPick(p);
 
@@ -587,7 +613,7 @@ export function Market({
         </select>
       </div>
       <div className="mt-2.5 flex items-center justify-between gap-2 lg:mt-2">
-        {!sell ? (
+        {!selling ? (
           <div
             role="group"
             aria-label="Position"
@@ -666,10 +692,10 @@ export function Market({
     </div>
   );
 
-  const sellBanner = sell ? (
+  const sellBanner = selling ? (
     <div className="arena-anim mb-3 flex animate-[arena-rise_.3s_ease-out_both] items-center gap-3 bg-karte-tief px-3 py-2.5 text-white lg:px-3.5">
       <PlayerPhoto
-        src={sell.image}
+        src={selling.image}
         className="h-[42px] w-[42px] border-2 border-white lg:h-10 lg:w-10"
       />
       <div className="min-w-0 flex-1">
@@ -677,10 +703,10 @@ export function Market({
           Abgabe · Ersatz gesucht
         </p>
         <p className="truncate font-display text-2xl leading-none font-black uppercase lg:text-[22px]">
-          {sell.lastName}{" "}
+          {selling.lastName}{" "}
           <span className="text-base">
-            · bis {mioNumber(sumPrices([manager.cash, sell.price]))} Mio · nur{" "}
-            {POS_LABEL[sell.position]}
+            · bis {mioNumber(sumPrices([manager.cash, selling.price]))} Mio ·
+            nur {POS_LABEL[selling.position]}
           </span>
         </p>
       </div>
@@ -827,6 +853,7 @@ export function Market({
                       setSellId(q.id);
                       setBuyId(pick.id);
                       setPickId(null);
+                      setFromPick(true);
                     }}
                   >
                     Abgeben
@@ -848,7 +875,7 @@ export function Market({
 
   const confirm =
     sell && buy ? (
-      <Modal labelledBy="deal-title" onClose={() => setBuyId(null)}>
+      <Modal labelledBy="deal-title" onClose={backFromConfirm}>
         <p
           id="deal-title"
           className="text-[11px] font-bold tracking-[0.14em] text-lampe uppercase"
@@ -905,7 +932,7 @@ export function Market({
         <div className="grid grid-cols-[1fr_1.4fr] gap-2">
           <button
             type="button"
-            onClick={() => setBuyId(null)}
+            onClick={backFromConfirm}
             className="h-[50px] border-2 border-white/40 font-display text-xl font-black uppercase"
           >
             Zurück
@@ -1021,7 +1048,7 @@ export function Market({
             main={
               <>
                 {sellBanner}
-                {!desktop && !sell && hot.length > 0 ? (
+                {!desktop && !selling && hot.length > 0 ? (
                   <section className="mt-2 mb-4 -mr-[18px]">
                     <h2 className="mb-2 font-display text-[26px] font-black uppercase">
                       Heiß gerade

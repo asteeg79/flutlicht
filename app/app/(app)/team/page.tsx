@@ -144,14 +144,23 @@ export default async function TeamPage() {
         }
         right={
           lock ? (
-            <HeroCountdown
-              label={lockLabel(lock)}
-              target={lock.at.toISOString()}
-              serverNow={serverNow}
-            />
+            // Desktop: Countdown steht schon in der Seitenleiste.
+            <span className="flex min-w-0 items-center gap-[7px] lg:hidden">
+              <HeroCountdown
+                label={lockLabel(lock)}
+                target={lock.at.toISOString()}
+                serverNow={serverNow}
+              />
+            </span>
           ) : undefined
         }
-        title={manager.teamName}
+        title={
+          <>
+            <span className="lg:hidden">{manager.teamName}</span>
+            {/* Desktop: Teamname steht in der Seitenleiste (Arena 3.2). */}
+            <span className="hidden lg:inline">Aufstellung</span>
+          </>
+        }
         compact={{
           title: manager.teamName,
           right: lock ? (
