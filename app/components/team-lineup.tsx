@@ -103,6 +103,17 @@ export function TeamLineup({
     key: number;
   } | null>(null);
   const [stamp, setStamp] = useState<{ id: number; key: number } | null>(null);
+  // Rote Badges und Schütteln sind Einmal-Rückmeldungen: danach zurück zum Normalzustand.
+  useEffect(() => {
+    if (!badgeError) return;
+    const t = setTimeout(() => setBadgeError(null), 900);
+    return () => clearTimeout(t);
+  }, [badgeError]);
+  useEffect(() => {
+    if (!shake) return;
+    const t = setTimeout(() => setShake(null), 500);
+    return () => clearTimeout(t);
+  }, [shake]);
   const save = useSaveState();
   const now = useServerClock(serverNow);
   const [loadedAt] = useState(() => Date.parse(serverNow));
@@ -329,7 +340,7 @@ export function TeamLineup({
     !isLocked(lineup.captain);
 
   return (
-    <div className={sel ? "pb-80 lg:pb-0" : undefined}>
+    <div className={sel ? "pb-44 lg:pb-0" : undefined}>
       <TwoCol
         main={
           <>
@@ -352,7 +363,7 @@ export function TeamLineup({
               <div
                 role="group"
                 aria-label="Formation wählen"
-                className="grid flex-1 grid-cols-5 gap-1.5 lg:flex-none lg:grid-cols-[repeat(5,88px)]"
+                className="grid flex-1 grid-cols-5 gap-1 lg:flex-none lg:grid-cols-[repeat(5,88px)] lg:gap-1.5"
               >
                 {QUICK_FORMATIONS.map((f) => (
                   <button
@@ -360,7 +371,7 @@ export function TeamLineup({
                     type="button"
                     onClick={() => pickFormation(f)}
                     aria-pressed={lineup.formation === f}
-                    className={`slant h-11 font-display text-lg font-black min-[400px]:text-xl lg:text-[22px] ${
+                    className={`slant h-11 font-display text-[clamp(12px,4.3vw,20px)] font-black whitespace-nowrap lg:text-[22px] ${
                       lineup.formation === f
                         ? "bg-lampe text-nacht"
                         : "bg-surface text-muted"
@@ -497,10 +508,10 @@ function Selection({
   const role = POSITION_LABELS[player.position];
   return (
     <>
-      <div className="flex items-center gap-3.5">
+      <div className="flex items-center gap-3 lg:gap-3.5">
         <PlayerPhoto
           src={player.image}
-          className="h-[72px] w-[72px] border-[3px] border-lampe lg:h-16 lg:w-16"
+          className="h-12 w-12 border-[3px] border-lampe lg:h-16 lg:w-16"
         />
         <div className="min-w-0 flex-1">
           <p className="text-[11px] font-bold tracking-[0.14em] text-lampe uppercase">
@@ -508,7 +519,7 @@ function Selection({
           </p>
           <p
             id="selected-player"
-            className="mt-0.5 truncate font-display text-[34px] leading-[0.92] font-black uppercase lg:text-[30px]"
+            className="mt-0.5 truncate font-display text-[26px] leading-[0.92] font-black uppercase lg:text-[30px]"
           >
             {player.name}
           </p>
@@ -522,10 +533,17 @@ function Selection({
                 ? " · fixiert"
                 : ` · fixiert ab ${formatWeekdayTime(player.lockAt)}`
               : ""}
+            <Link
+              href={`/spieler/${player.id}`}
+              className="ml-auto shrink-0 font-semibold text-lampe lg:hidden"
+            >
+              Profil →
+            </Link>
           </p>
         </div>
       </div>
-      <div className="mt-3.5 mb-3 grid grid-cols-3 gap-1.5">
+      {/* Kacheln und Hinweis nur auf dem Desktop: mobil soll das Spielfeld sichtbar bleiben. */}
+      <div className="mt-3.5 mb-3 hidden grid-cols-3 gap-1.5 lg:grid">
         <div className={tile}>
           <p className={tileLabel}>
             {latest ? `${latest.matchday}. Spieltag` : "Zuletzt"}
@@ -549,7 +567,7 @@ function Selection({
           </p>
         </div>
       </div>
-      <p className="mb-3 text-[13px] font-medium opacity-85">
+      <p className="mb-3 hidden text-[13px] font-medium opacity-85 lg:block">
         Tippe einen gelb markierten Spieler an, um zu tauschen.{" "}
         <Link
           href={`/spieler/${player.id}`}
@@ -558,12 +576,12 @@ function Selection({
           Spielerprofil →
         </Link>
       </p>
-      <div className="flex gap-2">
+      <div className="mt-3 flex gap-2 lg:mt-0">
         {canCap ? (
           <button
             type="button"
             onClick={onCaptain}
-            className="slant h-12 flex-[1.4] bg-lampe font-display text-xl font-black text-nacht uppercase lg:h-11 lg:text-[19px]"
+            className="slant h-11 flex-[1.4] bg-lampe font-display text-lg font-black text-nacht uppercase lg:text-[19px]"
           >
             Zum Kapitän
           </button>
@@ -571,7 +589,7 @@ function Selection({
         <button
           type="button"
           onClick={onCancel}
-          className="h-12 flex-1 border-2 border-white/40 font-display text-xl font-black uppercase lg:h-11 lg:text-[19px]"
+          className="h-11 flex-1 border-2 border-white/40 font-display text-lg font-black uppercase lg:text-[19px]"
         >
           Abbrechen
         </button>

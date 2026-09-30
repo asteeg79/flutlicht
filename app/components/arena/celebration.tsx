@@ -79,8 +79,8 @@ export function Celebration({
         </div>
       ) : null}
       <div className="relative h-32 w-32">
-        <span className="absolute top-1/2 left-1/2 h-32 w-32 -translate-1/2 animate-[arena-burst_1s_.2s_ease-out_both] rounded-full border-4 border-lampe" />
-        <span className="absolute top-1/2 left-1/2 h-32 w-32 -translate-1/2 animate-[arena-burst_1.1s_.45s_ease-out_both] rounded-full border-[3px] border-white" />
+        <span className="absolute top-1/2 left-1/2 h-32 w-32 animate-[arena-burst_1s_.2s_ease-out_both] rounded-full border-4 border-lampe" />
+        <span className="absolute top-1/2 left-1/2 h-32 w-32 animate-[arena-burst_1.1s_.45s_ease-out_both] rounded-full border-[3px] border-white" />
         {SHARDS.map((s, i) => (
           <span
             key={i}

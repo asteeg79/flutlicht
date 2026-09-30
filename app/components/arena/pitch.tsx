@@ -88,60 +88,68 @@ export function PlayerToken({
       aria-label={ariaLabel}
       data-testid="player-token"
       style={{ "--s": scale } as CSSProperties}
-      className={`arena-anim flex w-20 scale-(--s) flex-col items-center gap-[5px] transition-opacity duration-200 lg:w-[110px] lg:scale-100 lg:gap-1.5 ${dimmed ? "opacity-[0.38]" : ""}`}
+      className={`arena-anim w-20 scale-(--s) transition-opacity duration-200 lg:w-[110px] lg:scale-100 ${dimmed ? "opacity-[0.38]" : ""}`}
     >
+      {/* Eigene Ebene fürs Einploppen: der Knopf trägt schon die Perspektiv-Skalierung. */}
       <span
-        key={anim ? `${anim.kind}${anim.key}` : "still"}
+        key={anim?.kind === "pop" ? `pop${anim.key}` : "still"}
         style={
           anim?.kind === "pop"
             ? { animationDelay: `${anim.delay}ms` }
             : undefined
         }
-        className={`arena-anim relative h-[54px] w-[54px] rounded-full border-[3px] bg-bg lg:h-[70px] lg:w-[70px] ${ring} ${animClass(anim)}`}
+        className={`arena-anim flex flex-col items-center gap-[5px] lg:gap-1.5 ${anim?.kind === "pop" ? animClass(anim) : ""}`}
       >
-        <PlayerPhoto src={player.image} className="h-full w-full" />
-        <img
-          src={player.clubLogo}
-          alt=""
-          className="absolute -bottom-1 -left-1.5 h-5 w-5 rounded-full bg-white p-0.5 lg:h-6 lg:w-6"
-        />
-        <PosBadge
-          label={player.posLabel}
-          state={posState}
-          errorKey={posErrorKey}
-          className="absolute -right-3.5 -bottom-[3px] lg:-right-4 lg:text-[13px]"
-        />
-        {points !== null ? (
-          <span
-            className={`slant-sm absolute -top-1.5 -right-3 flex h-5 min-w-6 items-center justify-center px-[5px] font-display text-sm font-black lg:h-[22px] lg:min-w-7 lg:text-[15px] ${pointsLook(points)}`}
-          >
-            {points < 0 ? `−${-points}` : points}
-          </span>
-        ) : null}
-        {captain ? (
-          <span
-            key={captainStampKey}
-            className={`arena-anim absolute -top-[7px] -left-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-lampe font-display text-sm font-black text-nacht shadow-[0_0_12px_rgb(255_213_74/0.8)] lg:h-[26px] lg:w-[26px] lg:text-base ${captainStampKey ? "animate-[arena-stamp_.6s_cubic-bezier(.2,1.3,.4,1)_both]" : ""}`}
-          >
-            C
-          </span>
-        ) : null}
-      </span>
-      <span
-        className={`slant flex max-w-full items-center gap-1 overflow-hidden px-[9px] pt-0.5 pb-px font-display text-sm leading-4 font-extrabold tracking-[0.03em] whitespace-nowrap uppercase lg:px-2.5 lg:text-base lg:leading-[18px] ${selected ? "bg-lampe text-nacht" : "bg-plate-bg text-white"}`}
-      >
-        {locked ? (
-          <Lock
-            key={lockSnapKey}
-            aria-hidden
-            strokeWidth={2.6}
-            className={`arena-anim h-[11px] w-[11px] shrink-0 origin-[50%_60%] ${lockSnapKey ? "animate-[arena-snap_.55s_cubic-bezier(.2,1.3,.4,1)_both]" : ""}`}
+        <span
+          key={
+            anim && anim.kind !== "pop" ? `${anim.kind}${anim.key}` : "still"
+          }
+          className={`arena-anim relative h-[54px] w-[54px] rounded-full border-[3px] bg-bg lg:h-[70px] lg:w-[70px] ${ring} ${anim?.kind === "pop" ? "" : animClass(anim)}`}
+        >
+          <PlayerPhoto src={player.image} className="h-full w-full" />
+          <img
+            src={player.clubLogo}
+            alt=""
+            className="absolute -bottom-1 -left-1.5 h-5 w-5 rounded-full bg-white p-0.5 lg:h-6 lg:w-6"
           />
-        ) : null}
-        <span className="truncate">{player.lastName}</span>
-      </span>
-      <span className="text-[11px] leading-3 font-semibold whitespace-nowrap text-white/95 [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] lg:text-xs lg:leading-[13px]">
-        {sub}
+          <PosBadge
+            label={player.posLabel}
+            state={posState}
+            errorKey={posErrorKey}
+            className="absolute -right-3.5 -bottom-[3px] lg:-right-4 lg:text-[13px]"
+          />
+          {points !== null ? (
+            <span
+              className={`slant-sm absolute -top-1.5 -right-3 flex h-5 min-w-6 items-center justify-center px-[5px] font-display text-sm font-black lg:h-[22px] lg:min-w-7 lg:text-[15px] ${pointsLook(points)}`}
+            >
+              {points < 0 ? `−${-points}` : points}
+            </span>
+          ) : null}
+          {captain ? (
+            <span
+              key={captainStampKey}
+              className={`arena-anim absolute -top-[7px] -left-2 flex h-[22px] w-[22px] items-center justify-center rounded-full bg-lampe font-display text-sm font-black text-nacht shadow-[0_0_12px_rgb(255_213_74/0.8)] lg:h-[26px] lg:w-[26px] lg:text-base ${captainStampKey ? "animate-[arena-stamp_.6s_cubic-bezier(.2,1.3,.4,1)_both]" : ""}`}
+            >
+              C
+            </span>
+          ) : null}
+        </span>
+        <span
+          className={`slant flex max-w-full items-center gap-1 overflow-hidden px-[9px] pt-0.5 pb-px font-display text-sm leading-4 font-extrabold tracking-[0.03em] whitespace-nowrap uppercase lg:px-2.5 lg:text-base lg:leading-[18px] ${selected ? "bg-lampe text-nacht" : "bg-plate-bg text-white"}`}
+        >
+          {locked ? (
+            <Lock
+              key={lockSnapKey}
+              aria-hidden
+              strokeWidth={2.6}
+              className={`arena-anim h-[11px] w-[11px] shrink-0 origin-[50%_60%] ${lockSnapKey ? "animate-[arena-snap_.55s_cubic-bezier(.2,1.3,.4,1)_both]" : ""}`}
+            />
+          ) : null}
+          <span className="truncate">{player.lastName}</span>
+        </span>
+        <span className="text-[11px] leading-3 font-semibold whitespace-nowrap text-white/95 [text-shadow:0_1px_2px_rgb(0_0_0/0.6)] lg:text-xs lg:leading-[13px]">
+          {sub}
+        </span>
       </span>
     </button>
   );
@@ -243,17 +251,16 @@ export function BenchCard({
       aria-pressed={selected}
       aria-label={ariaLabel}
       data-testid="bench-card"
-      className={`arena-anim flex min-h-11 flex-col items-center gap-1.5 border-2 bg-surface px-1 pt-2.5 pb-[9px] text-text transition-opacity duration-200 lg:flex-row lg:gap-2.5 lg:p-2.5 lg:text-left ${selected ? "border-lampe" : "border-line"} ${dimmed ? "opacity-[0.38]" : ""}`}
+      key={anim?.kind === "pop" ? `pop${anim.key}` : "still"}
+      style={
+        anim?.kind === "pop" ? { animationDelay: `${anim.delay}ms` } : undefined
+      }
+      className={`arena-anim flex min-h-11 flex-col items-center gap-1.5 border-2 bg-surface px-1 pt-2.5 pb-[9px] text-text transition-opacity duration-200 lg:flex-row lg:gap-2.5 lg:p-2.5 lg:text-left ${selected ? "border-lampe" : "border-line"} ${dimmed ? "opacity-[0.38]" : ""} ${anim?.kind === "pop" ? animClass(anim) : ""}`}
     >
       <span className="lg:hidden">{slotLabel}</span>
       <span
-        key={anim ? `${anim.kind}${anim.key}` : "still"}
-        style={
-          anim?.kind === "pop"
-            ? { animationDelay: `${anim.delay}ms` }
-            : undefined
-        }
-        className={`arena-anim relative h-[42px] w-[42px] shrink-0 lg:h-11 lg:w-11 ${animClass(anim)}`}
+        key={anim && anim.kind !== "pop" ? `${anim.kind}${anim.key}` : "still"}
+        className={`arena-anim relative h-[42px] w-[42px] shrink-0 lg:h-11 lg:w-11 ${anim?.kind === "pop" ? "" : animClass(anim)}`}
       >
         <PlayerPhoto src={player.image} className="h-full w-full" />
         <PosBadge

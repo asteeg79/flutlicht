@@ -49,6 +49,13 @@ export function HeroHeader({
     io.observe(el);
     return () => io.disconnect();
   }, [hasCompact]);
+  // Für andere feste Elemente (Speichern-Pille): ist die kompakte Leiste zu sehen?
+  useEffect(() => {
+    const html = document.documentElement;
+    if (collapsed) html.dataset.compact = "";
+    else delete html.dataset.compact;
+    return () => void delete html.dataset.compact;
+  }, [collapsed]);
 
   return (
     <div className="relative">
