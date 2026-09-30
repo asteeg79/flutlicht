@@ -24,6 +24,24 @@ const NEW_PASSWORD = "flutlicht-aus";
 
 test.describe.configure({ mode: "serial" });
 
+test("Anleitung ohne Konto lesen: Login → Kapitel → Zurück schließt", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByRole("link", { name: "Wie läuft Flutlicht?" }).click();
+  await expect(page).toHaveURL(/\/login\?anleitung=idee$/);
+  const guide = page.getByTestId("guide");
+  await expect(guide).toBeVisible();
+  await guide.getByRole("button", { name: "Weiter: Startklar" }).click();
+  await expect(page).toHaveURL(/anleitung=start$/);
+  await guide.getByRole("button", { name: "Punkte", exact: true }).click();
+  await expect(guide.getByRole("heading", { name: "Punkte" })).toBeVisible();
+  // Kapitelwechsel ersetzen den Verlaufseintrag: ein Zurück schließt den Dialog.
+  await page.goBack();
+  await expect(guide).toHaveCount(0);
+  await expect(page).toHaveURL(/\/login$/);
+});
+
 test("Registrieren mit Einladungscode, ungültiger Code wird abgewiesen", async ({
   page,
 }) => {
@@ -41,6 +59,12 @@ test("Registrieren mit Einladungscode, ungültiger Code wird abgewiesen", async 
 
   await page.getByLabel("Einladungscode").fill("e2e2test");
   await page.getByRole("button", { name: "Konto anlegen" }).click();
+  // Erster Besuch: Die Anleitung öffnet sich einmal von selbst, Esc schließt sie.
+  await expect(page).toHaveURL(/\/team\?anleitung=idee$/);
+  const guide = page.getByRole("dialog", { name: "Die Idee" });
+  await expect(guide).toBeVisible();
+  await page.keyboard.press("Escape");
+  await expect(guide).toHaveCount(0);
   await expect(page).toHaveURL(/\/team$/);
   await expect(
     page.getByRole("heading", { name: "Flutlicht FC" }),

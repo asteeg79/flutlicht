@@ -6,7 +6,7 @@ const FOCUSABLE =
   'button:not([disabled]), [href], input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
 
 /** Fokus hinein beim Öffnen, Esc schließt, beim Schließen Fokus zurück (Arena 9). */
-function useDialogFocus(onClose: () => void) {
+export function useDialogFocus(onClose: () => void) {
   const ref = useRef<HTMLDivElement>(null);
   const close = useRef(onClose);
   useEffect(() => {

@@ -43,6 +43,7 @@ export default async function TeamPage() {
     return (
       <>
         <HeroHeader
+          guide={{ chapter: "start", label: "So baust du deinen Kader" }}
           tag={`Gewertet ab Spieltag ${manager.firstMatchday}`}
           title={manager.teamName}
           compact={{ title: manager.teamName }}
@@ -137,6 +138,10 @@ export default async function TeamPage() {
   return (
     <>
       <HeroHeader
+        guide={{
+          chapter: "aufstellung",
+          label: "So funktionieren Aufstellung und Kapitän",
+        }}
         tag={
           matchday === null
             ? "Saison beendet"

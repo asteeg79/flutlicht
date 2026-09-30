@@ -4,6 +4,8 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { activeNavIndex, NAV_ITEMS } from "@/components/arena/nav-items";
 import { CountdownText } from "@/components/arena/countdown";
+import { GuideLink } from "@/components/guide/guide-link";
+import { CircleHelp } from "lucide-react";
 import { PulseDot } from "@/components/arena/slant-tag";
 
 export interface SideInfo {
@@ -71,6 +73,13 @@ export function SideNav({ info }: { info: SideInfo }) {
           </Link>
         ))}
       </nav>
+      <GuideLink
+        chapter="idee"
+        className="mx-3 mt-3 flex min-h-11 items-center gap-3.5 px-3.5 text-sm font-semibold text-kreide-matt hover:text-kreide"
+      >
+        <CircleHelp aria-hidden className="h-[22px] w-[22px]" strokeWidth={2} />
+        Anleitung
+      </GuideLink>
       {info.lock ? (
         <div className="mt-auto border-t border-white/10 px-6 pt-[18px] pb-[22px]">
           <p className="flex items-center gap-2 text-[11px] font-bold tracking-[0.14em] text-kreide-matt uppercase">

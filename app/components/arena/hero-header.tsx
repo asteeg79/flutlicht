@@ -2,6 +2,8 @@
 
 import { useEffect, useRef, useState, type ReactNode } from "react";
 import { SlantTag, type TagVariant } from "@/components/arena/slant-tag";
+import { GuideHelpButton } from "@/components/guide/guide-link";
+import type { GuideChapterId } from "@/lib/guide";
 
 export interface CompactInfo {
   title: string;
@@ -25,6 +27,7 @@ export function HeroHeader({
   compact,
   children,
   board = "row",
+  guide,
 }: {
   tag?: ReactNode;
   tagVariant?: TagVariant;
@@ -36,6 +39,8 @@ export function HeroHeader({
   children?: ReactNode;
   /** Tafel mobil als Zeile ohne Kacheln oder als Kachel-Raster; Desktop immer rechts. */
   board?: "row" | "grid";
+  /** Kapitel der Anleitung für das „?“ neben dem Titel. */
+  guide?: { chapter: GuideChapterId; label: string };
 }) {
   const sentinel = useRef<HTMLDivElement>(null);
   const [collapsed, setCollapsed] = useState(false);
@@ -83,9 +88,14 @@ export function HeroHeader({
                 ) : null}
               </div>
             ) : null}
-            <h1 className="truncate font-display text-[36px] leading-[0.95] font-black uppercase lg:text-5xl lg:leading-[0.9]">
-              {title}
-            </h1>
+            <div className="flex items-center gap-1">
+              <h1 className="truncate font-display text-[36px] leading-[0.95] font-black uppercase lg:text-5xl lg:leading-[0.9]">
+                {title}
+              </h1>
+              {guide ? (
+                <GuideHelpButton chapter={guide.chapter} label={guide.label} />
+              ) : null}
+            </div>
           </div>
           {children ? (
             <div

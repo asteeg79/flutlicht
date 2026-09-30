@@ -454,6 +454,7 @@ export function Market({
   const cash = cashShown ?? manager.cash;
   const hero = draftMode ? (
     <HeroHeader
+      guide={{ chapter: "start", label: "So baust du deinen Kader" }}
       tag="Erstkader"
       right={
         <>
@@ -510,6 +511,10 @@ export function Market({
     </HeroHeader>
   ) : (
     <HeroHeader
+      guide={{
+        chapter: "transfers",
+        label: "So funktionieren Markt und Transfers",
+      }}
       tag={canTrade ? "Fenster offen" : "Fenster zu"}
       tagVariant={canTrade ? "hero" : "off"}
       right={
