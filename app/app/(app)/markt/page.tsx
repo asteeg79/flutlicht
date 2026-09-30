@@ -17,8 +17,15 @@ import { liveContext, publicManager } from "@/lib/squad";
 
 export const metadata = { title: "Markt" };
 
-export default async function MarketPage() {
-  const manager = await currentManager();
+export default async function MarketPage({
+  searchParams,
+}: {
+  searchParams: Promise<{ holen?: string }>;
+}) {
+  const [manager, { holen }] = await Promise.all([
+    currentManager(),
+    searchParams,
+  ]);
   const ctx = liveContext();
   const w = transferWindow(ctx.fixtures, ctx.finals, ctx.now);
   const window: MarketWindow = w.open
@@ -75,6 +82,7 @@ export default async function MarketPage() {
       budget={gameData.season.startBudget}
       window={window}
       serverNow={ctx.now.toISOString()}
+      initialPick={holen && w.open ? Number(holen) : null}
     />
   );
 }

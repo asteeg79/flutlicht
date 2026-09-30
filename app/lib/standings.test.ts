@@ -167,9 +167,31 @@ describe("leagueTable", () => {
     ]);
     expect(t.winners[9]).toEqual({
       matchday: 9,
+      ids: [tom.userId, ida.userId],
       names: ["Tom", "Ida"],
       points: 7,
     });
+  });
+});
+
+describe("leagueTable: Bewegung ▲/▼", () => {
+  const md = (matchday: number, id: string, base: number): MatchdayPoints => {
+    const p = points("final");
+    return { ...p, matchday, players: { [id]: { ...p.players["1"]!, base } } };
+  };
+  it("vergleicht mit der Tabelle ohne den letzten gewerteten Spieltag", () => {
+    // Tom: Kapitän 31 (ST); Ida: Kapitän 1 (TW). Spieltag 9 gewinnt Tom, 10 Ida deutlich.
+    const idaCap = { ...ida, lineup: { ...lineup, captain: 1 } };
+    const g = { ...game("final"), points: [md(9, "31", 10), md(10, "1", 30)] };
+    const t = leagueTable([tom, idaCap], g);
+    const by = new Map(t.rows.map((r) => [r.displayName, r]));
+    expect(by.get("Ida")).toMatchObject({ rank: 1, movement: 1 });
+    expect(by.get("Tom")).toMatchObject({ rank: 2, movement: -1 });
+  });
+
+  it("ohne Vorspieltag keine Bewegung", () => {
+    const t = leagueTable([tom, ida], game("final"));
+    expect(t.rows.every((r) => r.movement === null)).toBe(true);
   });
 });
 

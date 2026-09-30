@@ -95,6 +95,8 @@ interface Props {
   budget: number;
   window: MarketWindow;
   serverNow: string;
+  /** Aus dem Spielerprofil: „Holen“ öffnet gleich „Wen gibst du ab?“. */
+  initialPick?: number | null;
 }
 
 const GROUP_TITLE: Record<Position, string> = {
@@ -120,13 +122,14 @@ export function Market({
   budget,
   window,
   serverNow,
+  initialPick = null,
 }: Props) {
   const router = useRouter();
   const desktop = useMediaQuery(DESKTOP);
   const [manager, setManager] = useState(initialManager);
   const [draft, setDraft] = useState<number[]>([]);
   const [tab, setTab] = useState<"markt" | "kader">("markt");
-  const [pickId, setPickId] = useState<number | null>(null);
+  const [pickId, setPickId] = useState<number | null>(initialPick);
   const [sellId, setSellId] = useState<number | null>(null);
   const [buyId, setBuyId] = useState<number | null>(null);
   const [busy, setBusy] = useState(false);

@@ -20,6 +20,7 @@
   --color-karte-hell: #ff7a61;
   /* Plus auf dunklem Grund (Sheets, Tafel). */
   --color-gruen-hell: #6fdc8c;
+  --color-bronze: #c98a4b;
 
   --font-display: var(--font-big-shoulders), "Arial Narrow", sans-serif;
   --font-sans: var(--font-sans-body), system-ui, sans-serif;
@@ -81,6 +82,12 @@
   --color-down: var(--down);
   --color-urgent: var(--urgent);
   --color-me-row: var(--me-row);
+  --color-podium-2: var(--podium-2);
+  --color-podium-2-text: var(--podium-2-text);
+  --color-relegation: var(--relegation);
+  --color-word-accent: var(--word-accent);
+  --color-win-bg: var(--win-bg);
+  --color-win-text: var(--win-text);
 }
 
 :root,
@@ -142,6 +149,20 @@
   --down: #ff7a61;
   --urgent: #ff6a4d;
   --me-row: rgb(255 213 74 / 0.12);
+  --podium-2: #c9d3cf;
+  --podium-2-text: #0a141c;
+  --relegation: #f0a04b;
+  --word-accent: #ffd54a;
+  --win-bg: transparent;
+  --win-text: #ffd54a;
+  --login-bg:
+    radial-gradient(70% 45% at 0% 0%, rgb(255 213 74 / 0.35), transparent 70%),
+    radial-gradient(
+      60% 40% at 100% 0%,
+      rgb(255 244 214 / 0.18),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #0a141c 0%, #0f1c26 55%, #1d4a2a 100%);
 }
 
 [data-theme="light"] {
@@ -202,6 +223,13 @@
   --down: #c8412b;
   --urgent: #b3261e;
   --me-row: rgb(255 213 74 / 0.35);
+  --podium-2: #0f1c26;
+  --podium-2-text: #ffd54a;
+  --relegation: #e08a2e;
+  --word-accent: #ffffff;
+  --win-bg: #ffd54a;
+  --win-text: #0f1c26;
+  --login-bg: linear-gradient(174deg, #ffd54a 0%, #ffcb2e 56%, #f2efe6 56.2%);
 }
 
 html {
@@ -241,6 +269,11 @@ body {
     0 100%
   );
 }
+/* Anmeldung: Flutlicht über dem Rasen (dunkel) bzw. Gelb mit schrägem Schnitt (hell). */
+@utility login-bg {
+  background: var(--login-bg);
+  color: var(--hero-text);
+}
 /* Kopfbereich: Flutlicht-Verlauf (dunkel) bzw. Lampengelb (hell). */
 @utility hero-bg {
   background: var(--hero-bg);
@@ -266,51 +299,6 @@ body {
 }
 .pitch-light {
   background: var(--pitch-light);
-}
-
-/* Blick von der Tribüne: Lichtkegel zweier Masten über dem Nachthimmel. */
-.flutlicht {
-  background:
-    radial-gradient(60% 45% at 12% 0%, rgb(255 213 74 / 0.22), transparent 70%),
-    radial-gradient(
-      60% 45% at 88% 0%,
-      rgb(255 244 214 / 0.16),
-      transparent 70%
-    ),
-    linear-gradient(180deg, #0b1620 0%, var(--color-nacht) 60%);
-}
-
-/* Rasen mit Mähstreifen, perspektivisch nach hinten kippend. */
-.maehstreifen {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--color-rasen) 0 56px,
-    var(--color-rasen-hell) 56px 112px
-  );
-  /* Kippt von der Seitenlinie (oben) zum Betrachter hin. */
-  transform: perspective(700px) rotateX(38deg);
-  transform-origin: 50% 0%;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .flutlicht-an {
-    animation: flutlicht-an 1.2s ease-out both;
-  }
-  @keyframes flutlicht-an {
-    0%,
-    30% {
-      opacity: 0.25;
-    }
-    35% {
-      opacity: 0.6;
-    }
-    40% {
-      opacity: 0.35;
-    }
-    100% {
-      opacity: 1;
-    }
-  }
 }
 
 /*

@@ -38,8 +38,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="font-display text-3xl font-extrabold uppercase">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3.5" noValidate>
+      <h1 className="font-display text-[34px] leading-none font-black uppercase">
         Konto anlegen
       </h1>
       <Field

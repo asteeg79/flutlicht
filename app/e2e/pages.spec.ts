@@ -69,7 +69,7 @@ test("Einstellungen zeigen die Push-Benachrichtigungen", async ({ page }) => {
   await page.getByRole("link", { name: "Optionen", exact: true }).click();
   const push = page.getByRole("region", { name: "Benachrichtigungen" });
   await expect(
-    push.getByRole("heading", { name: "Push-Benachrichtigungen" }),
+    push.getByRole("heading", { name: "Push auf diesem Gerät" }),
   ).toBeVisible();
   await expect(
     push.getByRole("switch", { name: "Push-Benachrichtigungen" }),
@@ -111,4 +111,26 @@ test("Admin erzeugt einen Einladungscode, ein neuer Manager registriert sich dam
   // Spieler ohne Admin-Rolle sehen /admin nicht.
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Admin" })).toHaveCount(0);
+});
+
+test("Darstellung: Hell und Dunkel schalten sofort um und bleiben nach dem Neuladen", async ({
+  page,
+}) => {
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
+  const html = page.locator("html");
+  await page.getByRole("radio", { name: "Hell" }).click();
+  await expect(html).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("radio", { name: "Hell" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await page.getByRole("radio", { name: "Dunkel" }).click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("radio", { name: "System" }).click();
+  await expect(page.getByRole("radio", { name: "System" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
 });

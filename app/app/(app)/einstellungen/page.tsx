@@ -1,11 +1,11 @@
 import Link from "next/link";
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
+import { ThemePicker } from "@/components/arena/theme-picker";
 import { PushSettings } from "@/components/push-settings";
-import { APP_COMMIT, APP_VERSION, formatVersion } from "@/lib/version";
-import { Button } from "@/components/ui";
 import { signOut } from "@/lib/auth";
 import { currentManager } from "@/lib/session";
+import { APP_COMMIT, APP_VERSION, formatVersion } from "@/lib/version";
 
 export const metadata = { title: "Einstellungen" };
 
@@ -14,51 +14,75 @@ async function logout() {
   await signOut({ redirectTo: "/login" });
 }
 
+const H2 = "mb-2 font-display text-2xl font-black uppercase";
+
 export default async function SettingsPage() {
   const manager = await currentManager();
+  const account = [
+    ["Anzeigename", manager.displayName],
+    ["E-Mail", manager.email],
+    ["Team", manager.teamName],
+  ];
   return (
     <>
-      <HeroHeader title="Einstellungen" compact={{ title: "Einstellungen" }} />
+      <HeroHeader title="Optionen" compact={{ title: "Optionen" }}>
+        <p className="text-[13px] font-semibold text-hero-muted">
+          {manager.displayName} · {manager.teamName}
+        </p>
+      </HeroHeader>
       <PageBody>
-        <section className="mb-8 rounded-xl border border-line bg-surface p-4">
-          <h2 className="mb-3 text-sm font-semibold text-muted">Konto</h2>
-          <dl className="space-y-2">
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted">Anzeigename</dt>
-              <dd>{manager.displayName}</dd>
-            </div>
-            <div className="flex justify-between gap-4">
-              <dt className="text-muted">E-Mail</dt>
-              <dd className="truncate">{manager.email}</dd>
-            </div>
-          </dl>
-        </section>
-        <PushSettings initialPrefs={manager.push?.prefs ?? null} />
-        <form action={logout} className="mb-8">
-          <Button type="submit" variant="secondary">
-            Abmelden
-          </Button>
-        </form>
-        <nav className="flex flex-col gap-3 text-sm">
-          {manager.role === "admin" ? (
+        <div className="flex flex-col gap-5 lg:max-w-[720px]">
+          <section>
+            <h2 className={H2}>Konto</h2>
+            <dl className="bg-surface px-3.5 py-1">
+              {account.map(([label, value], i) => (
+                <div
+                  key={label}
+                  className={`flex justify-between gap-3 py-2.5 text-sm ${i > 0 ? "border-t border-line" : ""}`}
+                >
+                  <dt className="text-muted">{label}</dt>
+                  <dd className="truncate font-semibold">{value}</dd>
+                </div>
+              ))}
+            </dl>
+          </section>
+          <section>
+            <h2 className={H2}>Darstellung</h2>
+            <ThemePicker />
+          </section>
+          <section>
+            <h2 className={H2}>Benachrichtigungen</h2>
+            <PushSettings initialPrefs={manager.push?.prefs ?? null} />
+          </section>
+          <section className="flex flex-col gap-3.5">
+            <form action={logout}>
+              <button
+                type="submit"
+                className="h-[50px] w-full border-2 border-text font-display text-xl font-black uppercase"
+              >
+                Abmelden
+              </button>
+            </form>
+            {manager.role === "admin" ? (
+              <Link
+                href="/admin"
+                className="text-[13px] font-semibold text-accent underline-offset-4 hover:underline"
+              >
+                Admin
+              </Link>
+            ) : null}
             <Link
-              href="/admin"
-              className="text-accent underline-offset-4 hover:underline"
+              href="/impressum"
+              className="text-[13px] font-semibold text-muted underline-offset-4 hover:underline"
             >
-              Admin
+              Impressum und Datenschutz
             </Link>
-          ) : null}
-          <Link
-            href="/impressum"
-            className="text-muted underline-offset-4 hover:underline"
-          >
-            Impressum und Datenschutz
-          </Link>
-          <p className="text-xs text-muted/70">
-            Version {formatVersion(APP_VERSION)} · {APP_COMMIT} · gebaut{" "}
-            {process.env.NEXT_PUBLIC_BUILD_DATE}
-          </p>
-        </nav>
+            <p className="text-[11px] font-medium text-muted opacity-80">
+              Version {formatVersion(APP_VERSION)} · {APP_COMMIT} · gebaut{" "}
+              {process.env.NEXT_PUBLIC_BUILD_DATE}
+            </p>
+          </section>
+        </div>
       </PageBody>
     </>
   );

@@ -81,6 +81,11 @@ export interface TableRow {
   wins: number;
   best: number;
   byMatchday: Record<number, number>;
+  /**
+   * Platzänderung durch den letzten gewerteten Spieltag (positiv = aufgestiegen);
+   * null, solange es keinen Vorspieltag zum Vergleich gibt.
+   */
+  movement: number | null;
 }
 
 export interface LeagueTable {
@@ -88,7 +93,7 @@ export interface LeagueTable {
   /** Spieltag → Anzeigenamen der Sieger (nur finale Spieltage). */
   winners: Record<
     number,
-    { matchday: number; names: string[]; points: number }
+    { matchday: number; ids: string[]; names: string[]; points: number }
   >;
   matchdays: { matchday: number; status: MatchdayPoints["status"] }[];
 }
@@ -103,17 +108,38 @@ export function leagueTable(
   const statusOf = new Map(game.points.map((p) => [p.matchday, p.status]));
   const { rows, winners } = standings(scores, statusOf);
   const byId = new Map(managers.map((m) => [m.userId, m]));
+  // Bewegung ▲/▼: dieselbe Tabelle ohne den letzten gewerteten Spieltag.
+  const scored = game.points
+    .filter((p) => isScoredMatchday(p.matchday, first))
+    .map((p) => p.matchday);
+  const last = scored.at(-1);
+  const before =
+    scored.length >= 2
+      ? new Map(
+          standings(
+            new Map(
+              [...scores].map(([id, byMd]) => [
+                id,
+                new Map([...byMd].filter(([md]) => md !== last)),
+              ]),
+            ),
+            new Map([...statusOf].filter(([md]) => md !== last)),
+          ).rows.map((r) => [r.userId, r.rank]),
+        )
+      : null;
   return {
     rows: rows.map((r) => ({
       ...r,
       displayName: byId.get(r.userId)?.displayName ?? "?",
       teamName: byId.get(r.userId)?.teamName ?? "?",
+      movement: before ? (before.get(r.userId) ?? r.rank) - r.rank : null,
     })),
     winners: Object.fromEntries(
       Object.entries(winners).map(([md, ids]) => [
         md,
         {
           matchday: Number(md),
+          ids,
           names: ids.map((id) => byId.get(id)?.displayName ?? "?"),
           points: scores.get(ids[0]!)?.get(Number(md))?.total ?? 0,
         },
