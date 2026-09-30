@@ -78,7 +78,7 @@ cp deploy/flutlicht-scraper.{service,timer} ~/.config/systemd/user/
 systemctl --user daemon-reload
 systemctl --user enable --now flutlicht-scraper.timer
 sudo loginctl enable-linger "$USER"      # läuft auch ohne Anmeldung
-journalctl --user -u flutlicht-scraper -f  # Log
+journalctl --user-unit flutlicht-scraper -f   # Log (Benutzer in der Gruppe adm)
 ```
 
 **3b. Timer auf dem Mac (launchd):**

@@ -13,7 +13,7 @@ Ein Meilenstein gilt als erledigt, wenn seine Abnahmekriterien (KONZEPT.md Absch
 - [x] M8 · Punkte, Spieltag, Tabelle
 - [ ] M9 · Push & Taktgeber (Code fertig, Worker läuft; offen: Push-Test auf den Geräten)
 - [x] M10 · Admin
-- [ ] M11 · Heim-Rechner-Betrieb & Go-live (Code und Doku fertig; offen: Einrichtung des Heim-Rechners, Go-live-Checkliste, realer Spieltag im Schattenbetrieb, danach `reuse/` löschen)
+- [ ] M11 · Heim-Rechner-Betrieb & Go-live (Code, Doku und Heim-Rechner fertig; offen: Go-live-Checkliste, realer Spieltag im Schattenbetrieb, danach `reuse/` löschen)
 
 ## Notizen
 
@@ -32,3 +32,4 @@ Ein Meilenstein gilt als erledigt, wenn seine Abnahmekriterien (KONZEPT.md Absch
 - 2026-09-27 M11 (Stand Go-live): Erledigt sind das Vercel-Projekt `flutlicht` mit Upstash (KV_*), die Env-Variablen außer `GITHUB_PAT`, die Domain `flutlicht.a-tec.dev` (`/version.json` antwortet, der Tick ohne Secret gibt 401), Backfill der Spieltage 1–4 (36 Spiele) und 240 Spielerbilder. Offen: `GITHUB_PAT` in Vercel, Cloudflare-Worker deployen (`wrangler login` fehlt) samt Secret `CRON_SECRET`, Pi einrichten (bestellt 26.09.), Einladungscodes, Push-Test auf den Geräten. Korrektur: Der nächste reale Spieltag für den Schattenbetrieb ist Spieltag 5 (ab 09.10.), nicht 7.
 - 2026-09-28 M9/M11: Cloudflare-Worker `flutlicht-cron` deployt (Cron */10), `CRON_SECRET` neu erzeugt und in Vercel (Production) und im Worker gesetzt, App neu deployt. Erster Tick 28.09. 08:50 UTC: `tick OK` (nichts zu finalisieren, keine Pushes). Offen: `GITHUB_PAT` in Vercel, Pi einrichten, Einladungscodes, Push-Test auf den Geräten.
 - 2026-09-30 Redesign „Arena“ (kein Meilenstein): Branch `arena`, acht Phasen laut `docs/arena-plan.md` (Theme hell/dunkel, Rahmen mit Seitenleiste, Team, Markt mit Holen-Ablauf, Spieltag live, Tabelle, Historie, Spieler, Optionen, Login). Abnahme in `docs/arena-abnahme.md`; lint, typecheck, 445 Tests, Build und 11 E2E grün. Offen: Review durch Alex und Merge nach `main`.
+- 2026-09-30 M11 Heim-Rechner: Raspberry Pi 5 `raspdev.local` (Debian 13, Python 3.13, Chromium 154) läuft. Deploy-Key `flutlicht-scraper (raspdev)` mit Schreibrecht, Klon in `~/flutlicht`, venv, 56 pytest grün, headless Chromium startet. systemd-Benutzer-Timer alle 5 Min., Linger an; erster Lauf ohne Abrufe. Die Kader der Woche 40 sind als erledigt vermerkt (Stand 25.09., das Fenster Mi 10–18 Uhr war vorbei), nächster Kader-Abruf Mi 07.10. Log: `journalctl --user-unit flutlicht-scraper`. Erster echter Job: `round-events` für Spieltag 5 am Di 06.10.

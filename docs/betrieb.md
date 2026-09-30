@@ -108,7 +108,7 @@ cd infra/cron-worker && npx wrangler tail
 
 | Symptom | Prüfen | Ursache / Behebung |
 |---|---|---|
-| Frische-Banner bleibt stehen | Scheduler-Log (`journalctl --user -u flutlicht-scraper` bzw. `scraper/scraper.log`); `~/.fm-scraper/scheduler.json` → `done`/`attempts` für `prov:<event>` | Heim-Rechner aus/offline → einschalten, Job von Hand starten. 6-h-Pause in `state.json` → abwarten |
+| Frische-Banner bleibt stehen | Scheduler-Log (`journalctl --user-unit flutlicht-scraper` bzw. `scraper/scraper.log`); `~/.fm-scraper/scheduler.json` → `done`/`attempts` für `prov:<event>` | Heim-Rechner aus/offline → einschalten, Job von Hand starten. 6-h-Pause in `state.json` → abwarten |
 | Keine vorläufigen Daten, obwohl Scheduler läuft | Hat die Fixture eine `sofascoreEventId`? (`data/fixtures.json`) | `round-events` fehlt → `run round-events --matchday N` |
 | „Pause bis …“ im Log | `~/.fm-scraper/state.json` | 429/403 von Sofascore; 6 h abwarten, **nicht** umgehen |
 | Push vom Scraper scheitert | `git -C ~/flutlicht status`, `ssh -T git@github-flutlicht` | Deploy-Key fehlt/ohne Schreibrecht; Rebase-Konflikt → `git rebase --abort`, `git pull` |
