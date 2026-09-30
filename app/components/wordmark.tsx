@@ -1,12 +1,10 @@
-/** Wortmarke in Stadion-Beschilderung: FLUT und LICHT, das Licht in Natriumgelb. */
-export function Wordmark({ size = "lg" }: { size?: "lg" | "sm" }) {
-  const scale =
-    size === "lg" ? "text-[4.6rem] leading-[0.85]" : "text-2xl leading-none";
+/** Wortmarke in Stadion-Beschilderung: FLUT über LICHT, das Licht in Natriumgelb (hell: weiß). */
+export function Wordmark() {
   return (
-    <p
-      className={`font-display font-extrabold uppercase tracking-[0.01em] text-kreide ${scale}`}
-    >
-      Flut<span className="text-lampe">licht</span>
+    <p className="font-display text-[96px] leading-[0.82] font-black tracking-[0.01em] uppercase">
+      Flut
+      <br />
+      <span className="text-word-accent">licht</span>
     </p>
   );
 }

@@ -2,9 +2,9 @@ import type { ReactNode } from "react";
 import { Wordmark } from "@/components/wordmark";
 
 /**
- * Blick von der Tribüne: Nachthimmel mit den Lichtkegeln zweier Masten, unten
- * der Rasen mit Mähstreifen und Seitenlinie. Darauf liegt die „Anzeigetafel“
- * mit dem Formular.
+ * Anmeldung, Registrieren und Passwort-Reset (Arena 5 „Anmelden“): Wortmarke über
+ * Flutlicht und Rasen (hell: Gelb mit schrägem Schnitt), darunter das Formular in
+ * einer Karte mit abgeschnittener Ecke.
  */
 export function Stadium({
   season,
@@ -14,28 +14,19 @@ export function Stadium({
   children: ReactNode;
 }) {
   return (
-    <main className="flutlicht relative isolate flex min-h-dvh flex-col overflow-hidden px-5 pt-12 pb-10">
-      <div
-        aria-hidden
-        className="flutlicht flutlicht-an absolute inset-0 -z-10"
-      />
-      <div
-        aria-hidden
-        className="absolute inset-x-[-60%] top-[62%] -bottom-[20%] -z-10"
-      >
-        <div className="maehstreifen absolute inset-0 border-t-2 border-kreide/70" />
+    <main className="login-bg flex min-h-dvh flex-col px-6 pt-[calc(env(safe-area-inset-top)+72px)] pb-10 lg:justify-center lg:pt-10">
+      <div className="mx-auto flex w-full max-w-[420px] flex-1 flex-col lg:flex-none">
+        <header>
+          <Wordmark />
+          <p className="mt-[18px] text-xs font-bold tracking-[0.16em] text-hero-muted uppercase">
+            Saison {season} · Private Bundesliga-Managerrunde
+          </p>
+        </header>
+        <div className="min-h-8 flex-1 lg:min-h-10 lg:flex-none" />
+        <section className="cut-corner bg-surface p-5 text-text">
+          {children}
+        </section>
       </div>
-
-      <header className="mx-auto w-full max-w-sm">
-        <p className="mb-3 text-xs font-semibold tracking-[0.2em] text-lampe uppercase">
-          Saison {season}
-        </p>
-        <Wordmark />
-      </header>
-
-      <section className="mx-auto mt-8 w-full max-w-sm rounded-2xl border border-nacht-linie bg-nacht/90 p-6 shadow-2xl shadow-black/40 backdrop-blur">
-        {children}
-      </section>
     </main>
   );
 }

@@ -37,8 +37,8 @@ export default function LoginPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="font-display text-3xl font-extrabold uppercase">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3.5" noValidate>
+      <h1 className="font-display text-[34px] leading-none font-black uppercase">
         Anmelden
       </h1>
       <Field
@@ -65,13 +65,13 @@ export default function LoginPage() {
       <div className="flex justify-between text-sm">
         <Link
           href="/registrieren"
-          className="text-kreide underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center font-semibold text-text underline-offset-4 hover:underline"
         >
           Konto anlegen
         </Link>
         <Link
           href="/passwort-reset"
-          className="text-kreide-matt underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center font-semibold text-muted underline-offset-4 hover:underline"
         >
           Passwort vergessen?
         </Link>

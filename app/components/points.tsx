@@ -42,24 +42,16 @@ export function PartsLine({
     .map((k) => `${PART_LABELS[k]} ${signed(parts[k])}`);
   if (startBonus) items.push(`Startelf ${signed(startBonus)}`);
   if (items.length === 0) return null;
-  return <p className="text-xs text-kreide-matt">{items.join(" · ")}</p>;
+  return <p className="text-xs text-muted">{items.join(" · ")}</p>;
 }
 
-/** Saisonsumme je Kategorie als Tabelle, nur Teile, die etwas beitragen. */
-export function PartsTable({ parts }: { parts: PointParts }) {
-  const keys = (Object.keys(PART_LABELS) as (keyof PointParts)[]).filter(
-    (k) => parts[k] !== 0,
-  );
-  return (
-    <ul className="space-y-1 text-sm">
-      {keys.map((k) => (
-        <li key={k} className="flex justify-between">
-          <span className="text-kreide-matt">{PART_LABELS[k]}</span>
-          <span>{signed(parts[k])}</span>
-        </li>
-      ))}
-    </ul>
-  );
+/** Kategorien mit Beitrag, z. B. für die Balken „So kamen die Punkte“. */
+export function partEntries(
+  parts: PointParts,
+): { key: keyof PointParts; label: string; value: number }[] {
+  return (Object.keys(PART_LABELS) as (keyof PointParts)[])
+    .filter((k) => parts[k] !== 0)
+    .map((k) => ({ key: k, label: PART_LABELS[k], value: parts[k] }));
 }
 
 export const STATUS_LABEL = {

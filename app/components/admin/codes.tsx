@@ -2,7 +2,7 @@
 
 import type { InviteCode } from "@fm/core";
 import { useState } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { adminCall, Section, SmallButton } from "@/components/admin/common";
 
 export interface ManagerRow {
@@ -51,18 +51,18 @@ export function Invites({
       <ul className="mt-3 space-y-2">
         {open.map((i) => (
           <li key={i.code} className="flex items-center justify-between gap-3">
-            <code className="font-display text-2xl tracking-widest text-lampe">
+            <code className="font-display text-2xl tracking-widest text-accent">
               {i.code}
             </code>
             <SmallButton onClick={() => revoke(i.code)}>Widerrufen</SmallButton>
           </li>
         ))}
         {open.length === 0 ? (
-          <li className="text-sm text-kreide-matt">Kein offener Code.</li>
+          <li className="text-sm text-muted">Kein offener Code.</li>
         ) : null}
       </ul>
       {used.length > 0 ? (
-        <p className="mt-3 text-xs text-kreide-matt">
+        <p className="mt-3 text-xs text-muted">
           Eingelöst:{" "}
           {used
             .map((i) => `${i.code} (${names[i.usedBy!] ?? "gelöscht"})`)
@@ -101,16 +101,16 @@ export function Managers({
 
   return (
     <Section id="manager" title="Manager">
-      <ul className="divide-y divide-nacht-linie">
+      <ul className="divide-y divide-line">
         {managers.map((m) => (
           <li key={m.userId} className="py-3">
             <p className="font-semibold">
               {m.displayName}{" "}
-              <span className="text-sm font-normal text-kreide-matt">
+              <span className="text-sm font-normal text-muted">
                 {m.teamName}
               </span>
             </p>
-            <p className="text-xs text-kreide-matt">
+            <p className="text-xs text-muted">
               {m.email} · {m.role === "admin" ? "Admin" : "Spieler"} · ab
               Spieltag {m.firstMatchday}
               {m.hasSquad ? "" : " · noch kein Kader"}
@@ -129,7 +129,7 @@ export function Managers({
               {resetCodes[m.userId] ? (
                 <span className="text-sm">
                   Code{" "}
-                  <code className="font-display text-xl tracking-widest text-lampe">
+                  <code className="font-display text-xl tracking-widest text-accent">
                     {resetCodes[m.userId]}
                   </code>{" "}
                   (24 h gültig)

@@ -2,7 +2,8 @@ import { describe, expect, it, vi } from "vitest";
 import { defaultLineup, type ManagerDoc, type MatchdayPoints } from "@fm/core";
 
 vi.mock("@/lib/auth", () => ({ auth: async () => null }));
-const { leagueTable, matchdayView } = await import("@/lib/standings");
+const { leagueTable, matchdayRanks, matchdayView } =
+  await import("@/lib/standings");
 const { players, SQUAD } = await import("@/test/fixtures");
 
 // Standardaufstellung des Test-Kaders: Starter 1 (Verein 1), 11–14, 21–24, 31 (Verein 2), 32 (Verein 3).
@@ -166,8 +167,47 @@ describe("leagueTable", () => {
     ]);
     expect(t.winners[9]).toEqual({
       matchday: 9,
+      ids: [tom.userId, ida.userId],
       names: ["Tom", "Ida"],
       points: 7,
     });
+  });
+});
+
+describe("leagueTable: Bewegung ▲/▼", () => {
+  const md = (matchday: number, id: string, base: number): MatchdayPoints => {
+    const p = points("final");
+    return { ...p, matchday, players: { [id]: { ...p.players["1"]!, base } } };
+  };
+  it("vergleicht mit der Tabelle ohne den letzten gewerteten Spieltag", () => {
+    // Tom: Kapitän 31 (ST); Ida: Kapitän 1 (TW). Spieltag 9 gewinnt Tom, 10 Ida deutlich.
+    const idaCap = { ...ida, lineup: { ...lineup, captain: 1 } };
+    const g = { ...game("final"), points: [md(9, "31", 10), md(10, "1", 30)] };
+    const t = leagueTable([tom, idaCap], g);
+    const by = new Map(t.rows.map((r) => [r.displayName, r]));
+    expect(by.get("Ida")).toMatchObject({ rank: 1, movement: 1 });
+    expect(by.get("Tom")).toMatchObject({ rank: 2, movement: -1 });
+  });
+
+  it("ohne Vorspieltag keine Bewegung", () => {
+    const t = leagueTable([tom, ida], game("final"));
+    expect(t.rows.every((r) => r.movement === null)).toBe(true);
+  });
+});
+
+describe("matchdayRanks", () => {
+  it("Rang nach Punkten, Gleichstand teilt sich den Platz", () => {
+    const ranks = matchdayRanks([
+      { userId: "a", total: 40 },
+      { userId: "b", total: 55 },
+      { userId: "c", total: 40 },
+      { userId: "d", total: 12 },
+    ]);
+    expect([...ranks]).toEqual([
+      ["a", 2],
+      ["b", 1],
+      ["c", 2],
+      ["d", 4],
+    ]);
   });
 });

@@ -43,6 +43,16 @@ test("Spieltag, Tabelle und Spielerprofil", async ({ page }) => {
     .getByRole("link")
     .first();
   const name = await playerLink.textContent();
+  // Liste lädt seitenweise: 100 Zeilen, „Mehr anzeigen“ holt die nächsten, Filtern setzt zurück.
+  const rows = page
+    .getByRole("list", { name: "Spielerliste" })
+    .getByTestId("market-row");
+  await expect(rows).toHaveCount(100);
+  await page.getByRole("button", { name: "Mehr anzeigen" }).click();
+  await expect(rows).toHaveCount(200);
+  await page.getByRole("button", { name: "MF", exact: true }).click();
+  await page.getByRole("button", { name: "ALLE", exact: true }).click();
+  await expect(rows).toHaveCount(100);
   // Textsuche: Teil des Namens in Kleinbuchstaben findet den Spieler.
   await page
     .getByLabel("Spieler suchen")
@@ -69,7 +79,7 @@ test("Einstellungen zeigen die Push-Benachrichtigungen", async ({ page }) => {
   await page.getByRole("link", { name: "Optionen", exact: true }).click();
   const push = page.getByRole("region", { name: "Benachrichtigungen" });
   await expect(
-    push.getByRole("heading", { name: "Push-Benachrichtigungen" }),
+    push.getByRole("heading", { name: "Push auf diesem Gerät" }),
   ).toBeVisible();
   await expect(
     push.getByRole("switch", { name: "Push-Benachrichtigungen" }),
@@ -111,4 +121,26 @@ test("Admin erzeugt einen Einladungscode, ein neuer Manager registriert sich dam
   // Spieler ohne Admin-Rolle sehen /admin nicht.
   await page.goto("/admin");
   await expect(page.getByRole("heading", { name: "Admin" })).toHaveCount(0);
+});
+
+test("Darstellung: Hell und Dunkel schalten sofort um und bleiben nach dem Neuladen", async ({
+  page,
+}) => {
+  await page.getByRole("link", { name: "Optionen", exact: true }).click();
+  const html = page.locator("html");
+  await page.getByRole("radio", { name: "Hell" }).click();
+  await expect(html).toHaveAttribute("data-theme", "light");
+  await page.reload();
+  await expect(html).toHaveAttribute("data-theme", "light");
+  await expect(page.getByRole("radio", { name: "Hell" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
+  await page.getByRole("radio", { name: "Dunkel" }).click();
+  await expect(html).toHaveAttribute("data-theme", "dark");
+  await page.getByRole("radio", { name: "System" }).click();
+  await expect(page.getByRole("radio", { name: "System" })).toHaveAttribute(
+    "aria-checked",
+    "true",
+  );
 });

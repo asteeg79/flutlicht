@@ -4,7 +4,7 @@ import { LoaderCircle } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState, type FormEvent } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { Button, Field, FormError } from "@/components/ui";
 import { callApi } from "@/lib/api-client";
 
@@ -36,11 +36,11 @@ export default function ResetPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="font-display text-3xl font-extrabold uppercase">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3.5" noValidate>
+      <h1 className="font-display text-[34px] leading-none font-black uppercase">
         Neues Passwort
       </h1>
-      <p className="text-sm text-kreide-matt">
+      <p className="text-sm text-muted">
         Den Reset-Code erzeugt der Admin eurer Runde für dich. Er gilt 24
         Stunden.
       </p>
@@ -77,7 +77,7 @@ export default function ResetPage() {
       </Button>
       <Link
         href="/login"
-        className="block text-sm text-kreide-matt underline-offset-4 hover:underline"
+        className="inline-flex min-h-11 items-center self-start text-sm font-semibold text-muted underline-offset-4 hover:underline"
       >
         Zurück zur Anmeldung
       </Link>

@@ -4,6 +4,7 @@
  * Farbwelt „Rasen/Flutlicht“: Abendspiel, gesehen von der Tribüne.
  * Nacht = Himmel über dem Stadion, Rasen in zwei Mähstreifen-Tönen,
  * Kreide für Linien und Text, Natriumgelb als einziger Akzent (Flutlicht, Kapitän).
+ * Diese Markenfarben gelten in beiden Themes.
  */
 @theme {
   --color-nacht: #0f1c26;
@@ -15,19 +16,231 @@
   --color-kreide-matt: #9fb2ad;
   --color-lampe: #ffd54a;
   --color-karte: #e0533a;
+  /* Karte auf dunklem Grund (Tafel, Sheets): heller für Kontrast. */
+  --color-karte-hell: #ff7a61;
+  /* Karte mit weißer Schrift darauf (Live-Tag, Fehler, Abgabe): ≥ 4,5 : 1. */
+  --color-karte-tief: #bf3a24;
+  /* Plus auf dunklem Grund (Sheets, Tafel). */
+  --color-gruen-hell: #6fdc8c;
+  --color-bronze: #c98a4b;
 
   --font-display: var(--font-big-shoulders), "Arial Narrow", sans-serif;
   --font-sans: var(--font-sans-body), system-ui, sans-serif;
 }
 
-html {
+/*
+ * „Arena“: semantische Farben, die zwischen dunkel und hell umschalten
+ * (data-theme am html, gesetzt vom Inline-Script im Layout; die Demo /dev/arena
+ * setzt es auch auf Unterbäume). Komponenten nutzen nur
+ * diese Namen (bg-surface, text-muted, border-line …), nie Hex-Werte.
+ */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-alt: var(--surface-alt);
+  --color-line: var(--line);
+  --color-text: var(--text);
+  --color-muted: var(--muted);
+  --color-accent: var(--accent);
+  --color-hero-text: var(--hero-text);
+  --color-hero-muted: var(--hero-muted);
+  --color-tag-bg: var(--tag-bg);
+  --color-tag-text: var(--tag-text);
+  --color-tag-off-bg: var(--tag-off-bg);
+  --color-tag-off-text: var(--tag-off-text);
+  --color-board-bg: var(--board-bg);
+  --color-board-text: var(--board-text);
+  --color-board-num: var(--board-num);
+  --color-sheet-bg: var(--sheet-bg);
+  --color-sheet-text: var(--sheet-text);
+  --color-nav-bg: var(--nav-bg);
+  --color-nav-line: var(--nav-line);
+  --color-nav-muted: var(--nav-muted);
+  --color-nav-active: var(--nav-active);
+  --color-side-bg: var(--side-bg);
+  --color-compact-bg: var(--compact-bg);
+  --color-compact-line: var(--compact-line);
+  --color-compact-num: var(--compact-num);
+  --color-pitch-a: var(--pitch-a);
+  --color-pitch-b: var(--pitch-b);
+  --color-plate-bg: var(--plate-bg);
+  --color-cap-bg: var(--cap-bg);
+  --color-cap-text: var(--cap-text);
+  --color-cap-muted: var(--cap-muted);
+  --color-ticker-bg: var(--ticker-bg);
+  --color-ticker-text: var(--ticker-text);
+  --color-tick-up: var(--tick-up);
+  --color-tick-down: var(--tick-down);
+  --color-hot-bg: var(--hot-bg);
+  --color-chip-on-bg: var(--chip-on-bg);
+  --color-chip-on-text: var(--chip-on-text);
+  --color-save-bg: var(--save-bg);
+  --color-save-text: var(--save-text);
+  --color-save-ok: var(--save-ok);
+  --color-picked-row: var(--picked-row);
+  --color-pos-open-bg: var(--pos-open-bg);
+  --color-live: var(--live);
+  --color-up: var(--up);
+  --color-down: var(--down);
+  --color-urgent: var(--urgent);
+  --color-me-row: var(--me-row);
+  --color-podium-2: var(--podium-2);
+  --color-podium-2-text: var(--podium-2-text);
+  --color-relegation: var(--relegation);
+  --color-word-accent: var(--word-accent);
+  --color-win-bg: var(--win-bg);
+  --color-win-text: var(--win-text);
+}
+
+:root,
+[data-theme="dark"] {
   color-scheme: dark;
-  background: var(--color-nacht);
+  --bg: #0a141c;
+  --surface: #13222d;
+  --surface-alt: #13222d;
+  --line: #26404f;
+  --text: #f1f4f2;
+  --muted: #9fb2ad;
+  --accent: #ffd54a;
+  --hero-bg:
+    radial-gradient(70% 60% at 10% 0%, rgb(255 213 74 / 0.3), transparent 70%),
+    radial-gradient(60% 55% at 92% 0%, rgb(255 244 214 / 0.2), transparent 70%),
+    linear-gradient(180deg, #07111a 0%, #0f1c26 100%);
+  --hero-text: #f1f4f2;
+  --hero-muted: #9fb2ad;
+  --tag-bg: #ffd54a;
+  --tag-text: #0f1c26;
+  --tag-off-bg: #26404f;
+  --tag-off-text: #f1f4f2;
+  --board-bg: rgb(0 0 0 / 0.35);
+  --board-text: #f1f4f2;
+  --board-num: #ffd54a;
+  --sheet-bg: #0f1c26;
+  --sheet-text: #f1f4f2;
+  --nav-bg: #0a141c;
+  --nav-line: rgb(232 237 234 / 0.2);
+  --nav-muted: #9fb2ad;
+  --nav-active: #ffd54a;
+  --side-bg: #07111a;
+  --compact-bg: #0c1822;
+  --compact-line: rgb(255 213 74 / 0.55);
+  --compact-num: #ffd54a;
+  --pitch-a: #2e6a3b;
+  --pitch-b: #3a7d47;
+  --pitch-light:
+    radial-gradient(60% 40% at 15% 0%, rgb(255 213 74 / 0.18), transparent 70%),
+    radial-gradient(60% 40% at 85% 0%, rgb(255 244 214 / 0.14), transparent 70%);
+  --plate-bg: #0a141c;
+  --cap-bg: #13222d;
+  --cap-text: #f1f4f2;
+  --cap-muted: #9fb2ad;
+  --ticker-bg: #ffd54a;
+  --ticker-text: #0f1c26;
+  --tick-up: #0f5c2a;
+  --tick-down: #a3261a;
+  --hot-bg: #13222d;
+  --chip-on-bg: #f1f4f2;
+  --chip-on-text: #0a141c;
+  --save-bg: #f1f4f2;
+  --save-text: #0a141c;
+  --save-ok: #1f7a3a;
+  --picked-row: rgb(255 213 74 / 0.08);
+  --pos-open-bg: rgb(255 255 255 / 0.08);
+  --live: #e0533a;
+  --up: #6fdc8c;
+  --down: #ff7a61;
+  --urgent: #ff6a4d;
+  --me-row: rgb(255 213 74 / 0.12);
+  --podium-2: #c9d3cf;
+  --podium-2-text: #0a141c;
+  --relegation: #f0a04b;
+  --word-accent: #ffd54a;
+  --win-bg: transparent;
+  --win-text: #ffd54a;
+  --login-bg:
+    radial-gradient(70% 45% at 0% 0%, rgb(255 213 74 / 0.35), transparent 70%),
+    radial-gradient(
+      60% 40% at 100% 0%,
+      rgb(255 244 214 / 0.18),
+      transparent 70%
+    ),
+    linear-gradient(180deg, #0a141c 0%, #0f1c26 55%, #1d4a2a 100%);
+}
+
+[data-theme="light"] {
+  color-scheme: light;
+  --bg: #f2efe6;
+  --surface: #ffffff;
+  --surface-alt: #e6e1d3;
+  --line: #d8d2c2;
+  --text: #0f1c26;
+  --muted: #56615b;
+  --accent: #0f1c26;
+  --hero-bg: linear-gradient(160deg, #ffd54a 0%, #ffcb2e 100%);
+  --hero-text: #0f1c26;
+  --hero-muted: #3d3208;
+  --tag-bg: #0f1c26;
+  --tag-text: #ffd54a;
+  --tag-off-bg: rgb(15 28 38 / 0.2);
+  --tag-off-text: #0f1c26;
+  --board-bg: #0f1c26;
+  --board-text: #ffffff;
+  --board-num: #ffd54a;
+  --sheet-bg: #0f1c26;
+  --sheet-text: #ffffff;
+  --nav-bg: #ffffff;
+  --nav-line: #0f1c26;
+  --nav-muted: #5f6964;
+  --nav-active: #0f1c26;
+  --side-bg: #0f1c26;
+  --compact-bg: #ffd54a;
+  --compact-line: #0f1c26;
+  --compact-num: #0f1c26;
+  --pitch-a: #358043;
+  --pitch-b: #3f9150;
+  --pitch-light: radial-gradient(
+    80% 50% at 50% 0%,
+    rgb(255 255 255 / 0.14),
+    transparent 70%
+  );
+  --plate-bg: #0f1c26;
+  --cap-bg: #0f1c26;
+  --cap-text: #ffffff;
+  --cap-muted: #c3cfcb;
+  --ticker-bg: #0f1c26;
+  --ticker-text: #ffffff;
+  --tick-up: #6fdc8c;
+  --tick-down: #ff7a61;
+  --hot-bg: #0f1c26;
+  --chip-on-bg: #0f1c26;
+  --chip-on-text: #ffd54a;
+  --save-bg: #0f1c26;
+  --save-text: #ffffff;
+  --save-ok: #6fdc8c;
+  --picked-row: rgb(255 213 74 / 0.25);
+  /* Im Entwurf weiß auf Gelb (unlesbar); dunkel für Kontrast. */
+  --pos-open-bg: rgb(15 28 38 / 0.75);
+  --live: #c8412b;
+  --up: #1f7a3a;
+  --down: #bf3a24;
+  --urgent: #b3261e;
+  --me-row: rgb(255 213 74 / 0.35);
+  --podium-2: #0f1c26;
+  --podium-2-text: #ffd54a;
+  --relegation: #e08a2e;
+  --word-accent: #ffffff;
+  --win-bg: #ffd54a;
+  --win-text: #0f1c26;
+  --login-bg: linear-gradient(174deg, #ffd54a 0%, #ffcb2e 56%, #f2efe6 56.2%);
+}
+
+html {
+  background: var(--bg);
 }
 
 body {
-  background: var(--color-nacht);
-  color: var(--color-kreide);
+  background: var(--bg);
+  color: var(--text);
   font-family: var(--font-sans);
   -webkit-tap-highlight-color: transparent;
 }
@@ -37,47 +250,429 @@ body {
   outline-offset: 2px;
 }
 
-/* Blick von der Tribüne: Lichtkegel zweier Masten über dem Nachthimmel. */
-.flutlicht {
-  background:
-    radial-gradient(60% 45% at 12% 0%, rgb(255 213 74 / 0.22), transparent 70%),
-    radial-gradient(
-      60% 45% at 88% 0%,
-      rgb(255 244 214 / 0.16),
-      transparent 70%
-    ),
-    linear-gradient(180deg, #0b1620 0%, var(--color-nacht) 60%);
+/* Schräge Kanten statt Rundungen (Tags, Buttons, Namensschilder, Chips). */
+@utility slant {
+  clip-path: polygon(8px 0, 100% 0, calc(100% - 8px) 100%, 0 100%);
 }
-
-/* Rasen mit Mähstreifen, perspektivisch nach hinten kippend. */
-.maehstreifen {
-  background: repeating-linear-gradient(
-    90deg,
-    var(--color-rasen) 0 56px,
-    var(--color-rasen-hell) 56px 112px
+@utility slant-sm {
+  clip-path: polygon(4px 0, 100% 0, calc(100% - 4px) 100%, 0 100%);
+}
+/* Nur rechts schräg (Toast, Kapitäns-Leiste, Team-Karte). */
+@utility slant-r {
+  clip-path: polygon(0 0, 100% 0, calc(100% - 10px) 100%, 0 100%);
+}
+/* Karte mit abgeschnittener Ecke unten rechts. */
+@utility cut-corner {
+  clip-path: polygon(
+    0 0,
+    100% 0,
+    100% calc(100% - 12px),
+    calc(100% - 12px) 100%,
+    0 100%
   );
-  /* Kippt von der Seitenlinie (oben) zum Betrachter hin. */
-  transform: perspective(700px) rotateX(38deg);
-  transform-origin: 50% 0%;
+}
+/* Anmeldung: Flutlicht über dem Rasen (dunkel) bzw. Gelb mit schrägem Schnitt (hell). */
+@utility login-bg {
+  background: var(--login-bg);
+  color: var(--hero-text);
+}
+/* Kopfbereich: Flutlicht-Verlauf (dunkel) bzw. Lampengelb (hell). */
+@utility hero-bg {
+  background: var(--hero-bg);
+  color: var(--hero-text);
 }
 
-@media (prefers-reduced-motion: no-preference) {
-  .flutlicht-an {
-    animation: flutlicht-an 1.2s ease-out both;
+/* Mähstreifen des Aufstellungs-Spielfelds (46 px mobil, 60 px Desktop). */
+.pitch-stripes {
+  background: repeating-linear-gradient(
+    180deg,
+    var(--pitch-a) 0 46px,
+    var(--pitch-b) 46px 92px
+  );
+}
+@media (min-width: 1024px) {
+  .pitch-stripes {
+    background: repeating-linear-gradient(
+      180deg,
+      var(--pitch-a) 0 60px,
+      var(--pitch-b) 60px 120px
+    );
   }
-  @keyframes flutlicht-an {
-    0%,
-    30% {
-      opacity: 0.25;
-    }
-    35% {
-      opacity: 0.6;
-    }
-    40% {
-      opacity: 0.35;
-    }
-    100% {
-      opacity: 1;
-    }
+}
+.pitch-light {
+  background: var(--pitch-light);
+}
+
+/*
+ * Arena-Animationen (README 8): nur transform/opacity/filter/box-shadow.
+ * Einmal-Animationen gibt es doppelt (…0/…1), damit ein Wechsel des Namens sie neu startet.
+ * Alles mit der Klasse arena-anim steht bei prefers-reduced-motion still.
+ */
+@keyframes arena-pulse {
+  0%,
+  100% {
+    opacity: 1;
+    transform: scale(1);
+  }
+  50% {
+    opacity: 0.35;
+    transform: scale(0.7);
+  }
+}
+@keyframes arena-ticker {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
+}
+@keyframes arena-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+@keyframes arena-fade {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+@keyframes arena-rise {
+  from {
+    transform: translateY(22px);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-sheet {
+  from {
+    transform: translateY(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+@keyframes arena-modal {
+  from {
+    transform: translateY(24px) scale(0.96);
+    opacity: 0;
+  }
+  to {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-page {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes arena-list0 {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes arena-list1 {
+  from {
+    opacity: 0;
+    transform: translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+@keyframes arena-swap0 {
+  0% {
+    transform: scale(0.3) rotate(-24deg);
+    filter: brightness(2.2);
+  }
+  60% {
+    transform: scale(1.22) rotate(5deg);
+  }
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes arena-swap1 {
+  0% {
+    transform: scale(0.3) rotate(24deg);
+    filter: brightness(2.2);
+  }
+  60% {
+    transform: scale(1.22) rotate(-5deg);
+  }
+  100% {
+    transform: none;
+    filter: none;
+  }
+}
+@keyframes arena-pop {
+  0% {
+    transform: translateY(16px) scale(0.5);
+    opacity: 0;
+  }
+  70% {
+    transform: translateY(-3px) scale(1.1);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-stamp {
+  0% {
+    transform: scale(3.4) rotate(-40deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(0.8) rotate(8deg);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-shake {
+  0%,
+  100% {
+    transform: none;
+  }
+  20% {
+    transform: translateX(-7px);
+  }
+  40% {
+    transform: translateX(7px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(3px);
+  }
+}
+@keyframes arena-float {
+  0% {
+    transform: translate(-50%, 14px) scale(0.6);
+    opacity: 0;
+  }
+  15% {
+    transform: translate(-50%, 0) scale(1.06);
+    opacity: 1;
+  }
+  75% {
+    transform: translate(-50%, -4px) scale(1);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(-50%, -26px);
+    opacity: 0;
+  }
+}
+@keyframes arena-slam {
+  0% {
+    transform: scale(2.8);
+    opacity: 0;
+  }
+  55% {
+    transform: scale(0.9);
+    opacity: 1;
+  }
+  75% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-burst {
+  0% {
+    transform: translate(-50%, -50%) scale(0.5);
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate(-50%, -50%) scale(2.8);
+    opacity: 0;
+  }
+}
+@keyframes arena-zoom {
+  0% {
+    transform: scale(0.2) rotate(-25deg);
+    opacity: 0;
+  }
+  60% {
+    transform: scale(1.12) rotate(3deg);
+    opacity: 1;
+  }
+  100% {
+    transform: none;
+    opacity: 1;
+  }
+}
+@keyframes arena-out {
+  0% {
+    transform: none;
+    opacity: 1;
+  }
+  100% {
+    transform: translateX(-90px) scale(0.7);
+    opacity: 0;
+  }
+}
+@keyframes arena-beam-l {
+  0%,
+  100% {
+    transform: rotate(-26deg);
+  }
+  50% {
+    transform: rotate(-8deg);
+  }
+}
+@keyframes arena-beam-r {
+  0%,
+  100% {
+    transform: rotate(26deg);
+  }
+  50% {
+    transform: rotate(8deg);
+  }
+}
+@keyframes arena-shard {
+  0% {
+    transform: translate(0, 0) rotate(0);
+    opacity: 1;
+  }
+  100% {
+    transform: translate(var(--dx), var(--dy)) rotate(var(--r));
+    opacity: 0;
+  }
+}
+@keyframes arena-flash {
+  0% {
+    transform: scale(1.25);
+    text-shadow: 0 0 26px var(--color-lampe);
+  }
+  100% {
+    transform: none;
+    text-shadow: none;
+  }
+}
+@keyframes arena-deny {
+  0%,
+  100% {
+    transform: none;
+    box-shadow: inset 0 0 0 0 var(--color-karte);
+  }
+  25% {
+    transform: translateX(-4px);
+    box-shadow: inset 0 0 0 3px var(--color-karte);
+  }
+  50% {
+    transform: translateX(4px);
+    box-shadow: inset 0 0 0 3px var(--color-karte);
+  }
+  75% {
+    transform: translateX(-2px);
+  }
+}
+@keyframes arena-flip {
+  0% {
+    transform: rotateX(0);
+  }
+  50% {
+    transform: rotateX(90deg);
+  }
+  100% {
+    transform: rotateX(0);
+  }
+}
+@keyframes arena-drop {
+  0% {
+    transform: translateY(-22px);
+    opacity: 0;
+  }
+  60% {
+    transform: translateY(3px);
+    opacity: 1;
+  }
+  80% {
+    transform: translateY(-1px);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-tick {
+  0% {
+    transform: scale(1.18);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-snap {
+  0% {
+    transform: translateY(-7px) scale(1.8);
+    opacity: 0;
+  }
+  45% {
+    transform: translateY(1px) scale(0.85);
+    opacity: 1;
+  }
+  70% {
+    transform: scale(1.2);
+  }
+  100% {
+    transform: none;
+  }
+}
+@keyframes arena-row {
+  0% {
+    transform: translateY(var(--from));
+    box-shadow: inset 0 0 0 999px rgb(255 213 74 / 0.55);
+  }
+  65% {
+    transform: translateY(-2px);
+  }
+  100% {
+    transform: none;
+    box-shadow: inset 0 0 0 999px rgb(255 213 74 / 0);
+  }
+}
+@keyframes arena-sink {
+  0% {
+    transform: translateY(var(--from));
+  }
+  100% {
+    transform: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /* README 8: keine Bewegung außer sofortigen Zustandswechseln, auch keine Übergänge. */
+  *,
+  *::before,
+  *::after {
+    animation: none !important;
+    transition: none !important;
   }
 }

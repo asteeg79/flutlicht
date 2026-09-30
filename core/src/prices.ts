@@ -2,8 +2,9 @@
 import { MARKET } from "./config/market";
 import type { Position } from "./config/rules";
 import { isScoredMatchday } from "./participation";
-import { clamp, median, round1 } from "./rounding";
+import { clamp, median, round1, subtractMio } from "./rounding";
 import type { MarketHistory, MatchdayPoints, Player } from "./schemas/data";
+import { priceBefore } from "./trades";
 
 /** Startpreis in Mio. aus dem Marktwert v (Wurzelskala, 4.1). */
 export function startPrice(valueEur: number, vMaxEur: number): number {
@@ -170,4 +171,28 @@ export function priceTimeline(
     }
   }
   return { history, prices };
+}
+
+/** Letzter Spieltag, für den die Preis-Historie Einträge hat; null ohne Einträge. */
+export function lastPricedMatchday(history: MarketHistory): number | null {
+  let last: number | null = null;
+  for (const entries of Object.values(history))
+    for (const e of entries)
+      if (last === null || e.matchday > last) last = e.matchday;
+  return last;
+}
+
+/**
+ * Kursänderung durch den letzten Spieltag mit Preisdaten (Ticker, „Heiß gerade“,
+ * Trend in der Liste): aktueller Preis − Preis vor diesem Spieltag. Wer an dem
+ * Spieltag nicht gespielt hat, hat keinen Eintrag und damit 0.
+ */
+export function priceChange(
+  entries: MarketHistory[string] | undefined,
+  price: number,
+  start: number,
+  lastMatchday: number | null,
+): number {
+  if (lastMatchday === null) return 0;
+  return subtractMio(price, priceBefore(entries ?? [], start, lastMatchday));
 }

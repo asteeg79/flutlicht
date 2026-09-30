@@ -9,13 +9,22 @@ import {
   type LedgerRow,
 } from "@fm/core";
 import Link from "next/link";
-import { PageHeader } from "@/components/page-header";
+import { BoardTile } from "@/components/arena/board-tile";
+import { HeroHeader } from "@/components/arena/hero-header";
+import { PageBody, SectionTitle, TwoCol } from "@/components/arena/page-layout";
 import { PlayerPhoto } from "@/components/player-photo";
 import { signedMio } from "@/components/points";
+import { lastName, mioNumber } from "@/lib/format";
 import { gameData, playerById, positionById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 
 export const metadata = { title: "Transfer-Historie" };
+
+/** Mio.-Differenz ohne Einheit: „+0,6“, „−1,2“, „±0“. */
+function signedNumber(n: number): string {
+  if (n === 0) return "±0";
+  return `${n > 0 ? "+" : "−"}${mioNumber(Math.abs(n))}`;
+}
 
 /** Gekaufte und verkaufte Spieler mit Preisdifferenz; Grundlage: Transfers im Manager-Dokument. */
 export default async function HistoryPage() {
@@ -23,14 +32,20 @@ export default async function HistoryPage() {
   if (me.squad.length === 0) {
     return (
       <>
-        <PageHeader context="Transfers" title="Historie" />
-        <p className="text-kreide-matt">
-          Noch kein Kader. Stell ihn auf dem{" "}
-          <Link href="/markt" className="text-lampe underline">
-            Markt
-          </Link>{" "}
-          zusammen.
-        </p>
+        <HeroHeader
+          tag="Transfers"
+          title="Historie"
+          compact={{ title: "Historie" }}
+        />
+        <PageBody>
+          <p className="text-muted">
+            Noch kein Kader. Stell ihn auf dem{" "}
+            <Link href="/markt" className="text-accent underline">
+              Markt
+            </Link>{" "}
+            zusammen.
+          </p>
+        </PageBody>
       </>
     );
   }
@@ -75,132 +90,163 @@ export default async function HistoryPage() {
     ),
   });
   const bonuses = sumPrices(Object.values(me.matchdayBonuses ?? {}));
+  const earned = sumPrices(ledger.map((r) => r.result?.earned ?? 0));
   const when = (md: number | null) => (md === null ? "Erstkader" : `Sp. ${md}`);
+  const held = [...h.held].sort((a, b) => b.diff - a.diff);
+
+  const tile = (label: string, value: number) => (
+    <BoardTile
+      label={label}
+      value={
+        <span className={value < 0 ? "text-karte-hell" : "text-board-num"}>
+          {signedNumber(value)}
+        </span>
+      }
+      unit=" MIO"
+    />
+  );
 
   return (
     <>
-      <PageHeader context="Transfers" title="Historie" />
-      <dl className="mb-8 grid grid-cols-3 gap-3">
-        <Summary label="Verkäufe" value={h.realized} />
-        <Summary label="Im Kader" value={h.unrealized} />
-        <Summary label="Prämien" value={bonuses} />
-      </dl>
-
-      <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">Verlauf</h2>
-        {ledger.length === 0 ? (
-          <p className="text-sm text-kreide-matt">
-            Noch keine Transfers und kein gewerteter Spieltag. Gewertet wird ab
-            Spieltag {first}.
-          </p>
-        ) : (
-          <>
-            <ul
-              aria-label="Verlauf"
-              className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch"
-            >
-              {ledger.map((row) => (
-                <LedgerItem key={row.matchday} row={row} />
-              ))}
-            </ul>
-            <p className="mt-2 text-xs text-kreide-matt">
-              Verdient = Kaderwert-Änderung + Prämie. Der Gewinn eines Verkaufs
-              steckt schon in den Kaderwert-Änderungen davor.
-            </p>
-          </>
-        )}
-      </section>
-
-      <section className="mb-8">
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
-          Verkauft
-        </h2>
-        {h.sold.length === 0 ? (
-          <p className="text-sm text-kreide-matt">Noch keine Verkäufe.</p>
-        ) : (
-          <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch">
-            {h.sold.map((s) => (
-              <Row
-                key={`${s.playerId}-${s.soldMatchday}`}
-                id={s.playerId}
-                detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} → Sp. ${s.soldMatchday} für ${formatMio(s.sellPrice)}`}
-                diff={s.diff}
-              />
-            ))}
-          </ul>
-        )}
-      </section>
-
-      <section>
-        <h2 className="mb-3 text-sm font-semibold text-kreide-matt">
-          Im Kader
-        </h2>
-        <ul className="divide-y divide-nacht-linie rounded-xl border border-nacht-linie bg-nacht-hoch">
-          {h.held.map((s) => (
-            <Row
-              key={s.playerId}
-              id={s.playerId}
-              detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} · jetzt ${formatMio(s.currentPrice)}`}
-              diff={s.diff}
-            />
-          ))}
-        </ul>
-      </section>
+      <HeroHeader
+        tag="Transfers"
+        title="Historie"
+        compact={{ title: "Historie", right: `${signedMio(earned)} verdient` }}
+        board="grid"
+      >
+        <div className="col-span-2 grid grid-cols-3 gap-1.5 lg:flex lg:gap-2">
+          {tile("Verkäufe", h.realized)}
+          {tile("Im Kader", h.unrealized)}
+          {tile("Prämien", bonuses)}
+        </div>
+      </HeroHeader>
+      <PageBody>
+        <TwoCol
+          sideWidth={380}
+          main={
+            <section>
+              <SectionTitle>Verlauf</SectionTitle>
+              {ledger.length === 0 ? (
+                <p className="text-sm text-muted">
+                  Noch keine Transfers und kein gewerteter Spieltag. Gewertet
+                  wird ab Spieltag {first}.
+                </p>
+              ) : (
+                <>
+                  <ul aria-label="Verlauf" className="flex flex-col gap-2">
+                    {ledger.map((row) => (
+                      <LedgerItem key={row.matchday} row={row} />
+                    ))}
+                  </ul>
+                  <p className="mt-2 text-[11px] font-medium text-muted">
+                    Verdient = Kaderwert-Änderung + Prämie. Der Gewinn eines
+                    Verkaufs steckt schon in den Kaderwert-Änderungen davor.
+                  </p>
+                </>
+              )}
+            </section>
+          }
+          side={
+            <>
+              <section>
+                <SectionTitle>
+                  Im Kader <span className="text-muted">{held.length}</span>
+                </SectionTitle>
+                <ul>
+                  {held.map((s) => (
+                    <Row
+                      key={s.playerId}
+                      id={s.playerId}
+                      detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} · jetzt ${formatMio(s.currentPrice)}`}
+                      diff={s.diff}
+                    />
+                  ))}
+                </ul>
+              </section>
+              <section>
+                <SectionTitle>Verkauft</SectionTitle>
+                {h.sold.length === 0 ? (
+                  <p className="text-sm text-muted">Noch keine Verkäufe.</p>
+                ) : (
+                  <ul>
+                    {h.sold.map((s) => (
+                      <Row
+                        key={`${s.playerId}-${s.soldMatchday}`}
+                        id={s.playerId}
+                        detail={`${when(s.boughtMatchday)} für ${formatMio(s.buyPrice)} → Sp. ${s.soldMatchday} für ${formatMio(s.sellPrice)}`}
+                        diff={s.diff}
+                        sold
+                      />
+                    ))}
+                  </ul>
+                )}
+              </section>
+            </>
+          }
+        />
+      </PageBody>
     </>
   );
 }
 
+function tone(n: number): string {
+  return n > 0 ? "text-up" : n < 0 ? "text-down" : "text-muted";
+}
+
 function LedgerItem({ row }: { row: LedgerRow }) {
-  const name = (id: number) => playerById.get(id)?.shortName ?? `#${id}`;
+  const name = (id: number) => {
+    const p = playerById.get(id);
+    return p ? lastName(p.shortName) : `#${id}`;
+  };
   const r = row.result;
   return (
-    <li className="px-4 py-3">
+    <li className="bg-surface px-3.5 py-3">
       <div className="flex items-baseline justify-between gap-3">
         <Link
           href={`/spieltag/${row.matchday}`}
-          className="font-semibold underline-offset-4 hover:underline"
+          className="font-display text-[22px] font-black uppercase hover:underline"
         >
           {row.matchday}. Spieltag
         </Link>
         {r ? (
-          <span className={`font-semibold ${tone(r.earned)}`}>
-            {signedMio(r.earned)}
+          <span
+            className={`font-display text-[26px] font-black ${tone(r.earned)}`}
+          >
+            {signedNumber(r.earned)}
           </span>
         ) : (
-          <span className="text-xs text-kreide-matt">noch nicht gewertet</span>
+          <span className="text-xs text-muted">noch nicht gewertet</span>
         )}
       </div>
       {r ? (
-        <p className="text-xs text-kreide-matt">
-          {r.points} Punkte · Kaderwert {signedMio(r.valueChange)} · Prämie{" "}
-          {signedMio(r.bonus)}
+        <p className="mt-0.5 text-xs font-medium text-muted">
+          {r.points} Punkte · Kaderwert {signedNumber(r.valueChange)} · Prämie{" "}
+          {signedNumber(r.bonus)}
         </p>
       ) : null}
       {row.transfers.map((t) => (
-        <p key={`${t.out}-${t.in}`} className="mt-1 text-xs">
-          {name(t.out)} ({formatMio(t.priceOut)}) → {name(t.in)} (
-          {formatMio(t.priceIn)}) ·{" "}
-          <span className={tone(t.gain)}>{signedMio(t.gain)}</span> realisiert
+        <p
+          key={`${t.out}-${t.in}`}
+          className="mt-2 flex items-center gap-2 border-t border-line pt-2 text-xs font-semibold"
+        >
+          <span className="font-display text-[15px] font-extrabold uppercase line-through opacity-60">
+            {name(t.out)} {mioNumber(t.priceOut)}
+          </span>
+          <span
+            aria-label="gegen"
+            className="font-display text-base font-black text-accent"
+          >
+            →
+          </span>
+          <span className="font-display text-[15px] font-extrabold uppercase">
+            {name(t.in)} {mioNumber(t.priceIn)}
+          </span>
+          <span className={`ml-auto whitespace-nowrap ${tone(t.gain)}`}>
+            {signedNumber(t.gain)} realisiert
+          </span>
         </p>
       ))}
     </li>
-  );
-}
-
-function tone(n: number): string {
-  return n > 0 ? "text-lampe" : n < 0 ? "text-karte" : "text-kreide-matt";
-}
-
-function Summary({ label, value }: { label: string; value: number }) {
-  return (
-    <div className="rounded-xl border border-nacht-linie bg-nacht-hoch p-3">
-      <dt className="text-xs text-kreide-matt">{label}</dt>
-      <dd
-        className={`font-display text-2xl font-bold ${value > 0 ? "text-lampe" : value < 0 ? "text-karte" : ""}`}
-      >
-        {signedMio(value)}
-      </dd>
-    </div>
   );
 }
 
@@ -208,30 +254,33 @@ function Row({
   id,
   detail,
   diff,
+  sold = false,
 }: {
   id: number;
   detail: string;
   diff: number;
+  sold?: boolean;
 }) {
   const p = playerById.get(id);
   return (
-    <li className="flex items-center gap-3 px-4 py-2.5">
-      <PlayerPhoto src={p?.image} className="h-9 w-9" />
-      <div className="min-w-0 flex-1">
-        <p className="truncate font-medium">
-          <Link
-            href={`/spieler/${id}`}
-            className="underline-offset-4 hover:underline"
-          >
-            {p?.name ?? `Spieler ${id}`}
-          </Link>
-        </p>
-        <p className="text-xs text-kreide-matt">{detail}</p>
-      </div>
-      <span
-        className={`font-semibold ${diff > 0 ? "text-lampe" : diff < 0 ? "text-karte" : "text-kreide-matt"}`}
-      >
-        {signedMio(diff)}
+    <li className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-3 border-b border-line py-2.5">
+      <PlayerPhoto
+        src={p?.image}
+        className={`h-10 w-10 ${sold ? "grayscale-[.5]" : ""}`}
+      />
+      <span className="min-w-0">
+        <Link
+          href={`/spieler/${id}`}
+          className="block truncate font-display text-[19px] leading-none font-black uppercase hover:underline"
+        >
+          {p?.name ?? `Spieler ${id}`}
+        </Link>
+        <span className="mt-[3px] block text-[11px] font-medium text-muted">
+          {detail}
+        </span>
+      </span>
+      <span className={`font-display text-[22px] font-black ${tone(diff)}`}>
+        {signedNumber(diff)}
       </span>
     </li>
   );

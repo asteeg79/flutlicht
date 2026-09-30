@@ -38,8 +38,8 @@ export default function RegisterPage() {
   }
 
   return (
-    <form onSubmit={onSubmit} className="space-y-5" noValidate>
-      <h1 className="font-display text-3xl font-extrabold uppercase">
+    <form onSubmit={onSubmit} className="flex flex-col gap-3.5" noValidate>
+      <h1 className="font-display text-[34px] leading-none font-black uppercase">
         Konto anlegen
       </h1>
       <Field
@@ -81,11 +81,11 @@ export default function RegisterPage() {
         ) : null}
         Konto anlegen
       </Button>
-      <p className="text-sm text-kreide-matt">
+      <p className="text-sm text-muted">
         Schon dabei?{" "}
         <Link
           href="/login"
-          className="text-kreide underline-offset-4 hover:underline"
+          className="inline-flex min-h-11 items-center font-semibold text-text underline-offset-4 hover:underline"
         >
           Anmelden
         </Link>

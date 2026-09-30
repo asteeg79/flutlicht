@@ -3,7 +3,7 @@
 import type { ManagerDoc } from "@fm/core";
 import { LoaderCircle } from "lucide-react";
 import { useState, useSyncExternalStore } from "react";
-import { toast } from "sonner";
+import { toast } from "@/components/arena/toast";
 import { usePush } from "@/hooks/usePush";
 import { callApi } from "@/lib/api-client";
 
@@ -12,8 +12,8 @@ type Prefs = NonNullable<ManagerDoc["push"]>["prefs"];
 const PREF_LABELS: { key: keyof Prefs; label: string; hint: string }[] = [
   {
     key: "reminder",
-    label: "Erinnerung vor der Sperre",
-    hint: "24 und 3 Stunden vorher, wenn deiner Aufstellung etwas fehlt",
+    label: "Erinnerung vor dem Anpfiff",
+    hint: "24 und 3 Stunden, bevor die ersten Spieler fixiert werden – wenn deiner Aufstellung etwas fehlt",
   },
   {
     key: "daily",
@@ -56,23 +56,25 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
   return (
     <section
       aria-label="Benachrichtigungen"
-      className="mb-8 rounded-xl border border-nacht-linie bg-nacht-hoch p-4"
+      className="bg-surface px-3.5 pt-1 pb-3.5"
     >
-      <div className="flex items-center justify-between gap-4">
+      <div className="flex items-center justify-between gap-3.5 py-3">
         <div>
-          <h2 className="font-semibold">Push-Benachrichtigungen</h2>
-          <p className="text-sm text-kreide-matt">
+          <h3 className="font-display text-[22px] leading-tight font-black">
+            Push auf diesem Gerät
+          </h3>
+          <p className="mt-0.5 text-xs font-medium text-muted">
             {state === "unsupported"
               ? "Dieser Browser kann keine Push-Benachrichtigungen empfangen."
               : state === "denied"
                 ? "Im Browser blockiert. Erlaube Benachrichtigungen in den Website-Einstellungen."
-                : "Auf diesem Gerät."}
+                : "Erinnerungen, Tagesfazit und Endergebnis."}
           </p>
         </div>
         {loading ? (
           <LoaderCircle
             aria-hidden
-            className="h-4 w-4 animate-spin text-kreide-matt"
+            className="h-4 w-4 animate-spin text-muted"
           />
         ) : null}
         <Switch
@@ -84,7 +86,7 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
       </div>
 
       {iosHint ? (
-        <p className="mt-3 rounded-lg bg-nacht px-3 py-2 text-sm">
+        <p className="mb-2 border-l-4 border-lampe bg-bg px-3 py-2 text-sm">
           Auf dem iPhone kommen Benachrichtigungen nur an, wenn du die App
           installierst: in Safari auf{" "}
           <span className="font-semibold">Teilen</span> tippen, dann{" "}
@@ -95,12 +97,17 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
 
       {subscribed ? (
         <>
-          <ul className="mt-4 space-y-3 border-t border-nacht-linie pt-4">
+          <ul>
             {PREF_LABELS.map(({ key, label, hint }) => (
-              <li key={key} className="flex items-center justify-between gap-4">
+              <li
+                key={key}
+                className="flex items-center justify-between gap-3.5 border-t border-line py-3"
+              >
                 <div>
-                  <p className="text-sm font-medium">{label}</p>
-                  <p className="text-xs text-kreide-matt">{hint}</p>
+                  <p className="text-[15px] font-semibold">{label}</p>
+                  <p className="mt-0.5 text-xs font-medium text-muted">
+                    {hint}
+                  </p>
                 </div>
                 <Switch
                   label={label}
@@ -114,7 +121,7 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
             type="button"
             onClick={sendTest}
             disabled={busy}
-            className="mt-4 h-10 rounded-lg border border-kreide/40 px-4 text-sm font-semibold disabled:opacity-60"
+            className="mt-1 h-11 border-2 border-line px-3.5 font-display text-base font-black uppercase disabled:opacity-60"
           >
             Test-Push senden
           </button>
@@ -143,11 +150,11 @@ function Switch({
       aria-checked={checked}
       disabled={disabled}
       onClick={() => onChange(!checked)}
-      className={`relative h-7 w-12 shrink-0 rounded-full transition disabled:opacity-50 ${checked ? "bg-lampe" : "bg-nacht-linie"}`}
+      className={`relative h-[30px] w-[52px] shrink-0 rounded-full transition after:absolute after:-inset-2 after:content-[""] disabled:opacity-50 ${checked ? "bg-lampe" : "bg-line"}`}
     >
       <span
         aria-hidden
-        className={`absolute top-1 left-1 h-5 w-5 rounded-full bg-nacht transition-transform ${checked ? "translate-x-5" : ""}`}
+        className={`absolute top-1 left-1 h-[22px] w-[22px] rounded-full bg-nacht transition-transform duration-150 ${checked ? "translate-x-[22px]" : ""}`}
       />
     </button>
   );

@@ -1,61 +1,46 @@
 "use client";
 
-import {
-  ArrowLeftRight,
-  CalendarDays,
-  History,
-  ListOrdered,
-  Settings,
-  Shirt,
-} from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
+import { activeNavIndex, NAV_ITEMS } from "@/components/arena/nav-items";
 
-const ITEMS = [
-  { href: "/team", label: "Team", Icon: Shirt },
-  { href: "/markt", label: "Markt", Icon: ArrowLeftRight },
-  { href: "/spieltag", label: "Spieltag", Icon: CalendarDays },
-  { href: "/tabelle", label: "Tabelle", Icon: ListOrdered },
-  { href: "/historie", label: "Historie", Icon: History },
-  { href: "/einstellungen", label: "Optionen", Icon: Settings },
-];
-
-/** Untere Navigation; die Kreidelinie oben ist die Seitenlinie, der aktive Punkt brennt gelb. */
+/**
+ * Untere Navigation (mobil, Arena 3.1): sechs Einträge und ein einziger gelber Balken,
+ * der mit leichtem Überschwung zum aktiven Eintrag gleitet.
+ */
 export function BottomNav() {
-  const pathname = usePathname();
+  const active = activeNavIndex(usePathname());
   return (
     <nav
       aria-label="Hauptnavigation"
-      className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-kreide/25 bg-nacht-hoch/95 pb-[env(safe-area-inset-bottom)] backdrop-blur"
+      className="fixed inset-x-0 bottom-0 z-20 border-t-2 border-nav-line bg-nav-bg pb-[env(safe-area-inset-bottom)] lg:hidden"
     >
-      <ul className="mx-auto grid max-w-lg grid-cols-6">
-        {ITEMS.map(({ href, label, Icon }) => {
-          const active = pathname === href || pathname.startsWith(`${href}/`);
-          return (
-            <li key={href}>
-              <Link
-                href={href}
-                aria-current={active ? "page" : undefined}
-                className={`relative flex h-16 flex-col items-center justify-center gap-1 text-[11px] font-medium ${
-                  active ? "text-lampe" : "text-kreide-matt hover:text-kreide"
-                }`}
-              >
-                {active ? (
-                  <span
-                    aria-hidden
-                    className="absolute -top-[2px] h-[2px] w-10 bg-lampe shadow-[0_0_12px_2px_rgb(255_213_74/0.6)]"
-                  />
-                ) : null}
-                <Icon
-                  aria-hidden
-                  className="h-5 w-5"
-                  strokeWidth={active ? 2.4 : 1.8}
-                />
-                {label}
-              </Link>
-            </li>
-          );
-        })}
+      {active >= 0 ? (
+        <span
+          aria-hidden
+          className="arena-anim absolute -top-0.5 z-[1] -ml-5 h-[3px] w-10 bg-lampe shadow-[0_0_12px_2px_rgb(255_213_74/0.6)] transition-[left] duration-[380ms] ease-[cubic-bezier(.3,1.35,.5,1)]"
+          style={{ left: `${((active + 0.5) * 100) / NAV_ITEMS.length}%` }}
+        />
+      ) : null}
+      <ul className="grid h-[62px] grid-cols-6">
+        {NAV_ITEMS.map(({ href, label, Icon }, i) => (
+          <li key={href}>
+            <Link
+              href={href}
+              aria-current={i === active ? "page" : undefined}
+              className={`flex h-full flex-col items-center justify-center gap-[3px] font-display text-[13px] font-extrabold tracking-[0.06em] uppercase transition-colors duration-300 ${
+                i === active ? "text-nav-active" : "text-nav-muted"
+              }`}
+            >
+              <Icon
+                aria-hidden
+                className="h-[22px] w-[22px]"
+                strokeWidth={i === active ? 2.2 : 2}
+              />
+              {label}
+            </Link>
+          </li>
+        ))}
       </ul>
     </nav>
   );

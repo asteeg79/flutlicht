@@ -3,31 +3,47 @@
 import {
   autoLineup,
   changeFormation,
+  POSITION_LABELS,
+  SCORING,
   setCaptain,
   swapPlayers,
-  TIMEZONE,
   type Formation,
   type Lineup,
   type Position,
 } from "@fm/core";
-import { LoaderCircle, Lock } from "lucide-react";
+import { Lock } from "lucide-react";
+import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { useEffect, useState } from "react";
-import { toast } from "sonner";
-import { PlayerPhoto } from "@/components/player-photo";
+import { useEffect, useRef, useState } from "react";
+import { SectionTitle, TwoCol } from "@/components/arena/page-layout";
 import {
-  PlayerPointsInfo,
-  type PointsInfo,
-} from "@/components/player-points-info";
+  BenchCard,
+  CaptainBar,
+  Pitch,
+  PlayerToken,
+  ROW_SCALE,
+  SwapLabel,
+  type TokenAnim,
+} from "@/components/arena/pitch";
+import { Sheet } from "@/components/arena/overlay";
+import { SavePill, useSaveState } from "@/components/arena/save-pill";
+import { swapPartners } from "@/components/arena/swap-partners";
+import { toast } from "@/components/arena/toast";
+import { PlayerPhoto } from "@/components/player-photo";
+import type { PointsInfo } from "@/components/player-points-info";
+import { useServerClock } from "@/hooks/useServerClock";
 import { callApi } from "@/lib/api-client";
-import { POS_LABEL } from "@/lib/positions";
+import { formatWeekdayTime } from "@/lib/format";
 import type { PublicManager } from "@/lib/squad";
 
 export interface SquadEntry {
   id: number;
   name: string;
   shortName: string;
+  /** Nachname fürs Namensschild. */
+  lastName: string;
   position: Position;
+  posLabel: string;
   price: number;
   club: string;
   /** Pfad des Spielerfotos; fehlt, wenn es (noch) keins gibt. */
@@ -35,6 +51,8 @@ export interface SquadEntry {
   clubLogo: string;
   /** "Bremen (H)"; null, wenn der Verein an diesem Spieltag nicht spielt. */
   opponent: string | null;
+  /** "Dortmund – Stuttgart"; null ohne Spiel. */
+  match: string | null;
   /** Sperrzeit (Anpfiff − 90 Min.) als ISO-String; null ohne Spiel. */
   lockAt: string | null;
   points: PointsInfo;
@@ -42,20 +60,26 @@ export interface SquadEntry {
   form: number | null;
 }
 
-/** Wo der Hover-Tooltip sitzt: unter/über dem Spieler, bündig am Rand der Reihe. */
-interface TipPlacement {
-  below: boolean;
-  align: "start" | "center" | "end";
-}
-
 const ROWS: Position[] = ["FWD", "MID", "DEF", "GK"];
 /** Schnellwahl über dem Spielfeld; die übrigen erlaubten Formationen gehen per Tausch. */
 const QUICK_FORMATIONS: Formation[] = ["4-4-2", "4-3-3", "3-5-2", "3-4-3"];
 
+let seq = 0;
+const nextKey = () => ++seq;
+
+type Fx =
+  | {
+      kind: "swap";
+      ids: [number, number];
+      names: [string, string];
+      key: number;
+    }
+  | { kind: "pop"; key: number };
+
 /**
- * Spielfeld mit Formation, Bank, Kapitän und Sperren (KONZEPT 2.3–2.5, 8.1).
- * Tippen wählt einen Spieler, ein zweiter Tipp tauscht die beiden. Jede Änderung
- * wird sofort gespeichert; über Sperren entscheidet der Server.
+ * Spielfeld mit Formation, Bank, Kapitän und Sperren (KONZEPT 2.3–2.5, Arena 4 und 6).
+ * Antippen wählt einen Spieler, gültige Partner (laut core) werden gelb, ein zweiter
+ * Tipp tauscht. Jede Änderung wird sofort gespeichert; über Sperren entscheidet der Server.
  */
 export function TeamLineup({
   initialManager,
@@ -69,22 +93,59 @@ export function TeamLineup({
   const router = useRouter();
   const [manager, setManager] = useState(initialManager);
   const [selected, setSelected] = useState<number | null>(null);
-  const [saving, setSaving] = useState(false);
+  const [busy, setBusy] = useState(false);
   const [autoBy, setAutoBy] = useState<"form" | "points">("form");
+  const [fx, setFx] = useState<Fx | null>(null);
+  const [shake, setShake] = useState<{ id: number; key: number } | null>(null);
+  const [badgeError, setBadgeError] = useState<{
+    ids: number[];
+    key: number;
+  } | null>(null);
+  const [stamp, setStamp] = useState<{ id: number; key: number } | null>(null);
+  const save = useSaveState();
   const now = useServerClock(serverNow);
+  const [loadedAt] = useState(() => Date.parse(serverNow));
 
   const byId = new Map(squad.map((p) => [p.id, p]));
   const positionOf = (id: number) => byId.get(id)?.position;
   const lineup = manager.lineup!;
-  const isLocked = (id: number) => {
+  const lockTime = (id: number) => {
     const at = byId.get(id)?.lockAt;
-    return at !== null && at !== undefined && now >= Date.parse(at);
+    return at ? Date.parse(at) : null;
+  };
+  const isLocked = (id: number) => {
+    const at = lockTime(id);
+    return at !== null && now >= at;
+  };
+  /** Schloss schnappt nur ein, wenn die Sperre fällt, während die Seite offen ist. */
+  const snapKey = (id: number) => {
+    const at = lockTime(id);
+    return at !== null && at > loadedAt && now >= at ? 1 : undefined;
   };
 
-  async function save(next: Lineup) {
+  // Sperre fällt, während man zuschaut: Toast je neu fixiertem Spieler.
+  const lockedIds = squad.filter((p) => isLocked(p.id)).map((p) => p.id);
+  const lockedKey = lockedIds.join(",");
+  const announced = useRef(new Set(lockedIds));
+  useEffect(() => {
+    for (const id of lockedKey ? lockedKey.split(",").map(Number) : []) {
+      if (announced.current.has(id)) continue;
+      announced.current.add(id);
+      const p = byId.get(id);
+      if (p)
+        toast(
+          `${p.shortName} ist jetzt fixiert${p.match ? ` (${p.match})` : ""}.`,
+        );
+    }
+    // byId hängt nur an squad, das sich nicht ändert.
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [lockedKey]);
+
+  async function persist(next: Lineup) {
     const previous = manager;
     setManager({ ...manager, lineup: next });
-    setSaving(true);
+    setBusy(true);
+    save.begin();
     try {
       const r = await callApi<PublicManager>("/api/lineup", "PUT", {
         lineup: next,
@@ -92,6 +153,7 @@ export function TeamLineup({
       });
       if (!r.ok) {
         setManager(previous);
+        save.done(false);
         toast.error(
           r.error ?? "Die Aufstellung konnte nicht gespeichert werden.",
         );
@@ -99,29 +161,46 @@ export function TeamLineup({
         return;
       }
       setManager(r.data);
+      save.done(true);
     } finally {
-      setSaving(false);
+      setBusy(false);
     }
   }
 
   function tap(id: number) {
-    if (saving) return;
+    if (busy) return;
+    const p = byId.get(id);
     if (isLocked(id)) {
-      toast.info(
-        `${byId.get(id)?.shortName} ist gesperrt, sein Spiel beginnt bald oder läuft schon.`,
+      setSelected(null);
+      setShake({ id, key: nextKey() });
+      toast(
+        `${p?.shortName} ist fixiert – sein Spiel beginnt bald oder läuft schon, er bleibt auf seinem Platz.`,
       );
       return;
     }
     if (selected === null) return setSelected(id);
     if (selected === id) return setSelected(null);
     const change = swapPlayers(lineup, selected, id, positionOf);
+    const first = selected;
     setSelected(null);
-    if (!change.ok) return void toast.error(change.message);
-    if (change.lineup !== lineup) void save(change.lineup);
+    if (!change.ok) {
+      setBadgeError({ ids: [first, id], key: nextKey() });
+      toast.error(change.message);
+      return;
+    }
+    // Kein Tausch (zwei Starter): dann gilt der zweite Tipp als neue Auswahl.
+    if (change.lineup === lineup) return setSelected(id);
+    setFx({
+      kind: "swap",
+      ids: [first, id],
+      names: [byId.get(first)?.lastName ?? "", p?.lastName ?? ""],
+      key: nextKey(),
+    });
+    void persist(change.lineup);
   }
 
   function autoPick() {
-    if (saving) return;
+    if (busy) return;
     setSelected(null);
     const change = autoLineup(lineup, {
       positionOf,
@@ -137,12 +216,22 @@ export function TeamLineup({
     });
     if (!change.ok) return void toast.error(change.message);
     if (JSON.stringify(change.lineup) === JSON.stringify(lineup))
-      return void toast.info("Die Aufstellung ist schon die beste.");
-    void save(change.lineup);
+      return void toast("Die Aufstellung ist schon die beste.");
+    setFx({ kind: "pop", key: nextKey() });
+    toast(
+      `Aufgestellt nach ${autoBy === "form" ? "Form" : "Punkten"} – die beste Elf steht.${lockedIds.length > 0 ? " Fixierte blieben, wo sie sind." : ""}`,
+    );
+    if (change.lineup.captain !== lineup.captain) {
+      setStamp({ id: change.lineup.captain, key: nextKey() });
+      toast(
+        `${byId.get(change.lineup.captain)?.shortName} trägt jetzt die Binde – Punkte ×${SCORING.captainMultiplier}.`,
+      );
+    }
+    void persist(change.lineup);
   }
 
   function pickFormation(target: Formation) {
-    if (saving) return;
+    if (busy || target === lineup.formation) return;
     setSelected(null);
     const change = changeFormation(lineup, target, {
       positionOf,
@@ -150,311 +239,342 @@ export function TeamLineup({
       isLocked,
     });
     if (!change.ok) return void toast.error(change.message);
-    if (change.lineup !== lineup) void save(change.lineup);
+    setFx({ kind: "pop", key: nextKey() });
+    void persist(change.lineup);
   }
 
   function makeCaptain() {
     if (selected === null) return;
     const change = setCaptain(lineup, selected);
+    const name = byId.get(selected)?.shortName;
     setSelected(null);
     if (!change.ok) return void toast.error(change.message);
-    void save(change.lineup);
+    setStamp({ id: selected, key: nextKey() });
+    toast(`${name} trägt die Binde – Punkte ×${SCORING.captainMultiplier}!`);
+    void persist(change.lineup);
   }
 
-  const token = (id: number, tip: TipPlacement, label?: string) => {
-    const p = byId.get(id);
-    if (!p) return null;
-    return (
-      <PlayerToken
-        key={id}
-        player={p}
-        tip={tip}
-        label={label}
-        captain={lineup.captain === id}
-        locked={isLocked(id)}
-        selected={selected === id}
-        countdown={countdown(p.lockAt, now)}
-        onTap={() => tap(id)}
-      />
-    );
+  const partners =
+    selected === null
+      ? new Set<number>()
+      : swapPartners(lineup, selected, positionOf, isLocked);
+  let order = 0;
+  const animFor = (id: number): TokenAnim | null => {
+    const i = order++;
+    if (shake?.id === id) return { kind: "shake", key: shake.key };
+    if (fx?.kind === "swap" && fx.ids.includes(id))
+      return { kind: fx.ids[0] === id ? "swap-l" : "swap-r", key: fx.key };
+    if (fx?.kind === "pop") return { kind: "pop", key: fx.key, delay: i * 45 };
+    return null;
   };
+  const common = (id: number) => {
+    const p = byId.get(id)!;
+    const locked = isLocked(id);
+    const captain = lineup.captain === id;
+    const points =
+      p.points.latest && p.points.latest.minutes > 0
+        ? p.points.latest.base
+        : null;
+    return {
+      player: p,
+      locked,
+      selected: selected === id,
+      dimmed: selected !== null && selected !== id && !partners.has(id),
+      posState: badgeError?.ids.includes(id)
+        ? ("error" as const)
+        : partners.has(id)
+          ? ("partner" as const)
+          : ("normal" as const),
+      posErrorKey: badgeError?.key,
+      anim: animFor(id),
+      lockSnapKey: snapKey(id),
+      ariaLabel: `${p.name}, ${POSITION_LABELS[p.position]}${captain ? ", Kapitän" : ""}${points !== null ? `, ${points} Punkte` : ""}${locked ? ", fixiert" : " – antippen zum Tauschen"}`,
+      onTap: () => tap(id),
+      points,
+      captain,
+    };
+  };
+
+  const rows = ROWS.map((pos, row) =>
+    lineup.starters
+      .filter((id) => positionOf(id) === pos)
+      .map((id) => {
+        const c = common(id);
+        return (
+          <PlayerToken
+            key={id}
+            {...c}
+            sub={c.locked ? "fixiert" : (c.player.opponent ?? "kein Spiel")}
+            captainStampKey={stamp?.id === id ? stamp.key : undefined}
+            scale={ROW_SCALE[row]}
+          />
+        );
+      }),
+  );
+  const bench = [
+    ["TW", lineup.bench.gk] as const,
+    ...lineup.bench.b.map((id, i) => [`B${i + 1}`, id] as const),
+  ].map(([slot, id]) => {
+    const { points: _p, captain: _c, ...c } = common(id);
+    return <BenchCard key={id} slot={slot} {...c} />;
+  });
+
   const sel = selected === null ? undefined : byId.get(selected);
+  const cap = byId.get(lineup.captain);
+  const canCap =
+    sel !== undefined &&
+    lineup.starters.includes(sel.id) &&
+    lineup.captain !== sel.id &&
+    !isLocked(lineup.captain);
 
   return (
-    <div className={sel ? "pb-48" : undefined}>
-      <div className="mb-3 flex items-center gap-2">
-        <button
-          type="button"
-          onClick={autoPick}
-          className="h-10 flex-1 rounded-lg bg-lampe px-3 text-sm font-semibold text-nacht"
-        >
-          Automatisch aufstellen
-        </button>
-        <div
-          role="radiogroup"
-          aria-label="Aufstellen nach"
-          className="flex h-10 overflow-hidden rounded-lg border border-nacht-linie text-sm"
-        >
-          {(
-            [
-              ["form", "Form"],
-              ["points", "Punkte"],
-            ] as const
-          ).map(([key, label]) => (
-            <button
-              key={key}
-              type="button"
-              role="radio"
-              aria-checked={autoBy === key}
-              onClick={() => setAutoBy(key)}
-              className={`px-3 font-semibold ${
-                autoBy === key ? "bg-kreide text-nacht" : "text-kreide-matt"
-              }`}
-            >
-              {label}
-            </button>
-          ))}
-        </div>
-      </div>
-      <div
-        role="group"
-        aria-label="Formation wählen"
-        className="mb-3 grid grid-cols-4 gap-2"
-      >
-        {QUICK_FORMATIONS.map((f) => (
-          <button
-            key={f}
-            type="button"
-            onClick={() => pickFormation(f)}
-            aria-pressed={lineup.formation === f}
-            className={`h-10 rounded-lg border font-display text-lg font-bold ${
-              lineup.formation === f
-                ? "border-lampe bg-lampe text-nacht"
-                : "border-nacht-linie text-kreide"
-            }`}
-          >
-            {f}
-          </button>
-        ))}
-      </div>
-      {/* Spielfeld: Mähstreifen quer, Kreidelinien, Sturm oben, Tor unten */}
-      <section
-        aria-label={`Startelf, ${lineup.formation}`}
-        className="relative overflow-hidden rounded-2xl border-2 border-kreide/60"
-        style={{
-          background:
-            "repeating-linear-gradient(180deg, var(--color-rasen) 0 44px, var(--color-rasen-hell) 44px 88px)",
-        }}
-      >
-        <div
-          aria-hidden
-          className="absolute top-0 left-1/2 h-16 w-32 -translate-x-1/2 -translate-y-1/2 rounded-full border-2 border-kreide/50"
-        />
-        <div
-          aria-hidden
-          className="absolute bottom-0 left-1/2 h-16 w-44 -translate-x-1/2 border-2 border-b-0 border-kreide/50"
-        />
-        {/* Nur für Formationen ohne Schnellwahl-Knopf; sonst zeigt die Leiste sie an. */}
-        {QUICK_FORMATIONS.includes(lineup.formation) ? null : (
-          <p className="absolute top-2 right-3 font-display text-2xl font-extrabold text-kreide/80">
-            {lineup.formation}
-          </p>
-        )}
-        <div className="relative flex flex-col gap-4 px-1 py-6">
-          {ROWS.map((pos, row) => {
-            const ids = lineup.starters.filter((id) => positionOf(id) === pos);
-            return (
-              <div key={pos} className="flex justify-evenly">
-                {ids.map((id, i) =>
-                  token(id, { below: row < 2, align: alignAt(i, ids.length) }),
-                )}
+    <div className={sel ? "pb-80 lg:pb-0" : undefined}>
+      <TwoCol
+        main={
+          <>
+            {lockedIds.length > 0 ? (
+              <div
+                role="status"
+                className="mb-3.5 flex items-center gap-2.5 border-l-4 border-lampe bg-surface px-3 py-[9px] text-xs leading-snug font-semibold"
+              >
+                <Lock
+                  aria-hidden
+                  className="h-4 w-4 shrink-0 text-accent"
+                  strokeWidth={2.4}
+                />
+                {lockedIds.length} Spieler fixiert – ihr Spiel beginnt bald oder
+                läuft, sie bleiben, wo sie sind. Alle anderen kannst du noch
+                tauschen.
               </div>
-            );
-          })}
-        </div>
-      </section>
-
-      <section
-        aria-label="Bank"
-        className="mt-4 rounded-2xl border border-nacht-linie bg-nacht-hoch px-1 pt-3 pb-4"
-      >
-        <h2 className="mb-2 px-3 text-xs font-semibold tracking-[0.18em] text-kreide-matt uppercase">
-          Bank · rückt in dieser Reihenfolge nach
-        </h2>
-        <div className="flex justify-evenly">
-          {token(lineup.bench.gk, { below: false, align: "start" }, "TW")}
-          {lineup.bench.b.map((id, i) =>
-            token(id, { below: false, align: alignAt(i + 1, 4) }, `B${i + 1}`),
-          )}
-        </div>
-      </section>
-
-      <p className="mt-4 text-sm text-kreide-matt">
-        Tippe einen Spieler an und dann einen zweiten, um sie zu tauschen.
-        Gesperrte Spieler (Schloss) bleiben, wo sie sind.
-      </p>
-
-      {sel ? (
-        <div className="fixed inset-x-0 bottom-[calc(4rem+env(safe-area-inset-bottom))] z-10 border-t-2 border-lampe bg-nacht-hoch px-5 py-3">
-          <div className="mx-auto mb-2 max-w-lg">
-            <PlayerPointsInfo playerId={sel.id} info={sel.points} />
-          </div>
-          <div className="mx-auto flex max-w-lg items-center gap-3">
-            <p className="flex-1 text-sm">
-              <span className="font-semibold">{sel.shortName}</span>: tippe
-              einen Spieler zum Tauschen an.
-            </p>
-            {lineup.starters.includes(sel.id) && lineup.captain !== sel.id ? (
+            ) : null}
+            <div className="mb-3 flex items-center justify-between gap-4 lg:mb-3.5">
+              <div
+                role="group"
+                aria-label="Formation wählen"
+                className="grid flex-1 grid-cols-4 gap-1.5 lg:flex-none lg:grid-cols-[repeat(4,96px)]"
+              >
+                {QUICK_FORMATIONS.map((f) => (
+                  <button
+                    key={f}
+                    type="button"
+                    onClick={() => pickFormation(f)}
+                    aria-pressed={lineup.formation === f}
+                    className={`slant h-11 font-display text-[21px] font-black tracking-[0.02em] lg:text-[22px] ${
+                      lineup.formation === f
+                        ? "bg-lampe text-nacht"
+                        : "bg-surface text-muted"
+                    }`}
+                  >
+                    {f}
+                  </button>
+                ))}
+              </div>
+              <p className="hidden text-xs font-semibold text-muted lg:block">
+                Klick auf einen Spieler, dann auf einen gelb markierten Partner
+                – Tausch. Zahl = Punkte beim letzten Einsatz.
+              </p>
+            </div>
+            <Pitch
+              label={`Startelf, ${lineup.formation}`}
+              rows={rows}
+              overlay={
+                <>
+                  {QUICK_FORMATIONS.includes(lineup.formation) ? null : (
+                    <p className="absolute top-3 right-6 font-display text-2xl font-black text-white/85">
+                      {lineup.formation}
+                    </p>
+                  )}
+                  {fx?.kind === "swap" ? (
+                    <SwapLabel key={fx.key} a={fx.names[0]} b={fx.names[1]} />
+                  ) : null}
+                </>
+              }
+            />
+          </>
+        }
+        side={
+          <>
+            {sel ? (
+              <Sheet
+                labelledBy="selected-player"
+                onClose={() => setSelected(null)}
+              >
+                <Selection
+                  player={sel}
+                  locked={isLocked(sel.id)}
+                  canCap={canCap}
+                  onCaptain={makeCaptain}
+                  onCancel={() => setSelected(null)}
+                />
+              </Sheet>
+            ) : null}
+            {cap ? (
+              <CaptainBar
+                name={cap.name}
+                image={cap.image}
+                multiplier={SCORING.captainMultiplier}
+                popKey={stamp?.key}
+              />
+            ) : null}
+            <section aria-label="Bank">
+              <SectionTitle aside="rückt in Reihenfolge nach">
+                Bank
+              </SectionTitle>
+              <div className="grid grid-cols-4 gap-2 lg:grid-cols-2">
+                {bench}
+              </div>
+            </section>
+            <div className="flex gap-2">
               <button
                 type="button"
-                onClick={makeCaptain}
-                className="h-10 rounded-lg bg-lampe px-3 text-sm font-semibold text-nacht"
+                onClick={autoPick}
+                className="slant h-[52px] flex-1 bg-lampe font-display text-[22px] font-black tracking-[0.04em] text-nacht uppercase shadow-[0_0_30px_rgb(255_213_74/0.35)] lg:h-[50px] lg:text-[21px]"
               >
-                Zum Kapitän
+                Auto-Aufstellung
               </button>
-            ) : null}
-            <button
-              type="button"
-              onClick={() => setSelected(null)}
-              className="h-10 rounded-lg border border-kreide/40 px-3 text-sm font-semibold"
-            >
-              Abbrechen
-            </button>
-          </div>
-        </div>
-      ) : null}
-      {saving ? (
-        <p
-          role="status"
-          className="fixed top-3 right-4 z-20 flex items-center gap-2 text-xs text-kreide-matt"
-        >
-          <LoaderCircle aria-hidden className="h-3.5 w-3.5 animate-spin" />{" "}
-          speichert
-        </p>
-      ) : null}
+              <div
+                role="radiogroup"
+                aria-label="Aufstellen nach"
+                className="flex border-2 border-line"
+              >
+                {(
+                  [
+                    ["form", "Form"],
+                    ["points", "Punkte"],
+                  ] as const
+                ).map(([key, label]) => (
+                  <button
+                    key={key}
+                    type="button"
+                    role="radio"
+                    aria-checked={autoBy === key}
+                    onClick={() => setAutoBy(key)}
+                    className={`h-12 px-3 font-display text-base font-extrabold uppercase lg:h-[46px] ${
+                      autoBy === key
+                        ? "bg-chip-on-bg text-chip-on-text"
+                        : "text-muted"
+                    }`}
+                  >
+                    {label}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <p className="text-xs leading-normal text-muted lg:hidden">
+              Antippen, dann einen gelb markierten Spieler antippen – Tausch.
+              Zahl oben rechts = Punkte beim letzten Einsatz. Schloss = fixiert
+              (Sperre 90 Min. vor Anpfiff).
+            </p>
+          </>
+        }
+      />
+      <SavePill state={save.state} />
     </div>
   );
 }
 
-function PlayerToken({
+/** Auswahl: Foto, Name, Gegner und Sperre, Kacheln, „Zum Kapitän“ / „Abbrechen“. */
+function Selection({
   player,
-  tip,
-  label,
-  captain,
   locked,
-  selected,
-  countdown,
-  onTap,
+  canCap,
+  onCaptain,
+  onCancel,
 }: {
   player: SquadEntry;
-  tip: TipPlacement;
-  label?: string;
-  captain: boolean;
   locked: boolean;
-  selected: boolean;
-  countdown: string;
-  onTap: () => void;
+  canCap: boolean;
+  onCaptain: () => void;
+  onCancel: () => void;
 }) {
+  const { latest, season } = player.points;
+  const tile = "bg-white/[0.07] px-2.5 py-2";
+  const tileLabel =
+    "text-[11px] font-bold tracking-[0.1em] uppercase opacity-75";
+  const tileValue =
+    "font-display text-[30px] leading-none font-black lg:text-[26px]";
+  const role = POSITION_LABELS[player.position];
   return (
-    <div className="group relative">
-      <button
-        type="button"
-        onClick={onTap}
-        aria-pressed={selected}
-        aria-label={`${player.name} (${player.club})${captain ? ", Kapitän" : ""}${locked ? ", gesperrt" : ""}`}
-        className="flex w-[4.6rem] flex-col items-center gap-1 text-center"
-      >
-        <span
-          className={`relative flex h-12 w-12 items-center justify-center rounded-full border-2 bg-nacht ${
-            selected
-              ? "border-lampe shadow-[0_0_14px_3px_rgb(255_213_74/0.5)]"
-              : "border-kreide/80"
-          } ${locked ? "opacity-80" : ""}`}
-        >
-          <PlayerPhoto src={player.image} className="h-full w-full" />
-          <img
-            src={player.clubLogo}
-            alt=""
-            className="absolute -right-1 -bottom-1 h-5 w-5 rounded-full bg-kreide p-0.5"
-          />
-          <span className="absolute -top-1 -right-2 flex h-5 min-w-5 items-center justify-center rounded-full border border-kreide/60 bg-nacht px-1 text-[9px] font-bold text-kreide">
-            {POS_LABEL[player.position]}
-          </span>
-          {captain ? (
-            <span className="absolute -bottom-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-lampe text-[11px] font-extrabold text-nacht">
-              C
-            </span>
-          ) : null}
-          {locked ? (
-            <span className="absolute -top-1 -left-1 flex h-5 w-5 items-center justify-center rounded-full bg-nacht-hoch">
-              <Lock aria-hidden className="h-3 w-3 text-kreide" />
-            </span>
-          ) : null}
-        </span>
-        <span className="w-full truncate rounded bg-nacht/85 px-1 text-[11px] leading-5 font-semibold">
-          {label ? `${label} · ` : ""}
-          {player.shortName}
-        </span>
-        <span className="text-[10px] leading-3 text-kreide/85">
-          {player.opponent ?? "kein Spiel"}
-        </span>
-        <span className="text-[10px] leading-3 text-kreide/70">
-          {countdown}
-        </span>
-      </button>
-      {/* Nur mit Maus (Tailwind v4: hover nur bei hover-fähigen Geräten); am Handy zeigt die Auswahlleiste dasselbe. */}
-      <div
-        className={`absolute z-20 hidden w-60 group-hover:block ${
-          tip.below ? "top-full pt-1" : "bottom-full pb-1"
-        } ${
-          tip.align === "start"
-            ? "left-0"
-            : tip.align === "end"
-              ? "right-0"
-              : "left-1/2 -translate-x-1/2"
-        }`}
-      >
-        <div className="rounded-xl border border-nacht-linie bg-nacht-hoch px-3 py-2 shadow-lg">
-          <p className="mb-1 font-semibold">{player.name}</p>
-          <PlayerPointsInfo playerId={player.id} info={player.points} />
+    <>
+      <div className="flex items-center gap-3.5">
+        <PlayerPhoto
+          src={player.image}
+          className="h-[72px] w-[72px] border-[3px] border-lampe lg:h-16 lg:w-16"
+        />
+        <div className="min-w-0 flex-1">
+          <p className="text-[11px] font-bold tracking-[0.14em] text-lampe uppercase">
+            {role} · {player.club}
+          </p>
+          <p
+            id="selected-player"
+            className="mt-0.5 truncate font-display text-[34px] leading-[0.92] font-black uppercase lg:text-[30px]"
+          >
+            {player.name}
+          </p>
+          <p className="mt-1 flex items-center gap-[5px] text-xs font-semibold opacity-85">
+            {player.lockAt ? (
+              <Lock aria-hidden className="h-3 w-3" strokeWidth={2.6} />
+            ) : null}
+            {player.opponent ?? "kein Spiel"}
+            {player.lockAt
+              ? locked
+                ? " · fixiert"
+                : ` · fixiert ab ${formatWeekdayTime(player.lockAt)}`
+              : ""}
+          </p>
         </div>
       </div>
-    </div>
+      <div className="mt-3.5 mb-3 grid grid-cols-3 gap-1.5">
+        <div className={tile}>
+          <p className={tileLabel}>
+            {latest ? `${latest.matchday}. Spieltag` : "Zuletzt"}
+          </p>
+          <p className={`${tileValue} text-lampe`}>
+            {latest && latest.minutes > 0 ? latest.base : "–"}
+          </p>
+        </div>
+        <div className={tile}>
+          <p className={tileLabel}>Saison</p>
+          <p className={tileValue}>{season?.points ?? 0}</p>
+        </div>
+        <div className={tile}>
+          <p className={tileLabel}>Form</p>
+          <p className={tileValue}>
+            {player.form === null
+              ? "–"
+              : player.form
+                  .toLocaleString("de-DE", { maximumFractionDigits: 1 })
+                  .replace("-", "−")}
+          </p>
+        </div>
+      </div>
+      <p className="mb-3 text-[13px] font-medium opacity-85">
+        Tippe einen gelb markierten Spieler an, um zu tauschen.{" "}
+        <Link
+          href={`/spieler/${player.id}`}
+          className="font-semibold text-lampe underline-offset-4 hover:underline"
+        >
+          Spielerprofil →
+        </Link>
+      </p>
+      <div className="flex gap-2">
+        {canCap ? (
+          <button
+            type="button"
+            onClick={onCaptain}
+            className="slant h-12 flex-[1.4] bg-lampe font-display text-xl font-black text-nacht uppercase lg:h-11 lg:text-[19px]"
+          >
+            Zum Kapitän
+          </button>
+        ) : null}
+        <button
+          type="button"
+          onClick={onCancel}
+          className="h-12 flex-1 border-2 border-white/40 font-display text-xl font-black uppercase lg:h-11 lg:text-[19px]"
+        >
+          Abbrechen
+        </button>
+      </div>
+    </>
   );
-}
-
-function alignAt(index: number, count: number): TipPlacement["align"] {
-  if (count === 1) return "center";
-  if (index === 0) return "start";
-  return index === count - 1 ? "end" : "center";
-}
-
-/** Uhr im Takt der Serverzeit: der Versatz zur Geräteuhr wird beim Laden gemessen. */
-function useServerClock(serverNow: string): number {
-  const [offset] = useState(() => Date.parse(serverNow) - Date.now());
-  const [now, setNow] = useState(() => Date.parse(serverNow));
-  useEffect(() => {
-    const timer = setInterval(() => setNow(Date.now() + offset), 30_000);
-    return () => clearInterval(timer);
-  }, [offset]);
-  return now;
-}
-
-/** "gesperrt", "in 23 Min.", "in 5 Std. 12 Min." oder "Sa., 14:00". */
-const LOCK_FORMAT = new Intl.DateTimeFormat("de-DE", {
-  timeZone: TIMEZONE,
-  weekday: "short",
-  hour: "2-digit",
-  minute: "2-digit",
-});
-
-function countdown(lockAtIso: string | null, now: number): string {
-  if (lockAtIso === null) return "";
-  const ms = Date.parse(lockAtIso) - now;
-  if (ms <= 0) return "gesperrt";
-  const min = Math.ceil(ms / 60_000);
-  if (min < 60) return `Sperre in ${min} Min.`;
-  if (min < 24 * 60)
-    return `Sperre in ${Math.floor(min / 60)} Std. ${min % 60} Min.`;
-  return `Sperre ${LOCK_FORMAT.format(new Date(lockAtIso))}`;
 }
