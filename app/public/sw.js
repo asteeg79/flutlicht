@@ -1,4 +1,4 @@
-// Übernommen aus Workgrid public/sw.js, angepasst: Cache-Name fm-v1, Push- und
+// Übernommen aus Workgrid public/sw.js, angepasst: eigener Cache-Name (fm-v…), Push- und
 // notificationclick-Handler ergänzt (fehlten in Workgrid, KONZEPT 8.5).
 // Flutlicht Service Worker.
 // Ziel: PWA-Installierbarkeit (Chrome verlangt einen SW mit fetch-Handler) OHNE
@@ -7,7 +7,7 @@
 // (/_next/static, /icons) cache-first; HTML-Navigationen network-first mit
 // Cache nur als Offline-Fallback.
 
-const CACHE = "fm-v1";
+const CACHE = "fm-v2"; // hochzählen, wenn sich Dateien unter /icons ändern (cache-first)
 
 self.addEventListener("install", () => {
   self.skipWaiting();
@@ -86,7 +86,7 @@ self.addEventListener("push", (e) => {
     self.registration.showNotification(d.title ?? "Flutlicht", {
       body: d.body,
       icon: "/icons/icon-192.png",
-      badge: "/icons/icon-192.png",
+      badge: "/icons/badge-96.png", // Android zeigt Badges nur als Silhouette
       data: { url: d.url ?? "/team" },
       tag: d.tag,
     }),
