@@ -65,9 +65,14 @@ async function expectNoHorizontalScroll(page: Page) {
 test("Hauptseiten: kein seitliches Scrollen, Navigation sichtbar", async ({
   page,
 }, info) => {
+  // Sechs Seiten nacheinander: auf langsamen CI-Maschinen mehr Zeit als die üblichen 30 s.
+  test.setTimeout(120_000);
   for (const [name, path] of PAGES) {
     await page.goto(path);
-    await page.waitForLoadState("networkidle");
+    // Auf den Seitentitel warten statt auf Netzwerkruhe: der Produktions-Build lädt in
+    // Chromium die Navigationsziele vor, „networkidle“ kommt dort spät oder gar nicht.
+    await expect(page.locator("header.hero-bg h1")).toBeVisible();
+    await page.evaluate(() => document.fonts.ready);
     await expect(
       page.getByRole("navigation", { name: "Hauptnavigation" }).first(),
     ).toBeVisible();
