@@ -5,6 +5,7 @@ import {
   type Fixture,
   type ManagerDoc,
   type MatchdayPoints,
+  type ScraperStatus,
   type TickInput,
 } from "../src";
 import { lineup442, SQUAD_IDS, squadPlayers } from "./helpers";
@@ -111,7 +112,7 @@ const input = (over: Partial<TickInput> = {}): TickInput => ({
   fixtures: [fixture(100, 101, SAT), fixture(102, 103, SAT)],
   points: finals1to8,
   firstScoredMatchday: 8,
-  scraperSeenAt: null,
+  scraper: null,
   ...over,
 });
 const keys = (i: TickInput) => planTick(i).map((a) => a.key);
@@ -241,14 +242,20 @@ describe("Finalisierung und Endergebnis", () => {
 describe("Scraper-Alarm", () => {
   const admin = manager("b", "Ben", { role: "admin" });
   // Ben ist Admin. Aufstellung vollständig (allClubs): keine Erinnerung mischt sich in den Plan.
-  const silent = (
-    scraperSeenAt: string | null,
-    over: Partial<TickInput> = {},
-  ) =>
+  const quiet: ScraperStatus = {
+    pause: null,
+    lastJob: null,
+    due: [],
+    next: [],
+    gaveUp: [],
+    commit: null,
+    unpushed: 0,
+  };
+  const silent = (seenAt: string | null, over: Partial<TickInput> = {}) =>
     input({
       fixtures: allClubs,
       managers: [anna, admin],
-      scraperSeenAt,
+      scraper: seenAt === null ? null : { seenAt, status: quiet },
       ...over,
     });
 
@@ -294,6 +301,33 @@ describe("Scraper-Alarm", () => {
     expect(
       keys(silent("2026-11-06T10:00:00Z", { managers: [off] })),
     ).toHaveLength(1);
+  });
+
+  it("meldet eine Sofascore-Pause und aufgegebene Jobs einmal je Vorfall", () => {
+    const scraper = {
+      seenAt: "2026-11-06T13:58:00Z",
+      status: {
+        ...quiet,
+        pause: {
+          until: "2026-11-06T19:41:00Z",
+          reason: "429 Too Many Requests",
+        },
+        gaveUp: [{ key: "final:8", at: "2026-11-06T09:30:00Z" }],
+      },
+    };
+    const actions = planTick(silent(null, { scraper }));
+    expect(actions.map((a) => a.key)).toEqual([
+      "scraperpause:2026-11-06T19:41:00Z:b",
+      "scrapergaveup:final:8:2026-11-06T09:30:00Z:b",
+    ]);
+    expect(actions[0]).toMatchObject({
+      pref: "alarm",
+      title: "Scraper pausiert",
+      body: "⚠️ 429 Too Many Requests. Pause bis Fr., 06.11., 20:41 Uhr.",
+      url: "/admin",
+    });
+    const done = new Set([...input().done, ...actions.map((a) => a.key)]);
+    expect(keys(silent(null, { scraper, done }))).toEqual([]);
   });
 });
 

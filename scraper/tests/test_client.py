@@ -39,6 +39,7 @@ def test_pausiert_6_stunden_bei_wiederholtem_403(make_client, tmp_path):
         client.get_json("u1")
     state = json.loads((tmp_path / "state.json").read_text())
     assert state["pauseUntil"] == "2026-09-24T19:00:00+00:00"
+    assert state["pauseReason"] == "wiederholt 403/Bot-Challenge bei u1"
 
 
 def test_pausiert_bei_429_ohne_retry(make_client, tmp_path):

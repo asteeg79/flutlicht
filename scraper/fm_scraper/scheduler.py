@@ -31,6 +31,9 @@ SQUAD_WEEKDAYS = (0, 3)  # Montag, Donnerstag
 POSTPONED_GRACE = timedelta(days=3)
 # Vorläufige Daten nur bis zur Finalisierung am Folgemorgen; ältere Lücken füllt match-final/backfill.
 PROVISIONAL_WINDOW = timedelta(hours=24)
+# Das Lebenszeichen nennt die nächsten geplanten Jobs und die zuletzt aufgegebenen.
+STATUS_NEXT = 5
+GAVE_UP_KEEP = timedelta(days=7)
 
 
 @dataclass(frozen=True)
@@ -181,8 +184,9 @@ def plan(
     return tasks
 
 
-def record(state: dict[str, Any], task: Task, now: datetime, outcome: str) -> None:
+def record(state: dict[str, Any], task: Task, now: datetime, outcome: str, error: str | None = None) -> None:
     """Ergebnis eines Jobs vermerken: ok, unfinished (Spiel läuft noch) oder failed."""
+    state["lastJob"] = {"key": task.key, "at": now.isoformat(), "outcome": outcome, "error": error}
     attempts: dict[str, int] = state.setdefault("attempts", {})
     if outcome == "ok":
         state["done"][task.key] = now.isoformat()
@@ -194,8 +198,40 @@ def record(state: dict[str, Any], task: Task, now: datetime, outcome: str) -> No
     if n >= limit:
         log.warning("%s nach %d Versuchen aufgegeben", task.key, n)
         state["done"][task.key] = now.isoformat()
+        state.setdefault("gaveUp", {})[task.key] = now.isoformat()
     else:
         state["planned"][task.key] = (now + PROVISIONAL_RETRY).astimezone(timezone.utc).isoformat()
+
+
+def status(
+    state: dict[str, Any], pause: dict[str, Any], now: datetime, commit: str | None, unpushed: int
+) -> dict[str, Any]:
+    """Stand für das Lebenszeichen: `/admin` zeigt ihn, der Tick warnt bei Pause und Aufgabe.
+
+    `state` ist der Scheduler-Zustand, `pause` der des Sofascore-Clients (`state.json`)."""
+    done = state.get("done", {})
+    attempts = state.get("attempts", {})
+    until = pause.get("pauseUntil")
+    upcoming = sorted(
+        (datetime.fromisoformat(t), k) for k, t in state.get("planned", {}).items() if k not in done
+    )
+    return {
+        "pause": (
+            {"until": until, "reason": pause.get("pauseReason")}
+            if until and now < datetime.fromisoformat(until)
+            else None
+        ),
+        "lastJob": state.get("lastJob"),
+        "due": [{"key": k, "attempts": attempts.get(k, 0)} for k in state.get("due", []) if k not in done],
+        "next": [{"key": k, "at": t.isoformat()} for t, k in upcoming if t > now][:STATUS_NEXT],
+        "gaveUp": [
+            {"key": k, "at": t}
+            for k, t in state.get("gaveUp", {}).items()
+            if now - datetime.fromisoformat(t) <= GAVE_UP_KEEP
+        ],
+        "commit": commit,
+        "unpushed": unpushed,
+    }
 
 
 def load_state(path: Path) -> dict[str, Any]:
@@ -233,6 +269,7 @@ def run_once(now: datetime | None = None) -> int:
     import fcntl
 
     from . import gitsync, heartbeat
+    from .client import STATE_FILE as PAUSE_FILE
     from .client import FetchError, PauseRequired, default_client
     from .teams import load_teams
 
@@ -245,8 +282,12 @@ def run_once(now: datetime | None = None) -> int:
             log.info("Scheduler läuft schon, dieser Aufruf endet")
             return 0
 
-        heartbeat.send()
         state = load_state(STATE_FILE)
+
+        def beat(at: datetime) -> None:
+            heartbeat.send(status(state, load_state(PAUSE_FILE), at, *gitsync.head(config.REPO_ROOT)))
+
+        beat(now)
         last_pull = state.get("lastPull")
         if last_pull is None or now - datetime.fromisoformat(last_pull) >= PULL_EVERY:
             gitsync.pull(config.REPO_ROOT)
@@ -262,6 +303,7 @@ def run_once(now: datetime | None = None) -> int:
             lambda: _images_missing(config.RAW_DIR, config.IMG_DIR, load_teams(config.TEAMS_FILE)),
             random.Random(),
         )
+        state["due"] = [task.key for task in tasks]
         save_state(STATE_FILE, state)
         if not tasks:
             return 0
@@ -271,6 +313,7 @@ def run_once(now: datetime | None = None) -> int:
         try:
             for task in tasks:
                 log.info("Job %s (%s)", task.job, task.key)
+                error = None
                 try:
                     outcome, paths = _execute(task, client, config.RAW_DIR)
                 except PauseRequired as e:
@@ -278,13 +321,13 @@ def run_once(now: datetime | None = None) -> int:
                     break
                 except (FetchError, SystemExit) as e:
                     log.warning("%s fehlgeschlagen: %s", task.key, e)
-                    outcome, paths = "failed", ()
-                record(state, task, datetime.now(timezone.utc), outcome)
+                    outcome, paths, error = "failed", (), str(e)[:300]
+                record(state, task, datetime.now(timezone.utc), outcome, error)
                 save_state(STATE_FILE, state)
                 if paths:
                     gitsync.sync(config.REPO_ROOT, task.job, paths)
                 # Ein Lauf mit mehreren Jobs dauert länger als der Timer-Abstand.
-                heartbeat.send()
+                beat(datetime.now(timezone.utc))
                 ran += 1
         finally:
             client.close()

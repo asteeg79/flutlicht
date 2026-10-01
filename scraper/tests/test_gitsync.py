@@ -61,3 +61,14 @@ def test_committet_keine_fremden_gestagten_dateien(tmp_path):
     files = subprocess.run(["git", "ls-tree", "-r", "--name-only", "main"], cwd=remote, capture_output=True, text=True)
     assert "raw/a.json" in files.stdout
     assert "code.txt" not in files.stdout
+
+
+def test_head_nennt_commit_und_ungepushte_commits(tmp_path):
+    _, work = setup_repos(tmp_path)
+    commit, unpushed = gitsync.head(work)
+    short = subprocess.run(["git", "rev-parse", "--short", "HEAD"], cwd=work, capture_output=True, text=True)
+    assert (commit, unpushed) == (short.stdout.strip(), 0)
+    (work / "b.txt").write_text("x")
+    git(work, "add", ".")
+    git(work, "commit", "-q", "-m", "lokal")
+    assert gitsync.head(work)[1] == 1

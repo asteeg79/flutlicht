@@ -18,6 +18,8 @@ import {
   type Fixture,
   type League,
   type ManagerDoc,
+  type ScraperHeartbeat,
+  type ScraperStatus,
 } from "@fm/core";
 import { z } from "zod";
 import {
@@ -305,8 +307,8 @@ export interface AdminStatus {
   /** Meldung, wenn GitHub nicht erreichbar oder nicht eingerichtet ist; dann fehlen die drei Läufe. */
   github: string | null;
   scraper: { date: string; message: string } | null;
-  /** Letztes Lebenszeichen des Heim-Rechners; null, solange er sich nie gemeldet hat. */
-  heartbeat: { at: string; silent: boolean } | null;
+  /** Letztes Lebenszeichen des Heim-Rechners mit seinem Stand; null, solange er sich nie gemeldet hat. */
+  heartbeat: { at: string; silent: boolean; status: ScraperStatus } | null;
   compute: {
     status: string;
     conclusion: string | null;
@@ -328,7 +330,7 @@ export async function adminStatus(
   gh: GitHub,
   fixtures: readonly Fixture[],
   tickDone: Record<string, string>,
-  scraperSeenAt: string | null,
+  scraper: ScraperHeartbeat | null,
   now: Date,
 ): Promise<AdminStatus> {
   // Ohne GitHub (etwa fehlender GITHUB_PAT) bleibt der Rest des Status sichtbar.
@@ -352,9 +354,13 @@ export async function adminStatus(
   return {
     ...github,
     heartbeat:
-      scraperSeenAt === null
+      scraper === null
         ? null
-        : { at: scraperSeenAt, silent: scraperSilent(scraperSeenAt, now) },
+        : {
+            at: scraper.seenAt,
+            silent: scraperSilent(scraper.seenAt, now),
+            status: scraper.status,
+          },
     pending: fixtures.filter((f) => f.dataState === "pending").length,
     tick: Object.entries(tickDone)
       .map(([key, at]) => ({ key, at }))

@@ -3,7 +3,8 @@
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
 
-from fm_scraper.scheduler import Task, plan, record
+from fm_scraper import client, config, gitsync, heartbeat, scheduler
+from fm_scraper.scheduler import Task, plan, record, status
 
 BERLIN = ZoneInfo("Europe/Berlin")
 
@@ -178,8 +179,11 @@ def test_fehlgeschlagene_jobs_werden_nach_drei_versuchen_aufgegeben(tmp_path):
     task = Task("final:3", "backfill", matchday=3)
     now = at("2026-09-26 11:00")
     for i in range(3):
-        record(state, task, now + timedelta(minutes=15 * i), "failed")
+        record(state, task, now + timedelta(minutes=15 * i), "failed", "HTTP 404 für u1")
     assert "final:3" in state["done"]
+    gave_up = (now + timedelta(minutes=30)).isoformat()
+    assert state["gaveUp"] == {"final:3": gave_up}
+    assert state["lastJob"] == {"key": "final:3", "at": gave_up, "outcome": "failed", "error": "HTTP 404 für u1"}
 
 
 def test_round_events_auch_nach_dem_anpfiff(tmp_path):
@@ -190,3 +194,92 @@ def test_squads_nicht_doppelt_wenn_schon_ein_stand_existiert(tmp_path):
     (tmp_path / "sofascore" / "squads" / "2026-10-05").mkdir(parents=True)
     assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == []
     assert keys(plan(at("2026-10-08 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-08"]
+
+
+def test_status_nennt_pause_faellige_geplante_und_aufgegebene_jobs():
+    now = at("2026-10-08 18:00")
+    last_job = {"key": "round:5", "at": at("2026-10-06 10:00").isoformat(), "outcome": "ok", "error": None}
+    state = {
+        "done": {"round:5": "x", "final:4": "x"},
+        "planned": {
+            "round:5": at("2026-10-06 10:00").isoformat(),  # erledigt
+            "squads:2026-10-08": at("2026-10-08 15:39").isoformat(),  # fällig, steht in due
+            "prov:502": at("2026-10-10 17:45").isoformat(),
+            "prov:501": at("2026-10-09 22:45").isoformat(),
+        },
+        "due": ["squads:2026-10-08", "round:5"],
+        "attempts": {"squads:2026-10-08": 2},
+        "gaveUp": {"final:4": at("2026-10-05 09:00").isoformat(), "final:3": at("2026-09-30 09:00").isoformat()},
+        "lastJob": last_job,
+    }
+    pause = {"pauseUntil": at("2026-10-08 23:41").isoformat(), "pauseReason": "wiederholt 403/Bot-Challenge bei u1"}
+    assert status(state, pause, now, "5cfb8a4", 1) == {
+        "pause": {"until": at("2026-10-08 23:41").isoformat(), "reason": "wiederholt 403/Bot-Challenge bei u1"},
+        "lastJob": last_job,
+        "due": [{"key": "squads:2026-10-08", "attempts": 2}],
+        "next": [
+            {"key": "prov:501", "at": at("2026-10-09 22:45").isoformat()},
+            {"key": "prov:502", "at": at("2026-10-10 17:45").isoformat()},
+        ],
+        # Älter als 7 Tage: nicht mehr gemeldet.
+        "gaveUp": [{"key": "final:4", "at": at("2026-10-05 09:00").isoformat()}],
+        "commit": "5cfb8a4",
+        "unpushed": 1,
+    }
+
+
+def test_status_ohne_zustand_und_nach_abgelaufener_pause():
+    now = at("2026-10-08 18:00")
+    pause = {"pauseUntil": at("2026-10-08 17:59").isoformat()}
+    assert status({}, pause, now, None, 0) == {
+        "pause": None,
+        "lastJob": None,
+        "due": [],
+        "next": [],
+        "gaveUp": [],
+        "commit": None,
+        "unpushed": 0,
+    }
+
+
+def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeypatch):
+    """run_once ohne Netz und ohne Git: zwei fällige Jobs, der erste scheitert, der zweite trifft auf die Pause."""
+    now = at("2026-10-08 18:00")
+    beats: list[dict] = []
+    monkeypatch.setattr(config, "STATE_DIR", tmp_path)
+    monkeypatch.setattr(config, "REPO_ROOT", tmp_path)
+    monkeypatch.setattr(scheduler, "STATE_FILE", tmp_path / "scheduler.json")
+    monkeypatch.setattr(scheduler, "LOCK_FILE", tmp_path / "scheduler.lock")
+    monkeypatch.setattr(client, "STATE_FILE", tmp_path / "state.json")
+    monkeypatch.setattr(client, "default_client", lambda: type("NoClient", (), {"close": lambda self: None})())
+    monkeypatch.setattr(gitsync, "pull", lambda repo: None)
+    monkeypatch.setattr(gitsync, "head", lambda repo: ("5cfb8a4", 0))
+    monkeypatch.setattr(heartbeat, "send", beats.append)
+    tasks = [Task("squads:2026-10-08", "squads"), Task("images:2026-10-08T18", "images")]
+
+    def fake_plan(_now, _fixtures, state, *_rest):
+        state.setdefault("planned", {})
+        state.setdefault("done", {})
+        return tasks
+
+    monkeypatch.setattr(scheduler, "plan", fake_plan)
+
+    def execute(task, _client, _raw):
+        if task.job == "squads":
+            raise client.FetchError("u1", 404)
+        (tmp_path / "state.json").write_text('{"pauseUntil": "2026-10-08T21:41:00+00:00", "pauseReason": "429 Too Many Requests"}')
+        raise client.PauseRequired("429 Too Many Requests")
+
+    monkeypatch.setattr(scheduler, "_execute", execute)
+
+    assert scheduler.run_once(now) == 1
+    first, after_job = beats
+    assert first == status({}, {}, now, "5cfb8a4", 0)
+    assert after_job["lastJob"]["outcome"] == "failed"
+    assert after_job["lastJob"]["error"] == "HTTP 404 für u1"
+    assert after_job["due"] == [{"key": "squads:2026-10-08", "attempts": 1}, {"key": "images:2026-10-08T18", "attempts": 0}]
+    # Der nächste Lauf meldet die Pause gleich zu Beginn.
+    tasks.clear()
+    scheduler.run_once(now + timedelta(minutes=5))
+    assert beats[2]["pause"] == {"until": "2026-10-08T21:41:00+00:00", "reason": "429 Too Many Requests"}
+    assert beats[2]["due"] == [{"key": "squads:2026-10-08", "attempts": 1}, {"key": "images:2026-10-08T18", "attempts": 0}]

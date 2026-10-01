@@ -354,15 +354,30 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
       "remind24:8:x": "2026-10-29T20:00:00Z",
     };
     const seenAt = "2026-10-30T10:00:00Z";
+    const scraper = {
+      seenAt,
+      status: {
+        pause: {
+          until: "2026-10-30T15:41:00Z",
+          reason: "429 Too Many Requests",
+        },
+        lastJob: null,
+        due: [{ key: "squads:2026-10-29", attempts: 1 }],
+        next: [],
+        gaveUp: [],
+        commit: "5cfb8a4",
+        unpushed: 0,
+      },
+    };
     const status = await admin.adminStatus(
       gh,
       fixtures,
       tickDone,
-      seenAt,
+      scraper,
       new Date("2026-10-30T10:45:00Z"),
     );
     expect(status).toMatchObject({
-      heartbeat: { at: seenAt, silent: false },
+      heartbeat: { at: seenAt, silent: false, status: scraper.status },
       pending: 1,
       scraper: { message: "raw: match-provisional" },
       compute: { conclusion: "success" },
@@ -373,10 +388,10 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
       gh,
       fixtures,
       tickDone,
-      seenAt,
+      scraper,
       new Date("2026-10-30T10:46:00Z"),
     );
-    expect(later.heartbeat).toEqual({ at: seenAt, silent: true });
+    expect(later.heartbeat).toMatchObject({ at: seenAt, silent: true });
   });
 
   it("zeigt den Status auch ohne GitHub, mit Hinweis statt 502", async () => {

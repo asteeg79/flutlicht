@@ -16,6 +16,7 @@ export * from "./transfers";
 export * from "./violations";
 export * from "./sofascore";
 export * from "./schemas/admin";
+export * from "./schemas/scraper";
 export * from "./text";
 export * from "./manual-match";
 export * from "./matchday";

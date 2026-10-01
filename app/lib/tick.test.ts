@@ -191,7 +191,18 @@ describe("runTick (Abnahme M9)", () => {
       role: "admin",
       push: { subscription, prefs },
     });
-    await storage.saveScraperSeenAt("2026-11-06T07:00:00Z"); // 1 h vor NOW
+    await storage.saveScraperHeartbeat({
+      seenAt: "2026-11-06T07:00:00Z", // 1 h vor NOW
+      status: {
+        pause: null,
+        lastJob: null,
+        due: [],
+        next: [],
+        gaveUp: [],
+        commit: null,
+        unpushed: 0,
+      },
+    });
     const send = vi.fn(
       async (_s: unknown, _p: { tag?: string }) => "sent" as const,
     );

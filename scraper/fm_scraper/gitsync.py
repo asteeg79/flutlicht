@@ -24,6 +24,13 @@ def pull(repo: Path) -> None:
         log.warning("git pull fehlgeschlagen: %s", result.stderr.strip())
 
 
+def head(repo: Path) -> tuple[str | None, int]:
+    """Commit des Klons und die Zahl seiner noch nicht gepushten Commits (für das Lebenszeichen)."""
+    commit = _git(repo, "rev-parse", "--short", "HEAD").stdout.strip()
+    unpushed = _git(repo, "rev-list", "--count", "@{u}..HEAD").stdout.strip()
+    return commit or None, int(unpushed or 0)
+
+
 def sync(
     repo: Path,
     job: str,

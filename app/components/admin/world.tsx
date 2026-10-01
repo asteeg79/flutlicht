@@ -6,6 +6,7 @@ import {
   type MappingReviewEntry,
   type MissingValueEntry,
   type Position,
+  type ScraperStatus,
 } from "@fm/core";
 import { useEffect, useState } from "react";
 import { toast } from "@/components/arena/toast";
@@ -68,6 +69,9 @@ export function Status() {
               }
               alert={status.heartbeat?.silent}
             />
+            {status.heartbeat ? (
+              <ScraperRows status={status.heartbeat.status} when={when} />
+            ) : null}
             <Row label="Pipeline (compute)" value={run(status.compute)} />
             <Row label="Spielplan (fixtures)" value={run(status.fixtures)} />
             <Row label="Spiele ohne Daten" value={String(status.pending)} />
@@ -93,9 +97,78 @@ function Row({
 }) {
   return (
     <div className="flex justify-between gap-4">
-      <dt className="text-muted">{label}</dt>
-      <dd className={alert ? "text-right text-down" : "text-right"}>{value}</dd>
+      <dt className="shrink-0 text-muted">{label}</dt>
+      <dd
+        className={`min-w-0 whitespace-pre-line text-right [overflow-wrap:anywhere] ${alert ? "text-down" : ""}`}
+      >
+        {value}
+      </dd>
     </div>
+  );
+}
+
+const JOB_OUTCOME: Record<
+  NonNullable<ScraperStatus["lastJob"]>["outcome"],
+  string
+> = {
+  ok: "ok",
+  unfinished: "Spiel lief noch",
+  failed: "fehlgeschlagen",
+};
+
+/** Stand des Heim-Rechners aus dem letzten Lebenszeichen (docs/betrieb.md). */
+function ScraperRows({
+  status,
+  when,
+}: {
+  status: ScraperStatus;
+  when: (iso: string) => string;
+}) {
+  const { pause, lastJob, due, next, gaveUp, commit, unpushed } = status;
+  const timed = (jobs: { key: string; at: string }[]) =>
+    jobs.map((j) => `${j.key} · ${when(j.at)}`).join("\n") || "–";
+  return (
+    <>
+      <Row
+        label="Scraper-Pause"
+        value={
+          pause
+            ? `bis ${when(pause.until)}${pause.reason ? `\n${pause.reason}` : ""}`
+            : "keine"
+        }
+        alert={pause !== null}
+      />
+      <Row
+        label="Letzter Job"
+        value={
+          lastJob
+            ? `${lastJob.key} · ${JOB_OUTCOME[lastJob.outcome]} · ${when(lastJob.at)}${lastJob.error ? `\n${lastJob.error}` : ""}`
+            : "–"
+        }
+        alert={lastJob?.outcome === "failed"}
+      />
+      <Row
+        label="Fällige Jobs"
+        value={
+          due
+            .map((j) =>
+              j.attempts > 0 ? `${j.key} (Versuch ${j.attempts + 1})` : j.key,
+            )
+            .join("\n") || "–"
+        }
+      />
+      <Row label="Geplante Jobs" value={timed(next)} />
+      <Row
+        label="Aufgegebene Jobs"
+        value={timed(gaveUp)}
+        alert={gaveUp.length > 0}
+      />
+      <Row
+        label="Stand Heim-Rechner"
+        value={`${commit ?? "–"}${unpushed > 0 ? ` · ${unpushed} nicht gepusht` : ""}`}
+        alert={unpushed > 0}
+      />
+    </>
   );
 }
 

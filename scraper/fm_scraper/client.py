@@ -114,6 +114,7 @@ class Client:
         until = self._now() + timedelta(hours=config.PAUSE_HOURS)
         state = self._read_state()
         state["pauseUntil"] = until.isoformat()
+        state["pauseReason"] = reason
         self._state_file.parent.mkdir(parents=True, exist_ok=True)
         self._state_file.write_text(json.dumps(state, indent=2))
         log.warning("%s: Job abgebrochen, Pause bis %s", reason, until.isoformat())
@@ -229,9 +230,13 @@ def tm_client() -> Client:
     )
 
 
+# Pausen-Zustand des Sofascore-Clients; der Scheduler meldet ihn mit dem Lebenszeichen.
+STATE_FILE = config.STATE_DIR / "state.json"
+
+
 def default_client() -> Client:
     return Client(
         BotasaurusRequestTransport(),
         BotasaurusBrowserTransport,
-        config.STATE_DIR / "state.json",
+        STATE_FILE,
     )

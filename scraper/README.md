@@ -94,8 +94,10 @@ Der Mac darf nicht schlafen (Systemeinstellungen → Energie: „Ruhezustand
 verhindern“) oder `caffeinate -s` im Hintergrund.
 
 **4. Lebenszeichen an die App** (optional, empfohlen): Der Scheduler meldet sich bei
-jedem Lauf bei der App, sobald das Secret hinterlegt ist. `/admin` zeigt die letzte
-Meldung, und nach 45 Min. Stille bekommen die Admins einen Push.
+jedem Lauf bei der App, sobald das Secret hinterlegt ist, und schickt seinen Stand mit
+(Pause, letzter Job, fällige, geplante und aufgegebene Jobs, Git-Stand). `/admin` zeigt
+die letzte Meldung; nach 45 Min. Stille, bei einer Pause und bei einem aufgegebenen Job
+bekommen die Admins einen Push.
 
 ```sh
 # Derselbe Wert wie SCRAPER_SECRET in Vercel (z. B. aus `openssl rand -hex 32`)
@@ -109,8 +111,8 @@ umask 077 && cat > ~/.fm-scraper/heartbeat-secret   # Wert einfügen, Enter, Str
 
 | Datei (`~/.fm-scraper/`, änderbar per `FM_SCRAPER_STATE`) | Inhalt |
 |---|---|
-| `scheduler.json` | gezogene Zeitpunkte (`planned`), erledigte Jobs (`done`), Fehlversuche, letzter `git pull` |
-| `state.json` / `tm-state.json` | 6-h-Pause nach 429/403 (Sofascore bzw. Transfermarkt) |
+| `scheduler.json` | gezogene Zeitpunkte (`planned`), erledigte Jobs (`done`), Fehlversuche, letzter `git pull`; für das Lebenszeichen: fällige Jobs des letzten Laufs (`due`), letzter Job (`lastJob`), aufgegebene Jobs (`gaveUp`) |
+| `state.json` / `tm-state.json` | 6-h-Pause nach 429/403 mit Grund (Sofascore bzw. Transfermarkt) |
 | `scheduler.lock` | verhindert zwei gleichzeitige Läufe |
 | `heartbeat-secret` | Bearer-Secret für das Lebenszeichen an die App; ohne die Datei meldet sich der Scheduler nicht |
 
