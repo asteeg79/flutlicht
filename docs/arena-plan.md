@@ -45,5 +45,6 @@ eine Phase je Commit `feat(arena): Phase N – …`. Jede Phase endet mit
 | Weiß auf `#e0533a`, `down` hell `#c8412b` | `karte-tief` `#bf3a24` unter weißer Schrift, `down` hell `#bf3a24` | Kontrast ≥ 4,5 : 1 (README 9) |
 | Preisfilter im Markt | entfällt | im Entwurf nicht vorgesehen |
 | Marktliste komplett | 100 Spieler + „Mehr anzeigen“ | rund 520 Zeilen auf einmal könnten auf älteren Handys stocken |
+| Markttabelle mit Vereinsspalte ab 1024 px | 1024–1279 px: Zeilen wie mobil; ab 1280 px Tabelle, Verein unter dem Namen; Vereinsspalte erst ab 1536 px | Neben Navigation (240 px) und Seitenspalte (340 px) blieben dem Namen bei 1280 px nur 86 px, bei 1024 px gar nichts (Fehlermeldung von Alex, 01.10.) |
 | Deal-Bestätigung: Verkauf rot, Kauf grün | Verkauf grün, Kauf rot | Farbe folgt dem Geld (Wunsch von Alex) |
 | Startelf-Balken bei „So kamen die Punkte“ | kein eigener Balken | Saisonpunkte (`playerSeason`) enthalten den Startelf-Bonus nicht |

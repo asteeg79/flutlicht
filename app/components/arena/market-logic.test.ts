@@ -1,6 +1,8 @@
 import { describe, expect, it } from "vitest";
 import {
   draftExplanation,
+  filtersFromParams,
+  filtersToSearch,
   hotPlayers,
   missingCash,
   shortReason,
@@ -93,5 +95,49 @@ describe("Markt-Logik", () => {
     expect(
       [p(1, 0), p(2, 0)].sort(sorter("points", stats)).map((x) => x.id),
     ).toEqual([2, 1]);
+  });
+
+  it("liest die Filter aus der Adresse, Ungültiges fällt auf den Standard zurück", () => {
+    const teams = new Set([2672, 2673]);
+    const read = (search: string) =>
+      filtersFromParams(new URLSearchParams(search), teams);
+    expect(read("")).toEqual({
+      pos: "ALL",
+      team: "ALL",
+      sort: "price-desc",
+      query: "",
+    });
+    expect(read("pos=FWD&verein=2673&sort=points&suche=m%C3%BCl")).toEqual({
+      pos: "FWD",
+      team: 2673,
+      sort: "points",
+      query: "mül",
+    });
+    expect(read("pos=XX&verein=1&sort=teuer")).toEqual(read(""));
+  });
+
+  it("schreibt die Filter in die Adresse: Standard entfällt, Fremdes bleibt", () => {
+    const standard = {
+      pos: "ALL",
+      team: "ALL",
+      sort: "price-desc",
+      query: "",
+    } as const;
+    expect(filtersToSearch("", standard)).toBe("");
+    expect(filtersToSearch("?anleitung=transfers", standard)).toBe(
+      "?anleitung=transfers",
+    );
+    expect(
+      filtersToSearch("?pos=DEF&anleitung=transfers", {
+        pos: "FWD",
+        team: 2673,
+        sort: "points",
+        query: "mül",
+      }),
+    ).toBe(
+      "?pos=FWD&anleitung=transfers&verein=2673&sort=points&suche=m%C3%BCl",
+    );
+    // Zurück auf den Standard: die Parameter verschwinden wieder.
+    expect(filtersToSearch("?pos=FWD&verein=2673&suche=x", standard)).toBe("");
   });
 });

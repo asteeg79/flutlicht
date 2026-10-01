@@ -1,8 +1,9 @@
 // Anzeige-Logik des Markts (Arena 5): Kurzformen von Regelverstößen, „Heiß gerade“,
-// Kurs-Ticker, Sortierung. Die Regeln selbst stehen in core.
+// Kurs-Ticker, Sortierung, Filter in der Adresse. Die Regeln selbst stehen in core.
 import {
   formatMio,
   POSITION_LABELS,
+  POSITIONS,
   RULES,
   subtractMio,
   sumPrices,
@@ -109,4 +110,46 @@ export function sorter(sort: Sort, stats: Record<string, PlayerStats>) {
       );
     return b.price - a.price || a.id - b.id;
   };
+}
+
+export interface MarketFilters {
+  pos: Position | "ALL";
+  team: number | "ALL";
+  sort: Sort;
+  query: string;
+}
+
+const SORTS: readonly Sort[] = ["price-desc", "price-asc", "points", "form"];
+
+/**
+ * Filter aus der Adresse (`?pos=FWD&verein=2673&sort=points&suche=mu`). Sie stehen dort,
+ * damit „Zurück“ aus dem Spielerprofil sie wiederherstellt. Ungültiges fällt auf den
+ * Standard zurück.
+ */
+export function filtersFromParams(
+  params: { get(name: string): string | null },
+  teamIds: ReadonlySet<number>,
+): MarketFilters {
+  const pos = params.get("pos") as Position;
+  const team = Number(params.get("verein"));
+  const sort = params.get("sort") as Sort;
+  return {
+    pos: POSITIONS.includes(pos) ? pos : "ALL",
+    team: teamIds.has(team) ? team : "ALL",
+    sort: SORTS.includes(sort) ? sort : "price-desc",
+    query: params.get("suche") ?? "",
+  };
+}
+
+/** Suchteil der Adresse mit den Filtern: Standardwerte entfallen, fremde Parameter bleiben. */
+export function filtersToSearch(search: string, f: MarketFilters): string {
+  const params = new URLSearchParams(search);
+  const set = (name: string, value: string | null) =>
+    value === null ? params.delete(name) : params.set(name, value);
+  set("pos", f.pos === "ALL" ? null : f.pos);
+  set("verein", f.team === "ALL" ? null : String(f.team));
+  set("sort", f.sort === "price-desc" ? null : f.sort);
+  set("suche", f.query === "" ? null : f.query);
+  const text = params.toString();
+  return text ? `?${text}` : "";
 }

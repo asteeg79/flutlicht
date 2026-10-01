@@ -94,10 +94,12 @@ export function MarketRow({
   );
 }
 
+// Die Vereinsspalte gibt es erst ab 1536 px; darunter steht der Verein unter dem Namen,
+// sonst bleibt neben Navigation und Seitenspalte zu wenig Platz für den Namen.
 const COLS =
-  "grid grid-cols-[40px_minmax(0,1fr)_104px_40px_40px_58px_60px_96px] items-center gap-2";
+  "grid grid-cols-[40px_minmax(0,1fr)_40px_40px_58px_60px_96px] items-center gap-2 2xl:grid-cols-[40px_minmax(0,1fr)_104px_40px_40px_58px_60px_96px]";
 
-/** Tabelle auf dem Desktop (Arena 3.2 Markt): Foto · Name · Verein · Pkt · Form · Trend · Preis · Aktion. */
+/** Tabelle auf dem Desktop ab 1280 px (Arena 3.2 Markt): Foto · Name · Verein · Pkt · Form · Trend · Preis · Aktion. */
 export function MarketTable({
   count,
   children,
@@ -115,7 +117,9 @@ export function MarketTable({
         <span role="columnheader" className="whitespace-nowrap">
           {count} Spieler
         </span>
-        <span role="columnheader">Verein</span>
+        <span role="columnheader" className="hidden 2xl:block">
+          Verein
+        </span>
         <span role="columnheader" className="text-right">
           Pkt
         </span>
@@ -165,10 +169,13 @@ export function MarketTableRow({
         >
           {p.name}
         </Link>
+        <span className="mt-0.5 block truncate text-xs font-medium text-muted 2xl:hidden">
+          {p.club}
+        </span>
       </span>
       <span
         role="cell"
-        className="flex min-w-0 items-center gap-1.5 text-[13px] font-medium text-muted"
+        className="hidden min-w-0 items-center gap-1.5 text-[13px] font-medium text-muted 2xl:flex"
       >
         <ClubLogo src={p.clubLogo} className="h-[18px] w-[18px]" />
         <span className="truncate">{p.club}</span>

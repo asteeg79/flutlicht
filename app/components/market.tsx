@@ -19,8 +19,8 @@ import {
   type Violation,
 } from "@fm/core";
 import { Lock, Search } from "lucide-react";
-import { useRouter } from "next/navigation";
-import { useMemo, useState, type ReactNode } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
+import { useEffect, useMemo, useState, type ReactNode } from "react";
 import { BoardTile } from "@/components/arena/board-tile";
 import {
   Celebration,
@@ -32,6 +32,8 @@ import { HeroHeader } from "@/components/arena/hero-header";
 import { HotCard, HotRow, type HotPlayer } from "@/components/arena/hot";
 import {
   draftExplanation,
+  filtersFromParams,
+  filtersToSearch,
   hotPlayers,
   missingCash,
   shortReason,
@@ -112,6 +114,9 @@ const nextKey = () => ++seq;
 /** Spieler je Seite der Liste; „Mehr anzeigen“ lädt die nächsten nach. */
 const PAGE_SIZE = 100;
 
+/** Ab hier passt die Tabelle neben Navigation und Seitenspalte; darunter die Zeilen wie mobil. */
+const TABLE = "(min-width: 1280px)";
+
 /**
  * Transfermarkt (KONZEPT 2.2, 2.6, 2.7; Arena 5–7). Kaufen ist immer ein Tausch
  * gleicher Position: „Holen“ → „Wen gibst du ab?“ → Bestätigung, oder wie bisher
@@ -129,6 +134,11 @@ export function Market({
 }: Props) {
   const router = useRouter();
   const desktop = useMediaQuery(DESKTOP);
+  const table = useMediaQuery(TABLE);
+  const searchParams = useSearchParams();
+  const [initialFilters] = useState(() =>
+    filtersFromParams(searchParams, new Set(teams.map((t) => t.id))),
+  );
   const [manager, setManager] = useState(initialManager);
   const [draft, setDraft] = useState<number[]>([]);
   const [tab, setTab] = useState<"markt" | "kader">("markt");
@@ -138,10 +148,16 @@ export function Market({
   /** Bestätigung kam über „Holen“ (nicht über „Abgeben“): „Zurück“ führt zur Abgabe-Auswahl. */
   const [fromPick, setFromPick] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [pos, setPos] = useState<Position | "ALL">("ALL");
-  const [team, setTeam] = useState<number | "ALL">("ALL");
-  const [sort, setSort] = useState<Sort>("price-desc");
-  const [query, setQuery] = useState("");
+  const [pos, setPos] = useState<Position | "ALL">(initialFilters.pos);
+  const [team, setTeam] = useState<number | "ALL">(initialFilters.team);
+  const [sort, setSort] = useState<Sort>(initialFilters.sort);
+  const [query, setQuery] = useState(initialFilters.query);
+  // Filter in die Adresse schreiben: „Zurück“ aus dem Spielerprofil stellt sie so wieder her.
+  useEffect(() => {
+    const search = filtersToSearch(location.search, { pos, team, sort, query });
+    if (search !== location.search)
+      history.replaceState(null, "", location.pathname + search);
+  }, [pos, team, sort, query]);
   const [celebration, setCelebration] = useState<
     (CelebrationData & { after: () => void }) | null
   >(null);
@@ -655,12 +671,12 @@ export function Market({
           aria-label="Sortierung"
           value={sort}
           onChange={(e) => setSort(e.target.value as Sort)}
-          className="hidden h-11 border-2 border-line bg-surface px-2 text-[13px] font-bold text-text lg:block"
+          className="hidden h-11 border-2 border-line bg-surface px-2 text-[13px] font-bold text-text xl:block"
         >
           <SortOptions />
         </select>
       </div>
-      <div className="mt-3 mb-1 flex items-center justify-between lg:hidden">
+      <div className="mt-3 mb-1 flex items-center justify-between xl:hidden">
         <span className="font-display text-lg font-black uppercase">
           {list.length} Spieler
         </span>
@@ -681,7 +697,7 @@ export function Market({
       key={listKey}
       className="arena-anim animate-[arena-list0_.22s_ease-out_both]"
     >
-      {desktop ? (
+      {table ? (
         <MarketTable count={list.length}>
           {visible.map((p) => (
             <MarketTableRow

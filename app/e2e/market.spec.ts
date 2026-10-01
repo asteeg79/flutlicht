@@ -147,3 +147,69 @@ test("Holen: Abgabe wählen, Deal bestätigen, Feier; Abgeben zuerst mit Banner"
   await page.getByRole("button", { name: "Stopp" }).click();
   await expect(page.getByText("Abgabe · Ersatz gesucht")).toHaveCount(0);
 });
+
+test("Filter bleiben erhalten: Spielerprofil öffnen und zurück", async ({
+  page,
+}) => {
+  await page.goto("/login");
+  await page.getByLabel("E-Mail").fill("admin@e2e.test");
+  await page.getByLabel("Passwort").fill("flutlicht-an");
+  await page.getByRole("button", { name: "Anmelden" }).click();
+  await expect(page).toHaveURL(/\/team$/);
+  await page.getByRole("link", { name: "Markt", exact: true }).click();
+
+  const st = page.getByRole("button", { name: "ST", exact: true });
+  await st.click();
+  await page.getByLabel("Verein").selectOption({ label: "Bayern" });
+  const team = await page.getByLabel("Verein").inputValue();
+  await page.getByLabel("Sortierung mobil").selectOption("points");
+  await page.getByLabel("Spieler suchen").fill("a");
+  const rows = page
+    .getByRole("list", { name: "Spielerliste" })
+    .getByTestId("market-row");
+  await expect(rows.first()).toBeVisible();
+  const names = await rows.getByRole("link").allTextContents();
+
+  await rows.first().getByRole("link").click();
+  await expect(page).toHaveURL(/\/spieler\/\d+$/);
+  await page.getByRole("link", { name: "Zurück" }).click();
+
+  await expect(page).toHaveURL(/\/markt\?/);
+  await expect(st).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Verein")).toHaveValue(team);
+  await expect(page.getByLabel("Sortierung mobil")).toHaveValue("points");
+  await expect(page.getByLabel("Spieler suchen")).toHaveValue("a");
+  expect(await rows.getByRole("link").allTextContents()).toEqual(names);
+
+  // Die Adresse trägt die Filter: auch ein Neuladen behält sie.
+  await page.reload();
+  await expect(st).toHaveAttribute("aria-pressed", "true");
+  await expect(page.getByLabel("Spieler suchen")).toHaveValue("a");
+});
+
+test.describe("Desktop", () => {
+  // Das Projekt emuliert ein Handy; hier zählt ein echtes Desktop-Fenster.
+  test.use({ isMobile: false, hasTouch: false, deviceScaleFactor: 1 });
+  // Schmale und übliche Laptop-Breiten: neben Navigation und Kader bleibt wenig Platz.
+  for (const width of [1024, 1280, 1440, 1536]) {
+    test(`Markt bei ${width} px: Spielernamen haben Platz`, async ({
+      page,
+    }) => {
+      await page.setViewportSize({ width, height: 800 });
+      await page.goto("/login");
+      await page.getByLabel("E-Mail").fill("admin@e2e.test");
+      await page.getByLabel("Passwort").fill("flutlicht-an");
+      await page.getByRole("button", { name: "Anmelden" }).click();
+      await expect(page).toHaveURL(/\/team$/);
+      await page.goto("/markt");
+      // Erst wenn die Seitenspalte steht, ist das Desktop-Layout aktiv.
+      await expect(
+        page.getByRole("region", { name: "Mein Kader" }),
+      ).toBeVisible();
+      const name = page.getByTestId("market-row").first().getByRole("link");
+      await expect(name).toBeVisible();
+      const box = await name.boundingBox();
+      expect(box!.width).toBeGreaterThanOrEqual(170);
+    });
+  }
+});
