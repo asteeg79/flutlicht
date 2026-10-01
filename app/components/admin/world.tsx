@@ -59,6 +59,15 @@ export function Status() {
                   : "–"
               }
             />
+            <Row
+              label="Scraper-Lebenszeichen"
+              value={
+                status.heartbeat
+                  ? `${when(status.heartbeat.at)}${status.heartbeat.silent ? " · meldet sich nicht" : ""}`
+                  : "noch keines"
+              }
+              alert={status.heartbeat?.silent}
+            />
             <Row label="Pipeline (compute)" value={run(status.compute)} />
             <Row label="Spielplan (fixtures)" value={run(status.fixtures)} />
             <Row label="Spiele ohne Daten" value={String(status.pending)} />
@@ -73,11 +82,19 @@ export function Status() {
   );
 }
 
-function Row({ label, value }: { label: string; value: string }) {
+function Row({
+  label,
+  value,
+  alert,
+}: {
+  label: string;
+  value: string;
+  alert?: boolean;
+}) {
   return (
     <div className="flex justify-between gap-4">
       <dt className="text-muted">{label}</dt>
-      <dd className="text-right">{value}</dd>
+      <dd className={alert ? "text-right text-down" : "text-right"}>{value}</dd>
     </div>
   );
 }

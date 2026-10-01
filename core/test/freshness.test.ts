@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { awaitingData, type Fixture } from "../src";
+import { awaitingData, scraperSilent, type Fixture } from "../src";
 
 const f = (dataState: Fixture["dataState"]): Fixture => ({
   matchday: 5,
@@ -50,5 +50,16 @@ describe("awaitingData", () => {
         72 * HOUR,
       ),
     ).toEqual([]);
+  });
+});
+
+describe("scraperSilent", () => {
+  const seenAt = "2026-10-10T12:00:00Z";
+  it("gilt erst nach mehr als 45 Min. ohne Lebenszeichen", () => {
+    expect(scraperSilent(seenAt, new Date("2026-10-10T12:45:00Z"))).toBe(false);
+    expect(scraperSilent(seenAt, new Date("2026-10-10T12:45:01Z"))).toBe(true);
+  });
+  it("gilt nicht, solange sich der Heim-Rechner nie gemeldet hat", () => {
+    expect(scraperSilent(null, new Date("2026-10-10T12:45:01Z"))).toBe(false);
   });
 });

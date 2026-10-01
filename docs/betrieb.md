@@ -23,6 +23,7 @@ Heim-Rechners: [`scraper/README.md`](../scraper/README.md).
 Heim-Rechner (Timer 5 Min.) ── Job ── git push raw/ ──▶ compute.yml ── data/ ──▶ Vercel-Build
 GitHub-Cron ── fixtures.yml (OpenLigaDB + pipeline build) ── data/ ──────────────▶ Vercel-Build
 Cloudflare-Worker (*/10) ── POST /api/cron/tick ──▶ App (Finalisierung, Pushes)
+Heim-Rechner (jeder Lauf) ── POST /api/scraper/heartbeat ──▶ App (Lebenszeichen)
 ```
 
 - **Scheduler** (`scraper/fm_scraper/scheduler.py`): wird alle 5 Min. aufgerufen,
@@ -87,6 +88,13 @@ höchstens 3-mal.
    Zeitstempel), Commit und Build-Datum; die App fragt alle 5 Min. `/version.json`
    ab und bietet „Neu laden“ an, sobald ein neuerer Build (Code oder Daten) live ist.
 9. **Tick idempotent:** Schlüssel in `system-state`, jeder Push höchstens einmal.
+10. **Scraper-Lebenszeichen:** Der Scheduler meldet sich bei jedem Lauf (alle 5 Min.,
+    auch nachts) und nach jedem Job bei der App (`heartbeat.py`, Secret in
+    `~/.fm-scraper/heartbeat-secret`). `/admin` → Status zeigt den Zeitpunkt. Bleibt
+    die Meldung länger als 45 Min. aus, schickt der Tick den Admins einmal je Ausfall
+    einen Push. Das zeigt nur, dass der Rechner läuft und der Timer feuert, nicht, dass
+    die Jobs gelingen (dafür: Frische-Banner, Überfällig-Alarm). Fällt der Worker oder
+    die App aus, kommt auch kein Alarm.
 
 ## Soforthilfe
 
@@ -108,6 +116,8 @@ cd infra/cron-worker && npx wrangler tail
 
 | Symptom | Prüfen | Ursache / Behebung |
 |---|---|---|
+| Push „Scraper meldet sich nicht“ bzw. `/admin` → Scraper-Lebenszeichen rot | `ssh raspdev 'systemctl --user list-timers flutlicht-scraper.timer'`; Log nach „Lebenszeichen fehlgeschlagen“ durchsuchen | Heim-Rechner aus oder ohne Netz → einschalten. Timer gestoppt → `systemctl --user enable --now flutlicht-scraper.timer`. HTTP 401 im Log → `SCRAPER_SECRET` in Vercel und `~/.fm-scraper/heartbeat-secret` verschieden |
+| `/admin` → Scraper-Lebenszeichen „noch keines“ | Gibt es `~/.fm-scraper/heartbeat-secret` auf dem Heim-Rechner? | Secret-Datei fehlt: ohne sie meldet sich der Scheduler nicht (Einrichtung in `scraper/README.md`) |
 | Frische-Banner bleibt stehen | Scheduler-Log (`journalctl --user-unit flutlicht-scraper` bzw. `scraper/scraper.log`); `~/.fm-scraper/scheduler.json` → `done`/`attempts` für `prov:<event>` | Heim-Rechner aus/offline → einschalten, Job von Hand starten. 6-h-Pause in `state.json` → abwarten |
 | Keine vorläufigen Daten, obwohl Scheduler läuft | Hat die Fixture eine `sofascoreEventId`? (`data/fixtures.json`) | `round-events` fehlt → `run round-events --matchday N` |
 | „Pause bis …“ im Log | `~/.fm-scraper/state.json` | 429/403 von Sofascore; 6 h abwarten, **nicht** umgehen |

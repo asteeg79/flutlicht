@@ -1,12 +1,13 @@
 // Taktgeber (KONZEPT 9): entscheidet rein und deterministisch, welche Aktionen fällig
 // sind. Jede Aktion hat einen Schlüssel und wird höchstens einmal ausgeführt; die App
 // führt aus, merkt sich die Schlüssel in system-state und sendet die Pushes.
+import { scraperSilent } from "./freshness";
 import { isScoredMatchday, participation } from "./participation";
 import { firstLock } from "./locks";
 import { fixtureCounts, HAS_DATA } from "./matchday";
 import { round1 } from "./rounding";
 import { scoreLeague, standings } from "./standings";
-import { TIMEZONE } from "./time";
+import { formatKickoff, TIMEZONE } from "./time";
 import { currentMatchday, isBreakWindow, rollTransferBank } from "./transfers";
 import type { Fixture, MatchdayPoints, Player } from "./schemas/data";
 import type { ManagerDoc } from "./schemas/manager";
@@ -22,7 +23,8 @@ export type TickAction =
       kind: "push";
       key: string;
       userId: string;
-      pref: PushKind;
+      /** "alarm": Scraper-Ausfall, geht ohne Einstellung an die Admins. */
+      pref: PushKind | "alarm";
       title: string;
       body: string;
       url: string;
@@ -37,6 +39,8 @@ export interface TickInput {
   fixtures: readonly Fixture[];
   points: readonly MatchdayPoints[];
   firstScoredMatchday: number;
+  /** Letztes Lebenszeichen des Heim-Rechners; null, solange er sich nie gemeldet hat. */
+  scraperSeenAt: string | null;
 }
 
 // Formatter einmal je Modul: der Tick läuft alle 10 Minuten über alle Spiele.
@@ -224,6 +228,23 @@ export function planTick(input: TickInput): TickAction[] {
           `/spieltag/${md.matchday}`,
         );
       }
+    }
+  }
+
+  // Scraper-Alarm: ein Push je Ausfall (Schlüssel = letztes Lebenszeichen) an die Admins.
+  if (scraperSilent(input.scraperSeenAt, input.now)) {
+    for (const m of input.managers) {
+      const key = `scraperdown:${input.scraperSeenAt}:${m.userId}`;
+      if (m.role !== "admin" || !m.push || input.done.has(key)) continue;
+      actions.push({
+        kind: "push",
+        key,
+        userId: m.userId,
+        pref: "alarm",
+        title: "Scraper meldet sich nicht",
+        body: `⚠️ Letztes Lebenszeichen des Heim-Rechners: ${formatKickoff(input.scraperSeenAt!)} Uhr.`,
+        url: "/admin",
+      });
     }
   }
   return actions;

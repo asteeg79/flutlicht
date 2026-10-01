@@ -93,6 +93,15 @@ tail -f ~/flutlicht/scraper/scraper.log   # Log
 Der Mac darf nicht schlafen (Systemeinstellungen → Energie: „Ruhezustand
 verhindern“) oder `caffeinate -s` im Hintergrund.
 
+**4. Lebenszeichen an die App** (optional, empfohlen): Der Scheduler meldet sich bei
+jedem Lauf bei der App, sobald das Secret hinterlegt ist. `/admin` zeigt die letzte
+Meldung, und nach 45 Min. Stille bekommen die Admins einen Push.
+
+```sh
+# Derselbe Wert wie SCRAPER_SECRET in Vercel (z. B. aus `openssl rand -hex 32`)
+umask 077 && cat > ~/.fm-scraper/heartbeat-secret   # Wert einfügen, Enter, Strg+D
+```
+
 **Stoppen:** `systemctl --user disable --now flutlicht-scraper.timer` bzw.
 `launchctl unload ~/Library/LaunchAgents/dev.a-tec.flutlicht.scraper.plist`.
 
@@ -103,6 +112,7 @@ verhindern“) oder `caffeinate -s` im Hintergrund.
 | `scheduler.json` | gezogene Zeitpunkte (`planned`), erledigte Jobs (`done`), Fehlversuche, letzter `git pull` |
 | `state.json` / `tm-state.json` | 6-h-Pause nach 429/403 (Sofascore bzw. Transfermarkt) |
 | `scheduler.lock` | verhindert zwei gleichzeitige Läufe |
+| `heartbeat-secret` | Bearer-Secret für das Lebenszeichen an die App; ohne die Datei meldet sich der Scheduler nicht |
 
 Einen Job neu auslösen: seinen Schlüssel (z. B. `"final:9"`) aus `done` löschen,
 oder den Job von Hand starten (unten).

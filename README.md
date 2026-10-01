@@ -251,7 +251,7 @@ cd scraper && python3 -m venv .venv && .venv/bin/pip install -e '.[dev]'
 
 | Dienst | Zweck | Konfiguration |
 |---|---|---|
-| Vercel (Hobby) | App, Domain `flutlicht.a-tec.dev` | `AUTH_SECRET`, `APP_ENCRYPTION_SECRET`, `KV_REST_API_URL`/`KV_REST_API_TOKEN` (Upstash), `VAPID_*`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `CRON_SECRET`, `ADMIN_EMAILS`, `GITHUB_PAT`, `GITHUB_REPO` |
+| Vercel (Hobby) | App, Domain `flutlicht.a-tec.dev` | `AUTH_SECRET`, `APP_ENCRYPTION_SECRET`, `KV_REST_API_URL`/`KV_REST_API_TOKEN` (Upstash), `VAPID_*`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY`, `CRON_SECRET`, `SCRAPER_SECRET`, `ADMIN_EMAILS`, `GITHUB_PAT`, `GITHUB_REPO` |
 | Upstash Redis (Free) | Nutzerdaten, Rate-Limits | über die Vercel-Integration |
 | Cloudflare Workers (Free) | Taktgeber `flutlicht-cron` | Secret `CRON_SECRET` (gleicher Wert wie in Vercel), `APP_URL` in `wrangler.jsonc` |
 | GitHub Actions | CI, Pipeline, Spielplan | `GITHUB_TOKEN`; der Scraper pusht per Deploy-Key |

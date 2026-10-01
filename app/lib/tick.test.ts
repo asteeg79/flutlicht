@@ -186,6 +186,28 @@ describe("runTick (Abnahme M9)", () => {
     expect((await storage.loadManager(a.userId))!.cash).toBe(1.3);
   });
 
+  it("meldet dem Admin einen stillen Scraper genau einmal je Ausfall", async () => {
+    const adminDoc = await withSquad(SQUAD, {
+      role: "admin",
+      push: { subscription, prefs },
+    });
+    await storage.saveScraperSeenAt("2026-11-06T07:00:00Z"); // 1 h vor NOW
+    const send = vi.fn(
+      async (_s: unknown, _p: { tag?: string }) => "sent" as const,
+    );
+    const alarms = () =>
+      send.mock.calls
+        .map(([, p]) => (p as { tag: string }).tag)
+        .filter((tag) => tag.startsWith("scraperdown:"));
+
+    await runTick(NOW, game, send, finals);
+    expect(alarms()).toEqual([
+      `scraperdown:2026-11-06T07:00:00Z:${adminDoc.userId}`,
+    ]);
+    await runTick(new Date(NOW.getTime() + 10 * 60_000), game, send, finals);
+    expect(alarms()).toHaveLength(1);
+  });
+
   it("entfernt abgelaufene Subscriptions", async () => {
     const doc = await withSquad(SQUAD, { push: { subscription, prefs } });
     const r = await runTick(

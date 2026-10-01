@@ -23,6 +23,10 @@ NIGHT_HOURS = (0, 7)
 TIMEZONE = "Europe/Berlin"
 REQUEST_TIMEOUT_SECONDS = 30
 
+# Lebenszeichen an die eigene App (heartbeat.py), kein Sofascore-Abruf.
+HEARTBEAT_URL = "https://flutlicht.a-tec.dev/api/scraper/heartbeat"
+HEARTBEAT_TIMEOUT_SECONDS = 10
+
 # dcaribou-Datensatz (CC0), Stand 12.06.2026 (KONZEPT 5.4).
 DCARIBOU_URL = "https://pub-e682421888d945d684bcae8890b0ec20.r2.dev/data/players.csv.gz"
 # Lokaler transfermarkt-api-Dienst (Docker) und sein Abrufabstand.

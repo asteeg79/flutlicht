@@ -24,3 +24,16 @@ export function awaitingData(
     );
   });
 }
+
+/**
+ * So lange darf der Heim-Rechner schweigen. Er meldet sich bei jedem Scheduler-Lauf
+ * (alle 5 Min.) und nach jedem Job; der längste Job (60 Bilder) dauert rund 20 Min.
+ */
+export const SCRAPER_SILENT_MS = 45 * 60 * 1000;
+
+/** Der Heim-Rechner hat sich schon einmal gemeldet, seither aber zu lange nicht mehr. */
+export function scraperSilent(seenAt: string | null, now: Date): boolean {
+  return (
+    seenAt !== null && now.getTime() - Date.parse(seenAt) > SCRAPER_SILENT_MS
+  );
+}

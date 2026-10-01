@@ -575,6 +575,7 @@ user-{userId}-data.json.enc      Manager-Dokument (Schlüssel = userId)
 email-index.json.enc             { [emailLower]: userId }       (Schlüssel konstant)
 league.json.enc                  Einladungs- & Reset-Codes, Liga-Einstellungen
 system-state.json.enc            Tick-Idempotenz (gesendete Pushes, finalisierte Spieltage)
+scraper-heartbeat.json.enc       Letztes Lebenszeichen des Heim-Rechners (ISO-Zeitpunkt)
 ```
 ```ts
 // Manager-Dokument
@@ -645,6 +646,7 @@ Alle unter `withUser` (Workgrid), außer den ausdrücklich öffentlichen
 | `POST/DELETE /api/push/subscribe` | User | Muster Workgrid |
 | `PUT /api/push/prefs` | User | Push-Typen an/aus |
 | `POST /api/cron/tick` | Bearer `CRON_SECRET` | Abschnitt 9 |
+| `POST /api/scraper/heartbeat` | Bearer `SCRAPER_SECRET` | Lebenszeichen des Heim-Rechners: Zeitpunkt (Server-Uhr) speichern |
 | `/api/admin/*` | Admin | Abschnitt 11 |
 | `GET /api/health` | öffentlich | Muster Workgrid |
 
@@ -717,6 +719,7 @@ Alle unter `withUser` (Workgrid), außer den ausdrücklich öffentlichen
 | Tagesfazit | alle Spiele eines Kalendertags sind `dataState ≥ provisional`, nach 20:00 Uhr | `daily:{YYYY-MM-DD}:{userId}` |
 | Finalisierung | `data` meldet Spieltag N `final` → `lineupHistory[N] = lineup` für alle, Transferbank fortschreiben | `final:{N}` |
 | Endergebnis-Push | nach der Finalisierung: Platz, Punkte, Spieltagssieger | `finalpush:{N}:{userId}` |
+| Scraper-Alarm | letztes Lebenszeichen des Heim-Rechners älter als 45 Min.; nur an Admins, unabhängig von den Push-Einstellungen, einmal je Ausfall | `scraperdown:{letztesLebenszeichen}:{userId}` |
 
 - Push-Texte (Deutsch, kurz):
   - „⏰ Noch 3 Std. bis zur ersten Sperre an Spieltag 7 — deine Aufstellung ist unvollständig.“
@@ -739,6 +742,9 @@ Alle unter `withUser` (Workgrid), außer den ausdrücklich öffentlichen
     Zustand (`~/.fm-scraper/state.json`), zieht die zufälligen Zeitpunkte **einmal
     pro Job** und speichert sie, damit sie bei jedem Aufruf gleich bleiben.
   - `gitsync.py`: pull --rebase, add raw/, commit `raw: <job> <zeit>`, push (3 Versuche).
+  - `heartbeat.py`: Lebenszeichen an die eigene App (`POST /api/scraper/heartbeat`) bei
+    jedem Scheduler-Lauf und nach jedem Job. Kein Abruf bei einer Datenquelle, deshalb
+    nicht über `client.py` und ohne Pacing und Nachtruhe.
 - **Ausgabe:** Rohes JSON unverändert + `{ fetchedAt, url, phase }` als Hülle.
 - **Tests:** `pytest` für Scheduler-Entscheidungen (Zeitfenster, Retries, Nachtpause)
   mit fester Uhr. Es gibt keine Netzwerktests.
@@ -764,7 +770,7 @@ im WM-Tipp-Worker.
 | Spieldaten von Hand nachtragen | Formular je Spiel (beide Kader, Felder aus 7.4) → `raw/manual/matches/{eventId}.json` |
 | Neuberechnung | `repository_dispatch` `event_type: recompute` → `compute.yml` |
 | Startbudget / erster gewerteter Spieltag | `raw/manual/season.json` (nur vor dem ersten gewerteten Spieltag) |
-| Status-Übersicht | Letzter Scraper-Commit, letzter Pipeline-Lauf, ausstehende Spiele, Tick-Zustand |
+| Status-Übersicht | Letzter Scraper-Commit, Scraper-Lebenszeichen, letzter Pipeline-Lauf, ausstehende Spiele, Tick-Zustand |
 
 ---
 
@@ -955,6 +961,7 @@ Strom für den Heim-Rechner.
 | `UPSTASH_REDIS_REST_URL`, `UPSTASH_REDIS_REST_TOKEN` | Vercel | Storage + Rate-Limit |
 | `VAPID_PUBLIC_KEY`, `VAPID_PRIVATE_KEY`, `VAPID_SUBJECT`, `NEXT_PUBLIC_VAPID_PUBLIC_KEY` | Vercel | Push |
 | `CRON_SECRET` | Vercel + Cloudflare-Secret | Tick-Schutz |
+| `SCRAPER_SECRET` | Vercel + Heim-Rechner (`~/.fm-scraper/heartbeat-secret`) | Schutz des Lebenszeichens |
 | `ADMIN_EMAILS` | Vercel | Admin-Rolle |
 | `GITHUB_PAT`, `GITHUB_REPO` | Vercel | Admin-Commits, Dispatch |
 | Deploy-Key (SSH) | Heim-Rechner | Push nach `raw/` |

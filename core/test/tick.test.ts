@@ -111,6 +111,7 @@ const input = (over: Partial<TickInput> = {}): TickInput => ({
   fixtures: [fixture(100, 101, SAT), fixture(102, 103, SAT)],
   points: finals1to8,
   firstScoredMatchday: 8,
+  scraperSeenAt: null,
   ...over,
 });
 const keys = (i: TickInput) => planTick(i).map((a) => a.key);
@@ -234,6 +235,65 @@ describe("Finalisierung und Endergebnis", () => {
     const first = input({ done: new Set(), managers: [anna, ben] });
     const done = new Set(planTick(first).map((a) => a.key));
     expect(planTick({ ...first, done })).toEqual([]);
+  });
+});
+
+describe("Scraper-Alarm", () => {
+  const admin = manager("b", "Ben", { role: "admin" });
+  // Ben ist Admin. Aufstellung vollständig (allClubs): keine Erinnerung mischt sich in den Plan.
+  const silent = (
+    scraperSeenAt: string | null,
+    over: Partial<TickInput> = {},
+  ) =>
+    input({
+      fixtures: allClubs,
+      managers: [anna, admin],
+      scraperSeenAt,
+      ...over,
+    });
+
+  it("meldet den Admins einmal je Ausfall, wenn der Heim-Rechner über 45 Min. schweigt", () => {
+    const seenAt = "2026-11-06T13:14:00Z"; // 46 Min. vor now
+    const actions = planTick(silent(seenAt));
+    expect(actions).toEqual([
+      {
+        kind: "push",
+        key: `scraperdown:${seenAt}:b`,
+        userId: "b",
+        pref: "alarm",
+        title: "Scraper meldet sich nicht",
+        body: "⚠️ Letztes Lebenszeichen des Heim-Rechners: Fr., 06.11., 14:14 Uhr.",
+        url: "/admin",
+      },
+    ]);
+    const done = new Set([...input().done, actions[0]!.key]);
+    expect(keys(silent(seenAt, { done }))).toEqual([]);
+    // Nach einer neuen Meldung und erneutem Schweigen: neuer Ausfall, neuer Push.
+    expect(keys(silent("2026-11-06T13:00:00Z", { done }))).toEqual([
+      "scraperdown:2026-11-06T13:00:00Z:b",
+    ]);
+  });
+
+  it("schweigt bei frischem Lebenszeichen, ohne je eine Meldung und ohne Push-Anmeldung", () => {
+    expect(keys(silent("2026-11-06T13:15:00Z"))).toEqual([]); // genau 45 Min.
+    expect(keys(silent(null))).toEqual([]);
+    const noPush = manager("b", "Ben", { role: "admin", push: undefined });
+    expect(
+      keys(silent("2026-11-06T10:00:00Z", { managers: [anna, noPush] })),
+    ).toEqual([]);
+  });
+
+  it("gilt unabhängig von den Push-Einstellungen", () => {
+    const off = manager("b", "Ben", {
+      role: "admin",
+      push: {
+        subscription,
+        prefs: { reminder: false, daily: false, final: false },
+      },
+    });
+    expect(
+      keys(silent("2026-11-06T10:00:00Z", { managers: [off] })),
+    ).toHaveLength(1);
   });
 });
 

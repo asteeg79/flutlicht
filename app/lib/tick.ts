@@ -11,6 +11,7 @@ import {
 import {
   listAllManagers,
   loadManager,
+  loadScraperSeenAt,
   loadSystemState,
   saveManager,
   saveSystemState,
@@ -45,6 +46,7 @@ export async function runTick(
     fixtures: game.fixtures,
     points: game.points,
     firstScoredMatchday: game.season.firstScoredMatchday,
+    scraperSeenAt: await loadScraperSeenAt(),
   });
   const result: TickResult = { finalized: [], sent: 0, failed: 0, expired: 0 };
   const at = now.toISOString();

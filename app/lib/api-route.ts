@@ -1,5 +1,6 @@
 // Übernommen aus Workgrid lib/api-route.ts, angepasst: withAdmin, withPublic, Conflict (409),
 // Forbidden (403); ohne Profilbild im RouteUser.
+import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import type { z } from "zod";
 import { auth } from "@/lib/auth";
@@ -18,8 +19,8 @@ import { loadManager } from "@/lib/storage";
  *
  * Bewusst NICHT hier: Rate-Limiting (liegt in middleware.ts) und die Auth der
  * Routen, die absichtlich anders funktionieren — /api/health (öffentlich),
- * /api/auth/* (NextAuth) und /api/cron/tick (CRON-Bearer), siehe
- * lib/public-api-paths.ts.
+ * /api/auth/* (NextAuth), /api/cron/tick und /api/scraper/heartbeat (Bearer,
+ * `hasBearer`), siehe lib/public-api-paths.ts.
  */
 
 /** Fehler, die der Handler wirft, statt Status selbst zu kennen. */
@@ -127,6 +128,17 @@ export function withPublic(
 ) {
   return (request: Request): Promise<Response> =>
     handleErrors(() => handler(request));
+}
+
+/** `Authorization: Bearer <secret>` in konstanter Zeit; ohne gesetztes Secret nie gültig. */
+export function hasBearer(
+  request: Request,
+  secret: string | undefined,
+): boolean {
+  if (!secret) return false;
+  const expected = Buffer.from(`Bearer ${secret}`);
+  const actual = Buffer.from(request.headers.get("authorization") ?? "");
+  return actual.length === expected.length && timingSafeEqual(actual, expected);
 }
 
 async function handleErrors(

@@ -4,7 +4,13 @@
 import { Redis as UpstashRedis } from "@upstash/redis";
 import { promises as fs } from "node:fs";
 import path from "node:path";
-import { EmailIndex, League, ManagerDoc, SystemState } from "@fm/core";
+import {
+  EmailIndex,
+  IsoDateTime,
+  League,
+  ManagerDoc,
+  SystemState,
+} from "@fm/core";
 import type { z } from "zod";
 import { decrypt, encrypt } from "@/lib/crypto";
 
@@ -202,6 +208,8 @@ const LEAGUE_PATH = "league.json.enc";
 const LEAGUE_KEY = "__league__";
 const SYSTEM_STATE_PATH = "system-state.json.enc";
 const SYSTEM_STATE_KEY = "__system_state__";
+const SCRAPER_HEARTBEAT_PATH = "scraper-heartbeat.json.enc";
+const SCRAPER_HEARTBEAT_KEY = "__scraper_heartbeat__";
 
 /** { [emailLower]: userId } */
 export async function loadEmailIndex(): Promise<EmailIndex> {
@@ -242,5 +250,26 @@ export function saveSystemState(state: SystemState): Promise<void> {
     SYSTEM_STATE_KEY,
     SystemState,
     state,
+  );
+}
+
+/**
+ * Letztes Lebenszeichen des Heim-Rechners; null, solange er sich nie gemeldet hat.
+ * Eigenes Dokument: im system-state überschrieben sich Tick und Meldung gegenseitig.
+ */
+export function loadScraperSeenAt(): Promise<string | null> {
+  return readEncrypted(
+    SCRAPER_HEARTBEAT_PATH,
+    SCRAPER_HEARTBEAT_KEY,
+    IsoDateTime,
+  );
+}
+
+export function saveScraperSeenAt(at: string): Promise<void> {
+  return writeEncrypted(
+    SCRAPER_HEARTBEAT_PATH,
+    SCRAPER_HEARTBEAT_KEY,
+    IsoDateTime,
+    at,
   );
 }

@@ -14,6 +14,7 @@ import {
   normalizeCode,
   POSITIONS,
   RULES,
+  scraperSilent,
   type Fixture,
   type League,
   type ManagerDoc,
@@ -304,6 +305,8 @@ export interface AdminStatus {
   /** Meldung, wenn GitHub nicht erreichbar oder nicht eingerichtet ist; dann fehlen die drei Läufe. */
   github: string | null;
   scraper: { date: string; message: string } | null;
+  /** Letztes Lebenszeichen des Heim-Rechners; null, solange er sich nie gemeldet hat. */
+  heartbeat: { at: string; silent: boolean } | null;
   compute: {
     status: string;
     conclusion: string | null;
@@ -320,11 +323,13 @@ export interface AdminStatus {
   tick: { key: string; at: string }[];
 }
 
-/** Status-Übersicht (KONZEPT 11): letzter Scraper-Commit, letzte Pipeline-Läufe, offene Spiele, Tick. */
+/** Status-Übersicht (KONZEPT 11): Scraper (Commit, Lebenszeichen), letzte Pipeline-Läufe, offene Spiele, Tick. */
 export async function adminStatus(
   gh: GitHub,
   fixtures: readonly Fixture[],
   tickDone: Record<string, string>,
+  scraperSeenAt: string | null,
+  now: Date,
 ): Promise<AdminStatus> {
   // Ohne GitHub (etwa fehlender GITHUB_PAT) bleibt der Rest des Status sichtbar.
   let github: Pick<AdminStatus, "github" | "scraper" | "compute" | "fixtures">;
@@ -346,6 +351,10 @@ export async function adminStatus(
   }
   return {
     ...github,
+    heartbeat:
+      scraperSeenAt === null
+        ? null
+        : { at: scraperSeenAt, silent: scraperSilent(scraperSeenAt, now) },
     pending: fixtures.filter((f) => f.dataState === "pending").length,
     tick: Object.entries(tickDone)
       .map(([key, at]) => ({ key, at }))

@@ -349,16 +349,34 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
     const { gh, dispatches } = fakeGitHub();
     await admin.recompute(gh);
     expect(dispatches).toEqual(["recompute"]);
-    const status = await admin.adminStatus(gh, fixtures, {
+    const tickDone = {
       "final:7": "2026-10-12T08:00:00Z",
       "remind24:8:x": "2026-10-29T20:00:00Z",
-    });
+    };
+    const seenAt = "2026-10-30T10:00:00Z";
+    const status = await admin.adminStatus(
+      gh,
+      fixtures,
+      tickDone,
+      seenAt,
+      new Date("2026-10-30T10:45:00Z"),
+    );
     expect(status).toMatchObject({
+      heartbeat: { at: seenAt, silent: false },
       pending: 1,
       scraper: { message: "raw: match-provisional" },
       compute: { conclusion: "success" },
     });
     expect(status.tick.map((t) => t.key)).toEqual(["remind24:8:x", "final:7"]);
+    // Über 45 Min. ohne Lebenszeichen: der Scraper gilt als still.
+    const later = await admin.adminStatus(
+      gh,
+      fixtures,
+      tickDone,
+      seenAt,
+      new Date("2026-10-30T10:46:00Z"),
+    );
+    expect(later.heartbeat).toEqual({ at: seenAt, silent: true });
   });
 
   it("zeigt den Status auch ohne GitHub, mit Hinweis statt 502", async () => {
@@ -371,11 +389,16 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
         );
       },
     };
-    const status = await admin.adminStatus(broken, fixtures, {
-      "final:7": "2026-10-12T08:00:00Z",
-    });
+    const status = await admin.adminStatus(
+      broken,
+      fixtures,
+      { "final:7": "2026-10-12T08:00:00Z" },
+      null,
+      new Date("2026-10-30T10:00:00Z"),
+    );
     expect(status).toMatchObject({
       github: "GitHub ist nicht eingerichtet (GITHUB_PAT, GITHUB_REPO).",
+      heartbeat: null,
       scraper: null,
       compute: null,
       fixtures: null,

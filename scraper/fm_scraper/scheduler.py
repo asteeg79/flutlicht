@@ -232,7 +232,7 @@ def run_once(now: datetime | None = None) -> int:
     """Ein Scheduler-Lauf. Rückgabe: Anzahl ausgeführter Jobs."""
     import fcntl
 
-    from . import gitsync
+    from . import gitsync, heartbeat
     from .client import FetchError, PauseRequired, default_client
     from .teams import load_teams
 
@@ -245,6 +245,7 @@ def run_once(now: datetime | None = None) -> int:
             log.info("Scheduler läuft schon, dieser Aufruf endet")
             return 0
 
+        heartbeat.send()
         state = load_state(STATE_FILE)
         last_pull = state.get("lastPull")
         if last_pull is None or now - datetime.fromisoformat(last_pull) >= PULL_EVERY:
@@ -282,6 +283,8 @@ def run_once(now: datetime | None = None) -> int:
                 save_state(STATE_FILE, state)
                 if paths:
                     gitsync.sync(config.REPO_ROOT, task.job, paths)
+                # Ein Lauf mit mehreren Jobs dauert länger als der Timer-Abstand.
+                heartbeat.send()
                 ran += 1
         finally:
             client.close()
