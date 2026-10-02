@@ -70,11 +70,12 @@ def test_tm_crawl_holt_vereinsliste_und_je_verein_die_spieler(make_client, tmp_p
     assert request.urls[1] == f"{config.TM_API}/clubs/27/players"
 
 
-def test_tm_crawl_ohne_browser_bricht_bei_403_mit_pause_ab(tmp_path):
+def test_tm_crawl_ohne_rueckfall_bricht_bei_403_mit_pause_ab(tmp_path):
     from fm_scraper.client import Client
     from tests.conftest import DAYTIME
 
-    client = Client(FakeTransport(RawResponse(403, b"")), None, tmp_path / "tm.json", now=lambda: DAYTIME)
+    blocked = FakeTransport(RawResponse(403, b""))
+    client = Client([("http", lambda: blocked)], tmp_path / "tm.json", now=lambda: DAYTIME)
     with pytest.raises(PauseRequired):
         tm_crawl.run(client, tmp_path, date(2026, 9, 26))
 
@@ -119,10 +120,10 @@ def test_images_stoppt_nach_dem_limit(make_client, tmp_path, monkeypatch):
     assert len(request.urls) == 1
 
 
-def test_images_laedt_bei_403_ueber_den_browser(make_client, tmp_path):
+def test_images_laedt_bei_403_ueber_den_rueckfall(make_client, tmp_path):
     write_squad(tmp_path, [1, 2])
-    browser = FakeTransport(ok(png(64)), ok(png(64)))
-    client, _ = make_client(FakeTransport(RawResponse(403, b"")), browser)
+    fallback = FakeTransport(ok(png(64)), ok(png(64)))
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), fallback)
     written = images.run(client, tmp_path / "raw", tmp_path / "img", [])
     assert [p.name for p in written] == ["1.webp", "2.webp"]
 

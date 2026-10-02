@@ -4,7 +4,7 @@ from datetime import datetime, timezone
 
 import pytest
 
-from fm_scraper.client import FetchError, PauseRequired, RawResponse, _page_response
+from fm_scraper.client import Client, FetchError, PauseRequired, RawResponse, _fetched_response, _page_response
 from tests.conftest import FakeTransport, ok
 
 
@@ -16,20 +16,69 @@ def test_wartet_zwischen_abrufen_aber_nicht_vor_dem_ersten(make_client):
     assert sleeps == [14.0]  # Mitte von 8–20 s
 
 
-def test_wechselt_bei_403_auf_den_browser(make_client):
-    request = FakeTransport(RawResponse(403, b""))
-    browser = FakeTransport(ok(b'{"x":1}'), ok(b'{"y":2}'))
-    client, _ = make_client(request, browser)
+def test_wechselt_bei_403_auf_den_naechsten_abrufweg(make_client):
+    first = FakeTransport(RawResponse(403, b""))
+    fallback = FakeTransport(ok(b'{"x":1}'), ok(b'{"y":2}'))
+    client, _ = make_client(first, fallback)
     assert client.get_json("u1") == {"x": 1}
-    # Einmal gewechselt, bleibt der Job im Browser-Modus.
+    # Einmal gewechselt, bleibt der Job auf dem Rückfallweg.
     assert client.get_json("u2") == {"y": 2}
-    assert request.urls == ["u1"]
-    assert browser.urls == ["u1", "u2"]
+    assert first.urls == ["u1"]
+    assert fallback.urls == ["u1", "u2"]
+    assert first.closed
+
+
+def test_merkt_sich_den_abrufweg_ueber_laeufe_hinweg(make_client, tmp_path):
+    client, _ = make_client(FakeTransport(RawResponse(403, b"")), FakeTransport(ok()))
+    client.get_json("u1")
+    assert json.loads((tmp_path / "state.json").read_text())["route"] == "page"
+    # Der nächste Lauf beginnt gleich auf dem Weg, der zuletzt ging.
+    first, fallback = FakeTransport(), FakeTransport(ok())
+    client, _ = make_client(first, fallback)
+    client.get_json("u2")
+    assert (first.urls, fallback.urls) == ([], ["u2"])
+
+
+def test_nach_der_pause_beginnt_die_kette_wieder_vorn(make_client, tmp_path):
+    (tmp_path / "state.json").write_text(json.dumps({"route": "page"}))
+    client, _ = make_client(FakeTransport(), FakeTransport(RawResponse(403, b"")))
+    with pytest.raises(PauseRequired):
+        client.get_json("u1")
+    assert "route" not in json.loads((tmp_path / "state.json").read_text())
+
+
+def test_ein_abrufweg_der_nicht_startet_wird_uebersprungen(tmp_path):
+    from tests.conftest import DAYTIME
+
+    def broken():
+        raise RuntimeError("Xvfb fehlt")
+
+    working = FakeTransport(ok(b'{"x":1}'))
+    routes = [("direct", broken), ("page", lambda: working)]
+    client = Client(routes, tmp_path / "state.json", now=lambda: DAYTIME)
+    assert client.get_json("u1") == {"x": 1}
+    # Startet auch der letzte Weg nicht, gilt das wie eine Sperre: Pause statt Absturz.
+    client = Client([("window", broken)], tmp_path / "other.json", now=lambda: DAYTIME)
+    with pytest.raises(PauseRequired):
+        client.get_json("u1")
+    assert "Xvfb fehlt" in json.loads((tmp_path / "other.json").read_text())["pauseReason"]
+
+
+def test_startet_keinen_browser_solange_abrufe_nicht_erlaubt_sind(tmp_path):
+    from tests.conftest import DAYTIME
+
+    (tmp_path / "state.json").write_text(json.dumps({"pauseUntil": "2026-09-24T19:00:00+00:00"}))
+    started: list[str] = []
+    client = Client([("direct", lambda: started.append("x"))], tmp_path / "state.json", now=lambda: DAYTIME)
+    # Der Scheduler legt alle 5 Min. einen Client an, auch während der Pause.
+    with pytest.raises(PauseRequired):
+        client.get_json("u1")
+    assert started == []
 
 
 def test_wertet_html_statt_json_als_bot_challenge(make_client):
-    browser = FakeTransport(ok(b'{"x":1}'))
-    client, _ = make_client(FakeTransport(ok(b"<html>challenge</html>")), browser)
+    fallback = FakeTransport(ok(b'{"x":1}'))
+    client, _ = make_client(FakeTransport(ok(b"<html>challenge</html>")), fallback)
     assert client.get_json("u1") == {"x": 1}
 
 
@@ -95,17 +144,17 @@ def test_laedt_bilder_als_bytes(make_client):
     assert client.get_bytes("img") == b"RIFF....WEBP"
 
 
-def test_bilder_wechseln_bei_403_auf_den_browser(make_client):
-    request = FakeTransport(RawResponse(403, b'{"error": {"code": 403}}'))
-    browser = FakeTransport(ok(b"PNG1"), ok(b"PNG2"))
-    client, _ = make_client(request, browser)
+def test_bilder_wechseln_bei_403_auf_den_naechsten_abrufweg(make_client):
+    first = FakeTransport(RawResponse(403, b'{"error": {"code": 403}}'))
+    fallback = FakeTransport(ok(b"PNG1"), ok(b"PNG2"))
+    client, _ = make_client(first, fallback)
     assert client.get_bytes("img1") == b"PNG1"
     assert client.get_bytes("img2") == b"PNG2"
-    assert request.urls == ["img1"]
-    assert browser.urls == ["img1", "img2"]
+    assert first.urls == ["img1"]
+    assert fallback.urls == ["img1", "img2"]
 
 
-def test_bilder_pausieren_wenn_auch_der_browser_gesperrt_ist(make_client, tmp_path):
+def test_bilder_pausieren_wenn_auch_der_rueckfall_gesperrt_ist(make_client, tmp_path):
     client, _ = make_client(FakeTransport(RawResponse(403, b"")), FakeTransport(RawResponse(403, b"")))
     with pytest.raises(PauseRequired):
         client.get_bytes("img1")
@@ -137,3 +186,10 @@ def test_browser_seite_wird_zu_status_und_inhalt():
     assert _page_response({"status": 0, "text": "{}"}).status == 200
     assert _page_response({"status": 0, "text": "<html>"}).status == 403
     assert _page_response({"status": 0, "png": png}).status == 200
+
+
+def test_fetch_aus_der_seite_wird_zu_status_und_inhalt():
+    webp = base64.b64encode(b"RIFF....WEBP").decode()
+    assert _fetched_response({"status": 200, "text": "{}"}) == RawResponse(200, b"{}")
+    assert _fetched_response({"status": 200, "b64": webp}) == RawResponse(200, b"RIFF....WEBP")
+    assert _fetched_response({"status": 403, "text": '{"error": {"code": 403}}'}).status == 403

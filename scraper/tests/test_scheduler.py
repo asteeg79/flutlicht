@@ -212,7 +212,11 @@ def test_status_nennt_pause_faellige_geplante_und_aufgegebene_jobs():
         "gaveUp": {"final:4": at("2026-10-05 09:00").isoformat(), "final:3": at("2026-09-30 09:00").isoformat()},
         "lastJob": last_job,
     }
-    pause = {"pauseUntil": at("2026-10-08 23:41").isoformat(), "pauseReason": "wiederholt 403/Bot-Challenge bei u1"}
+    pause = {
+        "pauseUntil": at("2026-10-08 23:41").isoformat(),
+        "pauseReason": "wiederholt 403/Bot-Challenge bei u1",
+        "route": "page",
+    }
     assert status(state, pause, now, "5cfb8a4", 1) == {
         "pause": {"until": at("2026-10-08 23:41").isoformat(), "reason": "wiederholt 403/Bot-Challenge bei u1"},
         "lastJob": last_job,
@@ -225,6 +229,7 @@ def test_status_nennt_pause_faellige_geplante_und_aufgegebene_jobs():
         "gaveUp": [{"key": "final:4", "at": at("2026-10-05 09:00").isoformat()}],
         "commit": "5cfb8a4",
         "unpushed": 1,
+        "route": "page",
     }
 
 
@@ -239,6 +244,7 @@ def test_status_ohne_zustand_und_nach_abgelaufener_pause():
         "gaveUp": [],
         "commit": None,
         "unpushed": 0,
+        "route": None,
     }
 
 

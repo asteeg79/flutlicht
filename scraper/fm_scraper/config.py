@@ -3,8 +3,9 @@
 import os
 from pathlib import Path
 
-API = "https://api.sofascore.com/api/v1"
-IMAGE_API = "https://api.sofascore.app/api/v1"
+# Die API unter dem Host der Website: api.sofascore.com weist seit dem 30.09.2026 alle ab.
+SITE = "https://www.sofascore.com/"
+API = "https://www.sofascore.com/api/v1"
 TOURNAMENT_ID = 35
 SEASON_ID = 97464
 

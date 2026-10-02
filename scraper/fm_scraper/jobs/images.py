@@ -64,7 +64,7 @@ def run(client: Client, raw_dir: Path, img_dir: Path, teams: list[dict]) -> list
     for kind, id_ in todo(raw_dir, img_dir, teams)[: config.IMAGES_PER_RUN]:
         path = img_dir / kind / f"{id_}.webp"
         try:
-            image = client.get_bytes(f"{config.IMAGE_API}/{'team' if kind == 'clubs' else 'player'}/{id_}/image")
+            image = client.get_bytes(f"{config.API}/{'team' if kind == 'clubs' else 'player'}/{id_}/image")
         except FetchError as e:
             if e.status != 404:
                 raise

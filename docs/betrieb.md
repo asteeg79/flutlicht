@@ -68,9 +68,10 @@ höchstens 3-mal.
 ## Schutzmechanismen
 
 1. **Scraping-Regeln (KONZEPT 5.6)** stecken im Client (`client.py`), nicht im
-   Scheduler: 8–20 s Abstand, keine Parallelität, Browser nur bei 403/Challenge,
-   6 h Pause nach 429 oder wiederholtem 403, keine Abrufe 00–07 Uhr, auch nicht
-   bei manuellem Start.
+   Scheduler: 8–20 s Abstand, keine Parallelität, Abruf im Browser mit Rückfall
+   auf den nächsten Abrufweg bei 403/Challenge (`direct` → `page` → `window`),
+   6 h Pause nach 429 oder wenn alle Wege gesperrt sind, keine Abrufe 00–07 Uhr,
+   auch nicht bei manuellem Start.
 2. **Ein Lauf zur Zeit:** `scheduler.lock` (flock); ein zweiter Aufruf endet sofort.
 3. **Aufgeben statt Dauerschleife:** Ein Job, der 3-mal scheitert (oder ein Spiel,
    das nach 3 Versuchen nicht beendet ist), gilt als erledigt; die Lücke füllt
@@ -124,6 +125,7 @@ cd infra/cron-worker && npx wrangler tail
 |---|---|---|
 | Push „Scraper meldet sich nicht“ bzw. `/admin` → Scraper-Lebenszeichen rot | `ssh raspdev 'systemctl --user list-timers flutlicht-scraper.timer'`; Log nach „Lebenszeichen fehlgeschlagen“ durchsuchen | Heim-Rechner aus oder ohne Netz → einschalten. Timer gestoppt → `systemctl --user enable --now flutlicht-scraper.timer`. HTTP 401 im Log → `SCRAPER_SECRET` in Vercel und `~/.fm-scraper/heartbeat-secret` verschieden. HTTP 400 im Log → App und Klon haben verschiedene Code-Stände (Stand des Lebenszeichens passt nicht zum Schema): `git -C ~/flutlicht pull` bzw. App deployen |
 | Push „Scraper pausiert“ bzw. `/admin` → Scraper-Pause | Grund steht in der Zeile; `ssh raspdev 'cat ~/.fm-scraper/state.json'` | 429/403 von Sofascore; 6 h abwarten, **nicht** umgehen. Bei einer Sperre über Tage kommt je Pause ein Push |
+| `/admin` → Abrufweg rot („Rückfall: …“) | Scheduler-Log nach „wechsle auf den Abrufweg“ | Sofascore hat den direkten Abruf gesperrt, der Rückfall arbeitet. Kein Eingriff nötig; zurück auf `direct`: `route` aus `~/.fm-scraper/state.json` löschen. Pause mit „Abrufweg „window“ startet nicht“ → Xvfb fehlt (`sudo apt install xvfb`) |
 | Push „Scraper-Job aufgegeben“ bzw. `/admin` → Aufgegebene Jobs | `/admin` → Letzter Job (Fehlertext); Scheduler-Log | Job nach 3 Versuchen aufgegeben → von Hand starten (Soforthilfe) oder in `/admin` nachtragen |
 | `/admin` → Stand Heim-Rechner „nicht gepusht“ | `git -C ~/flutlicht status`, `ssh -T git@github-flutlicht` | Push gescheitert, die Rohdaten liegen nur auf dem Heim-Rechner → `git -C ~/flutlicht pull --rebase && git -C ~/flutlicht push` |
 | `/admin` → Scraper-Lebenszeichen „noch keines“ | Gibt es `~/.fm-scraper/heartbeat-secret` auf dem Heim-Rechner? | Secret-Datei fehlt: ohne sie meldet sich der Scheduler nicht (Einrichtung in `scraper/README.md`) |

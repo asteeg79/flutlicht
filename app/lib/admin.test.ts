@@ -367,6 +367,7 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
         gaveUp: [],
         commit: "5cfb8a4",
         unpushed: 0,
+        route: "page",
       },
     };
     const status = await admin.adminStatus(

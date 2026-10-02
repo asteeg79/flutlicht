@@ -28,6 +28,11 @@ export const ScraperStatus = z.object({
   /** Commit des Klons auf dem Heim-Rechner und seine noch nicht gepushten Commits. */
   commit: z.string().max(40).nullable(),
   unpushed: z.int().min(0),
+  /**
+   * Abrufweg, der zuletzt ging: `direct`, sonst ein Rückfall (`page`, `window`).
+   * Fehlt in Meldungen vor dem 02.10.2026.
+   */
+  route: z.string().max(40).nullish(),
 });
 export type ScraperStatus = z.infer<typeof ScraperStatus>;
 

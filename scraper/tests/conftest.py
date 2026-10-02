@@ -15,10 +15,14 @@ class FakeTransport:
     def __init__(self, *responses: RawResponse):
         self.responses = list(responses)
         self.urls: list[str] = []
+        self.closed = False
 
     def get(self, url: str) -> RawResponse:
         self.urls.append(url)
         return self.responses.pop(0)
+
+    def close(self) -> None:
+        self.closed = True
 
 
 def ok(body: bytes = b"{}") -> RawResponse:
@@ -27,11 +31,11 @@ def ok(body: bytes = b"{}") -> RawResponse:
 
 @pytest.fixture
 def make_client(tmp_path: Path):
-    def make(request: FakeTransport, browser: FakeTransport | None = None, now=DAYTIME):
+    def make(first: FakeTransport, fallback: FakeTransport | None = None, now=DAYTIME):
+        """Client mit zwei Abrufwegen: „direct“ und der Rückfall „page“."""
         sleeps: list[float] = []
         client = Client(
-            request,
-            lambda: browser or FakeTransport(),
+            [("direct", lambda: first), ("page", lambda: fallback or FakeTransport())],
             tmp_path / "state.json",
             now=lambda: now,
             sleep=sleeps.append,

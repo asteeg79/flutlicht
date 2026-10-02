@@ -58,6 +58,14 @@ describe("POST /api/scraper/heartbeat", () => {
     });
   });
 
+  it("nimmt den Abrufweg mit auf, auch als null", async () => {
+    for (const route of ["page", null]) {
+      const res = await beat("Bearer pi-geheim", { ...STATUS, route });
+      expect(res.status).toBe(200);
+      expect((await storage.loadScraperHeartbeat())!.status.route).toBe(route);
+    }
+  });
+
   it("weist einen ungültigen Stand mit 400 ab und speichert nichts", async () => {
     const res = await beat("Bearer pi-geheim", { ...STATUS, unpushed: -1 });
     expect(res.status).toBe(400);

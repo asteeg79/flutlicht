@@ -208,7 +208,8 @@ def status(
 ) -> dict[str, Any]:
     """Stand für das Lebenszeichen: `/admin` zeigt ihn, der Tick warnt bei Pause und Aufgabe.
 
-    `state` ist der Scheduler-Zustand, `pause` der des Sofascore-Clients (`state.json`)."""
+    `state` ist der Scheduler-Zustand, `pause` der des Sofascore-Clients (`state.json`:
+    Pause und der Abrufweg, der zuletzt ging)."""
     done = state.get("done", {})
     attempts = state.get("attempts", {})
     until = pause.get("pauseUntil")
@@ -231,6 +232,7 @@ def status(
         ],
         "commit": commit,
         "unpushed": unpushed,
+        "route": pause.get("route"),
     }
 
 

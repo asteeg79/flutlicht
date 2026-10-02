@@ -35,9 +35,22 @@ Ohne `--no-sync` committet und pusht der Job danach (`raw/` bzw. bei `images`
 `app/public/img/`). Vorhandene Dateien werden nicht erneut abgerufen.
 
 Scraping-Regeln (KONZEPT 5.6): Der Client hält 8–20 s Abstand, arbeitet nie
-parallel, wechselt nur bei 403 oder Bot-Challenge auf den Browser, pausiert nach
-429 oder wiederholtem 403 für 6 h und ruft zwischen 00 und 07 Uhr nichts ab. Die
-Pause steht in `~/.fm-scraper/state.json` (tm-crawl: `tm-state.json`).
+parallel, pausiert nach 429 oder wenn alle Abrufwege gesperrt sind für 6 h und ruft
+zwischen 00 und 07 Uhr nichts ab. Die Pause steht in `~/.fm-scraper/state.json`
+(tm-crawl: `tm-state.json`).
+
+Abrufwege: Alle Sofascore-Abrufe laufen im Browser über `www.sofascore.com/api/v1`.
+Bei 403 oder Bot-Challenge wechselt der Client auf den nächsten Weg und bleibt dort:
+
+| Weg | Was er tut |
+|---|---|
+| `direct` | headless Chromium ruft die API-URL direkt auf |
+| `page` | lädt einmal die Startseite und holt die Daten per `fetch` aus der Seite; festes Profil in `~/.fm-scraper/browser-profile` |
+| `window` | wie `page`, aber mit Fenster statt headless; auf dem Pi in einem virtuellen Display (Xvfb) |
+
+Der aktuelle Weg steht als `route` in `state.json` und in `/admin` → Status
+(„Abrufweg“). Zurück auf `direct`: `route` aus `state.json` löschen. Solange ein
+Rückfallweg das feste Profil nutzt, darf kein zweiter Job von Hand laufen.
 
 ## Heim-Rechner einrichten
 
@@ -68,7 +81,9 @@ python3 -m venv .venv
 .venv/bin/python -m fm_scraper schedule   # einmal von Hand: Pull, Plan, ggf. Job
 ```
 
-Für den Browser-Modus braucht botasaurus ein Chromium (Pi: `sudo apt install chromium`).
+Alle Abrufe laufen im Browser: botasaurus braucht ein Chromium, der Abrufweg `window`
+zusätzlich Xvfb (Pi: `sudo apt install chromium xvfb`). Ohne Xvfb endet die Kette
+nach `page` mit der 6-h-Pause.
 
 **3a. Timer auf dem Pi (systemd, Benutzer-Units):**
 
@@ -112,7 +127,8 @@ umask 077 && cat > ~/.fm-scraper/heartbeat-secret   # Wert einfügen, Enter, Str
 | Datei (`~/.fm-scraper/`, änderbar per `FM_SCRAPER_STATE`) | Inhalt |
 |---|---|
 | `scheduler.json` | gezogene Zeitpunkte (`planned`), erledigte Jobs (`done`), Fehlversuche, letzter `git pull`; für das Lebenszeichen: fällige Jobs des letzten Laufs (`due`), letzter Job (`lastJob`), aufgegebene Jobs (`gaveUp`) |
-| `state.json` / `tm-state.json` | 6-h-Pause nach 429/403 mit Grund (Sofascore bzw. Transfermarkt) |
+| `state.json` / `tm-state.json` | 6-h-Pause nach 429/403 mit Grund (Sofascore bzw. Transfermarkt), Abrufweg, der zuletzt ging (`route`) |
+| `browser-profile/` | festes Chromium-Profil der Abrufwege `page` und `window` (Cookies) |
 | `scheduler.lock` | verhindert zwei gleichzeitige Läufe |
 | `heartbeat-secret` | Bearer-Secret für das Lebenszeichen an die App; ohne die Datei meldet sich der Scheduler nicht |
 

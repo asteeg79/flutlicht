@@ -302,7 +302,8 @@ neuerPreis = clamp( round1( alterPreis × (1 + Δ%) ), 0.5, 30.0 )
 | Spielerbilder, Vereinslogos | Sofascore Bild-Endpunkte | Heim-Rechner | 1× pro Saison + neue Spieler |
 
 ### 5.2 Sofascore: verifizierte Fakten (Stichprobe 25.09.2026)
-- `API = https://api.sofascore.com/api/v1`. Bundesliga: `unique-tournament/35`.
+- `API = https://www.sofascore.com/api/v1` (bis 30.09.2026 `api.sofascore.com`; der Host
+  weist seither alle Clients mit 403 ab). Bundesliga: `unique-tournament/35`.
 - Saison 26/27: `season/97464` (25/26 = 77333). Liste: `GET /unique-tournament/35/seasons`.
 - Spieltag: `GET /unique-tournament/35/season/97464/events/round/{n}` → `events[]`
   mit `id`, `homeTeam{id,name,slug}`, `awayTeam{…}`, `startTimestamp` (Unix s),
@@ -329,7 +330,7 @@ neuerPreis = clamp( round1( alterPreis × (1 + Δ%) ), 0.5, 30.0 )
 - **In M2 zu verifizieren** (an echten Spielen als Test-Fixture ablegen):
   Klassen für Gelb-Rot/Rot, verschossener und gehaltener Elfmeter (vermutlich
   eigener `incidentType`), Bild-URLs
-  (`https://api.sofascore.app/api/v1/player/{id}/image`, `…/team/{id}/image`),
+  (`{API}/player/{id}/image`, `…/team/{id}/image`),
   Kader-Endpunkt `GET /team/{id}/players`. Ergebnisse dokumentierst du in
   `docs/sofascore-felder.md`. Unbekannte `incidentType`/`incidentClass` loggt die
   Pipeline als Warnung, statt abzustürzen.
@@ -387,14 +388,19 @@ Das Budget dafür: 20–40 Min. bis zum Abruf + ~2 Min. Action + ~2 Min. Vercel-
 
 ### 5.6 Scraping-Regeln (nicht verhandelbar)
 - Nur die oben genannten Endpunkte, nur mit den genannten Frequenzen.
-- Zuerst `botasaurus.request` (leichtgewichtig). Nur bei 403 oder Bot-Challenge
-  wechselst du auf `botasaurus.browser` (headless Chromium).
+- Abgerufen wird im Browser (`botasaurus_driver`, headless Chromium), der die API-URL
+  direkt aufruft (Abrufweg `direct`). Nur bei 403 oder Bot-Challenge folgt der nächste
+  Abrufweg: `page` (Startseite laden, Daten per `fetch` aus der Seite, festes
+  Browser-Profil), danach `window` (dasselbe mit Fenster statt headless). Der Weg, der
+  zuletzt ging, gilt für die folgenden Läufe. Stand 02.10.2026 auf Wunsch von Alex;
+  der frühere erste Schritt `botasaurus.request` scheitert seit dem 26.09.2026 an einer
+  Bot-Challenge (siehe `docs/entscheidungen.md`).
   `oseymour/ScraperFC` (GPL-3.0) dient **nur als Referenz** für Endpunkte und wird
   nicht als Abhängigkeit eingebunden.
 - Kein Verteilen der Rohdaten: Das Repo ist privat, `raw/` und `data/` werden nie
   öffentlich ausgeliefert.
-- Bei 429 oder wiederholten 403: Job abbrechen, 6 h Pause, Warnung im Log. Kein
-  aggressives Retry.
+- Bei 429 oder wenn alle Abrufwege 403 liefern: Job abbrechen, 6 h Pause, Warnung im
+  Log. Kein aggressives Retry; nach der Pause beginnt die Kette wieder bei `direct`.
 
 ### 5.7 Falls die App später öffentlich wird
 Dann ist Folgendes nötig: Scraping einstellen (Sofascore, Transfermarkt) und auf eine
@@ -734,8 +740,8 @@ Alle unter `withUser` (Workgrid), außer den ausdrücklich öffentlichen
 ## 10 · Heim-Rechner (`scraper/`)
 
 - **Plattform:** Raspberry Pi 4/5 (64-bit) oder ein Mac, der dauerhaft läuft.
-  Python 3.11, `botasaurus`, `pillow` (WebP), `httpx`, Chromium für den Browser-Modus,
-  Docker für `transfermarkt-api`.
+  Python 3.11, `botasaurus`, `pillow` (WebP), `httpx`, Chromium (alle Abrufe laufen im
+  Browser), Xvfb für den Abrufweg `window`, Docker für `transfermarkt-api`.
 - **Struktur:** `scraper/fm_scraper/{client.py, jobs/*.py, scheduler.py, gitsync.py, config.py}`.
   - `client.py` ist die **einzige** Stelle für HTTP: Pacing, request→browser-Fallback,
     429/403-Pause.

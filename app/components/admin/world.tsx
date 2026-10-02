@@ -107,6 +107,12 @@ function Row({
   );
 }
 
+const ROUTE: Record<string, string> = {
+  direct: "direkt",
+  page: "Rückfall: über die Startseite",
+  window: "Rückfall: Browser mit Fenster",
+};
+
 const JOB_OUTCOME: Record<
   NonNullable<ScraperStatus["lastJob"]>["outcome"],
   string
@@ -124,7 +130,7 @@ function ScraperRows({
   status: ScraperStatus;
   when: (iso: string) => string;
 }) {
-  const { pause, lastJob, due, next, gaveUp, commit, unpushed } = status;
+  const { pause, lastJob, due, next, gaveUp, commit, unpushed, route } = status;
   const timed = (jobs: { key: string; at: string }[]) =>
     jobs.map((j) => `${j.key} · ${when(j.at)}`).join("\n") || "–";
   return (
@@ -138,6 +144,13 @@ function ScraperRows({
         }
         alert={pause !== null}
       />
+      {route ? (
+        <Row
+          label="Abrufweg"
+          value={ROUTE[route] ?? route}
+          alert={route !== "direct"}
+        />
+      ) : null}
       <Row
         label="Letzter Job"
         value={

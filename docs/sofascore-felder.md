@@ -6,6 +6,12 @@ Kader von Union Berlin, je ein Spieler- und Vereinsbild. Insgesamt 22 Abrufe im
 `botasaurus.request`-Modus, ohne 403, 429 oder Bot-Challenge. Der Browser-Modus
 war nicht nötig.
 
+**Stand 02.10.2026:** `api.sofascore.com` weist seit dem 30.09. alle Clients mit 403
+ab, auch ein normales Chrome. Dieselben Pfade unter `www.sofascore.com/api/v1` antworten
+im Browser weiter (geprüft: Kader, Ereignisse, Spielerbild); der request-Modus läuft
+auf beiden Hosts in eine Bot-Challenge. Die Bilder liegen ebenfalls unter
+`www.sofascore.com/api/v1/…/image` (bis dahin `api.sofascore.app`).
+
 Die Test-Fixtures liegen in `core/test/fixtures/sofascore/` (Kopien aus `raw/`).
 Ausgewertet werden die Felder von `core/src/sofascore.ts`.
 
@@ -13,12 +19,12 @@ Ausgewertet werden die Felder von `core/src/sofascore.ts`.
 
 | Zweck | URL | Ergebnis |
 |---|---|---|
-| Spieltag | `api.sofascore.com/api/v1/unique-tournament/35/season/97464/events/round/{n}` | wie KONZEPT 5.2. Endstand in `homeScore.current` / `awayScore.current` |
+| Spieltag | `www.sofascore.com/api/v1/unique-tournament/35/season/97464/events/round/{n}` | wie KONZEPT 5.2. Endstand in `homeScore.current` / `awayScore.current` |
 | Aufstellungen | `…/event/{id}/lineups` | wie KONZEPT 5.2 |
 | Ereignisse | `…/event/{id}/incidents` | siehe unten |
 | Kader | `…/team/{id}/players` | **bestätigt.** `players[].player` mit `id, name, shortName, position (G/D/M/F), dateOfBirthTimestamp, dateOfBirth, proposedMarketValueRaw{value,currency}` (`dateOfBirth` als ISO-Zeitpunkt, z. B. 2002-02-28T00:00:00+00:00), zusätzlich `foreignPlayers`, `nationalPlayers`. Union: 30 Spieler |
-| Spielerbild | `api.sofascore.app/api/v1/player/{id}/image` | **bestätigt**, WebP (~4 KB) |
-| Vereinslogo | `api.sofascore.app/api/v1/team/{id}/image` | **bestätigt**, PNG (~5 KB) → wird für `app/public/img/clubs/` in WebP umgewandelt (6.3) |
+| Spielerbild | `…/player/{id}/image` | **bestätigt**, WebP (~4 KB) |
+| Vereinslogo | `…/team/{id}/image` | **bestätigt**, PNG (~5 KB) → wird für `app/public/img/clubs/` in WebP umgewandelt (6.3) |
 
 ## Aufstellungen (`lineups`)
 
