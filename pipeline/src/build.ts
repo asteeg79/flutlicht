@@ -84,7 +84,7 @@ export async function build(
   const teams = buildTeams(manual.teams);
   const imported = buildPlayers({
     teams: manual.teams,
-    snapshots: await readSquadSnapshots(rawDir),
+    snapshots: await readSquadSnapshots(rawDir, warn),
     tmCrawl: await readTmCrawl(rawDir),
     dcaribou: await readDcaribou(rawDir),
     manualPositions: manual.positions,

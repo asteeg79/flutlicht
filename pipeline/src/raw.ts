@@ -48,7 +48,7 @@ const SofaSquad = z.object({
         shortName: z.string().optional(),
         lastName: z.string().optional(),
         position: z.string().optional(),
-        dateOfBirthTimestamp: z.number(),
+        dateOfBirthTimestamp: z.number().optional(),
         proposedMarketValueRaw: z.object({ value: z.number() }).optional(),
       }),
     }),
@@ -57,6 +57,7 @@ const SofaSquad = z.object({
 
 export async function readSquadSnapshots(
   rawDir: string,
+  warn: (message: string) => void,
 ): Promise<SquadSnapshot[]> {
   const base = join(rawDir, "sofascore", "squads");
   const out: SquadSnapshot[] = [];
@@ -66,17 +67,27 @@ export async function readSquadSnapshots(
       out.push({
         date,
         teamId: Number(file.replace(".json", "")),
-        players: data.players.map(({ player: p }) => ({
-          id: p.id,
-          name: p.name,
-          shortName: p.shortName || p.name,
-          lastName: p.lastName,
-          position: positionFromSofascore(p.position),
-          birthDate: new Date(p.dateOfBirthTimestamp * 1000)
-            .toISOString()
-            .slice(0, 10),
-          sofascoreValueEur: p.proposedMarketValueRaw?.value,
-        })),
+        // Neu gemeldete Nachwuchsspieler kommen zunächst ohne Geburtsdatum (und ohne
+        // Position und Marktwert). Sie zählen erst, wenn Sofascore sie vervollständigt.
+        players: data.players.flatMap(({ player: p }) => {
+          if (p.dateOfBirthTimestamp === undefined) {
+            warn(
+              `Kader ${date}/${file}: Spieler ${p.id} (${p.name}) ohne Geburtsdatum, übersprungen`,
+            );
+            return [];
+          }
+          return {
+            id: p.id,
+            name: p.name,
+            shortName: p.shortName || p.name,
+            lastName: p.lastName,
+            position: positionFromSofascore(p.position),
+            birthDate: new Date(p.dateOfBirthTimestamp * 1000)
+              .toISOString()
+              .slice(0, 10),
+            sofascoreValueEur: p.proposedMarketValueRaw?.value,
+          };
+        }),
       });
     }
   }

@@ -74,12 +74,15 @@ CFG
 git clone git@github-flutlicht:asteeg79/flutlicht.git ~/flutlicht
 cd ~/flutlicht
 git config user.name "Flutlicht-Scraper"
-git config user.email "scraper@flutlicht.invalid"
+git config user.email "<E-Mail des GitHub-Kontos asteeg79>"
 cd scraper
 python3 -m venv .venv
 .venv/bin/pip install -e .
 .venv/bin/python -m fm_scraper schedule   # einmal von Hand: Pull, Plan, ggf. Job
 ```
+
+Die E-Mail muss zum GitHub-Konto des Vercel-Besitzers gehören: Im Hobby-Tarif blockiert
+Vercel sonst jeden Commit des Scrapers („not a member of the team“).
 
 Alle Abrufe laufen im Browser: botasaurus braucht ein Chromium, der Abrufweg `window`
 zusätzlich Xvfb (Pi: `sudo apt install chromium xvfb`). Ohne Xvfb endet die Kette

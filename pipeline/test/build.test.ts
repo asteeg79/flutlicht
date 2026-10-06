@@ -187,6 +187,34 @@ describe("pipeline build (raw → data, KONZEPT 6.5)", () => {
     expect(await readdir(join(root, "data", "points"))).toEqual(["md-01.json"]);
   });
 
+  it("überspringt Kader-Einträge ohne Geburtsdatum mit Warnung", async () => {
+    // Sofascore führt neu gemeldete Nachwuchsspieler zunächst nur mit ID und Namen.
+    await put(
+      raw("sofascore/squads/2026-10-05/1000.json"),
+      envelope({
+        players: [
+          ...squad(0),
+          {
+            player: {
+              id: 9999,
+              name: "Neu Gemeldet",
+              shortName: "N. Gemeldet",
+            },
+          },
+        ],
+      }),
+    );
+    const warnings: string[] = [];
+    await run((m) => warnings.push(m));
+
+    const players = await readData("players.json");
+    expect(players.length).toBe(414);
+    expect(players.some((p: { id: number }) => p.id === 9999)).toBe(false);
+    expect(warnings).toEqual([
+      "Kader 2026-10-05/1000.json: Spieler 9999 (Neu Gemeldet) ohne Geburtsdatum, übersprungen",
+    ]);
+  });
+
   it("schreibt nichts bei kaputtem Raw-File", async () => {
     await put(raw("sofascore/matches/700/final/lineups.json"), "{kaputt");
     await expect(run()).rejects.toThrow();
