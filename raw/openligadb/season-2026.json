@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-10T16:15:15.142Z",
+  "fetchedAt": "2026-10-10T20:06:33.165Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -4477,7 +4477,7 @@
     {
       "matchID": 83193,
       "matchDateTime": "2026-10-10T18:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -4502,10 +4502,110 @@
         "teamIconUrl": "https://i.imgur.com/X8NFkOb.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:22:35.123",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-10-10T20:22:34.163",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 129271,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 4,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129272,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 6,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 149389,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 1,
+          "goalGetterID": 23595,
+          "goalGetterName": "E. Banzuzi",
+          "scoringTeamId": 1635,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 149390,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 5,
+          "goalGetterID": 18782,
+          "goalGetterName": "C. Nkunku",
+          "scoringTeamId": 1635,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 149391,
+          "scoreTeam1": 3,
+          "scoreTeam2": 0,
+          "matchMinute": 41,
+          "goalGetterID": 18782,
+          "goalGetterName": "C. Nkunku",
+          "scoringTeamId": 1635,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 149392,
+          "scoreTeam1": 4,
+          "scoreTeam2": 0,
+          "matchMinute": 44,
+          "goalGetterID": 18782,
+          "goalGetterName": "C. Nkunku",
+          "scoringTeamId": 1635,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 149411,
+          "scoreTeam1": 5,
+          "scoreTeam2": 0,
+          "matchMinute": 54,
+          "goalGetterID": 22891,
+          "goalGetterName": "A. Nusa",
+          "scoringTeamId": 1635,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 149412,
+          "scoreTeam1": 6,
+          "scoreTeam2": 0,
+          "matchMinute": 89,
+          "goalGetterID": 27530,
+          "goalGetterName": "T. Gomis",
+          "scoringTeamId": 1635,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
