@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-11T16:39:54.885Z",
+  "fetchedAt": "2026-10-11T20:58:45.634Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -4708,7 +4708,7 @@
     {
       "matchID": 83195,
       "matchDateTime": "2026-10-11T17:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -4733,8 +4733,8 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/9/97/FC_Schalke_04_Logo.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-10-11T18:18:33.86",
-      "matchIsFinished": false,
+      "lastUpdateDateTime": "2026-10-11T19:25:39.077",
+      "matchIsFinished": true,
       "matchResults": [
         {
           "resultID": 129332,
@@ -4749,7 +4749,7 @@
         {
           "resultID": 129333,
           "resultName": "Endergebnis",
-          "pointsTeam1": 1,
+          "pointsTeam1": 2,
           "pointsTeam2": 1,
           "resultOrderID": 2,
           "resultTypeID": 2,
@@ -4779,6 +4779,19 @@
           "goalGetterID": 18435,
           "goalGetterName": "K. Karaman",
           "scoringTeamId": 9,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 149498,
+          "scoreTeam1": 2,
+          "scoreTeam2": 1,
+          "matchMinute": 85,
+          "goalGetterID": 27726,
+          "goalGetterName": "K. Goto",
+          "scoringTeamId": 112,
           "isPenalty": false,
           "isOwnGoal": false,
           "isOvertime": false,
