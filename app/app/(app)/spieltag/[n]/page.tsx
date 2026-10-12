@@ -374,8 +374,8 @@ export default async function MatchdayPage({
                   {BONUS_LABEL[bonusState(view)]}
                   <span className="block text-[11px]">
                     Median der Liga {formatNumber(own.bonus.median)} P. ·{" "}
-                    {formatMio(MARKET.bonusPerPoint)} je Punkt darüber,
-                    höchstens {formatMio(MARKET.bonusCap)}
+                    {MARKET.bonusPerPoint.toLocaleString("de-DE")} Mio. je Punkt
+                    darüber, höchstens {formatMio(MARKET.bonusCap)}
                   </span>
                 </>
               }
