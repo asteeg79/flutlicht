@@ -1,0 +1,1882 @@
+{
+  "fetchedAt": "2026-10-12T10:09:22.774220Z",
+  "url": "https://www.sofascore.com/api/v1/event/16434050/incidents",
+  "phase": "final",
+  "data": {
+    "incidents": [
+      {
+        "text": "FT",
+        "homeScore": 2,
+        "awayScore": 2,
+        "isLive": false,
+        "time": 90,
+        "addedTime": 999,
+        "timeSeconds": 5400,
+        "incidentType": "period",
+        "reversedPeriodTime": 1,
+        "reversedPeriodTimeSeconds": 0,
+        "periodTimeSeconds": 2700
+      },
+      {
+        "player": {
+          "name": "Felix Nmecha",
+          "firstName": "Felix",
+          "lastName": "Nmecha",
+          "slug": "felix-nmecha",
+          "shortName": "F. Nmecha",
+          "position": "M",
+          "jerseyNumber": "8",
+          "height": 190,
+          "userCount": 11878,
+          "gender": "M",
+          "sofascoreId": "66n-mch",
+          "id": 907463,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 971136000,
+          "proposedMarketValueRaw": {
+            "value": 53000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "فيليكس نميشا",
+              "bn": "নেমেচা, ফেলিক্স",
+              "hi": "नेमेचा, फेलिक्स",
+              "ru": "Феликс Нмеча"
+            },
+            "shortNameTranslation": {
+              "ar": "ف. نميشا",
+              "bn": "এফ. নেমেচা",
+              "hi": "एफ. नेमेचा",
+              "ru": "Ф. Нмеча"
+            }
+          }
+        },
+        "playerName": "Felix Nmecha",
+        "reason": "Foul",
+        "rescinded": false,
+        "id": 125737099,
+        "time": 90,
+        "addedTime": 4,
+        "isHome": true,
+        "incidentClass": "yellow",
+        "incidentType": "card",
+        "reversedPeriodTime": 1
+      },
+      {
+        "homeScore": 2,
+        "awayScore": 2,
+        "player": {
+          "name": "Niclas Füllkrug",
+          "slug": "niclas-fullkrug",
+          "shortName": "N. Füllkrug",
+          "position": "F",
+          "jerseyNumber": "10",
+          "height": 188,
+          "userCount": 9010,
+          "gender": "M",
+          "sofascoreId": "z7i-fxd",
+          "id": 132645,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 729216000,
+          "proposedMarketValueRaw": {
+            "value": 3700000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "نيكلاس فولكرغ",
+              "bn": "নিকলাস ফুলক্রুগ",
+              "hi": "निकोलस फुलक्रुग",
+              "ru": "Никлас Фюллькруг"
+            },
+            "shortNameTranslation": {
+              "ar": "ن. فولكرغ",
+              "bn": "এন. ফুলক্রুগ",
+              "hi": "एन. फुलक्रुग",
+              "ru": "Н. Фюллькруг"
+            }
+          }
+        },
+        "assist1": {
+          "name": "Marco Grüll",
+          "firstName": "Marco",
+          "lastName": "Grull",
+          "slug": "marco-grull",
+          "shortName": "M. Grüll",
+          "position": "F",
+          "jerseyNumber": "17",
+          "height": 182,
+          "userCount": 849,
+          "gender": "M",
+          "sofascoreId": "h23-pec",
+          "id": 815612,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 899683200,
+          "proposedMarketValueRaw": {
+            "value": 5400000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "ماركو غرول",
+              "bn": "মার্কো গ্রুল",
+              "hi": "मार्को ग्रुल",
+              "ru": "Марко Грюль"
+            },
+            "shortNameTranslation": {
+              "ar": "م. غرول",
+              "bn": "এম. গ্রুল",
+              "hi": "एम. ग्रुल",
+              "ru": "М. Грюль"
+            }
+          }
+        },
+        "footballPassingNetworkAction": [
+          {
+            "player": {
+              "name": "Marco Grüll",
+              "firstName": "Marco",
+              "lastName": "Grull",
+              "slug": "marco-grull",
+              "shortName": "M. Grüll",
+              "position": "F",
+              "jerseyNumber": "17",
+              "height": 182,
+              "userCount": 849,
+              "gender": "M",
+              "sofascoreId": "h23-pec",
+              "id": 815612,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 899683200,
+              "proposedMarketValueRaw": {
+                "value": 5400000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ماركو غرول",
+                  "bn": "মার্কো গ্রুল",
+                  "hi": "मार्को ग्रुल",
+                  "ru": "Марко Грюль"
+                },
+                "shortNameTranslation": {
+                  "ar": "م. غرول",
+                  "bn": "এম. গ্রুল",
+                  "hi": "एम. ग्रुल",
+                  "ru": "М. Грюль"
+                }
+              }
+            },
+            "eventType": "pass",
+            "isAssist": true,
+            "time": 90,
+            "playerCoordinates": {
+              "x": 27.7,
+              "y": 62.1
+            },
+            "passEndCoordinates": {
+              "x": 9.7,
+              "y": 47.2
+            },
+            "isHome": false
+          },
+          {
+            "player": {
+              "name": "Niclas Füllkrug",
+              "slug": "niclas-fullkrug",
+              "shortName": "N. Füllkrug",
+              "position": "F",
+              "jerseyNumber": "10",
+              "height": 188,
+              "userCount": 9010,
+              "gender": "M",
+              "sofascoreId": "z7i-fxd",
+              "id": 132645,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 729216000,
+              "proposedMarketValueRaw": {
+                "value": 3700000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "نيكلاس فولكرغ",
+                  "bn": "নিকলাস ফুলক্রুগ",
+                  "hi": "निकोलस फुलक्रुग",
+                  "ru": "Никлас Фюллькруг"
+                },
+                "shortNameTranslation": {
+                  "ar": "ن. فولكرغ",
+                  "bn": "এন. ফুলক্রুগ",
+                  "hi": "एन. फुलक्रुग",
+                  "ru": "Н. Фюллькруг"
+                }
+              }
+            },
+            "eventType": "goal",
+            "bodyPart": "head",
+            "time": 90,
+            "playerCoordinates": {
+              "x": 9.7,
+              "y": 47.2
+            },
+            "gkCoordinates": {
+              "x": 4.6,
+              "y": 46.6
+            },
+            "goalShotCoordinates": {
+              "x": 0,
+              "y": 48.8
+            },
+            "goalMouthCoordinates": {
+              "x": 43.55,
+              "y": 57.83
+            },
+            "goalkeeper": {
+              "name": "Gregor Kobel",
+              "firstName": "Gregor",
+              "lastName": "Kobel",
+              "slug": "gregor-kobel",
+              "shortName": "G. Kobel",
+              "position": "G",
+              "jerseyNumber": "1",
+              "height": 193,
+              "userCount": 10860,
+              "gender": "M",
+              "sofascoreId": "r2h-7pm",
+              "id": 556866,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 881366400,
+              "proposedMarketValueRaw": {
+                "value": 41000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "غريغور كوبل",
+                  "bn": "গ্রেগর কোবেল",
+                  "hi": "ग्रेगर कोबेल",
+                  "ru": "Грегор Кобель"
+                },
+                "shortNameTranslation": {
+                  "ar": "غ. كوبل",
+                  "bn": "জি. কোবেল",
+                  "hi": "जी. कोबेल",
+                  "ru": "Г. Кобель"
+                }
+              }
+            },
+            "isHome": false,
+            "goalType": "regular",
+            "xg": 0.55738240480423,
+            "xgot": 0.74252843856812,
+            "situation": "set-piece",
+            "goalMouthLocation": "high-centre"
+          }
+        ],
+        "id": 364680956,
+        "time": 90,
+        "addedTime": 2,
+        "isHome": false,
+        "incidentClass": "regular",
+        "incidentType": "goal",
+        "reversedPeriodTime": 1
+      },
+      {
+        "player": {
+          "name": "Joey Veerman",
+          "firstName": "Joey",
+          "lastName": "Veerman",
+          "slug": "joey-veerman",
+          "shortName": "J. Veerman",
+          "position": "M",
+          "jerseyNumber": "25",
+          "height": 185,
+          "userCount": 5126,
+          "gender": "M",
+          "sofascoreId": "8ip-taw",
+          "id": 850816,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 911433600,
+          "proposedMarketValueRaw": {
+            "value": 26000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "جوي فيرمان",
+              "bn": "জোই বীরম্যান",
+              "hi": "जॉय वीरमैन",
+              "ru": "Джоуи Веерман"
+            },
+            "shortNameTranslation": {
+              "ar": "ج. فيرمان",
+              "bn": "জে. বীরম্যান",
+              "hi": "जे. वीरमैन",
+              "ru": "Д. Веерман"
+            }
+          }
+        },
+        "playerName": "Joey Veerman",
+        "reason": "Foul",
+        "rescinded": false,
+        "id": 125737075,
+        "time": 90,
+        "addedTime": 2,
+        "isHome": true,
+        "incidentClass": "yellow",
+        "incidentType": "card",
+        "reversedPeriodTime": 1
+      },
+      {
+        "player": {
+          "name": "Dariusz Stalmach",
+          "firstName": "Dariusz Stalmach",
+          "slug": "dariusz-stalmach",
+          "shortName": "D. Stalmach",
+          "position": "M",
+          "jerseyNumber": "23",
+          "height": 182,
+          "userCount": 1090,
+          "gender": "M",
+          "sofascoreId": "b76-gcb",
+          "id": 1141977,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1134000000,
+          "proposedMarketValueRaw": {
+            "value": 1600000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "هولميدال، لينيه",
+              "ru": "Дариуш Сталмах"
+            },
+            "shortNameTranslation": {
+              "ar": "د. ستالماتش",
+              "ru": "Д. Сталмах"
+            }
+          }
+        },
+        "playerName": "Dariusz Stalmach",
+        "reason": "Foul",
+        "rescinded": false,
+        "id": 125737059,
+        "time": 90,
+        "isHome": false,
+        "incidentClass": "yellow",
+        "incidentType": "card",
+        "reversedPeriodTime": 1
+      },
+      {
+        "length": 6,
+        "time": 90,
+        "addedTime": 0,
+        "incidentType": "injuryTime",
+        "reversedPeriodTime": 1
+      },
+      {
+        "homeScore": 2,
+        "awayScore": 1,
+        "player": {
+          "name": "Ludovit Reis",
+          "firstName": "",
+          "lastName": "",
+          "slug": "ludovit-reis",
+          "shortName": "L. Reis",
+          "position": "M",
+          "jerseyNumber": "15",
+          "height": 178,
+          "userCount": 935,
+          "gender": "M",
+          "sofascoreId": "nun-vax",
+          "id": 893586,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 959817600,
+          "proposedMarketValueRaw": {
+            "value": 3100000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "لودوفيت ريس",
+              "bn": "লুডোভিট রেইস",
+              "hi": "लुडोवित रीस",
+              "ru": "Людовит Рейс"
+            },
+            "shortNameTranslation": {
+              "ar": "ل. ريس",
+              "bn": "এল. রেইস",
+              "hi": "एल. रीस",
+              "ru": "Л. Рейс"
+            }
+          }
+        },
+        "assist1": {
+          "name": "Oskar Wójcik",
+          "firstName": "",
+          "lastName": "",
+          "slug": "oskar-wojcik",
+          "shortName": "O. Wojcik",
+          "position": "D",
+          "jerseyNumber": "3",
+          "height": 191,
+          "userCount": 703,
+          "gender": "M",
+          "sofascoreId": "xz4-y7v",
+          "id": 1173623,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1058745600,
+          "proposedMarketValueRaw": {
+            "value": 5400000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بورغوس ب / دياز أ",
+              "ru": "Оскар Войцик"
+            },
+            "shortNameTranslation": {
+              "ar": "أ. فويتشيك",
+              "ru": "О. Войцик"
+            }
+          }
+        },
+        "footballPassingNetworkAction": [
+          {
+            "player": {
+              "name": "Oskar Wójcik",
+              "firstName": "",
+              "lastName": "",
+              "slug": "oskar-wojcik",
+              "shortName": "O. Wojcik",
+              "position": "D",
+              "jerseyNumber": "3",
+              "height": 191,
+              "userCount": 703,
+              "gender": "M",
+              "sofascoreId": "xz4-y7v",
+              "id": 1173623,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1058745600,
+              "proposedMarketValueRaw": {
+                "value": 5400000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "بورغوس ب / دياز أ",
+                  "ru": "Оскар Войцик"
+                },
+                "shortNameTranslation": {
+                  "ar": "أ. فويتشيك",
+                  "ru": "О. Войцик"
+                }
+              }
+            },
+            "eventType": "interception",
+            "time": 88,
+            "playerCoordinates": {
+              "x": 37.6,
+              "y": 76.1
+            },
+            "isHome": false
+          },
+          {
+            "player": {
+              "name": "Ludovit Reis",
+              "firstName": "",
+              "lastName": "",
+              "slug": "ludovit-reis",
+              "shortName": "L. Reis",
+              "position": "M",
+              "jerseyNumber": "15",
+              "height": 178,
+              "userCount": 935,
+              "gender": "M",
+              "sofascoreId": "nun-vax",
+              "id": 893586,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 959817600,
+              "proposedMarketValueRaw": {
+                "value": 3100000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "لودوفيت ريس",
+                  "bn": "লুডোভিট রেইস",
+                  "hi": "लुडोवित रीस",
+                  "ru": "Людовит Рейс"
+                },
+                "shortNameTranslation": {
+                  "ar": "ل. ريس",
+                  "bn": "এল. রেইস",
+                  "hi": "एल. रीस",
+                  "ru": "Л. Рейс"
+                }
+              }
+            },
+            "eventType": "goal",
+            "bodyPart": "right-foot",
+            "time": 88,
+            "playerCoordinates": {
+              "x": 22.2,
+              "y": 61.7
+            },
+            "gkCoordinates": {
+              "x": 3.1,
+              "y": 52.9
+            },
+            "goalShotCoordinates": {
+              "x": 0,
+              "y": 46.4
+            },
+            "goalMouthCoordinates": {
+              "x": 30.65,
+              "y": 92.67
+            },
+            "goalkeeper": {
+              "name": "Gregor Kobel",
+              "firstName": "Gregor",
+              "lastName": "Kobel",
+              "slug": "gregor-kobel",
+              "shortName": "G. Kobel",
+              "position": "G",
+              "jerseyNumber": "1",
+              "height": 193,
+              "userCount": 10860,
+              "gender": "M",
+              "sofascoreId": "r2h-7pm",
+              "id": 556866,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 881366400,
+              "proposedMarketValueRaw": {
+                "value": 41000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "غريغور كوبل",
+                  "bn": "গ্রেগর কোবেল",
+                  "hi": "ग्रेगर कोबेल",
+                  "ru": "Грегор Кобель"
+                },
+                "shortNameTranslation": {
+                  "ar": "غ. كوبل",
+                  "bn": "জি. কোবেল",
+                  "hi": "जी. कोबेल",
+                  "ru": "Г. Кобель"
+                }
+              }
+            },
+            "isHome": false,
+            "goalType": "regular",
+            "xg": 0.067011378705502,
+            "xgot": 0.39446806907654,
+            "situation": "assisted",
+            "goalMouthLocation": "low-left"
+          }
+        ],
+        "id": 364680448,
+        "time": 88,
+        "isHome": false,
+        "incidentClass": "regular",
+        "incidentType": "goal",
+        "reversedPeriodTime": 3
+      },
+      {
+        "homeScore": 2,
+        "awayScore": 0,
+        "player": {
+          "name": "Nico Schlotterbeck",
+          "firstName": "Nico",
+          "lastName": "Schlotterbeck",
+          "slug": "nico-schlotterbeck",
+          "shortName": "N. Schlotterbeck",
+          "position": "D",
+          "jerseyNumber": "4",
+          "height": 191,
+          "userCount": 15020,
+          "gender": "M",
+          "sofascoreId": "6gc-zgb",
+          "id": 940871,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 944006400,
+          "proposedMarketValueRaw": {
+            "value": 57000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "نيكو شلوتربيك",
+              "bn": "নিকো শ্লোটারবেক",
+              "hi": "निको श्लोटरबेक",
+              "ru": "Нико Шлоттербек"
+            },
+            "shortNameTranslation": {
+              "ar": "ن. شلوتربيك",
+              "bn": "এন. শ্লোটারবেক",
+              "hi": "एन. श्लोटरबेक",
+              "ru": "Н. Шлоттербек"
+            }
+          }
+        },
+        "assist1": {
+          "name": "Joey Veerman",
+          "firstName": "Joey",
+          "lastName": "Veerman",
+          "slug": "joey-veerman",
+          "shortName": "J. Veerman",
+          "position": "M",
+          "jerseyNumber": "25",
+          "height": 185,
+          "userCount": 5126,
+          "gender": "M",
+          "sofascoreId": "8ip-taw",
+          "id": 850816,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 911433600,
+          "proposedMarketValueRaw": {
+            "value": 26000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "جوي فيرمان",
+              "bn": "জোই বীরম্যান",
+              "hi": "जॉय वीरमैन",
+              "ru": "Джоуи Веерман"
+            },
+            "shortNameTranslation": {
+              "ar": "ج. فيرمان",
+              "bn": "জে. বীরম্যান",
+              "hi": "जे. वीरमैन",
+              "ru": "Д. Веерман"
+            }
+          }
+        },
+        "footballPassingNetworkAction": [
+          {
+            "player": {
+              "name": "Joey Veerman",
+              "firstName": "Joey",
+              "lastName": "Veerman",
+              "slug": "joey-veerman",
+              "shortName": "J. Veerman",
+              "position": "M",
+              "jerseyNumber": "25",
+              "height": 185,
+              "userCount": 5126,
+              "gender": "M",
+              "sofascoreId": "8ip-taw",
+              "id": 850816,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 911433600,
+              "proposedMarketValueRaw": {
+                "value": 26000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "جوي فيرمان",
+                  "bn": "জোই বীরম্যান",
+                  "hi": "जॉय वीरमैन",
+                  "ru": "Джоуи Веерман"
+                },
+                "shortNameTranslation": {
+                  "ar": "ج. فيرمان",
+                  "bn": "জে. বীরম্যান",
+                  "hi": "जे. वीरमैन",
+                  "ru": "Д. Веерман"
+                }
+              }
+            },
+            "eventType": "cross",
+            "isAssist": true,
+            "time": 85,
+            "playerCoordinates": {
+              "x": 99.5,
+              "y": 99.5
+            },
+            "passEndCoordinates": {
+              "x": 96.7,
+              "y": 44.2
+            },
+            "isHome": true
+          },
+          {
+            "player": {
+              "name": "Nico Schlotterbeck",
+              "firstName": "Nico",
+              "lastName": "Schlotterbeck",
+              "slug": "nico-schlotterbeck",
+              "shortName": "N. Schlotterbeck",
+              "position": "D",
+              "jerseyNumber": "4",
+              "height": 191,
+              "userCount": 15020,
+              "gender": "M",
+              "sofascoreId": "6gc-zgb",
+              "id": 940871,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 944006400,
+              "proposedMarketValueRaw": {
+                "value": 57000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "نيكو شلوتربيك",
+                  "bn": "নিকো শ্লোটারবেক",
+                  "hi": "निको श्लोटरबेक",
+                  "ru": "Нико Шлоттербек"
+                },
+                "shortNameTranslation": {
+                  "ar": "ن. شلوتربيك",
+                  "bn": "এন. শ্লোটারবেক",
+                  "hi": "एन. श्लोटरबेक",
+                  "ru": "Н. Шлоттербек"
+                }
+              }
+            },
+            "eventType": "goal",
+            "bodyPart": "head",
+            "time": 85,
+            "playerCoordinates": {
+              "x": 96.7,
+              "y": 44.2
+            },
+            "gkCoordinates": {
+              "x": 99,
+              "y": 46.9
+            },
+            "goalShotCoordinates": {
+              "x": 100,
+              "y": 46.4
+            },
+            "goalMouthCoordinates": {
+              "x": 69.35,
+              "y": 75.67
+            },
+            "goalkeeper": {
+              "name": "Karl Hein",
+              "slug": "karl-hein",
+              "shortName": "K. Hein",
+              "position": "G",
+              "jerseyNumber": "1",
+              "height": 193,
+              "userCount": 5853,
+              "gender": "M",
+              "sofascoreId": "6gi-r44",
+              "id": 991591,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1018656000,
+              "proposedMarketValueRaw": {
+                "value": 3900000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "كارل هاين",
+                  "bn": "কার্ল হেইন",
+                  "hi": "कार्ल हेन",
+                  "ru": "Карл Хайн"
+                },
+                "shortNameTranslation": {
+                  "ar": "ك. هاين",
+                  "bn": "কে. হেইন",
+                  "hi": "के. हेन",
+                  "ru": "К. Хайн"
+                }
+              }
+            },
+            "isHome": true,
+            "goalType": "regular",
+            "xg": 0.16063779592514,
+            "xgot": 0.7406559586525,
+            "situation": "corner",
+            "goalMouthLocation": "low-right"
+          }
+        ],
+        "id": 364680204,
+        "time": 85,
+        "isHome": true,
+        "incidentClass": "regular",
+        "incidentType": "goal",
+        "reversedPeriodTime": 6
+      },
+      {
+        "playerIn": {
+          "name": "Mick Schmetgens",
+          "firstName": "Mick Schmetgens",
+          "slug": "mick-schmetgens",
+          "shortName": "M. Schmetgens",
+          "position": "D",
+          "jerseyNumber": "33",
+          "height": 190,
+          "userCount": 254,
+          "gender": "M",
+          "sofascoreId": "8ja-9sf",
+          "id": 1568521,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1189296000,
+          "proposedMarketValueRaw": {
+            "value": 3300000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "ميك شميتغنز",
+              "ru": "Мик Шметгенс"
+            },
+            "shortNameTranslation": {
+              "ar": "م. شميتغنز",
+              "ru": "М. Шметгенс"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Eren Dinkçi",
+          "firstName": "Eren",
+          "lastName": "Dinkci",
+          "slug": "eren-dinkci",
+          "shortName": "E. Dinkçi",
+          "position": "F",
+          "jerseyNumber": "18",
+          "height": 188,
+          "userCount": 963,
+          "gender": "M",
+          "sofascoreId": "sn5-k9f",
+          "id": 1067120,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1008201600,
+          "proposedMarketValueRaw": {
+            "value": 5400000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "إرين دينكسي",
+              "bn": "এরেন ডিংকি",
+              "hi": "एरेन डिंकी",
+              "ru": "Эрен Динкчи"
+            },
+            "shortNameTranslation": {
+              "ar": "إ. دينكسي",
+              "bn": "ই. ডিংকি",
+              "hi": "ई. डिंकी",
+              "ru": "Э. Динкчи"
+            }
+          }
+        },
+        "id": 127052257,
+        "time": 81,
+        "injury": false,
+        "isHome": false,
+        "incidentClass": "regular",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 10
+      },
+      {
+        "playerIn": {
+          "name": "Paul Erevbenagie",
+          "firstName": "Paul Erevbenagie",
+          "slug": "paul-erevbenagie",
+          "shortName": "P. Erevbenagie",
+          "position": "F",
+          "jerseyNumber": "38",
+          "height": 182,
+          "userCount": 101,
+          "gender": "M",
+          "sofascoreId": "r3f-4kg",
+          "id": 2160258,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1187481600,
+          "proposedMarketValueRaw": {
+            "value": 1500000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "إيريفبيناچي، بول",
+              "ru": "Эревбенаги, Пол"
+            },
+            "shortNameTranslation": {
+              "ar": "ب. إيريفبيناچي",
+              "ru": "П. Эревбенаги"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Chuki",
+          "firstName": "",
+          "lastName": "",
+          "slug": "chuky",
+          "shortName": "Chuki",
+          "position": "M",
+          "jerseyNumber": "20",
+          "height": 176,
+          "userCount": 567,
+          "gender": "M",
+          "sofascoreId": "snf-z8b",
+          "id": 1137584,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1083196800,
+          "proposedMarketValueRaw": {
+            "value": 8700000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "تشوكي",
+              "ru": "Чуки"
+            },
+            "shortNameTranslation": {
+              "ar": "تشوكي",
+              "ru": "Чуки"
+            }
+          }
+        },
+        "id": 127052256,
+        "time": 81,
+        "injury": false,
+        "isHome": false,
+        "incidentClass": "regular",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 10
+      },
+      {
+        "homeScore": 1,
+        "awayScore": 0,
+        "player": {
+          "name": "Daniel Svensson",
+          "firstName": "",
+          "lastName": "",
+          "slug": "daniel-svensson",
+          "shortName": "D. Svensson",
+          "position": "M",
+          "jerseyNumber": "24",
+          "height": 183,
+          "userCount": 3937,
+          "gender": "M",
+          "sofascoreId": "5fq-ama",
+          "id": 1021272,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1013472000,
+          "proposedMarketValueRaw": {
+            "value": 20000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "دانيال سفينسون",
+              "ru": "Даниэль Свенссон"
+            },
+            "shortNameTranslation": {
+              "ar": "د. سفينسون",
+              "ru": "Д. Свенссон"
+            }
+          }
+        },
+        "assist1": {
+          "name": "Fábio Silva",
+          "firstName": "Fabio",
+          "lastName": "Silva",
+          "slug": "fabio-silva",
+          "shortName": "F. Silva",
+          "position": "F",
+          "jerseyNumber": "21",
+          "height": 185,
+          "userCount": 6654,
+          "gender": "M",
+          "sofascoreId": "hii-g4b",
+          "id": 954076,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1027036800,
+          "proposedMarketValueRaw": {
+            "value": 21000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "فابيو سيلفا",
+              "bn": "ফ্যাবিও সিলভা",
+              "hi": "फैबियो सिल्वा",
+              "ru": "Фабио Силва"
+            },
+            "shortNameTranslation": {
+              "ar": "ف. سيلفا",
+              "bn": "এফ. সিলভা",
+              "hi": "एफ. सिल्वा",
+              "ru": "Ф. Силва"
+            }
+          }
+        },
+        "footballPassingNetworkAction": [
+          {
+            "player": {
+              "name": "Maximilian Beier",
+              "firstName": "Maximilian",
+              "lastName": "Beier",
+              "slug": "maximilian-beier",
+              "shortName": "M. Beier",
+              "position": "F",
+              "jerseyNumber": "14",
+              "height": 183,
+              "userCount": 5936,
+              "gender": "M",
+              "sofascoreId": "g88-htr",
+              "id": 980628,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1034812800,
+              "proposedMarketValueRaw": {
+                "value": 43000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "ماكسيميليان بيير",
+                  "bn": "ম্যাক্সিমিলিয়ান বিয়ার",
+                  "hi": "मैक्सिमिलियन बेयर",
+                  "ru": "Максимилиан Байер"
+                },
+                "shortNameTranslation": {
+                  "ar": "م. بيير",
+                  "bn": "এম. বেয়ার",
+                  "hi": "एम. बेयर",
+                  "ru": "М. Байер"
+                }
+              }
+            },
+            "eventType": "tackle",
+            "time": 80,
+            "playerCoordinates": {
+              "x": 24.6,
+              "y": 70.4
+            },
+            "isHome": true
+          },
+          {
+            "player": {
+              "name": "Konstantinos Karetsas",
+              "slug": "konstantinos-karetsas",
+              "shortName": "K. Karetsas",
+              "position": "M",
+              "jerseyNumber": "19",
+              "height": 171,
+              "userCount": 13005,
+              "gender": "M",
+              "sofascoreId": "ekp-nxh",
+              "id": 1468744,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1195430400,
+              "proposedMarketValueRaw": {
+                "value": 34000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "كونستانتينوس كاريتساس",
+                  "bn": "কনস্টান্টিনোস কারেসাস",
+                  "hi": "कोंस्टैंटिनोस करेत्सस",
+                  "ru": "Константинос Карецас"
+                },
+                "shortNameTranslation": {
+                  "ar": "ك. كاريتساس",
+                  "bn": "কে. ক্যারেটাস",
+                  "hi": "के. करेत्सस",
+                  "ru": "К. Карецас"
+                }
+              }
+            },
+            "eventType": "pass",
+            "time": 80,
+            "playerCoordinates": {
+              "x": 31.3,
+              "y": 70.2
+            },
+            "passEndCoordinates": {
+              "x": 79.9,
+              "y": 18
+            },
+            "isHome": true
+          },
+          {
+            "player": {
+              "name": "Serhou Guirassy",
+              "firstName": "Serhou",
+              "lastName": "Guirassy",
+              "slug": "serhou-guirassy",
+              "shortName": "S. Guirassy",
+              "position": "F",
+              "jerseyNumber": "9",
+              "height": 187,
+              "userCount": 53425,
+              "gender": "M",
+              "sofascoreId": "ix8-nfe",
+              "id": 328027,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 826588800,
+              "proposedMarketValueRaw": {
+                "value": 34000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "سيرو غيراسي",
+                  "bn": "সেরহাউ গুইরাসি",
+                  "hi": "सेरहो गुइरासी",
+                  "ru": "Серху Гирасси"
+                },
+                "shortNameTranslation": {
+                  "ar": "س. غيراسي",
+                  "bn": "এস. গুইরাসি",
+                  "hi": "एस. गुइरासी",
+                  "ru": "С. Гирасси"
+                }
+              }
+            },
+            "eventType": "ball-movement",
+            "time": 80,
+            "playerCoordinates": {
+              "x": 79.9,
+              "y": 18
+            },
+            "passEndCoordinates": {
+              "x": 90.2,
+              "y": 40.3
+            },
+            "isHome": true
+          },
+          {
+            "player": {
+              "name": "Serhou Guirassy",
+              "firstName": "Serhou",
+              "lastName": "Guirassy",
+              "slug": "serhou-guirassy",
+              "shortName": "S. Guirassy",
+              "position": "F",
+              "jerseyNumber": "9",
+              "height": 187,
+              "userCount": 53425,
+              "gender": "M",
+              "sofascoreId": "ix8-nfe",
+              "id": 328027,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 826588800,
+              "proposedMarketValueRaw": {
+                "value": 34000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "سيرو غيراسي",
+                  "bn": "সেরহাউ গুইরাসি",
+                  "hi": "सेरहो गुइरासी",
+                  "ru": "Серху Гирасси"
+                },
+                "shortNameTranslation": {
+                  "ar": "س. غيراسي",
+                  "bn": "এস. গুইরাসি",
+                  "hi": "एस. गुइरासी",
+                  "ru": "С. Гирасси"
+                }
+              }
+            },
+            "eventType": "pass",
+            "time": 80,
+            "playerCoordinates": {
+              "x": 97,
+              "y": 27.2
+            },
+            "passEndCoordinates": {
+              "x": 90.2,
+              "y": 40.3
+            },
+            "isHome": true
+          },
+          {
+            "player": {
+              "name": "Fábio Silva",
+              "firstName": "Fabio",
+              "lastName": "Silva",
+              "slug": "fabio-silva",
+              "shortName": "F. Silva",
+              "position": "F",
+              "jerseyNumber": "21",
+              "height": 185,
+              "userCount": 6654,
+              "gender": "M",
+              "sofascoreId": "hii-g4b",
+              "id": 954076,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1027036800,
+              "proposedMarketValueRaw": {
+                "value": 21000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "فابيو سيلفا",
+                  "bn": "ফ্যাবিও সিলভা",
+                  "hi": "फैबियो सिल्वा",
+                  "ru": "Фабио Силва"
+                },
+                "shortNameTranslation": {
+                  "ar": "ف. سيلفا",
+                  "bn": "এফ. সিলভা",
+                  "hi": "एफ. सिल्वा",
+                  "ru": "Ф. Силва"
+                }
+              }
+            },
+            "eventType": "miss",
+            "isAssist": true,
+            "time": 80,
+            "playerCoordinates": {
+              "x": 90.2,
+              "y": 40.3
+            },
+            "gkCoordinates": {
+              "x": 98.2,
+              "y": 47.1
+            },
+            "goalShotCoordinates": {
+              "x": 100,
+              "y": 70.6
+            },
+            "goalMouthCoordinates": {
+              "x": 40.7,
+              "y": 95.33
+            },
+            "isHome": true
+          },
+          {
+            "player": {
+              "name": "Daniel Svensson",
+              "firstName": "",
+              "lastName": "",
+              "slug": "daniel-svensson",
+              "shortName": "D. Svensson",
+              "position": "M",
+              "jerseyNumber": "24",
+              "height": 183,
+              "userCount": 3937,
+              "gender": "M",
+              "sofascoreId": "5fq-ama",
+              "id": 1021272,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1013472000,
+              "proposedMarketValueRaw": {
+                "value": 20000000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "دانيال سفينسون",
+                  "ru": "Даниэль Свенссон"
+                },
+                "shortNameTranslation": {
+                  "ar": "د. سفينسون",
+                  "ru": "Д. Свенссон"
+                }
+              }
+            },
+            "eventType": "goal",
+            "bodyPart": "left-foot",
+            "time": 80,
+            "playerCoordinates": {
+              "x": 91.4,
+              "y": 47.9
+            },
+            "gkCoordinates": {
+              "x": 98,
+              "y": 47.6
+            },
+            "goalShotCoordinates": {
+              "x": 100,
+              "y": 49.5
+            },
+            "goalMouthCoordinates": {
+              "x": 52.69,
+              "y": 58.83
+            },
+            "goalkeeper": {
+              "name": "Karl Hein",
+              "slug": "karl-hein",
+              "shortName": "K. Hein",
+              "position": "G",
+              "jerseyNumber": "1",
+              "height": 193,
+              "userCount": 5853,
+              "gender": "M",
+              "sofascoreId": "6gi-r44",
+              "id": 991591,
+              "marketValueCurrency": "EUR",
+              "dateOfBirthTimestamp": 1018656000,
+              "proposedMarketValueRaw": {
+                "value": 3900000,
+                "currency": "EUR"
+              },
+              "fieldTranslations": {
+                "nameTranslation": {
+                  "ar": "كارل هاين",
+                  "bn": "কার্ল হেইন",
+                  "hi": "कार्ल हेन",
+                  "ru": "Карл Хайн"
+                },
+                "shortNameTranslation": {
+                  "ar": "ك. هاين",
+                  "bn": "কে. হেইন",
+                  "hi": "के. हेन",
+                  "ru": "К. Хайн"
+                }
+              }
+            },
+            "isHome": true,
+            "goalType": "regular",
+            "xg": 0.40657624602318,
+            "xgot": 0.46494653820992,
+            "situation": "fast-break",
+            "goalMouthLocation": "high-centre"
+          }
+        ],
+        "id": 364679472,
+        "time": 80,
+        "isHome": true,
+        "incidentClass": "regular",
+        "incidentType": "goal",
+        "reversedPeriodTime": 11
+      },
+      {
+        "playerIn": {
+          "name": "Joey Veerman",
+          "firstName": "Joey",
+          "lastName": "Veerman",
+          "slug": "joey-veerman",
+          "shortName": "J. Veerman",
+          "position": "M",
+          "jerseyNumber": "25",
+          "height": 185,
+          "userCount": 5126,
+          "gender": "M",
+          "sofascoreId": "8ip-taw",
+          "id": 850816,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 911433600,
+          "proposedMarketValueRaw": {
+            "value": 26000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "جوي فيرمان",
+              "bn": "জোই বীরম্যান",
+              "hi": "जॉय वीरमैन",
+              "ru": "Джоуи Веерман"
+            },
+            "shortNameTranslation": {
+              "ar": "ج. فيرمان",
+              "bn": "জে. বীরম্যান",
+              "hi": "जे. वीरमैन",
+              "ru": "Д. Веерман"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Jobe Bellingham",
+          "firstName": "Jobe Bellingham",
+          "slug": "jobe-bellingham",
+          "shortName": "J. Bellingham",
+          "position": "M",
+          "jerseyNumber": "7",
+          "height": 191,
+          "userCount": 40017,
+          "gender": "M",
+          "sofascoreId": "jvt-s3d",
+          "id": 1134083,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1127433600,
+          "proposedMarketValueRaw": {
+            "value": 38000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "جوب بيلينغهام",
+              "bn": "জোবে বেলিংহাম",
+              "hi": "जोब बेलिंगहैम",
+              "ru": "Джоб Беллингем"
+            },
+            "shortNameTranslation": {
+              "ar": "ج. بيلينغهام",
+              "bn": "জে. বেলিংহাম",
+              "hi": "जे. बेलिंगहैम",
+              "ru": "Д. Беллингем"
+            }
+          }
+        },
+        "id": 127052187,
+        "time": 72,
+        "injury": false,
+        "isHome": true,
+        "incidentClass": "regular",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 19
+      },
+      {
+        "playerIn": {
+          "name": "Konstantinos Karetsas",
+          "slug": "konstantinos-karetsas",
+          "shortName": "K. Karetsas",
+          "position": "M",
+          "jerseyNumber": "19",
+          "height": 171,
+          "userCount": 13005,
+          "gender": "M",
+          "sofascoreId": "ekp-nxh",
+          "id": 1468744,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1195430400,
+          "proposedMarketValueRaw": {
+            "value": 34000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "كونستانتينوس كاريتساس",
+              "bn": "কনস্টান্টিনোস কারেসাস",
+              "hi": "कोंस्टैंटिनोस करेत्सस",
+              "ru": "Константинос Карецас"
+            },
+            "shortNameTranslation": {
+              "ar": "ك. كاريتساس",
+              "bn": "কে. ক্যারেটাস",
+              "hi": "के. करेत्सस",
+              "ru": "К. Карецас"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Marcel Sabitzer",
+          "firstName": "Marcel",
+          "lastName": "Sabitzer",
+          "slug": "marcel-sabitzer",
+          "shortName": "M. Sabitzer",
+          "position": "M",
+          "jerseyNumber": "20",
+          "height": 177,
+          "userCount": 9802,
+          "gender": "M",
+          "sofascoreId": "gjz-uqi",
+          "id": 133908,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 763862400,
+          "proposedMarketValueRaw": {
+            "value": 6200000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "مارسيل سابيتزر",
+              "bn": "মার্সেল সাবিৎজার",
+              "hi": "मार्सेल सबिट्ज़र",
+              "ru": "Марсель Забитцер"
+            },
+            "shortNameTranslation": {
+              "ar": "م. سابيتزر",
+              "bn": "এম. সাবিৎজার",
+              "hi": "एम. सबिट्ज़र",
+              "ru": "М. Забитцер"
+            }
+          }
+        },
+        "id": 127052182,
+        "time": 72,
+        "injury": false,
+        "isHome": true,
+        "incidentClass": "regular",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 19
+      },
+      {
+        "playerIn": {
+          "name": "Dariusz Stalmach",
+          "firstName": "Dariusz Stalmach",
+          "slug": "dariusz-stalmach",
+          "shortName": "D. Stalmach",
+          "position": "M",
+          "jerseyNumber": "23",
+          "height": 182,
+          "userCount": 1090,
+          "gender": "M",
+          "sofascoreId": "b76-gcb",
+          "id": 1141977,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1134000000,
+          "proposedMarketValueRaw": {
+            "value": 1600000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "هولميدال، لينيه",
+              "ru": "Дариуш Сталмах"
+            },
+            "shortNameTranslation": {
+              "ar": "د. ستالماتش",
+              "ru": "Д. Сталмах"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Youri Regeer",
+          "slug": "youri-regeer",
+          "shortName": "Y. Regeer",
+          "position": "M",
+          "jerseyNumber": "44",
+          "height": 177,
+          "userCount": 905,
+          "gender": "M",
+          "sofascoreId": "ekj-d5t",
+          "id": 996940,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1061164800,
+          "proposedMarketValueRaw": {
+            "value": 4700000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "يوري ريغير",
+              "bn": "ইউরি রেগার",
+              "hi": "योरी रेगीर",
+              "ru": "Юри Регир"
+            },
+            "shortNameTranslation": {
+              "ar": "ي. ريغير",
+              "bn": "ওয়াই. রেগার",
+              "hi": "वाई. रेगीर",
+              "ru": "Ю. Регир"
+            }
+          }
+        },
+        "id": 127052118,
+        "time": 65,
+        "injury": true,
+        "isHome": false,
+        "incidentClass": "injury",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 26
+      },
+      {
+        "playerIn": {
+          "name": "Mitchell Weiser",
+          "firstName": "Mitchell",
+          "lastName": "Weiser",
+          "slug": "mitchell-weiser",
+          "shortName": "M. Weiser",
+          "position": "M",
+          "jerseyNumber": "8",
+          "height": 176,
+          "userCount": 1250,
+          "gender": "M",
+          "sofascoreId": "f9m-u8b",
+          "id": 138150,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 766886400,
+          "proposedMarketValueRaw": {
+            "value": 2700000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "ميتشيل وايزر",
+              "bn": "মিচেল ওয়েইজার",
+              "hi": "मिशेल वेसर",
+              "ru": "Митчелл Вайзер"
+            },
+            "shortNameTranslation": {
+              "ar": "م. وايزر",
+              "bn": "এম. ওয়েইজার",
+              "hi": "एम. वेसर",
+              "ru": "М. Вайзер"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Arthur",
+          "firstName": "Arthur",
+          "lastName": "",
+          "slug": "arthur",
+          "shortName": "Arthur",
+          "position": "M",
+          "jerseyNumber": "13",
+          "height": 173,
+          "userCount": 2954,
+          "gender": "M",
+          "sofascoreId": "8jn-ddq",
+          "id": 1174761,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1047859200,
+          "proposedMarketValueRaw": {
+            "value": 7400000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "جاومي ماركيس كابيلا",
+              "bn": "আর্থার",
+              "hi": "आर्थर",
+              "ru": "Артур"
+            },
+            "shortNameTranslation": {
+              "ar": "ج. كابيلا",
+              "bn": "আর্থার",
+              "hi": "आर्थर",
+              "ru": "Артур"
+            }
+          }
+        },
+        "id": 127052099,
+        "time": 65,
+        "injury": false,
+        "isHome": false,
+        "incidentClass": "regular",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 26
+      },
+      {
+        "playerIn": {
+          "name": "Fábio Silva",
+          "firstName": "Fabio",
+          "lastName": "Silva",
+          "slug": "fabio-silva",
+          "shortName": "F. Silva",
+          "position": "F",
+          "jerseyNumber": "21",
+          "height": 185,
+          "userCount": 6654,
+          "gender": "M",
+          "sofascoreId": "hii-g4b",
+          "id": 954076,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1027036800,
+          "proposedMarketValueRaw": {
+            "value": 21000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "فابيو سيلفا",
+              "bn": "ফ্যাবিও সিলভা",
+              "hi": "फैबियो सिल्वा",
+              "ru": "Фабио Силва"
+            },
+            "shortNameTranslation": {
+              "ar": "ف. سيلفا",
+              "bn": "এফ. সিলভা",
+              "hi": "एफ. सिल्वा",
+              "ru": "Ф. Силва"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Ethan Nwaneri",
+          "slug": "ethan-nwaneri",
+          "shortName": "E. Nwaneri",
+          "position": "M",
+          "jerseyNumber": "18",
+          "height": 176,
+          "userCount": 29465,
+          "gender": "M",
+          "sofascoreId": "fpk-pr2",
+          "id": 1401702,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1174435200,
+          "proposedMarketValueRaw": {
+            "value": 34000000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "إيثان نوانيري",
+              "bn": "ইথান নওয়ানেরি",
+              "hi": "एथन नवानेरी",
+              "ru": "Итан Нванери"
+            },
+            "shortNameTranslation": {
+              "ar": "إ. نوانيري",
+              "bn": "ই. নওয়ানেরি",
+              "hi": "ई. नवानेरी",
+              "ru": "И. Нванери"
+            }
+          }
+        },
+        "id": 127052085,
+        "time": 63,
+        "injury": false,
+        "isHome": true,
+        "incidentClass": "regular",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 28
+      },
+      {
+        "text": "HT",
+        "homeScore": 0,
+        "awayScore": 0,
+        "isLive": false,
+        "time": 45,
+        "addedTime": 999,
+        "timeSeconds": 2700,
+        "incidentType": "period",
+        "reversedPeriodTime": 1,
+        "reversedPeriodTimeSeconds": 0,
+        "periodTimeSeconds": 2700
+      },
+      {
+        "length": 2,
+        "time": 45,
+        "addedTime": 0,
+        "incidentType": "injuryTime",
+        "reversedPeriodTime": 1
+      },
+      {
+        "playerIn": {
+          "name": "Oskar Wójcik",
+          "firstName": "",
+          "lastName": "",
+          "slug": "oskar-wojcik",
+          "shortName": "O. Wojcik",
+          "position": "D",
+          "jerseyNumber": "3",
+          "height": 191,
+          "userCount": 703,
+          "gender": "M",
+          "sofascoreId": "xz4-y7v",
+          "id": 1173623,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 1058745600,
+          "proposedMarketValueRaw": {
+            "value": 5400000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بورغوس ب / دياز أ",
+              "ru": "Оскар Войцик"
+            },
+            "shortNameTranslation": {
+              "ar": "أ. فويتشيك",
+              "ru": "О. Войцик"
+            }
+          }
+        },
+        "playerOut": {
+          "name": "Amos Pieper",
+          "firstName": "Amos",
+          "lastName": "Pieper",
+          "slug": "amos-pieper",
+          "shortName": "A. Pieper",
+          "position": "D",
+          "jerseyNumber": "5",
+          "height": 191,
+          "userCount": 335,
+          "gender": "M",
+          "sofascoreId": "d5k-unf",
+          "id": 851254,
+          "marketValueCurrency": "EUR",
+          "dateOfBirthTimestamp": 884995200,
+          "proposedMarketValueRaw": {
+            "value": 3900000,
+            "currency": "EUR"
+          },
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "بيبر، أموس",
+              "bn": "পাইপার, আমোস",
+              "hi": "पीपर, अमोस",
+              "ru": "Амос Пайпер"
+            },
+            "shortNameTranslation": {
+              "ar": "أ. بيبر",
+              "bn": "এ. পাইপার",
+              "hi": "ए. पीपर",
+              "ru": "А. Пайпер"
+            }
+          }
+        },
+        "id": 127051317,
+        "time": 19,
+        "injury": true,
+        "isHome": false,
+        "incidentClass": "injury",
+        "incidentType": "substitution",
+        "reversedPeriodTime": 27
+      },
+      {
+        "playerName": "Daniel Thioune",
+        "reason": "Argument",
+        "manager": {
+          "name": "Daniel Thioune",
+          "slug": "daniel-thioune",
+          "shortName": "D. Thioune",
+          "id": 789171,
+          "fieldTranslations": {
+            "nameTranslation": {
+              "ar": "دانييل ثيوني",
+              "bn": "ড্যানিয়েল থিউন",
+              "hi": "डैनियल थिओने",
+              "ru": "Даниэль Тиуне"
+            },
+            "shortNameTranslation": {
+              "ar": "د. ثيوني",
+              "bn": "ডি. থিউন",
+              "hi": "डी. थिओने",
+              "ru": "Д. Тиуне"
+            }
+          }
+        },
+        "rescinded": false,
+        "benchTime": 90,
+        "benchAddedTime": 8,
+        "id": 125737141,
+        "time": -5,
+        "isHome": false,
+        "incidentClass": "yellow",
+        "incidentType": "card",
+        "reversedPeriodTime": 6
+      }
+    ],
+    "home": {
+      "goalkeeperColor": {
+        "primary": "fa7d1e",
+        "number": "050505",
+        "outline": "fa7d1e",
+        "fancyNumber": "222226"
+      },
+      "playerColor": {
+        "primary": "ffda27",
+        "number": "000000",
+        "outline": "ffda27",
+        "fancyNumber": "222226"
+      }
+    },
+    "away": {
+      "goalkeeperColor": {
+        "primary": "ecd35e",
+        "number": "0f0f0f",
+        "outline": "ecd35e",
+        "fancyNumber": "222226"
+      },
+      "playerColor": {
+        "primary": "036848",
+        "number": "fbfefd",
+        "outline": "036848",
+        "fancyNumber": "ffffff"
+      }
+    }
+  }
+}
