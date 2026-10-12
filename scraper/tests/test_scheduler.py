@@ -120,12 +120,27 @@ def test_final_am_folgetag_zwischen_8_und_10(tmp_path):
     assert "final:5" not in keys(run_plan(at("2026-10-11 09:00"), finished, tmp_path)[0])
 
 
+def test_final_ohne_dateien_gilt_nicht_als_erledigt(tmp_path):
+    """Zustand des Pi am 12.10.2026: final:5 als „ok“ vermerkt, aber nichts abgerufen."""
+    finished = [dict(f, status="finished", dataState="provisional") for f in MD5]
+    write_round(tmp_path, 5)
+    now = at("2026-10-12 12:30")
+    state = {"done": {"final:5": at("2026-10-12 09:41").isoformat()}, "planned": {"final:5": at("2026-10-12 09:41").isoformat()}}
+    assert "final:5" in keys(run_plan(now, finished, tmp_path, state)[0])
+    # Aufgegebene Spieltage bleiben erledigt, ebenso solche mit Daten.
+    gave_up = dict(state, gaveUp={"final:5": at("2026-10-12 09:41").isoformat()})
+    assert "final:5" not in keys(run_plan(now, finished, tmp_path, gave_up)[0])
+    write_final(tmp_path, 501)
+    assert "final:5" not in keys(run_plan(now, finished, tmp_path, state)[0])
+
+
 def test_backfill_ein_spieltag_pro_tag(tmp_path):
     old = [fixture(3, 301, "2026-09-12 15:30", "finished", "pending"), fixture(4, 401, "2026-09-19 15:30", "finished", "pending")]
     now = at("2026-09-26 11:00")
     tasks, state = run_plan(now, old, tmp_path)
     assert tasks == [Task("final:3", "backfill", matchday=3)]
     record(state, tasks[0], now, "ok")
+    write_final(tmp_path, 301)
     assert keys(plan(now + timedelta(hours=1), old, state, tmp_path, lambda: False, Earliest())) == []
     assert "final:4" in keys(plan(at("2026-09-27 08:00"), old, state, tmp_path, lambda: False, Earliest()))
 

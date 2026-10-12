@@ -135,7 +135,7 @@ def plan(
             tasks.append(Task(key, "match-provisional", matchday=f["matchday"], event=event))
 
     # match-final bzw. backfill: höchstens ein Spieltag pro Tag, am Morgen nach dem letzten Spiel 08–10 Uhr.
-    finals_today = any(k.startswith("final:") and datetime.fromisoformat(v).astimezone(BERLIN).date() == local_now.date() for k, v in done.items())
+    finals_today = {k for k, v in done.items() if k.startswith("final:") and datetime.fromisoformat(v).astimezone(BERLIN).date() == local_now.date()}
     for md in sorted(by_md):
         games = [f for f in by_md[md] if _counts(f)]
         if not games or not all(f["status"] == "finished" for f in games):
@@ -143,9 +143,12 @@ def plan(
         if all(_has_final(raw_dir, f.get("sofascoreEventId")) for f in games):
             continue
         key = f"final:{md}"
-        if key in done:
+        # „Erledigt“ ohne eine einzige finale Datei zählt nicht: Bis 12.10.2026 meldete match-final
+        # „ok“, ohne etwas abzurufen, wenn die Rundendatei von vor dem Spieltag stammte.
+        empty = key not in state.get("gaveUp", {}) and not any(_has_final(raw_dir, f.get("sofascoreEventId")) for f in games)
+        if key in done and not empty:
             continue  # versucht (ggf. aufgegeben); nicht die späteren Spieltage blockieren
-        if finals_today:
+        if finals_today - {key}:
             break
         last = max(_kickoff(f) for f in games).astimezone(BERLIN).date()
         day = max(last + timedelta(days=1), local_now.date())

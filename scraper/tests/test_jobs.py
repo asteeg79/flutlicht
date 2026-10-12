@@ -65,3 +65,28 @@ def test_match_final_ueberspringt_vorhandene_spiele(make_client, tmp_path):
     client, _ = make_client(request)
     match_final.run(client, tmp_path, 5)
     assert all("/event/3/" in u for u in request.urls)
+
+
+def test_match_final_mit_rundendatei_von_vor_dem_spieltag(make_client, tmp_path):
+    """Spieltag 5, 12.10.2026: Die Rundendatei nennt alle Spiele notstarted, fixtures.json kennt den Stand."""
+    raw = tmp_path / "raw"
+    write_round(raw, [event(1, "notstarted"), event(2, "notstarted")])
+    fixtures = [
+        {"matchday": 5, "sofascoreEventId": 1, "status": "finished"},
+        {"matchday": 5, "sofascoreEventId": 2, "status": "postponed"},
+        {"matchday": 6, "sofascoreEventId": 3, "status": "finished"},
+    ]
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "fixtures.json").write_text(json.dumps(fixtures))
+    request = FakeTransport(ok(), ok())
+    client, _ = make_client(request)
+    written = match_final.run(client, raw, 5)
+    assert len(written) == 2
+    assert all("/event/1/" in u for u in request.urls)
+
+
+def test_match_final_ohne_beendetes_spiel_ist_ein_fehler(make_client, tmp_path):
+    write_round(tmp_path, [event(1, "notstarted")])
+    client, _ = make_client(FakeTransport())
+    with pytest.raises(SystemExit):
+        match_final.run(client, tmp_path, 5)
