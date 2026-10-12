@@ -44,13 +44,13 @@ describe("nextChapter", () => {
 describe("strikerExample", () => {
   it("entspricht dem Rechenbeispiel A aus KONZEPT 3.5", () => {
     expect(strikerExample()).toEqual({
-      rating: 13,
+      rating: 6.5,
       goal: 5,
       assist: 4,
       yellow: -1,
       startBonus: 2,
-      total: 23,
-      captain: 46,
+      total: 17,
+      captain: 34,
     });
   });
 });

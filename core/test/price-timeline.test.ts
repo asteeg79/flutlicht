@@ -86,7 +86,7 @@ describe("expectationFor", () => {
       md(3, "provisional", { "10": pp(40) }),
     ];
     expect(expectationFor(points, 10, "MID")).toBe(12);
-    expect(expectationFor(points, 110, "MID")).toBe(4); // ohne Einsatz: Standardwert
+    expect(expectationFor(points, 110, "MID")).toBe(3); // ohne Einsatz: Standardwert
   });
 });
 

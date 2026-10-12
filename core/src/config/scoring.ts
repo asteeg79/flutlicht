@@ -8,7 +8,7 @@ export const SCORING = {
     /** Note, die 0 Punkte ergibt. */
     baseline: 6.5,
     /** Punkte je ganzer Notenstufe über/unter baseline. */
-    factor: 10,
+    factor: 5,
     /** Ab so vielen Minuten zählt die Note voll. */
     fullMinutes: 60,
   },

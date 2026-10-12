@@ -134,7 +134,7 @@ Preisformel zusätzlich nach Punkten der Vorsaison, öffentliche Version (Abschn
   Transaktionspreis). Der Kaderwert ist die Summe der aktuellen Preise. Beides
   wird angezeigt, **gewertet werden nur Punkte**.
 - **Spieltagsprämie:** Bei der Finalisierung eines gewerteten Spieltags erhält jeder
-  Manager `clamp(round1(0.02 × (Spieltagspunkte − Median aller Manager)), 0, 2.0)` Mio.
+  Manager `clamp(round1(0.03 × (Spieltagspunkte − Median aller Manager)), 0, 2.0)` Mio.
   aufs Guthaben (Spieltagspunkte inkl. Kapitän und Transferabzug; Median über alle
   Manager mit Aufstellung an diesem Spieltag). Konstanten `bonusPerPoint`, `bonusCap`
   in `core/src/config/market.ts`.
@@ -176,14 +176,14 @@ ersten Spieltagen werden sie kalibriert, ohne Codeänderung an der Logik.
 
 ### 3.1 Noten-Punkte
 ```
-ratingPoints = (rating − 6.5) × 10 × min(minutes, 60) / 60
+ratingPoints = (rating − 6.5) × 5 × min(minutes, 60) / 60
 ```
 - `rating` ist die Sofascore-Note (`statistics.rating`). Fehlt sie (z. B. bei sehr
   kurzen Einsätzen), gilt `ratingPoints = 0`.
 - Die Note ist auch negativ möglich.
 - **Fließkomma vermeiden:** Rechne in Hundertsteln:
-  `ratingPoints = (Math.round(rating × 100) − 650) / 10 × min(minutes, 60) / 60`.
-  Sonst ergibt z. B. `(6.45 − 6.5) × 10` den Wert `−0.4999…` statt `−0.5`.
+  `ratingPoints = (Math.round(rating × 100) − 650) / 20 × min(minutes, 60) / 60`.
+  Sonst ergibt z. B. `(6.4 − 6.5) × 5` den Wert `−0.4999…` statt `−0.5`.
   `roundHalfAwayFromZero` arbeitet mit einem Epsilon von 1e-9.
 
 ### 3.2 Ereignis-Punkte
@@ -225,14 +225,14 @@ ratingPoints = (rating − 6.5) × 10 × min(minutes, 60) / 60
 
 | # | Situation | Rechnung | Punkte |
 |---|---|---|---|
-| A | ST, Startelf (Manager + real), 90′, Note 7.8, 1 Tor, 1 Vorlage, Gelb | 13 + 5 + 4 − 1 = 21; +2 Bonus | **23** |
-| A′ | wie A, als Kapitän | 23 × 2 | **46** |
-| B | ABW, eingewechselt, 30′, Note 6.9, Team zu null | 4 × 30/60 = 2; zu null erst ab 60′ → 0 | **2** |
-| C | TW, Startelf, 90′, Note 6.1, 3 Gegentore, 1 Elfer gehalten | −4 − 2 + 6 = 0; +2 Bonus | **2** |
-| D | MF, 0′ (Starter beim Manager) | Auto-Wechsel: B1 = MF mit 90′, Note 7.0 → 5 (kein Bonus) | **5** für den Slot |
+| A | ST, Startelf (Manager + real), 90′, Note 7.8, 1 Tor, 1 Vorlage, Gelb | 6.5 + 5 + 4 − 1 = 14.5 → 15; +2 Bonus | **17** |
+| A′ | wie A, als Kapitän | 17 × 2 | **34** |
+| B | ABW, eingewechselt, 30′, Note 6.9, Team zu null | 2 × 30/60 = 1; zu null erst ab 60′ → 0 | **1** |
+| C | TW, Startelf, 90′, Note 6.1, 3 Gegentore, 1 Elfer gehalten | −2 − 2 + 6 = 2; +2 Bonus | **4** |
+| D | MF, 0′ (Starter beim Manager) | Auto-Wechsel: B1 = MF mit 90′, Note 7.0 → 2.5 → 3 (kein Bonus) | **3** für den Slot |
 | E | Kapitän 0′, Bankspieler rückt nach (7 P.) | keine Verdopplung | **7** |
-| F | ABW, 75′, Note 6.45, keine Ereignisse, Team 2 Gegentore, Startelf | −0.5 − 1 (2. Gegentor) = −1.5 → roundHalfAway → −2; +2 Bonus | **0** |
-| G | ST, Startelf, 90′, Note 5.9, Rot | −6 − 5 = −11; +2 | **−9** (Kapitän: **−18**) |
+| F | ABW, 75′, Note 6.4, keine Ereignisse, Team 2 Gegentore, Startelf | −0.5 − 1 (2. Gegentor) = −1.5 → roundHalfAway → −2; +2 Bonus | **0** |
+| G | ST, Startelf, 90′, Note 5.9, Rot | −3 − 5 = −8; +2 | **−6** (Kapitän: **−12**) |
 | H | Manager kauft am Spieltag 5 Spieler, verfügbar 3 | 2 × −5 | **−10** auf den Spieltag |
 
 > Anmerkung zu F: Gerundet wird die Summe (−1.5 → −2), nicht jeder Teil einzeln.
@@ -273,7 +273,7 @@ Für jeden Spieler mit **> 0 Minuten** im gewerteten Spiel:
 ```
 E  = Mittel der Basispunkte (3.4, ohne Bonus) seiner letzten 5 Einsätze (> 0′)
      vor diesem Spieltag; ohne Einsatz-Historie: E = defaultExpectation[pos]
-     (Start: GK 4, DEF 4, MID 4, FWD 4, nach Kalibrierung anpassen)
+     (seit der Kalibrierung vom 12.10.2026: GK 3, DEF 2, MID 3, FWD 3)
 P  = Basispunkte dieses Spieltags
 Δ% = clamp( 0.02 × (P − E) / 5 , −0.08, +0.08 )
 neuerPreis = clamp( round1( alterPreis × (1 + Δ%) ), 0.5, 30.0 )

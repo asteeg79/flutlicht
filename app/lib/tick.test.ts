@@ -176,14 +176,14 @@ describe("runTick (Abnahme M9)", () => {
     const g = { ...(game as object), points: [...earlier, md] } as never;
     const send = vi.fn(async () => "sent" as const);
     await runTick(NOW, g, send, finals);
-    // Median (a+b)/2 → a liegt 14,5 darüber → 0,29 → 0,3 Mio.
-    expect((await storage.loadManager(a.userId))!.cash).toBe(1.3);
+    // Median (a+b)/2 → a liegt 14,5 darüber → 0,435 → 0,4 Mio.
+    expect((await storage.loadManager(a.userId))!.cash).toBe(1.4);
     expect((await storage.loadManager(a.userId))!.matchdayBonuses).toEqual({
-      "8": 0.3,
+      "8": 0.4,
     });
     expect((await storage.loadManager(b.userId))!.cash).toBe(1);
     await runTick(new Date(NOW.getTime() + 10 * 60_000), g, send, finals);
-    expect((await storage.loadManager(a.userId))!.cash).toBe(1.3);
+    expect((await storage.loadManager(a.userId))!.cash).toBe(1.4);
   });
 
   it("meldet dem Admin einen stillen Scraper genau einmal je Ausfall", async () => {

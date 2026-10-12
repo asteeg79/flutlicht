@@ -8,7 +8,7 @@ import { clamp, median, round1 } from "./rounding";
 import type { MatchdayPoints } from "./schemas/data";
 import { lineupForMatchday, type ScoringManager } from "./standings";
 
-/** Prämie in Mio.: 0,02 je Punkt über dem Median aller Teilnehmer, 0 bis 2 Mio. */
+/** Prämie in Mio.: 0,03 je Punkt über dem Median aller Teilnehmer, 0 bis 2 Mio. */
 export function matchdayBonus(
   total: number,
   allTotals: readonly number[],

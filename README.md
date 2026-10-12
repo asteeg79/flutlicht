@@ -27,10 +27,10 @@ komplett in Gratis-Tarifen: <https://flutlicht.a-tec.dev>.
 | **Kapitän** | Seine Punkte zählen doppelt, auch negative. Kein Vize. |
 | **Sperren** | Jeder Spieler ist ab 90 Minuten vor Anpfiff seines Spiels gesperrt. Der Server entscheidet, nie der Client. |
 | **Transfers** | Ein Transfer ist ein Tausch auf gleicher Position zum aktuellen Preis. 2 freie Transfers pro Spieltag (1 wird übertragen, max. 3), jeder weitere kostet −5 Punkte. In Pausen ab 10 Tagen und beim Kaderaufbau unbegrenzt. |
-| **Punkte** | Sofascore-Note (`(Note − 6,5) × 10`, anteilig bis 60 Min.) plus Ereignisse nach Position (Tore, Vorlagen, zu null, Karten, Elfmeter …) plus +2 für einen echten Startelf-Einsatz. |
+| **Punkte** | Sofascore-Note (`(Note − 6,5) × 5`, anteilig bis 60 Min.) plus Ereignisse nach Position (Tore, Vorlagen, zu null, Karten, Elfmeter …) plus +2 für einen echten Startelf-Einsatz. |
 | **Preise** | Startpreis aus dem Transfermarkt-Wert (Wurzelskala, 0,5–25 Mio.). Nach jedem finalen Spieltag ±bis zu 8 % je nach Leistung gegenüber der Erwartung (Ø der letzten 5 Einsätze). |
 | **Kaufbarkeit** | Aktive Spieler mit Transfermarkt-Zuordnung oder eigenem Admin-Wert. Ohne Zuordnung (meist Nachwuchs) oder ohne Marktwert nicht kaufbar. |
-| **Spieltagsprämie** | 0,02 Mio. je Punkt über dem Median der Liga, 0 bis 2 Mio., bei der Finalisierung aufs Guthaben. |
+| **Spieltagsprämie** | 0,03 Mio. je Punkt über dem Median der Liga, 0 bis 2 Mio., bei der Finalisierung aufs Guthaben. |
 | **Wertung** | Gewertet werden nur Punkte. Gesamttabelle nach Summe, Tie-Break: Spieltagssiege, dann bester Einzelspieltag. Guthaben und Kaderwert werden angezeigt, zählen aber nicht. |
 
 Die exakten Regeln inklusive Rechenbeispielen stehen in `KONZEPT.md` Abschnitt 2–4.

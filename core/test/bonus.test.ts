@@ -19,12 +19,12 @@ describe("median", () => {
 });
 
 describe("matchdayBonus (Spieltagsprämie, KONZEPT 2.7)", () => {
-  it("0,02 Mio. je Punkt über dem Median, auf 0,1 gerundet", () => {
-    expect(matchdayBonus(115, [80, 90, 115])).toBe(0.5);
-    expect(matchdayBonus(130, [80, 90, 100, 130])).toBe(0.7);
-    expect(matchdayBonus(100, [80, 90, 100, 130])).toBe(0.1);
-    expect(matchdayBonus(103, [90, 103, 80])).toBe(0.3); // 13 × 0,02 = 0,26
-    expect(matchdayBonus(102, [90, 102, 80])).toBe(0.2); // 12 × 0,02 = 0,24
+  it("0,03 Mio. je Punkt über dem Median, auf 0,1 gerundet", () => {
+    expect(matchdayBonus(110, [80, 90, 110])).toBe(0.6);
+    expect(matchdayBonus(125, [80, 90, 100, 125])).toBe(0.9);
+    expect(matchdayBonus(100, [80, 90, 100, 125])).toBe(0.2); // 5 × 0,03 = 0,15
+    expect(matchdayBonus(102, [90, 102, 80])).toBe(0.4); // 12 × 0,03 = 0,36
+    expect(matchdayBonus(101, [90, 101, 80])).toBe(0.3); // 11 × 0,03 = 0,33
   });
 
   it("nie negativ, höchstens 2 Mio.", () => {
@@ -112,7 +112,7 @@ describe("matchdayBonuses", () => {
     expect(r.get("a")).toEqual({
       total: 215,
       median: 169,
-      bonus: 0.9,
+      bonus: 1.4,
       shadow: false,
     });
     expect(r.get("b")?.bonus).toBe(0);
@@ -121,7 +121,7 @@ describe("matchdayBonuses", () => {
 
   it("Spieltag vor dem ersten gewerteten: Schattenbetrieb", () => {
     const r = matchdayBonuses(managers, md(7), positions, 8);
-    expect(r.get("a")).toMatchObject({ bonus: 0.9, shadow: true });
+    expect(r.get("a")).toMatchObject({ bonus: 1.4, shadow: true });
     expect(r.has("late")).toBe(false);
   });
 

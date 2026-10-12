@@ -80,8 +80,8 @@ describe("buildPoints", () => {
     expect(md!.players["10"]).toMatchObject({
       eventId: 500,
       minutes: 90,
-      base: 17,
-    }); // 10 Note + 6 Tor + 1 zu null
+      base: 12,
+    }); // 5 Note + 6 Tor + 1 zu null
     expect(md!.players["110"]!.parts.conceded).toBe(0);
     expect(warnings).toEqual([
       'Spiel 500: Unbekannter Incident-Typ "mystery", ignoriert',

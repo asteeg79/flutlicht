@@ -259,7 +259,8 @@ function Punkte() {
         <b>Die Note.</b> Grundlage ist die Spielernote. Eine {de(baseline)} ist
         neutral. Jede volle Note darüber bringt {factor} Punkte, jede darunter
         kostet {factor}. Ab {fullMinutes} Minuten zählt die Note voll, bei
-        kürzeren Einsätzen anteilig.
+        kürzeren Einsätzen anteilig. Halbe Punkte werden am Ende je Spieler
+        gerundet.
       </P>
       <P>
         <b>Die Ereignisse:</b>
@@ -294,7 +295,7 @@ function Punkte() {
         head={["Note", "Tor", "Vorlage", "Gelb", "Startelf", "Summe"]}
         rows={[
           [
-            signedInt(ex.rating),
+            signedInt(ex.rating).replace(".", ","),
             signedInt(ex.goal),
             signedInt(ex.assist),
             signedInt(ex.yellow),

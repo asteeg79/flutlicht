@@ -65,8 +65,8 @@ export function playerMatchPoints(p: PlayerMatchInput): PlayerMatchResult {
 }
 
 /**
- * Noten-Punkte (3.1), ungerundet: (Note − 6,5) × 10, unter 60 Minuten anteilig. In
- * Hundertsteln gerechnet, damit 6.45 exakt −0.5 ergibt.
+ * Noten-Punkte (3.1), ungerundet: (Note − 6,5) × 5, unter 60 Minuten anteilig. In
+ * Hundertsteln gerechnet, damit 6.4 exakt −0.5 ergibt.
  */
 export function ratingPoints(rating: number | null, minutes: number): number {
   if (rating === null) return 0;

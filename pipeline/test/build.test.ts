@@ -272,8 +272,8 @@ describe("Admin-Änderungen über raw/manual/ (Abnahme M10)", () => {
     });
     const md1 = await readData("points/md-01.json");
     expect(md1.status).toBe("final");
-    // Spieler 10 (ST): Note 7.5 → 10, Tor 5 → 15
-    expect(md1.players["10"]).toMatchObject({ eventId: 700, base: 15 });
+    // Spieler 10 (ST): Note 7.5 → 5, Tor 5 → 10
+    expect(md1.players["10"]).toMatchObject({ eventId: 700, base: 10 });
   });
 
   it("ein Mapping-Fix entfernt den Eintrag aus der Review-Liste", async () => {

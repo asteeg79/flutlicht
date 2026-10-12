@@ -60,8 +60,8 @@ describe("nextPrice (KONZEPT 4.3, Preis 10.0 und E = 6)", () => {
 
 describe("expectation (KONZEPT 4.3)", () => {
   it("nimmt ohne Einsatz-Historie den Standardwert der Position", () => {
-    expect(expectation([], "GK")).toBe(4);
-    expect(expectation([], "FWD")).toBe(4);
+    expect(expectation([], "GK")).toBe(3);
+    expect(expectation([], "DEF")).toBe(2);
   });
   it("mittelt die letzten 5 Einsätze", () => {
     expect(expectation([100, 1, 2, 3, 4, 5], "MID")).toBe(3);

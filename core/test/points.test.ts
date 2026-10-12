@@ -43,26 +43,26 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
     teamConceded: 1,
   };
 
-  it("A: ST, Startelf (Manager + real), 90′, Note 7.8, 1 Tor, 1 Vorlage, Gelb → 13 + 5 + 4 − 1 = 21; +2 Bonus = 23", () => {
+  it("A: ST, Startelf (Manager + real), 90′, Note 7.8, 1 Tor, 1 Vorlage, Gelb → 6.5 + 5 + 4 − 1 = 14.5 → 15; +2 Bonus = 17", () => {
     const { result, slot, score } = scoreSingle(13, a, 14);
     expect(result.parts).toMatchObject({
-      rating: 13,
+      rating: 6.5,
       goals: 5,
       assists: 4,
       cards: -1,
     });
-    expect(result.base).toBe(21);
-    expect(slot.points).toBe(23);
-    expect(score.total).toBe(23);
+    expect(result.base).toBe(15);
+    expect(slot.points).toBe(17);
+    expect(score.total).toBe(17);
   });
 
-  it("A′: wie A, als Kapitän → 23 × 2 = 46", () => {
+  it("A′: wie A, als Kapitän → 17 × 2 = 34", () => {
     const { score } = scoreSingle(13, a, 13);
-    expect(score.captainBonus).toBe(23);
-    expect(score.total).toBe(46);
+    expect(score.captainBonus).toBe(17);
+    expect(score.total).toBe(34);
   });
 
-  it("B: ABW, eingewechselt, 30′, Note 6.9, Team zu null → 4 × 30/60 = 2; zu null erst ab 60′ → 0; gesamt 2", () => {
+  it("B: ABW, eingewechselt, 30′, Note 6.9, Team zu null → 2 × 30/60 = 1; zu null erst ab 60′ → 0; gesamt 1", () => {
     const { result, slot } = scoreSingle(
       3,
       {
@@ -75,12 +75,12 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
       },
       13,
     );
-    expect(result.parts.rating).toBe(2);
+    expect(result.parts.rating).toBe(1);
     expect(result.parts.cleanSheet).toBe(0);
-    expect(slot.points).toBe(2);
+    expect(slot.points).toBe(1);
   });
 
-  it("C: TW, Startelf, 90′, Note 6.1, 3 Gegentore, 1 Elfer gehalten → −4 − 2 + 6 = 0; +2 Bonus = 2", () => {
+  it("C: TW, Startelf, 90′, Note 6.1, 3 Gegentore, 1 Elfer gehalten → −2 − 2 + 6 = 2; +2 Bonus = 4", () => {
     const { result, slot } = scoreSingle(
       1,
       {
@@ -95,15 +95,15 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
       13,
     );
     expect(result.parts).toMatchObject({
-      rating: -4,
+      rating: -2,
       conceded: -2,
       penSaved: 6,
     });
-    expect(result.base).toBe(0);
-    expect(slot.points).toBe(2);
+    expect(result.base).toBe(2);
+    expect(slot.points).toBe(4);
   });
 
-  it("D: MF 0′ (Starter beim Manager) → Auto-Wechsel: B1 = MF mit 90′, Note 7.0 → 5 (kein Bonus)", () => {
+  it("D: MF 0′ (Starter beim Manager) → Auto-Wechsel: B1 = MF mit 90′, Note 7.0 → 2.5 → 3 (kein Bonus)", () => {
     const b1 = playerMatchPoints({
       ...quiet,
       position: "MID",
@@ -112,7 +112,7 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
       rating: 7.0,
       teamConceded: 1,
     });
-    expect(b1.base).toBe(5);
+    expect(b1.base).toBe(3);
     const lineup: Lineup = { ...lineup442, bench: { gk: 2, b: [12, 7, 15] } };
     const score = scoreManager(
       7,
@@ -126,7 +126,7 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
       playerId: 12,
       subbedIn: true,
       startBonus: 0,
-      points: 5,
+      points: 3,
     });
   });
 
@@ -144,7 +144,7 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
     expect(score.total).toBe(7);
   });
 
-  it("F: ABW, 75′, Note 6.45, keine Ereignisse, Team 2 Gegentore, Startelf → −0.5 − 1 = −1.5 → −2; +2 Bonus = 0", () => {
+  it("F: ABW, 75′, Note 6.4, keine Ereignisse, Team 2 Gegentore, Startelf → −0.5 − 1 = −1.5 → −2; +2 Bonus = 0", () => {
     const { result, slot } = scoreSingle(
       3,
       {
@@ -152,7 +152,7 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
         position: "DEF",
         minutes: 75,
         started: true,
-        rating: 6.45,
+        rating: 6.4,
         teamConceded: 2,
       },
       13,
@@ -173,15 +173,15 @@ describe("Rechenbeispiele KONZEPT 3.5", () => {
     teamConceded: 0,
   };
 
-  it("G: ST, Startelf, 90′, Note 5.9, Rot → −6 − 5 = −11; +2 = −9", () => {
+  it("G: ST, Startelf, 90′, Note 5.9, Rot → −3 − 5 = −8; +2 = −6", () => {
     const { result, score } = scoreSingle(13, g, 14);
-    expect(result.base).toBe(-11);
-    expect(score.total).toBe(-9);
+    expect(result.base).toBe(-8);
+    expect(score.total).toBe(-6);
   });
 
-  it("G als Kapitän → −18", () => {
+  it("G als Kapitän → −12", () => {
     const { score } = scoreSingle(13, g, 13);
-    expect(score.total).toBe(-18);
+    expect(score.total).toBe(-12);
   });
 });
 
@@ -330,10 +330,10 @@ describe("scoreManager: Auto-Wechsel, Kapitän, Transferabzug", () => {
 });
 
 describe("ratingPoints (3.1, Beispiel im Spielerprofil)", () => {
-  it("Note 7,4: +9 ab 60 Minuten, anteilig darunter, ohne Note 0", () => {
-    expect(ratingPoints(7.4, 90)).toBe(9);
-    expect(ratingPoints(7.4, 30)).toBe(4.5);
-    expect(ratingPoints(6.0, 60)).toBe(-5);
+  it("Note 7,4: +4,5 ab 60 Minuten, anteilig darunter, ohne Note 0", () => {
+    expect(ratingPoints(7.4, 90)).toBe(4.5);
+    expect(ratingPoints(7.4, 30)).toBe(2.25);
+    expect(ratingPoints(6.0, 60)).toBe(-2.5);
     expect(ratingPoints(null, 90)).toBe(0);
   });
 });

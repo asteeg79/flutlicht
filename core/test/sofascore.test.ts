@@ -46,32 +46,32 @@ describe("Fixture-Spiel Union Berlin – Eintracht Frankfurt 3:3 (Event 16434026
   });
 
   // Von Hand nachgerechnet (KONZEPT 3.1–3.4):
-  it("Ebnoutalib (ST, Frankfurt): 85′, Note 9.7, 3 Tore, Gelb → 32 + 15 − 1 = 46", () => {
+  it("Ebnoutalib (ST, Frankfurt): 85′, Note 9.7, 3 Tore, Gelb → 16 + 15 − 1 = 30", () => {
     expect(points.get(1474296)).toMatchObject({
       minutes: 85,
       started: true,
-      parts: { rating: 32, goals: 15, cards: -1 },
-      base: 46,
+      parts: { rating: 16, goals: 15, cards: -1 },
+      base: 30,
     });
   });
 
-  it("Raab (TW, Union): 90′, Note 5.2, 3 Gegentore → −13 − 2 = −15", () => {
+  it("Raab (TW, Union): 90′, Note 5.2, 3 Gegentore → −6.5 − 2 = −8.5 → −9", () => {
     expect(points.get(842718)).toMatchObject({
-      parts: { rating: -13, conceded: -2, cleanSheet: 0 },
-      base: -15,
+      parts: { rating: -6.5, conceded: -2, cleanSheet: 0 },
+      base: -9,
     });
   });
 
-  it("Skarke (MF, Union): eingewechselt, 29′, Note 7.1, 1 Tor → 6 × 29/60 = 2.9; + 6 = 8.9 → 9", () => {
+  it("Skarke (MF, Union): eingewechselt, 29′, Note 7.1, 1 Tor → 3 × 29/60 = 1.45; + 6 = 7.45 → 7", () => {
     const p = points.get(800252)!;
     expect(p.started).toBe(false);
-    expect(p.parts.rating).toBeCloseTo(2.9, 10);
+    expect(p.parts.rating).toBeCloseTo(1.45, 10);
     expect(p.parts.goals).toBe(6);
-    expect(p.base).toBe(9);
+    expect(p.base).toBe(7);
   });
 
-  it("Querfeld (ABW, Union): 90′, Note 7.5, 1 Tor, 1 Vorlage, 3 Gegentore → 10 + 7 + 4 − 2 = 19", () => {
-    expect(points.get(1086547)!.base).toBe(19);
+  it("Querfeld (ABW, Union): 90′, Note 7.5, 1 Tor, 1 Vorlage, 3 Gegentore → 5 + 7 + 4 − 2 = 14", () => {
+    expect(points.get(1086547)!.base).toBe(14);
   });
 
   it("gibt Ersatzspielern ohne Einsatz 0 Punkte", () => {
