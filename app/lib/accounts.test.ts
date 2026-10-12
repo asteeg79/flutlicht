@@ -20,7 +20,8 @@ const { registerManager, resetPassword, updateProfile } =
   await import("@/lib/accounts");
 const { authorizeCredentials } = await import("@/lib/auth");
 const storage = await import("@/lib/storage");
-const { gameData } = await import("@/lib/game-data");
+const { finals, gameData } = await import("@/lib/game-data");
+const { firstMatchdayFor } = await import("@fm/core");
 
 const NOW = new Date("2026-09-25T12:00:00Z");
 const input = (over: Record<string, unknown> = {}) => ({
@@ -46,17 +47,21 @@ describe("registerManager (KONZEPT 8.2)", () => {
   it("legt mit gültigem Code einen Manager an und verbraucht den Code", async () => {
     await seedInvites();
     const doc = await registerManager(input(), NOW);
+    // Echte Daten: Der Einstieg hängt davon ab, welche Spieltage schon final sind (core/league.test.ts).
+    const firstMatchday = firstMatchdayFor(
+      gameData.fixtures,
+      finals(),
+      NOW,
+      gameData.season.firstScoredMatchday,
+    );
     expect(doc).toMatchObject({
       email: "tom@example.org",
       role: "player",
       squad: [],
       lineup: null,
       cash: gameData.season.startBudget,
-      firstMatchday: gameData.season.firstScoredMatchday,
-      transferBank: {
-        matchday: gameData.season.firstScoredMatchday,
-        available: 2,
-      },
+      firstMatchday,
+      transferBank: { matchday: firstMatchday, available: 2 },
     });
     expect(await storage.loadEmailIndex()).toEqual({
       "tom@example.org": doc.userId,
