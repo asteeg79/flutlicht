@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-17T09:28:51.326Z",
+  "fetchedAt": "2026-10-17T14:14:15.442Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -4899,9 +4899,30 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/6/67/Borussia_Dortmund_logo.svg/960px-Borussia_Dortmund_logo.svg.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:05:42.15",
+      "lastUpdateDateTime": "2026-10-17T15:34:55.463",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 129863,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129864,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
@@ -4934,9 +4955,30 @@
         "teamIconUrl": "https://i.imgur.com/v0tkpNx.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:05:58.853",
+      "lastUpdateDateTime": "2026-10-17T15:50:07.727",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 129865,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129871,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
@@ -4969,10 +5011,58 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/e/e3/SC_Paderborn_07_Logo.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:06:14.997",
+      "lastUpdateDateTime": "2026-10-17T16:00:52.743",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 129867,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129870,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 2,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 150457,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 18,
+          "goalGetterID": 24968,
+          "goalGetterName": "S. Marino",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 150469,
+          "scoreTeam1": 0,
+          "scoreTeam2": 2,
+          "matchMinute": 30,
+          "goalGetterID": 19135,
+          "goalGetterName": "S. Tigges",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
@@ -5004,10 +5094,45 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_Mainz_05.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:06:24.463",
+      "lastUpdateDateTime": "2026-10-17T15:54:30.993",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 129868,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129872,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 1,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 150459,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 24,
+          "goalGetterID": 18976,
+          "goalGetterName": "P. Tietz",
+          "scoringTeamId": 81,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
@@ -5039,10 +5164,71 @@
         "teamIconUrl": "https://i.imgur.com/sdE62e2.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:06:32.29",
+      "lastUpdateDateTime": "2026-10-17T15:58:03.32",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 129866,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 1,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129869,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 3,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 150454,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 4,
+          "goalGetterID": 18969,
+          "goalGetterName": "L. Petkov",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 150455,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 7,
+          "goalGetterID": 27924,
+          "goalGetterName": "Lasse Günther",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 150461,
+          "scoreTeam1": 3,
+          "scoreTeam2": 0,
+          "matchMinute": 28,
+          "goalGetterID": 17792,
+          "goalGetterName": "Maximilian Rohr",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
