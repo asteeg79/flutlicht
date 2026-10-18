@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-18T14:38:03.748Z",
+  "fetchedAt": "2026-10-18T18:10:01.999Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -5475,7 +5475,7 @@
     {
       "matchID": 83202,
       "matchDateTime": "2026-10-18T15:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -5500,8 +5500,8 @@
         "teamIconUrl": "https://i.imgur.com/r3mvi0h.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-10-18T16:21:04.453",
-      "matchIsFinished": false,
+      "lastUpdateDateTime": "2026-10-18T17:26:57.94",
+      "matchIsFinished": true,
       "matchResults": [
         {
           "resultID": 129954,
@@ -5516,7 +5516,7 @@
         {
           "resultID": 129955,
           "resultName": "Endergebnis",
-          "pointsTeam1": 1,
+          "pointsTeam1": 2,
           "pointsTeam2": 1,
           "resultOrderID": 2,
           "resultTypeID": 2,
@@ -5550,6 +5550,19 @@
           "isOwnGoal": false,
           "isOvertime": false,
           "comment": null
+        },
+        {
+          "goalID": 150643,
+          "scoreTeam1": 2,
+          "scoreTeam2": 1,
+          "matchMinute": 76,
+          "goalGetterID": 18331,
+          "goalGetterName": "P. Schick",
+          "scoringTeamId": 6,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
         }
       ],
       "location": null,
@@ -5558,7 +5571,7 @@
     {
       "matchID": 83205,
       "matchDateTime": "2026-10-18T17:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -5583,10 +5596,71 @@
         "teamIconUrl": "https://i.imgur.com/gF0PfEl.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:24:52.773",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-10-18T19:23:40.75",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 129975,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 1,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129976,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 1,
+          "pointsTeam2": 2,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 150646,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 11,
+          "goalGetterID": 22903,
+          "goalGetterName": "B. Conté",
+          "scoringTeamId": 175,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 150676,
+          "scoreTeam1": 1,
+          "scoreTeam2": 1,
+          "matchMinute": 49,
+          "goalGetterID": 24912,
+          "goalGetterName": "W. Mohya",
+          "scoringTeamId": 87,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 150678,
+          "scoreTeam1": 1,
+          "scoreTeam2": 2,
+          "matchMinute": 54,
+          "goalGetterID": 20511,
+          "goalGetterName": "A. Prass",
+          "scoringTeamId": 175,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
