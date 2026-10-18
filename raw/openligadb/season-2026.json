@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-18T09:42:08.348Z",
+  "fetchedAt": "2026-10-18T14:38:03.748Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -5500,10 +5500,58 @@
         "teamIconUrl": "https://i.imgur.com/r3mvi0h.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:24:39.477",
+      "lastUpdateDateTime": "2026-10-18T16:21:04.453",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 129954,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 1,
+          "pointsTeam2": 1,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 129955,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 1,
+          "pointsTeam2": 1,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 150618,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 14,
+          "goalGetterID": 19807,
+          "goalGetterName": "D. Scherhant",
+          "scoringTeamId": 112,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 150620,
+          "scoreTeam1": 1,
+          "scoreTeam2": 1,
+          "matchMinute": 19,
+          "goalGetterID": 20081,
+          "goalGetterName": "Ibrahim Maza",
+          "scoringTeamId": 6,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
