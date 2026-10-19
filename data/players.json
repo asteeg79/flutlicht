@@ -1600,8 +1600,8 @@
     "startValueEur": 800000,
     "valueSource": "tm-crawl",
     "price": 1.7,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/789714.webp"
   },
   {
@@ -2574,8 +2574,8 @@
     "startValueEur": 600000,
     "valueSource": "tm-crawl",
     "price": 1.5,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/862011.webp"
   },
   {
@@ -5349,8 +5349,8 @@
     "startValueEur": 200000,
     "valueSource": "tm-crawl",
     "price": 0.9,
-    "purchasable": false,
-    "active": false,
+    "purchasable": true,
+    "active": true,
     "image": "/img/players/1140591.webp"
   },
   {
@@ -5472,6 +5472,20 @@
     "purchasable": true,
     "active": true,
     "image": "/img/players/1149113.webp"
+  },
+  {
+    "id": 1150373,
+    "name": "Valentin Lässig",
+    "shortName": "V. Lässig",
+    "teamId": 2569,
+    "position": "DEF",
+    "birthDate": "2003-03-03",
+    "tmId": "553539",
+    "startValueEur": 775000,
+    "valueSource": "sofascore",
+    "price": 1.7,
+    "purchasable": true,
+    "active": true
   },
   {
     "id": 1150938,
@@ -6054,7 +6068,7 @@
     "valueSource": "sofascore",
     "price": 0.6,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1403065.webp"
   },
   {
@@ -6083,8 +6097,8 @@
     "startValueEur": 400000,
     "valueSource": "dcaribou",
     "price": 1.2,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1405444.webp"
   },
   {
@@ -6143,7 +6157,7 @@
     "valueSource": "sofascore",
     "price": 0.7,
     "purchasable": false,
-    "active": false,
+    "active": true,
     "image": "/img/players/1409359.webp"
   },
   {
@@ -6232,8 +6246,8 @@
     "startValueEur": 200000,
     "valueSource": "dcaribou",
     "price": 0.9,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1418648.webp"
   },
   {
@@ -6292,7 +6306,7 @@
     "valueSource": "sofascore",
     "price": 0.5,
     "purchasable": false,
-    "active": true
+    "active": false
   },
   {
     "id": 1426231,
@@ -6305,7 +6319,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1426231.webp"
   },
   {
@@ -6364,8 +6378,8 @@
     "startValueEur": 150000,
     "valueSource": "tm-crawl",
     "price": 0.7,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1466561.webp"
   },
   {
@@ -6454,7 +6468,7 @@
     "valueSource": "sofascore",
     "price": 0.8,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1481911.webp"
   },
   {
@@ -6483,7 +6497,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1489216.webp"
   },
   {
@@ -6585,7 +6599,7 @@
     "valueSource": "sofascore",
     "price": 2,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1510769.webp"
   },
   {
@@ -6599,7 +6613,7 @@
     "valueSource": "sofascore",
     "price": 0.6,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1510770.webp"
   },
   {
@@ -6672,7 +6686,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1534055.webp"
   },
   {
@@ -6804,7 +6818,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1584952.webp"
   },
   {
@@ -6848,8 +6862,8 @@
     "startValueEur": 840000,
     "valueSource": "sofascore",
     "price": 1.8,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1597286.webp"
   },
   {
@@ -6923,7 +6937,7 @@
     "valueSource": "sofascore",
     "price": 0.8,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1799680.webp"
   },
   {
@@ -6949,9 +6963,10 @@
     "position": "MID",
     "birthDate": "2007-03-23",
     "tmId": "1071244",
-    "valueSource": "missing",
-    "price": 0.5,
-    "purchasable": false,
+    "startValueEur": 470000,
+    "valueSource": "sofascore",
+    "price": 1.3,
+    "purchasable": true,
     "active": true,
     "image": "/img/players/1823917.webp"
   },
@@ -7026,7 +7041,7 @@
     "valueSource": "sofascore",
     "price": 0.6,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1842919.webp"
   },
   {
@@ -7040,8 +7055,8 @@
     "startValueEur": 250000,
     "valueSource": "tm-crawl",
     "price": 1,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1855407.webp"
   },
   {
@@ -7084,7 +7099,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1861965.webp"
   },
   {
@@ -7173,7 +7188,7 @@
     "valueSource": "sofascore",
     "price": 0.7,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1864726.webp"
   },
   {
@@ -7232,7 +7247,7 @@
     "valueSource": "sofascore",
     "price": 0.6,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1864919.webp"
   },
   {
@@ -7290,7 +7305,7 @@
     "valueSource": "sofascore",
     "price": 0.7,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1893891.webp"
   },
   {
@@ -7319,7 +7334,7 @@
     "valueSource": "sofascore",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1898169.webp"
   },
   {
@@ -7363,7 +7378,7 @@
     "valueSource": "sofascore",
     "price": 0.7,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1915284.webp"
   },
   {
@@ -7420,8 +7435,8 @@
     "startValueEur": 430000,
     "valueSource": "sofascore",
     "price": 1.3,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1925489.webp"
   },
   {
@@ -7434,7 +7449,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1926087.webp"
   },
   {
@@ -7448,8 +7463,8 @@
     "startValueEur": 200000,
     "valueSource": "tm-crawl",
     "price": 0.9,
-    "purchasable": false,
-    "active": false,
+    "purchasable": true,
+    "active": true,
     "image": "/img/players/1931662.webp"
   },
   {
@@ -7490,9 +7505,10 @@
     "position": "GK",
     "birthDate": "2008-02-14",
     "tmId": "1077676",
-    "valueSource": "missing",
-    "price": 0.5,
-    "purchasable": false,
+    "startValueEur": 390000,
+    "valueSource": "sofascore",
+    "price": 1.2,
+    "purchasable": true,
     "active": true,
     "image": "/img/players/1952390.webp"
   },
@@ -7535,7 +7551,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1961612.webp"
   },
   {
@@ -7579,7 +7595,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1971557.webp"
   },
   {
@@ -7620,9 +7636,10 @@
     "position": "FWD",
     "birthDate": "2007-02-19",
     "tmId": "1162925",
-    "valueSource": "missing",
-    "price": 0.5,
-    "purchasable": false,
+    "startValueEur": 450000,
+    "valueSource": "sofascore",
+    "price": 1.3,
+    "purchasable": true,
     "active": true,
     "image": "/img/players/1989789.webp"
   },
@@ -7666,7 +7683,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/1995789.webp"
   },
   {
@@ -7722,8 +7739,8 @@
     "startValueEur": 400000,
     "valueSource": "tm-crawl",
     "price": 1.2,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/2006785.webp"
   },
   {
@@ -7827,8 +7844,8 @@
     "startValueEur": 500000,
     "valueSource": "tm-crawl",
     "price": 1.4,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/2112003.webp"
   },
   {
@@ -7913,7 +7930,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2184173.webp"
   },
   {
@@ -7927,7 +7944,7 @@
     "valueSource": "sofascore",
     "price": 1.3,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2190082.webp"
   },
   {
@@ -7940,7 +7957,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2192141.webp"
   },
   {
@@ -7953,7 +7970,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2192458.webp"
   },
   {
@@ -7967,7 +7984,7 @@
     "valueSource": "sofascore",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2193787.webp"
   },
   {
@@ -7981,7 +7998,7 @@
     "valueSource": "sofascore",
     "price": 0.6,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2198073.webp"
   },
   {
@@ -8055,7 +8072,7 @@
     "valueSource": "sofascore",
     "price": 0.6,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2217898.webp"
   },
   {
@@ -8069,8 +8086,8 @@
     "startValueEur": 2900000,
     "valueSource": "sofascore",
     "price": 3.3,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/2236502.webp"
   },
   {
@@ -8083,7 +8100,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2245361.webp"
   },
   {
@@ -8110,8 +8127,8 @@
     "startValueEur": 800000,
     "valueSource": "tm-crawl",
     "price": 1.7,
-    "purchasable": false,
-    "active": false,
+    "purchasable": true,
+    "active": true,
     "image": "/img/players/2255221.webp"
   },
   {
@@ -8125,7 +8142,7 @@
     "valueSource": "sofascore",
     "price": 0.7,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2267716.webp"
   },
   {
@@ -8154,8 +8171,8 @@
     "startValueEur": 250000,
     "valueSource": "tm-crawl",
     "price": 1,
-    "purchasable": false,
-    "active": false,
+    "purchasable": true,
+    "active": true,
     "image": "/img/players/2276906.webp"
   },
   {
@@ -8168,7 +8185,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2303925.webp"
   },
   {
@@ -8181,7 +8198,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2303928.webp"
   },
   {
@@ -8194,7 +8211,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2311149.webp"
   },
   {
@@ -8222,7 +8239,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true
+    "active": false
   },
   {
     "id": 2334132,
@@ -8304,7 +8321,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true
+    "active": false
   },
   {
     "id": 2631849,
@@ -8316,7 +8333,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true
+    "active": false
   },
   {
     "id": 2639511,
@@ -8328,7 +8345,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2639511.webp"
   },
   {
@@ -8356,7 +8373,7 @@
     "valueSource": "missing",
     "price": 0.5,
     "purchasable": false,
-    "active": true,
+    "active": false,
     "image": "/img/players/2722884.webp"
   }
 ]
