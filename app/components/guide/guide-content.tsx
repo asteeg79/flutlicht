@@ -3,13 +3,16 @@
 import {
   FORMATIONS,
   MARKET,
+  POSITIONS,
   RULES,
   SCORING,
   SELECTABLE_FORMATIONS,
   type Position,
 } from "@fm/core";
 import type { ReactNode } from "react";
+import { signed } from "@/components/points";
 import { signedInt } from "@/lib/format";
+import { POS_LABEL } from "@/lib/positions";
 import { strikerExample, type GuideChapterId } from "@/lib/guide";
 
 export interface GuideFacts {
@@ -18,8 +21,6 @@ export interface GuideFacts {
 }
 
 const de = (n: number) => n.toLocaleString("de-DE");
-const POS: Position[] = ["GK", "DEF", "MID", "FWD"];
-const POS_LABEL = ["TW", "ABW", "MF", "ST"];
 
 function P({ children }: { children: ReactNode }) {
   return <p className="mb-3 text-[15px] leading-relaxed">{children}</p>;
@@ -91,7 +92,7 @@ function Table({ head, rows }: { head: ReactNode[]; rows: ReactNode[][] }) {
 
 /** Punkte je Position; 0 wird als „–“ gezeigt. */
 function perPos(values: Record<Position, number>) {
-  return POS.map((p) => (values[p] === 0 ? "–" : signedInt(values[p])));
+  return POSITIONS.map((p) => (values[p] === 0 ? "–" : signedInt(values[p])));
 }
 
 function Idee({ facts }: { facts: GuideFacts }) {
@@ -250,7 +251,7 @@ function Fixiert() {
 function Punkte() {
   const { baseline, factor, fullMinutes } = SCORING.rating;
   const min = SCORING.defenseMinMinutes;
-  const same = (n: number) => POS.map(() => signedInt(n));
+  const same = (n: number) => POSITIONS.map(() => signedInt(n));
   const ex = strikerExample();
   return (
     <>
@@ -266,7 +267,7 @@ function Punkte() {
         <b>Die Ereignisse:</b>
       </P>
       <Table
-        head={["", ...POS_LABEL]}
+        head={["", ...POSITIONS.map((p) => POS_LABEL[p])]}
         rows={[
           ["Tor", ...perPos(SCORING.goal)],
           ["Vorlage", ...perPos(SCORING.assist)],
@@ -295,7 +296,7 @@ function Punkte() {
         head={["Note", "Tor", "Vorlage", "Gelb", "Startelf", "Summe"]}
         rows={[
           [
-            signedInt(ex.rating).replace(".", ","),
+            signed(ex.rating),
             signedInt(ex.goal),
             signedInt(ex.assist),
             signedInt(ex.yellow),

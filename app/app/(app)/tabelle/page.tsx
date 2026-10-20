@@ -4,8 +4,8 @@ import { PageBody, SectionTitle } from "@/components/arena/page-layout";
 import { STATUS_LABEL } from "@/components/points";
 import { TableTabs } from "@/components/table-tabs";
 import { gameData } from "@/lib/game-data";
-import { allManagers, currentManager } from "@/lib/session";
-import { leagueTable, type TableRow } from "@/lib/standings";
+import { currentLeagueTable, currentManager } from "@/lib/session";
+import type { TableRow } from "@/lib/standings";
 
 export const metadata = { title: "Tabelle" };
 
@@ -16,8 +16,10 @@ const PODIUM = [
 ] as const;
 
 export default async function StandingsPage() {
-  const [me, managers] = await Promise.all([currentManager(), allManagers()]);
-  const table = leagueTable(managers);
+  const [me, table] = await Promise.all([
+    currentManager(),
+    currentLeagueTable(),
+  ]);
   const scored = table.matchdays;
   const last = scored.at(-1);
   const mine = table.rows.find((r) => r.userId === me.userId);

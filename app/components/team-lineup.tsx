@@ -34,7 +34,7 @@ import { PlayerPhoto } from "@/components/player-photo";
 import type { PointsInfo } from "@/components/player-points-info";
 import { useServerClock } from "@/hooks/useServerClock";
 import { callApi } from "@/lib/api-client";
-import { formatWeekdayTime } from "@/lib/format";
+import { formatForm, formatWeekdayTime } from "@/lib/format";
 import type { PublicManager } from "@/lib/squad";
 
 export interface SquadEntry {
@@ -558,13 +558,7 @@ function Selection({
         </div>
         <div className={tile}>
           <p className={tileLabel}>Form</p>
-          <p className={tileValue}>
-            {player.form === null
-              ? "–"
-              : player.form
-                  .toLocaleString("de-DE", { maximumFractionDigits: 1 })
-                  .replace("-", "−")}
-          </p>
+          <p className={tileValue}>{formatForm(player.form)}</p>
         </div>
       </div>
       <p className="mb-3 hidden text-[13px] font-medium opacity-85 lg:block">

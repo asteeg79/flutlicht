@@ -1,6 +1,6 @@
 "use client";
 
-import type { ManagerDoc } from "@fm/core";
+import { DEFAULT_PUSH_PREFS, type ManagerDoc } from "@fm/core";
 import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/components/arena/toast";
@@ -31,9 +31,7 @@ const PREF_LABELS: { key: keyof Prefs; label: string; hint: string }[] = [
 /** Push je Typ und Test-Push (KONZEPT 8.1, 8.5); iPhone nur als installierte App. */
 export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
   const { state, subscribed, loading, subscribe, unsubscribe } = usePush();
-  const [prefs, setPrefs] = useState<Prefs>(
-    initialPrefs ?? { reminder: true, daily: true, final: true },
-  );
+  const [prefs, setPrefs] = useState<Prefs>(initialPrefs ?? DEFAULT_PUSH_PREFS);
   const [busy, setBusy] = useState(false);
   const iosHint = useInstall().mode === "ios";
 

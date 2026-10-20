@@ -45,6 +45,13 @@ export const PushPrefs = z.object({
   final: z.boolean(),
 });
 
+/** Neue Push-Anmeldung: alle Benachrichtigungen an. */
+export const DEFAULT_PUSH_PREFS: z.infer<typeof PushPrefs> = {
+  reminder: true,
+  daily: true,
+  final: true,
+};
+
 export const PushSubscriptionJson = z.object({
   endpoint: z.url(),
   expirationTime: z.number().nullable().optional(),

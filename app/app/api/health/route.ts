@@ -1,12 +1,14 @@
+import { Meta } from "@fm/core";
 import { NextResponse } from "next/server";
-import { gameData } from "@/lib/game-data";
+import meta from "@/generated/data/meta.json";
 import { storageBackend } from "@/lib/storage";
 
-// Öffentlicher Uptime-Check (lib/public-api-paths.ts).
+// Öffentlicher Uptime-Check (lib/public-api-paths.ts). Liest nur meta.json, nicht die
+// ganze Fußballwelt aus game-data.
 export function GET() {
   return NextResponse.json({
     ok: true,
     storage: storageBackend(),
-    dataVersion: gameData.meta.dataVersion,
+    dataVersion: Meta.parse(meta).dataVersion,
   });
 }

@@ -11,6 +11,11 @@ export const POSITION_LABELS: Record<Position, string> = {
   FWD: "Stürmer",
 };
 
+/** Kaufbar: Marktwert bekannt (`purchasable`) und noch im Bundesliga-Kader (`active`). */
+export function isBuyable(p: Pick<Player, "purchasable" | "active">): boolean {
+  return p.purchasable && p.active;
+}
+
 export type SquadCandidate = Pick<
   Player,
   "id" | "position" | "teamId" | "price" | "purchasable" | "active"
@@ -27,7 +32,7 @@ export function draftAddViolation(
   p: SquadCandidate,
   budget: number,
 ): Violation | null {
-  if (!p.purchasable || !p.active) {
+  if (!isBuyable(p)) {
     return {
       code: "not-purchasable",
       message: "Dieser Spieler ist derzeit nicht kaufbar.",
@@ -90,7 +95,7 @@ export function validateSquad(
     });
   }
   for (const p of players) {
-    if (!p.purchasable || !p.active) {
+    if (!isBuyable(p)) {
       violations.push({
         code: "not-purchasable",
         message: "Dieser Spieler ist derzeit nicht kaufbar.",

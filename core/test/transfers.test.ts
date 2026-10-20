@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   applyTransfer,
+  cashAfterTransfer,
   currentMatchday,
   isBreakWindow,
   rollTransferBank,
@@ -387,5 +388,15 @@ describe("applyTransfer (KONZEPT 2.3, 2.6, 2.7)", () => {
     const score = scoreManager(8, s.lineup!, {}, s.transfers, pos);
     expect(score.transferPenalty).toBe(10);
     expect(score.total).toBe(-10);
+  });
+});
+
+describe("cashAfterTransfer", () => {
+  it("rechnet exakt in Zehnteln", () => {
+    expect(cashAfterTransfer(0.3, 0.1, 0.2)).toBe(0.2);
+    expect(cashAfterTransfer(1.1, 2.2, 3.3)).toBe(0);
+  });
+  it("wird negativ, wenn das Guthaben nicht reicht", () => {
+    expect(cashAfterTransfer(0.5, 4.0, 4.6)).toBe(-0.1);
   });
 });

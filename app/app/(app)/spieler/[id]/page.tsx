@@ -1,6 +1,7 @@
 import {
   expectationFor,
   formatMio,
+  isBuyable,
   lastPricedMatchday,
   MARKET,
   nextPrice,
@@ -9,6 +10,7 @@ import {
   ratingPoints,
   SCORING,
   startPrice,
+  subtractMio,
 } from "@fm/core";
 import { ChevronDown } from "lucide-react";
 import Link from "next/link";
@@ -26,8 +28,14 @@ import {
   partEntries,
   signed,
 } from "@/components/points";
-import { mioNumber } from "@/lib/format";
-import { gameData, playerById, statsById, teamById } from "@/lib/game-data";
+import { formatForm, mioNumber } from "@/lib/format";
+import {
+  gameData,
+  opponentLabel,
+  playerById,
+  statsById,
+  teamById,
+} from "@/lib/game-data";
 import { POS_LABEL } from "@/lib/positions";
 import { currentManager } from "@/lib/session";
 
@@ -80,9 +88,7 @@ export default async function PlayerPage({
         x.matchday === matchday &&
         (x.homeTeamId === player.teamId || x.awayTeamId === player.teamId),
     );
-    if (!f) return null;
-    const home = f.homeTeamId === player.teamId;
-    return `${teamById.get(home ? f.awayTeamId : f.homeTeamId)?.shortName} (${home ? "H" : "A"})`;
+    return f ? opponentLabel(f, player.teamId) : null;
   };
   const inSquad = me.squad.includes(id);
   const captain = me.lineup?.captain === id;
@@ -94,8 +100,7 @@ export default async function PlayerPage({
   ]
     .filter(Boolean)
     .join(" · ");
-  const canBuy =
-    !inSquad && me.squad.length > 0 && player.purchasable && player.active;
+  const canBuy = !inSquad && me.squad.length > 0 && isBuyable(player);
 
   // Formkurve: letzte 8 Einsätze, Höhe relativ zum Maximum.
   const bars = played.slice(-8);
@@ -109,7 +114,10 @@ export default async function PlayerPage({
     ...history.map((h, i) => ({
       label: `nach ${h.matchday}.`,
       price: h.price,
-      diff: h.price - (i === 0 ? (start ?? h.price) : history[i - 1]!.price),
+      diff: subtractMio(
+        h.price,
+        i === 0 ? (start ?? h.price) : history[i - 1]!.price,
+      ),
     })),
   ];
 
@@ -177,14 +185,7 @@ export default async function PlayerPage({
             }
           />
           <BoardTile label="Punkte" value={stats?.points ?? 0} />
-          <BoardTile
-            label="Form"
-            value={
-              stats?.form != null
-                ? formatNumber(stats.form).replace("-", "−")
-                : "–"
-            }
-          />
+          <BoardTile label="Form" value={formatForm(stats?.form)} />
         </div>
       </HeroHeader>
       <PageBody>
@@ -306,7 +307,7 @@ export default async function PlayerPage({
                             {p.diff === 0 ? (
                               <span className="text-muted">±0</span>
                             ) : (
-                              <Trend delta={Math.round(p.diff * 10) / 10} />
+                              <Trend delta={p.diff} />
                             )}
                           </p>
                         ) : null}

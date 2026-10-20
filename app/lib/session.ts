@@ -3,6 +3,7 @@ import { cache } from "react";
 import { notFound, redirect } from "next/navigation";
 import type { ManagerDoc } from "@fm/core";
 import { auth } from "@/lib/auth";
+import { leagueTable } from "@/lib/standings";
 import { listAllManagers, loadManager } from "@/lib/storage";
 
 /**
@@ -18,6 +19,11 @@ export const currentManager = cache(async (): Promise<ManagerDoc> => {
 
 /** Alle Manager-Dokumente, je Request nur einmal gelesen (Layout, Tabelle, Spieltag). */
 export const allManagers = cache(listAllManagers);
+
+/** Gesamttabelle, je Request nur einmal berechnet (Seitenleiste, Team, Tabelle). */
+export const currentLeagueTable = cache(async () =>
+  leagueTable(await allManagers()),
+);
 
 /** Nur für Admins; alle anderen sehen eine 404, nicht einmal die Existenz der Seite. */
 export async function requireAdmin(): Promise<ManagerDoc> {

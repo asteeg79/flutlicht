@@ -1,6 +1,7 @@
 import { describe, expect, it } from "vitest";
 import {
   draftAddViolation,
+  isBuyable,
   sumPrices,
   validateSquad,
   type SquadCandidate,
@@ -113,5 +114,13 @@ describe("draftAddViolation (Erstkader Schritt für Schritt)", () => {
     expect(code({ ...striker, price: 9.1 })).toBe("budget");
     expect(code({ ...striker, purchasable: false })).toBe("not-purchasable");
     expect(code({ ...striker, active: false })).toBe("not-purchasable");
+  });
+});
+
+describe("isBuyable", () => {
+  it("verlangt bekannten Marktwert und aktiven Kaderplatz", () => {
+    expect(isBuyable({ purchasable: true, active: true })).toBe(true);
+    expect(isBuyable({ purchasable: false, active: true })).toBe(false);
+    expect(isBuyable({ purchasable: true, active: false })).toBe(false);
   });
 });

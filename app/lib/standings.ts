@@ -66,7 +66,7 @@ function refs(game: GameSlice) {
           name: `Spieler ${id}`,
           shortName: `#${id}`,
           club: "",
-          position: positions.get(id) ?? "MID",
+          position: "MID",
         };
   };
   return { byId, positions, ref };

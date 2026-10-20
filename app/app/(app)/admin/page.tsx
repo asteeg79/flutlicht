@@ -15,8 +15,8 @@ import {
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
 import { gameData } from "@/lib/game-data";
-import { requireAdmin } from "@/lib/session";
-import { listAllManagers, loadLeague } from "@/lib/storage";
+import { allManagers, requireAdmin } from "@/lib/session";
+import { loadLeague } from "@/lib/storage";
 
 export const metadata = { title: "Admin" };
 
@@ -34,10 +34,7 @@ const SECTIONS = [
 
 export default async function AdminPage() {
   const me = await requireAdmin();
-  const [managers, league] = await Promise.all([
-    listAllManagers(),
-    loadLeague(),
-  ]);
+  const [managers, league] = await Promise.all([allManagers(), loadLeague()]);
   const clubs = Object.fromEntries(
     gameData.teams.map((t) => [t.id, t.shortName]),
   );

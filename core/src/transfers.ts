@@ -2,6 +2,7 @@
 import { RULES } from "./config/rules";
 import { firstLock } from "./locks";
 import { toTenths } from "./rounding";
+import { isBuyable } from "./squad";
 import type { Fixture, Player } from "./schemas/data";
 import type {
   Lineup,
@@ -166,7 +167,7 @@ export function transferViolation(
       "Du kannst nur Spieler derselben Position tauschen.",
     );
   }
-  if (!pIn.purchasable || !pIn.active) {
+  if (!isBuyable(pIn)) {
     return violation(
       "not-purchasable",
       "Dieser Spieler ist derzeit nicht kaufbar.",
@@ -181,10 +182,19 @@ export function transferViolation(
       `Von einem Verein darfst du höchstens ${RULES.maxPerClub} Spieler haben.`,
     );
   }
-  if (toTenths(state.cash) + toTenths(pOut.price) - toTenths(pIn.price) < 0) {
+  if (cashAfterTransfer(state.cash, pOut.price, pIn.price) < 0) {
     return violation("cash", "Dein Guthaben reicht für diesen Transfer nicht.");
   }
   return null;
+}
+
+/** Guthaben nach dem Tausch: Guthaben + Preis des Abgegebenen − Preis des Neuen, exakt über Zehntel. */
+export function cashAfterTransfer(
+  cash: number,
+  outPrice: number,
+  inPrice: number,
+): number {
+  return (toTenths(cash) + toTenths(outPrice) - toTenths(inPrice)) / 10;
 }
 
 /** Tauscht `outId` gegen `inId` (gleiche Position, aktueller Preis, 2.6). */
@@ -202,8 +212,6 @@ export function applyTransfer<T extends TransferState>(
   const pOut = ctx.players.get(outId)!;
   const pIn = ctx.players.get(inId)!;
   const unlimited = isUnlimited(window, state.firstMatchday);
-  const cashTenths =
-    toTenths(state.cash) + toTenths(pOut.price) - toTenths(pIn.price);
 
   let bank = state.transferBank;
   let free = true;
@@ -226,7 +234,7 @@ export function applyTransfer<T extends TransferState>(
     state: {
       ...state,
       squad: state.squad.map((id) => (id === outId ? inId : id)),
-      cash: cashTenths / 10,
+      cash: cashAfterTransfer(state.cash, pOut.price, pIn.price),
       lineup,
       transfers: [...state.transfers, transfer],
       transferBank: bank,

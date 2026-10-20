@@ -1,13 +1,15 @@
 "use client";
 
 import {
+  cashAfterTransfer,
   draftAddViolation,
   foldDiacritics,
+  isBuyable,
   POSITION_LABELS,
   POSITIONS,
   RULES,
+  subtractMio,
   sumPrices,
-  toTenths,
   transferQuote,
   transferViolation,
   validateSquad,
@@ -192,8 +194,7 @@ export function Market({
     .filter((p): p is MarketPlayer => p !== undefined);
   const posCount = (p: Position) =>
     squad.filter((s) => s.position === p).length;
-  const remaining =
-    (toTenths(budget) - toTenths(sumPrices(squad.map((p) => p.price)))) / 10;
+  const remaining = subtractMio(budget, sumPrices(squad.map((p) => p.price)));
   const sell = sellId === null ? undefined : byId.get(sellId);
   const buy = buyId === null ? undefined : byId.get(buyId);
   const pick = pickId === null ? undefined : byId.get(pickId);
@@ -446,7 +447,7 @@ export function Market({
     }
     if (inSquad.has(p.id)) return <OwnedTag />;
     if (!canTrade) return <ClosedTag />;
-    if (!p.purchasable || !p.active)
+    if (!isBuyable(p))
       return (
         <ReasonAction
           onClick={() => toast("Dieser Spieler ist derzeit nicht kaufbar.")}
@@ -468,6 +469,10 @@ export function Market({
           : { open: false, reopensAfter: window.reopensAfter },
       );
   const cash = cashShown ?? manager.cash;
+  const posTiles = POSITIONS.map((p) => (
+    <PosTile key={p} pos={p} count={posCount(p)} deny={deny} pop={popPos} />
+  ));
+
   const hero = draftMode ? (
     <HeroHeader
       guide={{ chapter: "start", label: "So baust du deinen Kader" }}
@@ -509,15 +514,7 @@ export function Market({
         unit={`/${RULES.squadSize}`}
       />
       <div className="col-span-2 grid grid-cols-4 gap-1 lg:hidden">
-        {POSITIONS.map((p) => (
-          <PosTile
-            key={p}
-            pos={p}
-            count={posCount(p)}
-            deny={deny}
-            pop={popPos}
-          />
-        ))}
+        {posTiles}
       </div>
       <p className="col-span-2 text-[11px] font-semibold text-hero-muted lg:hidden">
         {RULES.squadComposition.GK} TW · {RULES.squadComposition.DEF} ABW ·{" "}
@@ -598,14 +595,8 @@ export function Market({
   );
 
   // ——— Bausteine ———
-  const hot = draftMode
-    ? []
-    : hotPlayers(
-        players.filter((p) => p.purchasable && p.active),
-        inSquad,
-      );
+  const hot = draftMode ? [] : hotPlayers(players.filter(isBuyable), inSquad);
   const ticker = draftMode ? [] : tickerPlayers(players);
-  const onHot = (p: MarketPlayer) => startPick(p);
 
   const filters = (
     <div className="mb-1">
@@ -963,12 +954,7 @@ export function Market({
         </div>
         <p className="mb-3 text-center text-[13px] font-medium opacity-85">
           Guthaben danach{" "}
-          {mioNumber(
-            (toTenths(manager.cash) +
-              toTenths(sell.price) -
-              toTenths(buy.price)) /
-              10,
-          )}{" "}
+          {mioNumber(cashAfterTransfer(manager.cash, sell.price, buy.price))}{" "}
           Mio ·{" "}
           <span
             className={`font-bold ${quote && quote.nextCost > 0 ? "text-karte-hell" : "text-gruen-hell"}`}
@@ -1078,13 +1064,7 @@ export function Market({
     <div className={draftMode ? "pb-24" : pick ? "pb-80 lg:pb-0" : undefined}>
       {hero}
       {closedNote}
-      <Ticker
-        items={ticker.map((p) => ({
-          id: p.id,
-          lastName: p.lastName,
-          delta: p.delta,
-        }))}
-      />
+      <Ticker items={ticker} />
       <PageBody className="pt-3.5">
         {mobileTabs}
         {showKaderTab ? (
@@ -1105,7 +1085,7 @@ export function Market({
                         <HotCard
                           key={p.id}
                           player={toHot(p)}
-                          onClick={() => onHot(p)}
+                          onClick={() => startPick(p)}
                         />
                       ))}
                     </div>
@@ -1129,7 +1109,7 @@ export function Market({
                               <HotRow
                                 key={p.id}
                                 player={toHot(p)}
-                                onClick={() => onHot(p)}
+                                onClick={() => startPick(p)}
                               />
                             ))}
                           </div>
@@ -1142,15 +1122,7 @@ export function Market({
                         </h2>
                         {draftMode ? (
                           <div className="mb-2 grid grid-cols-4 gap-1">
-                            {POSITIONS.map((p) => (
-                              <PosTile
-                                key={p}
-                                pos={p}
-                                count={posCount(p)}
-                                deny={deny}
-                                pop={popPos}
-                              />
-                            ))}
+                            {posTiles}
                           </div>
                         ) : null}
                         {squadGroups(true)}

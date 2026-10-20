@@ -7,9 +7,8 @@ import { UpdateNotice } from "@/components/update-notice";
 import { auth } from "@/lib/auth";
 import { formatWeekdayTime } from "@/lib/format";
 import { finals, gameData, teamById } from "@/lib/game-data";
-import { allManagers, currentManager } from "@/lib/session";
+import { currentLeagueTable, currentManager } from "@/lib/session";
 import { lockLabel, nextLock } from "@/lib/shell";
-import { leagueTable } from "@/lib/standings";
 
 export default async function AppLayout({ children }: { children: ReactNode }) {
   // Die Middleware leitet schon um; das hier deckt Pfade ab, die ihr Matcher verfehlt.
@@ -29,9 +28,11 @@ export default async function AppLayout({ children }: { children: ReactNode }) {
 
 /** Team-Karte und Countdown der Desktop-Seitenleiste. */
 async function sideInfo(): Promise<SideInfo> {
-  const [me, managers] = await Promise.all([currentManager(), allManagers()]);
+  const [me, table] = await Promise.all([
+    currentManager(),
+    currentLeagueTable(),
+  ]);
   const now = new Date();
-  const table = leagueTable(managers);
   const row = table.rows.find((r) => r.userId === me.userId);
   const lock = nextLock(gameData.fixtures, finals(), now);
   const name = (id: number) => teamById.get(id)?.shortName ?? "";

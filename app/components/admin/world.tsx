@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  foldDiacritics,
   formatDate,
   TIMEZONE,
   type MappingReviewEntry,
@@ -400,11 +401,12 @@ export function Positions({
   clubs: Record<number, string>;
 }) {
   const [query, setQuery] = useState("");
-  const q = query.trim().toLowerCase();
+  // Gleiche Suche wie im Markt: „ronnow“ findet „Rønnow“.
+  const q = foldDiacritics(query.trim());
   const hits =
     q.length < 3
       ? []
-      : players.filter((p) => p.name.toLowerCase().includes(q)).slice(0, 8);
+      : players.filter((p) => foldDiacritics(p.name).includes(q)).slice(0, 8);
 
   async function save(playerId: number, position: Position) {
     if (

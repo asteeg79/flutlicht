@@ -14,6 +14,7 @@ import {
   playerStats,
   Season,
   Teams,
+  type Fixture,
 } from "@fm/core";
 import fixtures from "@/generated/data/fixtures.json";
 import history from "@/generated/data/market/history.json";
@@ -56,4 +57,14 @@ export function finals(): Map<number, Date> {
       .filter((p) => p.status === "final")
       .map((p) => [p.matchday, new Date(p.generatedAt)]),
   );
+}
+
+/** Gegner aus Sicht von `teamId` mit Heim/Auswärts: „Bayern (H)“. */
+export function opponentLabel(
+  f: Pick<Fixture, "homeTeamId" | "awayTeamId">,
+  teamId: number,
+): string {
+  const home = f.homeTeamId === teamId;
+  const other = teamById.get(home ? f.awayTeamId : f.homeTeamId);
+  return `${other?.shortName ?? ""} (${home ? "H" : "A"})`;
 }

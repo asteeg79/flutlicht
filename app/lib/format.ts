@@ -21,6 +21,15 @@ export function mioNumber(mio: number): string {
   });
 }
 
+/** Form mit echtem Minus, höchstens eine Nachkommastelle: −1.25 → "−1,3"; ohne Wert „–“. */
+export function formatForm(form: number | null | undefined): string {
+  return form == null
+    ? "–"
+    : form
+        .toLocaleString("de-DE", { maximumFractionDigits: 1 })
+        .replace("-", "−");
+}
+
 /** Mit echtem Minus: −5 → "−5", 3 → "+3", 0 → "0". */
 export function signedInt(n: number): string {
   if (n > 0) return `+${n}`;

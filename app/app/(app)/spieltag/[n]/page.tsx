@@ -27,7 +27,7 @@ import {
 } from "@/components/points";
 import { formatRating } from "@/components/player-points-info";
 import { formatWeekdayTime, lastName } from "@/lib/format";
-import { gameData, playerById, teamById } from "@/lib/game-data";
+import { gameData, opponentLabel, playerById, teamById } from "@/lib/game-data";
 import { POS_LABEL } from "@/lib/positions";
 import { allManagers, currentManager } from "@/lib/session";
 import {
@@ -54,9 +54,8 @@ export default async function MatchdayPage({
   const view = matchdayView(n, managers, me.userId, now);
   const own = view.managers.find((m) => m.own);
   const ranks = matchdayRanks(view.managers);
-  const others = view.managers
-    .filter((m) => !m.own)
-    .sort((a, b) => b.total - a.total);
+  // matchdayView liefert schon nach Punkten sortiert (eigener Manager zuerst).
+  const others = view.managers.filter((m) => !m.own);
   const fixtures = gameData.fixtures.filter((f) => f.matchday === n);
   const team = (id: number) => teamById.get(id);
   const fixtureOf = (teamId: number | undefined) =>
@@ -290,7 +289,6 @@ export default async function MatchdayPage({
                 const p = playerById.get(id);
                 if (!p) return null;
                 const f = fixtureOf(p.teamId);
-                const home = f?.homeTeamId === p.teamId;
                 const lock = f ? lockAt(f) : null;
                 return (
                   <li
@@ -308,9 +306,7 @@ export default async function MatchdayPage({
                         </span>
                       </span>
                       <span className="mt-0.5 block text-xs font-medium text-muted">
-                        {f
-                          ? `${team(home ? f.awayTeamId : f.homeTeamId)?.shortName} (${home ? "H" : "A"})`
-                          : "kein Spiel"}
+                        {f ? opponentLabel(f, p.teamId) : "kein Spiel"}
                       </span>
                     </span>
                     {lock ? (
@@ -431,7 +427,6 @@ export default async function MatchdayPage({
               key={m.userId}
               view={m}
               rank={ranks.get(m.userId) ?? 0}
-              leader={ranks.get(m.userId) === 1}
               state={bonusState(view)}
             />
           ))}
@@ -656,12 +651,10 @@ function Sum({
 function OtherCard({
   view,
   rank,
-  leader,
   state,
 }: {
   view: ManagerMatchdayView;
   rank: number;
-  leader: boolean;
   state: BonusState;
 }) {
   const top = [...view.slots]
@@ -677,7 +670,7 @@ function OtherCard({
   ].join(" · ");
   return (
     <li
-      className={`grid grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2.5 border-l-4 bg-surface px-3 py-2.5 ${leader ? "border-lampe" : "border-line"}`}
+      className={`grid grid-cols-[30px_minmax(0,1fr)_auto] items-center gap-2.5 border-l-4 bg-surface px-3 py-2.5 ${rank === 1 ? "border-lampe" : "border-line"}`}
     >
       <span className="font-display text-2xl font-black text-muted">
         {rank}

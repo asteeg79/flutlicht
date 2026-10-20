@@ -5,8 +5,8 @@ import {
   defaultLineup,
   firstMatchdayFor,
   RULES,
+  subtractMio,
   sumPrices,
-  toTenths,
   transferWindow,
   validateSquad,
   type Fixture,
@@ -103,10 +103,7 @@ export async function buildInitialSquad(
     ...doc,
     squad: squad.map((p) => p.id),
     initialPrices: Object.fromEntries(squad.map((p) => [p.id, p.price])),
-    cash:
-      (toTenths(ctx.startBudget) -
-        toTenths(sumPrices(squad.map((p) => p.price)))) /
-      10,
+    cash: subtractMio(ctx.startBudget, sumPrices(squad.map((p) => p.price))),
     lineup: defaultLineup(squad),
     firstMatchday,
     transferBank: {

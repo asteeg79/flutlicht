@@ -20,23 +20,23 @@ import { TeamLineup, type SquadEntry } from "@/components/team-lineup";
 import { lastName, signedInt } from "@/lib/format";
 import {
   gameData,
+  opponentLabel,
   playerById,
   positionById,
   statsById,
   teamById,
 } from "@/lib/game-data";
 import { POS_LABEL } from "@/lib/positions";
-import { allManagers, currentManager } from "@/lib/session";
+import { currentLeagueTable, currentManager } from "@/lib/session";
 import { lockLabel, nextLock } from "@/lib/shell";
 import { liveContext, publicManager } from "@/lib/squad";
-import { leagueTable } from "@/lib/standings";
 
 export const metadata = { title: "Team" };
 
 export default async function TeamPage() {
-  const [manager, managers] = await Promise.all([
+  const [manager, table] = await Promise.all([
     currentManager(),
-    allManagers(),
+    currentLeagueTable(),
   ]);
 
   if (manager.lineup === null) {
@@ -77,7 +77,6 @@ export default async function TeamPage() {
     const f = fixtures.find(
       (x) => x.homeTeamId === p.teamId || x.awayTeamId === p.teamId,
     );
-    const home = f?.homeTeamId === p.teamId;
     return [
       {
         id: p.id,
@@ -90,9 +89,7 @@ export default async function TeamPage() {
         club: name(p.teamId),
         image: p.image,
         clubLogo: teamById.get(p.teamId)?.logo ?? "",
-        opponent: f
-          ? `${name(home ? f.awayTeamId : f.homeTeamId)} (${home ? "H" : "A"})`
-          : null,
+        opponent: f ? opponentLabel(f, p.teamId) : null,
         match: f ? `${name(f.homeTeamId)} – ${name(f.awayTeamId)}` : null,
         lockAt: f ? lockAt(f).toISOString() : null,
         points: pointsInfo(p.id),
@@ -102,7 +99,6 @@ export default async function TeamPage() {
   });
 
   // Tafel: Platz und Saison wie auf /tabelle; dazu der letzte finale oder der laufende Spieltag.
-  const table = leagueTable(managers);
   const row = table.rows.find((r) => r.userId === manager.userId);
   const scored = table.matchdays.length > 0 && row !== undefined;
   const lastFinal = table.matchdays.filter((m) => m.status === "final").at(-1);

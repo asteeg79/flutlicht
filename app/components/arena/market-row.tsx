@@ -4,7 +4,7 @@ import type { ReactNode } from "react";
 import { PosBadge } from "@/components/arena/pos-badge";
 import { ClubLogo } from "@/components/club-logo";
 import { PlayerPhoto } from "@/components/player-photo";
-import { mioNumber } from "@/lib/format";
+import { formatForm, mioNumber } from "@/lib/format";
 
 export interface RowPlayer {
   id: number;
@@ -20,11 +20,6 @@ export interface RowPlayer {
   delta: number;
   inactive?: boolean;
 }
-
-const formText = (f: number | null) =>
-  f === null
-    ? "–"
-    : f.toLocaleString("de-DE", { maximumFractionDigits: 1 }).replace("-", "−");
 
 /** ▲/▼ Betrag in Up/Down-Farbe; ohne Änderung nichts. */
 export function Trend({
@@ -74,7 +69,7 @@ export function MarketRow({
           {p.name}
         </Link>
         <span className="mt-[3px] block truncate text-xs font-medium text-muted">
-          {p.club} · {p.points} P. · Form {formText(p.form)}
+          {p.club} · {p.points} P. · Form {formatForm(p.form)}
           {p.inactive ? " · nicht mehr in der Liga" : ""}
         </span>
       </span>
@@ -190,7 +185,7 @@ export function MarketTableRow({
         role="cell"
         className="text-right font-display text-lg font-extrabold text-muted"
       >
-        {formText(p.form)}
+        {formatForm(p.form)}
       </span>
       <span
         role="cell"

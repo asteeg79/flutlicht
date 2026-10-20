@@ -1,8 +1,9 @@
 // Übernommen aus Workgrid lib/api-route.ts, angepasst: withAdmin, withPublic, Conflict (409),
-// Forbidden (403); ohne Profilbild im RouteUser.
+// Forbidden (403), Admin-Dokument im Kontext; RouteUser nur mit id.
 import { timingSafeEqual } from "node:crypto";
 import { NextResponse } from "next/server";
 import type { z } from "zod";
+import type { ManagerDoc } from "@fm/core";
 import { auth } from "@/lib/auth";
 import { loadManager } from "@/lib/storage";
 
@@ -72,8 +73,6 @@ export class Upstream extends ApiError {
 
 export interface RouteUser {
   id: string;
-  email?: string | null;
-  name?: string | null;
 }
 
 export interface RouteContext {
@@ -97,25 +96,26 @@ export function withUser(handler: Handler) {
     const session = await auth();
     if (!session?.user?.id) return errorResponse(401, "Unauthorized");
 
-    const user: RouteUser = {
-      id: session.user.id,
-      email: session.user.email,
-      name: session.user.name,
-    };
-
-    return handleErrors(() => handler({ user, request }));
+    return handleErrors(() =>
+      handler({ user: { id: session.user.id }, request }),
+    );
   };
 }
 
 /**
  * Wie withUser, verlangt zusätzlich role=admin. Die Rolle kommt aus dem
  * Manager-Dokument, nicht aus dem Token: ein entzogenes Admin-Recht wirkt sofort.
+ * Der Handler bekommt das geladene Dokument als `admin` mit.
  */
-export function withAdmin(handler: Handler) {
+export function withAdmin(
+  handler: (
+    ctx: RouteContext & { admin: ManagerDoc },
+  ) => Response | Promise<Response>,
+) {
   return withUser(async (ctx) => {
-    const doc = await loadManager(ctx.user.id);
-    if (doc?.role !== "admin") throw new Forbidden();
-    return handler(ctx);
+    const admin = await loadManager(ctx.user.id);
+    if (admin?.role !== "admin") throw new Forbidden();
+    return handler({ ...ctx, admin });
   });
 }
 
