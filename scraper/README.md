@@ -26,7 +26,7 @@ python3 -m venv .venv
 | `match-provisional --event ID` | 2 | vorläufige lineups + incidents eines Spiels |
 | `match-final --matchday N [--event ID]` | 2 je Spiel | lineups + incidents aller beendeten Spiele |
 | `backfill --matchday N` | 1 + 2 × 9 | bereits gespielten Spieltag nachholen; **höchstens einen pro Aufruf**, über 2–3 Tage verteilen |
-| `squads` | 18 | Kader aller Vereine aus `raw/manual/teams.json` |
+| `squads` | 18 | Kader aller Vereine aus `raw/manual/teams.json`, als `{teamId}.json.gz` (lesen mit `zcat`) |
 | `dcaribou` | 1 | Transfermarkt-Datensatz (CC0), gefiltert auf die Bundesliga |
 | `tm-crawl` | 19 | Marktwerte über den lokalen transfermarkt-api-Dienst (60–180 s Abstand) |
 | `images` | ≤ 60 | Logos und Spielerbilder als 128-px-WebP nach `app/public/img/`; höchstens stündlich |

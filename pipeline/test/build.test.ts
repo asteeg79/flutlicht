@@ -9,6 +9,7 @@ import {
 } from "node:fs/promises";
 import { tmpdir } from "node:os";
 import { dirname, join } from "node:path";
+import { gzipSync } from "node:zlib";
 import { beforeEach, describe, expect, it } from "vitest";
 import { build } from "../src/build";
 
@@ -19,10 +20,8 @@ const run = (warn: (m: string) => void = () => {}) =>
 
 async function put(path: string, value: unknown) {
   await mkdir(dirname(path), { recursive: true });
-  await writeFile(
-    path,
-    typeof value === "string" ? value : JSON.stringify(value),
-  );
+  const text = typeof value === "string" ? value : JSON.stringify(value);
+  await writeFile(path, path.endsWith(".gz") ? gzipSync(text) : text);
 }
 const envelope = (data: unknown, fetchedAt = "2026-09-25T10:00:00Z") => ({
   fetchedAt,
@@ -67,7 +66,7 @@ beforeEach(async () => {
   await put(raw("manual/season.json"), { firstScoredMatchday: 1 });
   for (let t = 0; t < 18; t++)
     await put(
-      raw(`sofascore/squads/2026-09-25/${1000 + t}.json`),
+      raw(`sofascore/squads/2026-09-25/${1000 + t}.json.gz`),
       envelope({ players: squad(t) }),
     );
   await put(
@@ -190,7 +189,7 @@ describe("pipeline build (raw → data, KONZEPT 6.5)", () => {
   it("überspringt Kader-Einträge ohne Geburtsdatum mit Warnung", async () => {
     // Sofascore führt neu gemeldete Nachwuchsspieler zunächst nur mit ID und Namen.
     await put(
-      raw("sofascore/squads/2026-10-05/1000.json"),
+      raw("sofascore/squads/2026-10-05/1000.json.gz"),
       envelope({
         players: [
           ...squad(0),
@@ -211,7 +210,7 @@ describe("pipeline build (raw → data, KONZEPT 6.5)", () => {
     expect(players.length).toBe(414);
     expect(players.some((p: { id: number }) => p.id === 9999)).toBe(false);
     expect(warnings).toEqual([
-      "Kader 2026-10-05/1000.json: Spieler 9999 (Neu Gemeldet) ohne Geburtsdatum, übersprungen",
+      "Kader 2026-10-05/1000.json.gz: Spieler 9999 (Neu Gemeldet) ohne Geburtsdatum, übersprungen",
     ]);
   });
 

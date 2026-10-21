@@ -2,13 +2,14 @@ import csv
 import gzip
 import io
 import json
-from datetime import date
+from datetime import date, datetime, timezone
 
 import pytest
 from PIL import Image
 
 from fm_scraper import config
 from fm_scraper.client import PauseRequired, RawResponse
+from fm_scraper.raw import read_raw, write_raw
 from fm_scraper.jobs import backfill, dcaribou, images, round_events, squads, tm_crawl
 from tests.conftest import FakeTransport, ok
 
@@ -18,12 +19,21 @@ TEAMS = [{"id": 2672}, {"id": 2547}]
 def test_squads_legt_nach_datum_ab_und_ueberspringt_vorhandene(make_client, tmp_path):
     day = tmp_path / "sofascore/squads/2026-09-25"
     day.mkdir(parents=True)
-    (day / "2672.json").write_text("{}")
+    (day / "2672.json.gz").write_bytes(b"")
     request = FakeTransport(ok(b'{"players": []}'))
     client, _ = make_client(request)
     written = squads.run(client, tmp_path, TEAMS, date(2026, 9, 25))
-    assert written == [day / "2547.json"]
+    assert written == [day / "2547.json.gz"]
     assert request.urls == [f"{config.API}/team/2547/players"]
+    assert read_raw(day / "2547.json.gz") == {"players": []}
+
+
+def test_write_raw_gz_schreibt_kompakt_und_ohne_zeitstempel(tmp_path):
+    path = tmp_path / "x.json.gz"
+    write_raw(path, "u", "squad", {"players": []}, datetime(2026, 10, 21, tzinfo=timezone.utc))
+    data = path.read_bytes()
+    assert data[4:8] == b"\0\0\0\0"  # gzip-mtime 0: gleicher Inhalt ergibt gleiche Bytes
+    assert gzip.decompress(data) == b'{"fetchedAt":"2026-10-21T00:00:00Z","url":"u","phase":"squad","data":{"players":[]}}'
 
 
 def test_backfill_holt_round_nur_wenn_sie_fehlt(make_client, tmp_path):
@@ -87,9 +97,9 @@ def png(size: int) -> bytes:
 
 
 def write_squad(tmp_path, player_ids):
-    path = tmp_path / "raw/sofascore/squads/2026-09-25/2672.json"
+    path = tmp_path / "raw/sofascore/squads/2026-09-25/2672.json.gz"
     path.parent.mkdir(parents=True)
-    path.write_text(json.dumps({"data": {"players": [{"player": {"id": i}} for i in player_ids]}}))
+    path.write_bytes(gzip.compress(json.dumps({"data": {"players": [{"player": {"id": i}} for i in player_ids]}}).encode()))
 
 
 def test_images_erst_logos_dann_spieler_als_128px_webp(make_client, tmp_path, monkeypatch):

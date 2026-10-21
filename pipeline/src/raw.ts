@@ -2,6 +2,7 @@
 import { existsSync } from "node:fs";
 import { readdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
+import { gunzipSync } from "node:zlib";
 import { z } from "zod";
 import {
   ManualMatch,
@@ -34,9 +35,9 @@ async function listDirs(dir: string): Promise<string[]> {
     .sort();
 }
 
-async function listJson(dir: string): Promise<string[]> {
+async function listJson(dir: string, ext = ".json"): Promise<string[]> {
   if (!existsSync(dir)) return [];
-  return (await readdir(dir)).filter((f) => f.endsWith(".json")).sort();
+  return (await readdir(dir)).filter((f) => f.endsWith(ext)).sort();
 }
 
 const SofaSquad = z.object({
@@ -55,6 +56,9 @@ const SofaSquad = z.object({
   ),
 });
 
+/** Kader liegen gzip-komprimiert, sie sind der Großteil von raw/ (Entscheidung 2026-10-21). */
+const SQUAD_EXT = ".json.gz";
+
 export async function readSquadSnapshots(
   rawDir: string,
   warn: (message: string) => void,
@@ -62,11 +66,13 @@ export async function readSquadSnapshots(
   const base = join(rawDir, "sofascore", "squads");
   const out: SquadSnapshot[] = [];
   for (const date of await listDirs(base)) {
-    for (const file of await listJson(join(base, date))) {
-      const data = SofaSquad.parse(await readData(join(base, date, file)));
+    for (const file of await listJson(join(base, date), SQUAD_EXT)) {
+      const gz = await readFile(join(base, date, file));
+      const env = Envelope.parse(JSON.parse(gunzipSync(gz).toString("utf8")));
+      const data = SofaSquad.parse(env.data);
       out.push({
         date,
-        teamId: Number(file.replace(".json", "")),
+        teamId: Number(file.slice(0, -SQUAD_EXT.length)),
         // Neu gemeldete Nachwuchsspieler kommen zunächst ohne Geburtsdatum (und ohne
         // Position und Marktwert). Sie zählen erst, wenn Sofascore sie vervollständigt.
         players: data.players.flatMap(({ player: p }) => {

@@ -567,7 +567,7 @@ Alle Schemas stehen als zod in `core/src/schemas/`. Typen leitest du mit `z.infe
 ```
 raw/sofascore/rounds/round-NN.json
 raw/sofascore/matches/{eventId}/{provisional|final}/{lineups,incidents}.json   (+ fetchedAt)
-raw/sofascore/squads/{YYYY-MM-DD}/{teamId}.json
+raw/sofascore/squads/{YYYY-MM-DD}/{teamId}.json.gz   (gzip, kompakt)
 raw/openligadb/season-2026.json
 raw/transfermarkt/{YYYY-MM-DD}/clubs.json, club-{id}.json
 raw/dcaribou/players-L1.csv
@@ -756,6 +756,7 @@ Alle unter `withUser` (Workgrid), außer den ausdrücklich öffentlichen
     gepushte Commits des Klons). Kein Abruf bei einer Datenquelle, deshalb nicht über
     `client.py` und ohne Pacing und Nachtruhe.
 - **Ausgabe:** Rohes JSON unverändert + `{ fetchedAt, url, phase }` als Hülle.
+  Kader gzip-komprimiert (`.json.gz`), Inhalt gleich (Entscheidung 2026-10-21).
 - **Tests:** `pytest` für Scheduler-Entscheidungen (Zeitfenster, Retries, Nachtpause)
   mit fester Uhr. Es gibt keine Netzwerktests.
 - **Betrieb:** `scraper/README.md` beschreibt Einrichtung (Deploy-Key, Klon,

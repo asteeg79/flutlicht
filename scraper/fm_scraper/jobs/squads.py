@@ -1,6 +1,6 @@
 """Job squads: Kader aller 18 Vereine (18 Abrufe, KONZEPT 5.5).
 
-Ablage nach Datum (Europe/Berlin). Heute schon geholte Vereine werden übersprungen,
+Ablage nach Datum (Europe/Berlin), gzip-komprimiert (`{teamId}.json.gz`). Heute schon geholte Vereine werden übersprungen,
 der Job ist also nach einem Abbruch wiederaufnehmbar.
 """
 
@@ -16,7 +16,7 @@ def run(client: Client, raw_dir: Path, teams: list[dict], today: date) -> list[P
     day_dir = raw_dir / "sofascore" / "squads" / today.isoformat()
     written: list[Path] = []
     for team in teams:
-        path = day_dir / f"{team['id']}.json"
+        path = day_dir / f"{team['id']}.json.gz"
         if path.exists():
             continue
         url = f"{config.API}/team/{team['id']}/players"

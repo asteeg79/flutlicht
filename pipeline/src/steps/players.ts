@@ -21,7 +21,7 @@ export interface SquadPlayer {
   sofascoreValueEur: number | undefined;
 }
 
-/** Kader eines Vereins an einem Tag (raw/sofascore/squads/{date}/{teamId}.json). */
+/** Kader eines Vereins an einem Tag (raw/sofascore/squads/{date}/{teamId}.json.gz). */
 export interface SquadSnapshot {
   date: string;
   teamId: number;

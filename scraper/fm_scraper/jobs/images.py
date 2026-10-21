@@ -20,7 +20,7 @@ def wanted(raw_dir: Path, teams: list[dict]) -> list[tuple[str, int]]:
     """(Art, ID) aller Bilder: erst die 18 Logos, dann alle Spieler aus den Kadern."""
     items: list[tuple[str, int]] = [("clubs", t["id"]) for t in teams]
     player_ids: set[int] = set()
-    for squad in sorted((raw_dir / "sofascore" / "squads").glob("*/*.json")):
+    for squad in sorted((raw_dir / "sofascore" / "squads").glob("*/*.json.gz")):
         data = read_raw(squad)
         player_ids.update(p["player"]["id"] for p in data["players"])
     items += [("players", pid) for pid in sorted(player_ids)]
