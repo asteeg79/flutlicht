@@ -1,7 +1,7 @@
 name: CI (Lint + Typecheck + Tests)
 
 # Übernommen aus WM-Tipp .github/workflows/ci.yml, angepasst: paths-ignore für
-# raw/ und data/, Node 22 (vitest 5 braucht ≥ 22.12).
+# raw/ und data/, Node 24 (vitest 5 braucht ≥ 22.12).
 #
 # Qualitäts-Gate: prüft bei jedem Code-Push/PR Lint, Format, Typecheck aller
 # Pakete und die Vitest-Suite. Keine Secrets nötig, keine Netzwerkabrufe.
@@ -40,7 +40,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Lint (ESLint)
@@ -60,7 +60,7 @@ jobs:
       - uses: pnpm/action-setup@v6
       - uses: actions/setup-node@v6
         with:
-          node-version: 22
+          node-version: 24
           cache: pnpm
       - run: pnpm install --frozen-lockfile
       - name: Playwright-Browser
