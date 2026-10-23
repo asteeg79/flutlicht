@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-23T19:58:27.962Z",
+  "fetchedAt": "2026-10-23T23:11:38.169Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -5667,7 +5667,7 @@
     {
       "matchID": 83212,
       "matchDateTime": "2026-10-23T20:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -5692,8 +5692,8 @@
         "teamIconUrl": "https://i.imgur.com/KSIk0Eu.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-10-23T21:57:33.537",
-      "matchIsFinished": false,
+      "lastUpdateDateTime": "2026-10-23T22:26:35.347",
+      "matchIsFinished": true,
       "matchResults": [
         {
           "resultID": 130195,
@@ -5708,7 +5708,7 @@
         {
           "resultID": 130196,
           "resultName": "Endergebnis",
-          "pointsTeam1": 1,
+          "pointsTeam1": 2,
           "pointsTeam2": 3,
           "resultOrderID": 2,
           "resultTypeID": 2,
@@ -5764,6 +5764,19 @@
           "goalGetterID": 24912,
           "goalGetterName": "W. Mohya",
           "scoringTeamId": 87,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151046,
+          "scoreTeam1": 2,
+          "scoreTeam2": 3,
+          "matchMinute": 83,
+          "goalGetterID": 18339,
+          "goalGetterName": "E. Demirovic",
+          "scoringTeamId": 16,
           "isPenalty": false,
           "isOwnGoal": false,
           "isOvertime": false,
