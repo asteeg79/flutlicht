@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-24T09:37:06.069Z",
+  "fetchedAt": "2026-10-24T14:36:11.847Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -5814,9 +5814,30 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/35/SV_Elversberg_Logo.svg/500px-SV_Elversberg_Logo.svg.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:07:21.917",
+      "lastUpdateDateTime": "2026-10-24T16:16:30.003",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 130263,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130264,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
@@ -5849,9 +5870,30 @@
         "teamIconUrl": "https://assets.dfb.de/uploads/000/018/232/small_union-Berlin.jpg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:08:24.933",
+      "lastUpdateDateTime": "2026-10-24T16:18:48.56",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 130265,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130266,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
@@ -5859,7 +5901,7 @@
     {
       "matchID": 83216,
       "matchDateTime": "2026-10-24T15:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -5884,10 +5926,71 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/b/be/SV-Werder-Bremen-Logo.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:08:34.653",
+      "lastUpdateDateTime": "2026-10-24T16:34:53.133",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 130267,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 1,
+          "pointsTeam2": 2,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130270,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 1,
+          "pointsTeam2": 2,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 151154,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 6,
+          "goalGetterID": 18661,
+          "goalGetterName": "N. Füllkrug",
+          "scoringTeamId": 134,
+          "isPenalty": true,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151159,
+          "scoreTeam1": 0,
+          "scoreTeam2": 2,
+          "matchMinute": 24,
+          "goalGetterID": 18661,
+          "goalGetterName": "N. Füllkrug",
+          "scoringTeamId": 134,
+          "isPenalty": true,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151174,
+          "scoreTeam1": 1,
+          "scoreTeam2": 2,
+          "matchMinute": 33,
+          "goalGetterID": 19551,
+          "goalGetterName": "A. Caci",
+          "scoringTeamId": 81,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
@@ -5919,9 +6022,30 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/9/97/FC_Schalke_04_Logo.png",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:08:44.953",
+      "lastUpdateDateTime": "2026-10-24T16:23:22.247",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 130268,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130271,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
@@ -5954,9 +6078,30 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/f/f7/Hamburger_SV_logo.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-07-03T08:08:59.023",
+      "lastUpdateDateTime": "2026-10-24T16:18:30.97",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 130269,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130272,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
