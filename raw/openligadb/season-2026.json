@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-25T09:53:55.227Z",
+  "fetchedAt": "2026-10-25T14:58:03.042Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -6324,9 +6324,30 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/de/f/f7/Bayer_Leverkusen_Logo.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:26:20.797",
+      "lastUpdateDateTime": "2026-10-25T15:30:17.07",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 130355,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130356,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": null,
       "numberOfViewers": null
