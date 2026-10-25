@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-25T14:58:03.042Z",
+  "fetchedAt": "2026-10-25T18:26:08.381Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -6299,7 +6299,7 @@
     {
       "matchID": 83213,
       "matchDateTime": "2026-10-25T15:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -6324,8 +6324,8 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/de/f/f7/Bayer_Leverkusen_Logo.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-10-25T15:30:17.07",
-      "matchIsFinished": false,
+      "lastUpdateDateTime": "2026-10-25T17:30:44.863",
+      "matchIsFinished": true,
       "matchResults": [
         {
           "resultID": 130355,
@@ -6340,7 +6340,7 @@
         {
           "resultID": 130356,
           "resultName": "Endergebnis",
-          "pointsTeam1": 0,
+          "pointsTeam1": 3,
           "pointsTeam2": 0,
           "resultOrderID": 2,
           "resultTypeID": 2,
@@ -6348,7 +6348,47 @@
           "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
         }
       ],
-      "goals": [],
+      "goals": [
+        {
+          "goalID": 151332,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 78,
+          "goalGetterID": 18327,
+          "goalGetterName": "A. Kramaric",
+          "scoringTeamId": 175,
+          "isPenalty": true,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151341,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 90,
+          "goalGetterID": 20511,
+          "goalGetterName": "A. Prass",
+          "scoringTeamId": 175,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151342,
+          "scoreTeam1": 3,
+          "scoreTeam2": 0,
+          "matchMinute": 95,
+          "goalGetterID": 23592,
+          "goalGetterName": "M. Moerstedt",
+          "scoringTeamId": 175,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
@@ -6380,10 +6420,84 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/1/1f/Logo_FC_Bayern_M%C3%BCnchen_%282002%E2%80%932017%29.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:26:33.983",
+      "lastUpdateDateTime": "2026-10-25T19:25:00.97",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 130388,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 2,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130389,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 1,
+          "pointsTeam2": 3,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 151346,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 16,
+          "goalGetterID": 19198,
+          "goalGetterName": "D. Upamecano",
+          "scoringTeamId": 40,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151353,
+          "scoreTeam1": 0,
+          "scoreTeam2": 2,
+          "matchMinute": 42,
+          "goalGetterID": 16086,
+          "goalGetterName": "S. Gnabry",
+          "scoringTeamId": 40,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151366,
+          "scoreTeam1": 1,
+          "scoreTeam2": 2,
+          "matchMinute": 82,
+          "goalGetterID": 23149,
+          "goalGetterName": "T. Bischof",
+          "scoringTeamId": 112,
+          "isPenalty": false,
+          "isOwnGoal": true,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151369,
+          "scoreTeam1": 1,
+          "scoreTeam2": 3,
+          "matchMinute": 95,
+          "goalGetterID": 23135,
+          "goalGetterName": "M. Olise",
+          "scoringTeamId": 40,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
