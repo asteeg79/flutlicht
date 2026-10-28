@@ -34,8 +34,9 @@ komponenten:
     runtime: { sprache: python, version: 3.13 } # CI testet mit 3.11
     abhaengigkeiten: scraper/pyproject.toml (botasaurus, pillow; ohne Lockfile)
     hosting:
-      art: eigener Rechner (Raspberry Pi 5, Debian 13, Chromium)
+      art: eigener Rechner (Raspberry Pi 5 raspdev, Debian 13, Chromium)
       live_url: keine # nur ausgehende Abrufe, von außen nicht erreichbar
+      geteilt_mit: [scvh-app (Scraper), nachspielzeit]
     deploy: Scheduler zieht alle 30 Min. per git pull; venv-Pakete nur von Hand
     runtime_patcht: Alex (apt auf dem Pi)
     verifikation: /admin → Status (Lebenszeichen mit Git-Stand); Python und Chromium nur per SSH
@@ -58,4 +59,6 @@ komponenten:
 # - Actions sind auf Tags gepinnt (@v6), nicht auf Commit-SHA (Renovate).
 # - Scraper-Pakete sind nur nach unten begrenzt und ohne Lockfile; das venv auf
 #   dem Pi wird nie automatisch aktualisiert.
+# - Der Pi trägt drei Projekte; ein Einbruch über eines erreicht auch den
+#   Deploy-Key mit Schreibrecht und das Heartbeat-Secret von flutlicht.
 # - next-auth ist eine Beta-Version und Auth-Code: kein Auto-Merge.
