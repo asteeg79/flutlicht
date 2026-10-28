@@ -32,6 +32,15 @@ Spezifikation ist `KONZEPT.md`**, die Reihenfolge der Arbeit steht in Abschnitt 
 - Neue API-Route: `withUser`/`withAdmin` verwenden **oder** in
   `lib/public-api-paths.ts` begründen. Der Guard-Test muss grün bleiben.
 
+## Sicherheit
+- Vertrauensgrenzen, ASVS-L1-Prüfpunkte und bekannte Ausnahmen stehen in
+  `security/review-instructions.md`. Sie gelten für jede Änderung; das Claude-Review
+  der PRs liest dieselbe Datei.
+- `security/inventory.yml` (Runtime, Hosting, Patch-Weg) bei Änderungen an Runtime,
+  Hosting oder Deploy-Weg mitpflegen.
+- PRs prüft `security-pr-review.yml` (gitleaks, Semgrep, Claude), montags läuft
+  `security-weekly-scan.yml` mit ZAP gegen die Live-App.
+
 ## Befehle
 - `pnpm dev` · `pnpm build` · `pnpm test` · `pnpm lint` · `pnpm typecheck`
 - `pnpm --filter pipeline build` rechnet `data/` lokal aus `raw/` neu.

@@ -1,0 +1,83 @@
+name: Security-Review (PR)
+
+# Security-Agent, Phase 2 (Pilot): Scanner zuerst, Claude danach.
+# - gitleaks prüft die Commits des PRs auf Secrets, Semgrep nur die geänderten
+#   Stellen (Baseline = Basis des PRs); beide brechen bei einem Fund ab.
+# - Claude (anthropics/claude-code-security-review) kommentiert den PR mit Funden.
+#   Prüfanleitung: security/review-instructions.md. Nicht gegen Prompt Injection
+#   gehärtet, deshalb nur für PRs aus diesem Repo, nie aus Forks.
+# Renovate- und Dependabot-PRs bekommen nur die Scanner, kein Claude-Review.
+on:
+  pull_request:
+    paths-ignore:
+      - "raw/**"
+      - "data/**"
+      - "docs/**"
+      - "**.md"
+
+concurrency:
+  group: security-pr-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+env:
+  GITLEAKS_VERSION: "8.30.1"
+  GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
+  SEMGREP_VERSION: "1.182.0"
+
+jobs:
+  scanners:
+    if: github.event.pull_request.head.repo.full_name == github.repository
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    env:
+      BASE_SHA: ${{ github.event.pull_request.base.sha }}
+      HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          fetch-depth: 0
+      - name: gitleaks (Commits des PRs)
+        run: |
+          curl -sSfL -o gitleaks.tgz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
+          echo "${GITLEAKS_SHA256}  gitleaks.tgz" | sha256sum -c -
+          tar xzf gitleaks.tgz gitleaks && rm gitleaks.tgz
+          ./gitleaks git . --no-banner --redact --log-opts="${BASE_SHA}..${HEAD_SHA}"
+      - name: Semgrep (nur neue Funde, Schwere ERROR)
+        run: |
+          pipx install "semgrep==${SEMGREP_VERSION}"
+          semgrep scan --config p/default --metrics=off --disable-version-check \
+            --baseline-commit "$BASE_SHA" --severity ERROR --error \
+            --exclude raw --exclude data --exclude reuse --exclude app/public
+
+  claude-review:
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    permissions:
+      contents: read
+      pull-requests: write
+    env:
+      ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+    steps:
+      - name: Ohne ANTHROPIC_API_KEY überspringen
+        if: env.ANTHROPIC_API_KEY == ''
+        run: echo "::warning::Secret ANTHROPIC_API_KEY fehlt, Claude-Review übersprungen."
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        if: env.ANTHROPIC_API_KEY != ''
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+          fetch-depth: 2
+      - uses: anthropics/claude-code-security-review@0c6a49f1fa56a1d472575da86a94dbc1edb78eda # main, 2026-02-11
+        if: env.ANTHROPIC_API_KEY != ''
+        with:
+          comment-pr: true
+          claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
+          claude-model: claude-opus-5-5
+          claudecode-timeout: 20
+          exclude-directories: raw,data,reuse,app/public
+          custom-security-scan-instructions: security/review-instructions.md
