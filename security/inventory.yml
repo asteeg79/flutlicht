@@ -1,0 +1,61 @@
+# Sicherheits-Inventar für den Security-Agenten (Phase 0). Grundlage für den
+# täglichen Abgleich neuer Advisories: Was läuft wo, in welcher Version, wer patcht.
+# Bei Änderungen an Runtime, Hosting oder Deploy-Weg mitpflegen.
+projekt: flutlicht
+repo: asteeg79/flutlicht (privat)
+stand: 2026-10-28
+
+# PHP2Shell (CVE-2026-109618, CVE-2026-109619): nicht betroffen. Geprüft am
+# 2026-10-28: kein composer.json, keine .php-Datei, kein Dockerfile, kein
+# setup-php in den Workflows; keine Komponente läuft auf PHP.
+php: keins
+
+komponenten:
+  - name: app
+    pfad: app/
+    runtime: { sprache: node, version: 24.x }
+    abhaengigkeiten: pnpm-lock.yaml (Next.js ^15.5, next-auth 5.0.0-beta.32)
+    hosting: { art: vercel, live_url: https://flutlicht.a-tec.dev }
+    deploy: automatisch bei Push auf main (Vercel-Git-Build)
+    runtime_patcht: Vercel (Projekteinstellung 24.x, Patch-Stand verwaltet Vercel)
+    verifikation: /version.json (Feld commit = deployter Stand), /api/health
+
+  - name: pipeline
+    pfad: pipeline/, core/
+    runtime: { sprache: node, version: 24.x }
+    abhaengigkeiten: pnpm-lock.yaml
+    hosting: { art: github-actions, runner: ubuntu-latest }
+    deploy: compute.yml (Push auf raw/, Dispatch), fixtures.yml (Cron)
+    runtime_patcht: GitHub (Runner-Image); setup-node mit check-latest holt die neueste 24.x
+    verifikation: Actions-Log, Schritt setup-node
+
+  - name: scraper
+    pfad: scraper/
+    runtime: { sprache: python, version: 3.13 } # CI testet mit 3.11
+    abhaengigkeiten: scraper/pyproject.toml (botasaurus, pillow; ohne Lockfile)
+    hosting:
+      art: eigener Rechner (Raspberry Pi 5, Debian 13, Chromium)
+      live_url: keine # nur ausgehende Abrufe, von außen nicht erreichbar
+    deploy: Scheduler zieht alle 30 Min. per git pull; venv-Pakete nur von Hand
+    runtime_patcht: Alex (apt auf dem Pi)
+    verifikation: /admin → Status (Lebenszeichen mit Git-Stand); Python und Chromium nur per SSH
+
+  - name: cron-worker
+    pfad: infra/cron-worker/
+    runtime: { sprache: javascript, version: Cloudflare Workers }
+    abhaengigkeiten: keine
+    hosting: { art: cloudflare-workers, live_url: keine } # workers_dev: false
+    deploy: von Hand (npx wrangler deploy)
+    runtime_patcht: Cloudflare
+    verifikation: npx wrangler deployments list
+
+  - name: storage
+    runtime: { sprache: keine, version: Upstash Redis (REST) }
+    hosting: { art: upstash }
+    runtime_patcht: Upstash
+
+# Beobachtungen für Phase 1 (nicht in Phase 0 behoben):
+# - Actions sind auf Tags gepinnt (@v6), nicht auf Commit-SHA (Renovate).
+# - Scraper-Pakete sind nur nach unten begrenzt und ohne Lockfile; das venv auf
+#   dem Pi wird nie automatisch aktualisiert.
+# - next-auth ist eine Beta-Version und Auth-Code: kein Auto-Merge.
