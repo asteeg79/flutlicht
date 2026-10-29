@@ -556,6 +556,19 @@ body {
     transform: rotate(8deg);
   }
 }
+/* Startseite: drei Punkte hinter „Lädt“ hüpfen nacheinander. */
+@keyframes arena-dot {
+  0%,
+  60%,
+  100% {
+    transform: none;
+    opacity: 0.35;
+  }
+  30% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
 @keyframes arena-shard {
   0% {
     transform: translate(0, 0) rotate(0);
