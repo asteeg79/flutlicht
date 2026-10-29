@@ -62,3 +62,10 @@ komponenten:
 # - Der Pi trägt drei Projekte; ein Einbruch über eines erreicht auch den
 #   Deploy-Key mit Schreibrecht und das Heartbeat-Secret von flutlicht.
 # - next-auth ist eine Beta-Version und Auth-Code: kein Auto-Merge.
+
+# Akzeptierte Risiken (Phase 3, Entscheidung in docs/entscheidungen.md):
+# - postcss 8.4.31 in next 15 (2× hoch, 2× mittel: Pfadtraversal über
+#   sourceMappingURL, XSS in der Stringify-Ausgabe). next 15 bringt die Version
+#   fest mit. postcss verarbeitet nur das eigene CSS beim Build, nie fremde
+#   Eingaben. Behoben mit dem Upgrade auf next 16; erneut prüfen, falls ein Fund
+#   postcss zur Laufzeit erreichbar macht oder next 15 keine Updates mehr bekommt.
