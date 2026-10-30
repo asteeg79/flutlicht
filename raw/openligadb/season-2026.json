@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-10-30T17:02:05.744Z",
+  "fetchedAt": "2026-10-30T21:33:03.467Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -6504,7 +6504,7 @@
     {
       "matchID": 83227,
       "matchDateTime": "2026-10-30T20:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -6529,10 +6529,97 @@
         "teamIconUrl": "https://upload.wikimedia.org/wikipedia/commons/9/9e/Logo_Mainz_05.svg",
         "teamGroupName": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:26:59.373",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-10-30T22:25:17.05",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 130534,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 3,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130535,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 4,
+          "pointsTeam2": 1,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 151692,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 7,
+          "goalGetterID": 23632,
+          "goalGetterName": "F. Keidel",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151700,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 26,
+          "goalGetterID": 24093,
+          "goalGetterName": "Francis Onyeka",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 151732,
+          "scoreTeam1": 3,
+          "scoreTeam2": 0,
+          "matchMinute": 46,
+          "goalGetterID": 22975,
+          "goalGetterName": "M. Krattenmacher",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": ""
+        },
+        {
+          "goalID": 151815,
+          "scoreTeam1": 4,
+          "scoreTeam2": 0,
+          "matchMinute": 91,
+          "goalGetterID": 27263,
+          "goalGetterName": "Cole Campbell",
+          "scoringTeamId": 198,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        },
+        {
+          "goalID": 151816,
+          "scoreTeam1": 4,
+          "scoreTeam2": 1,
+          "matchMinute": 92,
+          "goalGetterID": 23137,
+          "goalGetterName": "B. Hollerbach",
+          "scoringTeamId": 81,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
