@@ -78,11 +78,18 @@ test("Abmelden und wieder anmelden", async ({ page }) => {
   await page.getByRole("button", { name: "Anmelden" }).click();
   await expect(page).toHaveURL(/\/team$/);
 
+  // Startseite (start_url der PWA) führt mit Session zum Team …
+  await page.goto("/");
+  await expect(page).toHaveURL(/\/team$/);
+
   await page.getByRole("link", { name: "Optionen" }).click();
   await page.getByRole("button", { name: "Abmelden" }).click();
   await expect(page).toHaveURL(/\/login$/);
 
   await page.goto("/team");
+  await expect(page).toHaveURL(/\/login/);
+  // … und ohne Session zur Anmeldung.
+  await page.goto("/");
   await expect(page).toHaveURL(/\/login/);
 });
 

@@ -86,6 +86,11 @@ const nextConfig = {
   // Die Dev-Anzeige läge unten links genau über dem Team-Punkt der Navigation.
   devIndicators: false,
   transpilePackages: ["@fm/core"],
+  // Vorab geladene Ladezustände (loading.tsx) eine Stunde statt 5 Min. wiederverwenden:
+  // Nach etwa 10 Min. Leerlauf ist die Vercel-Funktion kalt (bis 2 s), und genau dann
+  // soll das Skelett beim Tab-Wechsel sofort stehen. Seitendaten betrifft das nicht
+  // (alle App-Seiten sind dynamisch, staleTimes.dynamic bleibt 0).
+  experimental: { staleTimes: { static: 3600 } },
   // Build-Kennung (Git-SHA auf Vercel) — sichtbar in den Einstellungen, damit
   // verifizierbar ist, welche Client-Version geladen ist. Version kommt aus
   // der package.json, das Datum wird beim Build eingefroren.
