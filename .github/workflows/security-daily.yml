@@ -1,7 +1,8 @@
 name: Security-Tagesabgleich
 
 # Security-Agent, Phase 3 (Pilot): täglicher Abgleich gegen die Advisory-Feeds.
-# - OSV-Scanner prüft pnpm-lock.yaml und scraper/requirements-ci.txt gegen OSV (enthält GHSA).
+# - OSV-Scanner prüft pnpm-lock.yaml, scraper/requirements-pi.txt (Pi) und
+#   scraper/requirements-ci.txt (CI) gegen OSV (enthält GHSA).
 # - CISA KEV markiert Lücken, die aktiv ausgenutzt werden; sie gelten als kritisch.
 # - endoflife.date prüft die Laufzeiten aus security/inventory.yml und Next.js.
 # Das Issue „Sicherheitslücken: offene Fristen“ (Label security-deadlines) hält den Stand
@@ -46,10 +47,11 @@ jobs:
           curl -sSfL --proto '=https' --tlsv1.2 -o osv-scanner "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64"
           echo "${OSV_SCANNER_SHA256}  osv-scanner" | sha256sum -c -
           chmod +x osv-scanner
-          # Exit-Code 1 heißt „Lücken gefunden“, alles andere ist ein Fehler. Der Dateiname
-          # requirements-ci.txt wird nicht erkannt, daher der Parser vor dem Pfad.
+          # Exit-Code 1 heißt „Lücken gefunden“, alles andere ist ein Fehler. Die Dateinamen
+          # requirements-*.txt werden nicht erkannt, daher der Parser vor dem Pfad.
           ./osv-scanner scan source --format json --output-file osv.json \
-            --lockfile pnpm-lock.yaml --lockfile requirements.txt:scraper/requirements-ci.txt || [ $? -eq 1 ]
+            --lockfile pnpm-lock.yaml --lockfile requirements.txt:scraper/requirements-pi.txt \
+            --lockfile requirements.txt:scraper/requirements-ci.txt || [ $? -eq 1 ]
       - name: CISA KEV und endoflife.date laden
         run: |
           curl -sSfL --proto '=https' --tlsv1.2 -o kev.json \
