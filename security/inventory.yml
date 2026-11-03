@@ -32,12 +32,12 @@ komponenten:
   - name: scraper
     pfad: scraper/
     runtime: { sprache: python, version: 3.13 } # CI testet mit 3.11
-    abhaengigkeiten: scraper/pyproject.toml (botasaurus, pillow; ohne Lockfile)
+    abhaengigkeiten: scraper/requirements-pi.txt (aus pyproject.toml: botasaurus, pillow; mit Hashes)
     hosting:
       art: eigener Rechner (Raspberry Pi 5 raspdev, Debian 13, Chromium)
       live_url: keine # nur ausgehende Abrufe, von außen nicht erreichbar
       geteilt_mit: [scvh-app (Scraper), nachspielzeit]
-    deploy: Scheduler zieht alle 30 Min. per git pull; venv-Pakete nur von Hand
+    deploy: Scheduler zieht alle 30 Min. per git pull; venv-Pakete nur von Hand aus requirements-pi.txt
     runtime_patcht: Alex (apt auf dem Pi)
     verifikation: /admin → Status (Lebenszeichen mit Git-Stand); Python und Chromium nur per SSH
 

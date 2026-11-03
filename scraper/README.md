@@ -77,9 +77,15 @@ git config user.name "Flutlicht-Scraper"
 git config user.email "<E-Mail des GitHub-Kontos asteeg79>"
 cd scraper
 python3 -m venv .venv
-.venv/bin/pip install -e .
+.venv/bin/pip install --require-hashes -r requirements-pi.txt
+.venv/bin/pip install --no-deps -e .
 .venv/bin/python -m fm_scraper schedule   # einmal von Hand: Pull, Plan, ggf. Job
 ```
+
+`requirements-pi.txt` hält die Pakete mit festen Versionen und Hashes fest; der
+Security-Tagesabgleich prüft genau diese Versionen. Der Scheduler zieht nur den Code,
+die Pakete nie. Ändert sich `requirements-pi.txt`, auf dem Pi dieselben zwei
+`pip install`-Befehle noch einmal ausführen (danach Timer weiterlaufen lassen).
 
 Die E-Mail muss zum GitHub-Konto des Vercel-Besitzers gehören: Im Hobby-Tarif blockiert
 Vercel sonst jeden Commit des Scrapers („not a member of the team“).
