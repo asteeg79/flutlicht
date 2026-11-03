@@ -2,3 +2,14 @@ packages:
   - "app"
   - "core"
   - "pipeline"
+
+# Lieferkette (Security-Wochenscan, Semgrep-Regeln für pnpm, ab pnpm 10.26):
+# Neue Versionen erst einen Tag nach Veröffentlichung, kein Rückfall auf eine
+# schwächere Herkunft (Provenance) und keine Unterabhängigkeiten aus Git oder URLs.
+minimumReleaseAge: 1440
+trustPolicy: no-downgrade
+blockExoticSubdeps: true
+# pnpm 10 führt Install-Skripte nur für freigegebene Pakete aus. esbuild braucht
+# seines nicht, die Binärdatei kommt über die optionalen Abhängigkeiten.
+ignoredBuiltDependencies:
+  - esbuild
