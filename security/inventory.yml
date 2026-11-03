@@ -3,7 +3,7 @@
 # Bei Änderungen an Runtime, Hosting oder Deploy-Weg mitpflegen.
 projekt: flutlicht
 repo: asteeg79/flutlicht (privat)
-stand: 2026-10-28
+stand: 2026-11-03
 
 # PHP2Shell (CVE-2026-109618, CVE-2026-109619): nicht betroffen. Geprüft am
 # 2026-10-28: kein composer.json, keine .php-Datei, kein Dockerfile, kein
@@ -14,7 +14,7 @@ komponenten:
   - name: app
     pfad: app/
     runtime: { sprache: node, version: 24.x }
-    abhaengigkeiten: pnpm-lock.yaml (Next.js ^15.5, next-auth 5.0.0-beta.32)
+    abhaengigkeiten: pnpm-lock.yaml (Next.js ^16.4, next-auth 5.0.0-beta.32)
     hosting: { art: vercel, live_url: https://flutlicht.a-tec.dev }
     deploy: automatisch bei Push auf main (Vercel-Git-Build)
     runtime_patcht: Vercel (Projekteinstellung 24.x, Patch-Stand verwaltet Vercel)
@@ -64,8 +64,8 @@ komponenten:
 # - next-auth ist eine Beta-Version und Auth-Code: kein Auto-Merge.
 
 # Akzeptierte Risiken (Phase 3, Entscheidung in docs/entscheidungen.md):
-# - postcss 8.4.31 in next 15 (2× hoch, 2× mittel: Pfadtraversal über
-#   sourceMappingURL, XSS in der Stringify-Ausgabe). next 15 bringt die Version
-#   fest mit. postcss verarbeitet nur das eigene CSS beim Build, nie fremde
-#   Eingaben. Behoben mit dem Upgrade auf next 16; erneut prüfen, falls ein Fund
-#   postcss zur Laufzeit erreichbar macht oder next 15 keine Updates mehr bekommt.
+# - minimatch 10 in ESLint 10 (1× mittel, ReDoS über Glob-Muster): ESLint läuft
+#   nur in der Entwicklung und in der CI auf den eigenen Dateien. Behoben, sobald
+#   ESLint minimatch 11 verwendet.
+# - Das postcss-Risiko aus next 15 (2× hoch, 2× mittel) ist seit dem Upgrade auf
+#   next 16 behoben (postcss 8.5).
