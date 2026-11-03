@@ -76,7 +76,8 @@ cd ~/flutlicht
 git config user.name "Flutlicht-Scraper"
 git config user.email "<E-Mail des GitHub-Kontos asteeg79>"
 cd scraper
-python3 -m venv .venv
+uv python install 3.15                  # uv: sudo apt install pipx && pipx install uv
+uv venv --seed --python 3.15 .venv
 .venv/bin/pip install --require-hashes -r requirements-pi.txt
 .venv/bin/pip install --no-deps -e .
 .venv/bin/python -m fm_scraper schedule   # einmal von Hand: Pull, Plan, ggf. Job
@@ -86,6 +87,23 @@ python3 -m venv .venv
 Security-Tagesabgleich prüft genau diese Versionen. Der Scheduler zieht nur den Code,
 die Pakete nie. Ändert sich `requirements-pi.txt`, auf dem Pi dieselben zwei
 `pip install`-Befehle noch einmal ausführen (danach Timer weiterlaufen lassen).
+
+Debian 13 bringt Python 3.13 mit, der Scraper läuft auf 3.15 aus `uv`. Das
+System-Python und die anderen Projekte auf dem Pi bleiben unberührt.
+
+**Umstieg eines bestehenden Pi auf Python 3.15** (nicht während eines Spieltags):
+
+```sh
+cd ~/flutlicht/scraper && git pull
+systemctl --user stop flutlicht-scraper.timer
+uv python install 3.15
+mv .venv .venv-alt                       # Rückweg: .venv löschen, .venv-alt zurück
+uv venv --seed --python 3.15 .venv
+.venv/bin/pip install --require-hashes -r requirements-pi.txt
+.venv/bin/pip install --no-deps -e .
+.venv/bin/python -m fm_scraper schedule  # einmal von Hand prüfen
+systemctl --user start flutlicht-scraper.timer
+```
 
 Die E-Mail muss zum GitHub-Konto des Vercel-Besitzers gehören: Im Hobby-Tarif blockiert
 Vercel sonst jeden Commit des Scrapers („not a member of the team“).

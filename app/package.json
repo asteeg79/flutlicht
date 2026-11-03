@@ -2,6 +2,9 @@
   "name": "@fm/app",
   "version": "0.0.0",
   "private": true,
+  "engines": {
+    "node": "26.x"
+  },
   "scripts": {
     "dev": "node ../scripts/stage-data.mjs && next dev",
     "build": "node ../scripts/stage-data.mjs && node ../scripts/gen-version.mjs && next build",

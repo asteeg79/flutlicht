@@ -1,11 +1,13 @@
 name: CI (Lint + Typecheck + Tests)
 
 # Übernommen aus WM-Tipp .github/workflows/ci.yml, angepasst: paths-ignore für
-# raw/ und data/, Node 24 (vitest 5 braucht ≥ 22.12).
+# raw/ und data/, Node 26 wie bei Vercel (vitest 5 braucht ≥ 22.12).
 #
 # Qualitäts-Gate: prüft bei jedem Code-Push/PR Lint, Format, Typecheck aller
 # Pakete und die Vitest-Suite. Keine Secrets nötig, keine Netzwerkabrufe.
 # Reine Daten-/Doku-Commits lösen keinen Lauf aus → spart CI-Minuten.
+# E2E (e2e.yml) und Scraper-Tests (scraper.yml) laufen in eigenen Workflows nur,
+# wenn sich ihre Dateien ändern; das spart die meisten Minuten.
 on:
   push:
     branches: [main]
@@ -52,46 +54,3 @@ jobs:
         run: pnpm -r typecheck
       - name: Unit-Tests (Vitest)
         run: pnpm test
-
-  e2e:
-    runs-on: ubuntu-latest
-    timeout-minutes: 15
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6
-      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
-        with:
-          node-version: 26
-          check-latest: true
-          cache: pnpm
-      - run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Playwright-Browser
-        # WebKit für die iPhone-Profile (Safari-Engine), Chromium für Android.
-        working-directory: app
-        run: ./node_modules/.bin/playwright install --with-deps chromium webkit
-      - name: E2E (Playwright, inkl. emulierter iPhones und Android-Geräte)
-        run: pnpm --filter @fm/app test:e2e
-      - name: Geräte-Screenshots
-        if: always()
-        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
-        with:
-          name: geraete-screenshots
-          path: app/test-results/devices/
-          retention-days: 14
-          if-no-files-found: ignore
-
-  scraper:
-    runs-on: ubuntu-latest
-    timeout-minutes: 10
-    steps:
-      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
-      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
-        with:
-          python-version: "3.11"
-      # Die Tests brauchen botasaurus nicht (wird erst im Transport importiert).
-      # Feste Versionen mit Hashes, nur fertige Wheels: keine Setup-Skripte.
-      - run: |
-          pip install --only-binary :all: --require-hashes -r scraper/requirements-ci.txt
-      - name: Scraper-Tests (pytest, ohne Netzwerk)
-        working-directory: scraper
-        run: python -m pytest -q

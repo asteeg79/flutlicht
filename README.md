@@ -136,7 +136,7 @@ nie nach `data/`.
 | **`app/`** | Next.js 15 (App Router), React 19, Tailwind, NextAuth 5 | PWA mit Server-Components und API-Routen. Lädt `data/` gebündelt beim Build, Nutzerdaten aus Redis. Rechnet nie selbst, ruft immer `core` auf. |
 | **`scraper/`** | Python ≥ 3.11, botasaurus, Pillow | Läuft auf dem Heim-Rechner. Holt Sofascore-Spieldaten, Kader, Bilder sowie Transfermarkt-Werte und pusht sie nach `raw/`. |
 | **`infra/cron-worker/`** | Cloudflare Worker | Taktgeber alle 10 Minuten für `/api/cron/tick`, weil Vercel Hobby nur tägliche Crons erlaubt. |
-| **`.github/workflows/`** | GitHub Actions | `ci.yml` (Lint, Typecheck, Tests), `compute.yml` (Pipeline bei `raw/`-Änderungen, manuell oder per Admin), `fixtures.yml` (OpenLigaDB-Spielplan + Pipeline), `_alert.yml` (Issue bei Fehlschlag). |
+| **`.github/workflows/`** | GitHub Actions | `ci.yml` (Lint, Typecheck, Tests), `e2e.yml` (Playwright, nur bei App-Änderungen), `scraper.yml` (pytest, nur bei Scraper-Änderungen), `compute.yml` (Pipeline bei `raw/`-Änderungen, manuell oder per Admin), `fixtures.yml` (OpenLigaDB-Spielplan + Pipeline), `_alert.yml` (Issue bei Fehlschlag). |
 
 ### Datenfluss eines Spieltags
 

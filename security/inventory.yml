@@ -13,25 +13,25 @@ php: keins
 komponenten:
   - name: app
     pfad: app/
-    runtime: { sprache: node, version: 24.x }
+    runtime: { sprache: node, version: 26.x }
     abhaengigkeiten: pnpm-lock.yaml (Next.js ^16.4, next-auth 5.0.0-beta.32)
     hosting: { art: vercel, live_url: https://flutlicht.a-tec.dev }
     deploy: automatisch bei Push auf main (Vercel-Git-Build)
-    runtime_patcht: Vercel (Projekteinstellung 24.x, Patch-Stand verwaltet Vercel)
+    runtime_patcht: Vercel (engines.node 26.x in app/package.json, Patch-Stand verwaltet Vercel)
     verifikation: /version.json (Feld commit = deployter Stand), /api/health
 
   - name: pipeline
     pfad: pipeline/, core/
-    runtime: { sprache: node, version: 24.x }
+    runtime: { sprache: node, version: 26.x }
     abhaengigkeiten: pnpm-lock.yaml
     hosting: { art: github-actions, runner: ubuntu-latest }
     deploy: compute.yml (Push auf raw/, Dispatch), fixtures.yml (Cron)
-    runtime_patcht: GitHub (Runner-Image); setup-node mit check-latest holt die neueste 24.x
+    runtime_patcht: GitHub (Runner-Image); setup-node mit check-latest holt die neueste 26.x
     verifikation: Actions-Log, Schritt setup-node
 
   - name: scraper
     pfad: scraper/
-    runtime: { sprache: python, version: 3.13 } # CI testet mit 3.11
+    runtime: { sprache: python, version: 3.15 } # per uv im venv, Debian selbst hat 3.13; CI testet 3.15
     abhaengigkeiten: scraper/requirements-pi.txt (aus pyproject.toml mit botasaurus und pillow, mit Hashes)
     hosting:
       art: eigener Rechner (Raspberry Pi 5 raspdev, Debian 13, Chromium)
