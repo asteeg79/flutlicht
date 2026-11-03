@@ -1,5 +1,5 @@
 // Übernommen aus Workgrid next.config.js, angepasst: Google-Hosts aus der CSP entfernt,
-// @fm/core wird mitübersetzt (TypeScript-Quellen im Workspace).
+// @fm/core wird mitübersetzt (TypeScript-Quellen im Workspace), COOP und COEP ergänzt.
 // Hinweis: next-pwa wurde entfernt (dessen aggressiver Cache verursachte
 // veraltete App-Zustände). Stattdessen ein eigener, schlanker Service Worker
 // (public/sw.js, registriert via components/pwa/ServiceWorkerRegister): macht
@@ -37,6 +37,10 @@ const securityHeaders = [
     key: "Permissions-Policy",
     value: "camera=(), microphone=(), geolocation=()",
   },
+  // Eigener Browsing-Kontext und nur eigene Ressourcen (Security-Wochenscan, ZAP 90004).
+  // Die CSP erlaubt ohnehin nur 'self', und die Anmeldung kommt ohne Popup aus.
+  { key: "Cross-Origin-Opener-Policy", value: "same-origin" },
+  { key: "Cross-Origin-Embedder-Policy", value: "require-corp" },
   // HSTS: erzwingt HTTPS (2 Jahre, inkl. Subdomains, preload-fähig).
   {
     key: "Strict-Transport-Security",
