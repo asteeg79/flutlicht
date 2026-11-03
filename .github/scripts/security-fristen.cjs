@@ -345,3 +345,5 @@ module.exports = async function abgleich({ github, context, core }) {
 module.exports.auswerten = auswerten;
 module.exports.funde = funde;
 module.exports.laufzeiten = laufzeiten;
+module.exports.zeit = zeit;
+module.exports.zelle = zelle;
