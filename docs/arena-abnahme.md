@@ -18,7 +18,7 @@ Geprüft mit `pnpm lint`, `pnpm typecheck`, `pnpm test` (445 Tests), `pnpm forma
 | Fenster zu: kein Holen, kein Abgeben, Hinweis sichtbar, Stöbern möglich | erfüllt | Zustand `canTrade = false` (auch bei `bankStale`); Liste zeigt „Zu“, Kader „Zu“, Hinweiszeile |
 | Spieltag live: Status je Spieler, Live-Punkte zählen bei neuen Daten hoch | erfüllt | Status läuft/Ende/offen aus dem Spielstatus; Hochzählen und Banner über den letzten Datenstand in `localStorage` (`live-diff.test.ts`); lokal mit simulierten Daten geprüft |
 | Desktop ab 1024 px: Seitenleiste, zweispaltig, Modals statt Sheets, keine Bottom-Nav | erfüllt | Aufnahmen 1440 px; Bottom-Nav `lg:hidden` |
-| `prefers-reduced-motion`: keine Bewegung | erfüllt | Mit Playwright `reducedMotion: "reduce"` auf sechs Seiten: 0 Elemente mit Animation oder Übergang; Zahlen springen (`useCountUp`) |
+| `prefers-reduced-motion`: keine Bewegung | aufgehoben (2026-11-03, siehe Entscheidungen) | Mit Playwright `reducedMotion: "reduce"` auf sechs Seiten: 0 Elemente mit Animation oder Übergang; Zahlen springen (`useCountUp`) |
 | Kein Text unter 11 px, keine Tippfläche unter 44 px | erfüllt | Code-Durchsicht: kleinste Schrift 11 px; Knöpfe und Links mobil ≥ 44 px (Schalter per unsichtbarer Fläche) |
 
 ## Kontrast
