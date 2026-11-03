@@ -22,7 +22,10 @@ env:
   GITLEAKS_VERSION: "8.30.1"
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
   SEMGREP_VERSION: "1.182.0"
-  LIVE_URL: https://flutlicht.a-tec.dev
+  # Direkt auf Vercel statt über die Domain: Cloudflares Bot Fight Mode (Free-Plan,
+  # ohne Ausnahmeregel) weist ZAP sonst ab. Die Middleware leitet nur
+  # flutlicht.vercel.app auf die Domain um, die Branch-Adresse von main nicht.
+  LIVE_URL: https://flutlicht-git-main-apollon-projects.vercel.app
 
 jobs:
   code:
@@ -76,6 +79,12 @@ jobs:
       zap_alerts: ${{ steps.summary.outputs.alerts }}
     steps:
       - uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
+        env:
+          # Vercels Deployment-Schutz: Schlüssel aus „Protection Bypass for Automation“.
+          # ZAP schickt den Header nur an diesen Host; ohne Secret gar nicht.
+          ZAP_AUTH_HEADER: x-vercel-protection-bypass
+          ZAP_AUTH_HEADER_VALUE: ${{ secrets.VERCEL_AUTOMATION_BYPASS_SECRET }}
+          ZAP_AUTH_HEADER_SITE: flutlicht-git-main-apollon-projects.vercel.app
         with:
           target: ${{ env.LIVE_URL }}
           allow_issue_writing: false
@@ -136,7 +145,14 @@ jobs:
                   job_id: live.id,
                 });
                 const log = typeof res.data === "string" ? res.data : Buffer.from(res.data).toString("utf8");
-                blocked = log.match(/status code returned : (\d+) expected 200/)?.[1] ?? null;
+                // ZAPs Spider-Warnung oder ein anderer Status als 200 für die Startseite,
+                // etwa 302 auf Vercels Anmeldeseite (am 03.11.2026 ohne Bypass-Schlüssel).
+                const root = process.env.LIVE_URL.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+                const codes = [...log.matchAll(new RegExp(`${root} \\((\\d{3}) `, "g"))].map((m) => m[1]);
+                blocked =
+                  log.match(/status code returned : (\d+) expected 200/)?.[1] ??
+                  codes.find((code) => code !== "200") ??
+                  null;
               }
             } catch (err) {
               core.warning(`Log des live-Jobs nicht lesbar: ${err.message}`);
@@ -152,7 +168,7 @@ jobs:
               `| ZAP Baseline ${process.env.LIVE_URL} | ${process.env.ZAP} |`,
               ...(blocked ? [
                 "",
-                `**Achtung:** ZAP bekam von der Startseite HTTP ${blocked} statt 200 und hat nur die Sperrseite geprüft, nicht die App.`,
+                `**Achtung:** ZAP bekam von der Startseite HTTP ${blocked} statt 200 und hat vermutlich nur eine Sperr- oder Anmeldeseite geprüft, nicht die App.`,
               ] : []),
               ...table("**Semgrep** (höchstens 50)\n\n| Schwere | Regel | Stelle |", process.env.SEMGREP_FINDINGS),
               ...table("**ZAP**\n\n| Risiko | Hinweis | Treffer |", process.env.ZAP_ALERTS),
