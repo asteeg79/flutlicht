@@ -22,7 +22,10 @@ env:
   GITLEAKS_VERSION: "8.30.1"
   GITLEAKS_SHA256: 551f6fc83ea457d62a0d98237cbad105af8d557003051f41f3e7ca7b3f2470eb
   SEMGREP_VERSION: "1.182.0"
-  LIVE_URL: https://flutlicht.a-tec.dev
+  # Direkt auf Vercel statt über die Domain: Cloudflares Bot Fight Mode (Free-Plan,
+  # ohne Ausnahmeregel) weist ZAP sonst ab. Die Middleware leitet nur
+  # flutlicht.vercel.app auf die Domain um, die Branch-Adresse von main nicht.
+  LIVE_URL: https://flutlicht-git-main-apollon-projects.vercel.app
 
 jobs:
   code:
