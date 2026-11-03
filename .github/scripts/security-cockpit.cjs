@@ -33,7 +33,7 @@ const RENOVATE =
 function markiert(body) {
   const out = [];
   for (const zeile of String(body ?? "").split("\n")) {
-    const m = zeile.trim().match(MARKE);
+    const m = MARKE.exec(zeile.trim());
     if (m) out.push({ aktion: m[1], ziel: m[2], sha: m[3] });
   }
   return out;
@@ -69,7 +69,7 @@ function mergeGrund({ pr, runs, sha, repoName, aendertWorkflows, mitApp }) {
 function renovateEintraege(body) {
   const out = [];
   for (const zeile of String(body ?? "").split("\n")) {
-    const m = zeile.match(RENOVATE);
+    const m = RENOVATE.exec(zeile);
     if (m) out.push({ art: m[1], branch: m[2], titel: m[3].trim() });
   }
   return out;
@@ -87,7 +87,7 @@ function fristenStand(body) {
   const zaehler = {};
   let abgelaufen = 0;
   for (const zeile of String(body ?? "").split("\n")) {
-    const m = zeile.match(/^\| (kritisch|hoch|mittel|niedrig) \|/);
+    const m = /^\| (kritisch|hoch|mittel|niedrig) \|/.exec(zeile);
     if (!m) continue;
     zaehler[m[1]] = (zaehler[m[1]] ?? 0) + 1;
     if (zeile.includes("**abgelaufen**")) abgelaufen++;
@@ -263,21 +263,20 @@ async function sammeln(api) {
     state: "open",
     per_page: 30,
   });
-  const prs = [];
-  for (const p of pulls) {
-    const eintrag = {
-      number: p.number,
-      title: p.title,
-      autor: p.user?.login ?? "",
-      sha: p.head.sha,
-    };
-    if (autorErlaubt(p, repoName)) {
+  const prs = await Promise.all(
+    pulls.map(async (p) => {
+      const eintrag = {
+        number: p.number,
+        title: p.title,
+        autor: p.user?.login ?? "",
+        sha: p.head.sha,
+      };
+      if (!autorErlaubt(p, repoName))
+        return { ...eintrag, stand: "–", grund: "Autor nicht freigegeben" };
       const { runs, grund } = await prPruefen(api, p.number, p.head.sha);
-      prs.push({ ...eintrag, stand: pruefStand(runs), grund });
-    } else {
-      prs.push({ ...eintrag, stand: "–", grund: "Autor nicht freigegeben" });
-    }
-  }
+      return { ...eintrag, stand: pruefStand(runs), grund };
+    }),
+  );
   const akzeptiert = JSON.parse(
     fs.readFileSync(path.join(basis, "security/accepted-risks.json"), "utf8"),
   );
@@ -350,7 +349,14 @@ module.exports = async function cockpit({ github, context, core }) {
   const probe = context.eventName === "pull_request";
   const issue = await offenesIssue(github, repo, LABEL);
   const ergebnisse = [];
-  if (issue && !probe) {
+  // Ein Bearbeiten des Issues zählt nur vom Besitzer (Prüfung über die feste ID, nicht
+  // den Login); der Workflow filtert schon so, hier noch einmal für den Fall einer
+  // geänderten Bedingung.
+  const fremd =
+    context.eventName === "issues" &&
+    context.payload.sender?.id !== context.payload.repository?.owner?.id;
+  if (issue && !probe && !fremd) {
+    // Nacheinander, nicht parallel: Es sind Entscheidungen, die Reihenfolge zählt.
     for (const e of markiert(issue.body)) {
       try {
         const r = await ausfuehren(api, e);

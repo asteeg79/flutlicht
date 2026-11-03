@@ -35,7 +35,7 @@ jobs:
       github.event_name != 'pull_request' &&
       (github.event_name != 'issues' ||
        (contains(github.event.issue.labels.*.name, 'security-cockpit') &&
-        github.event.sender.login == github.repository_owner))
+        github.event.sender.id == fromJSON(github.repository_owner_id)))
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
