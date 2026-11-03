@@ -58,7 +58,7 @@ jobs:
             curl -sSfL --proto '=https' --tlsv1.2 -o "eol-$produkt.json" "https://endoflife.date/api/$produkt.json"
           done
       - name: Fristen und Issue
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        uses: actions/github-script@3a2844b7e9c422d3c10d287c895573f7108da1b3 # v9
         with:
           script: |
             const run = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/security-fristen.cjs`);
