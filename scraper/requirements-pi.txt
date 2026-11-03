@@ -1,6 +1,6 @@
-# Laufzeit-Abhängigkeiten des Scrapers auf dem Pi (Python 3.13, aarch64), mit Hashes.
+# Laufzeit-Abhängigkeiten des Scrapers auf dem Pi (Python 3.15, aarch64), mit Hashes.
 # Neu erzeugen nach einer Änderung an pyproject.toml:
-#   uv pip compile pyproject.toml --generate-hashes --python-version 3.13 \
+#   uv pip compile pyproject.toml --generate-hashes --python-version 3.15 \
 #     --python-platform aarch64-unknown-linux-gnu --no-header -o requirements-pi.txt
 # Der Tagesabgleich (security-daily.yml) prüft diese Datei gegen OSV.
 anyio==4.16.0 \
@@ -1000,9 +1000,7 @@ soupsieve==4.0 \
 typing-extensions==4.16.0 \
     --hash=sha256:481caa481374e813c1b176ada14e97f1f67a4539ce9cfeb3f350d78d6370c2e8 \
     --hash=sha256:dc983d19a509c94dba722ee6abd33940f7c05a89e243c47e907eb4db6f1a43e5
-    # via
-    #   anyio
-    #   beautifulsoup4
+    # via beautifulsoup4
 urllib3==2.8.0 \
     --hash=sha256:0cf3cae568d36aa9576b28dfb35f11328f1cb974ca7647d9475ebb86c75ac6e3 \
     --hash=sha256:63bf2ead4c879426ebf22ef2a781eeb4aa3b4ae798a0435506f8687fd5bb9b63

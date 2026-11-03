@@ -31,7 +31,7 @@ komponenten:
 
   - name: scraper
     pfad: scraper/
-    runtime: { sprache: python, version: 3.13 } # CI testet mit 3.11
+    runtime: { sprache: python, version: 3.15 } # per uv im venv, Debian selbst hat 3.13; CI testet 3.15
     abhaengigkeiten: scraper/requirements-pi.txt (aus pyproject.toml mit botasaurus und pillow, mit Hashes)
     hosting:
       art: eigener Rechner (Raspberry Pi 5 raspdev, Debian 13, Chromium)
