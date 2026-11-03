@@ -1,4 +1,4 @@
-// Übernommen aus Workgrid lib/crypto.ts, unverändert.
+// Übernommen aus Workgrid lib/crypto.ts, angepasst: feste Tag-Länge beim Entschlüsseln.
 import {
   createHmac,
   createCipheriv,
@@ -38,7 +38,10 @@ export function decrypt(encryptedData: string, userId: string): string {
   const iv = buffer.subarray(0, 12);
   const authTag = buffer.subarray(12, 28);
   const encrypted = buffer.subarray(28);
-  const decipher = createDecipheriv("aes-256-gcm", key, iv);
+  // Feste Tag-Länge: Ohne sie nähme GCM auch verkürzte Tags (ab 4 Byte) an.
+  const decipher = createDecipheriv("aes-256-gcm", key, iv, {
+    authTagLength: 16,
+  });
   decipher.setAuthTag(authTag);
   return decipher.update(encrypted) + decipher.final("utf8");
 }
