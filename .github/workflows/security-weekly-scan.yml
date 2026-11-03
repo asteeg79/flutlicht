@@ -74,16 +74,7 @@ jobs:
     outputs:
       zap: ${{ steps.summary.outputs.zap }}
       zap_alerts: ${{ steps.summary.outputs.alerts }}
-      status: ${{ steps.reach.outputs.status }}
     steps:
-      # Antwortet die Startseite dem Runner nicht, sieht ZAP nur die Sperrseite
-      # (am 03.11.2026: HTTP 403 von Cloudflare). Der Bericht sagt das dann dazu.
-      - name: Erreichbarkeit der Startseite
-        id: reach
-        run: |
-          status=$(curl -s -o /dev/null -w '%{http_code}' --max-time 20 \
-            -A "Mozilla/5.0 (X11; Linux x86_64; rv:128.0) Gecko/20100101 Firefox/128.0" "$LIVE_URL") || status=000
-          echo "status=$status" >> "$GITHUB_OUTPUT"
       - uses: zaproxy/action-baseline@de8ad967d3548d44ef623df22cf95c3b0baf8b25 # v0.15.0
         with:
           target: ${{ env.LIVE_URL }}
@@ -114,6 +105,7 @@ jobs:
     timeout-minutes: 5
     permissions:
       issues: write
+      actions: read # Log des live-Jobs lesen
     steps:
       - uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
         env:
@@ -122,14 +114,33 @@ jobs:
           ZAP: ${{ needs.live.outputs.zap || 'Lauf fehlgeschlagen' }}
           SEMGREP_FINDINGS: ${{ needs.code.outputs.semgrep_findings }}
           ZAP_ALERTS: ${{ needs.live.outputs.zap_alerts }}
-          LIVE_STATUS: ${{ needs.live.outputs.status }}
         with:
           script: |
             const label = "security-report";
             const runUrl = `${context.serverUrl}/${context.repo.owner}/${context.repo.repo}/actions/runs/${context.runId}`;
             const day = new Date().toISOString().slice(0, 10);
-            const status = process.env.LIVE_STATUS;
-            const reached = !status || /^[23]\d\d$/.test(status);
+            // Antwortet die Startseite nicht mit 200, prüft ZAP nur die Sperrseite
+            // (am 03.11.2026: HTTP 403 von Cloudflare). ZAP meldet das nur im Job-Log.
+            let blocked = null;
+            try {
+              const { data } = await github.rest.actions.listJobsForWorkflowRun({
+                owner: context.repo.owner,
+                repo: context.repo.repo,
+                run_id: context.runId,
+              });
+              const live = data.jobs.find((job) => job.name === "live");
+              if (live) {
+                const res = await github.rest.actions.downloadJobLogsForWorkflowRun({
+                  owner: context.repo.owner,
+                  repo: context.repo.repo,
+                  job_id: live.id,
+                });
+                const log = typeof res.data === "string" ? res.data : Buffer.from(res.data).toString("utf8");
+                blocked = log.match(/status code returned : (\d+) expected 200/)?.[1] ?? null;
+              }
+            } catch (err) {
+              core.warning(`Log des live-Jobs nicht lesbar: ${err.message}`);
+            }
             const table = (head, rows) => (rows || "").trim() ? ["", head, "| --- | --- | --- |", rows.trim()] : [];
             const body = [
               `Security-Wochenscan vom ${day} ([Lauf](${runUrl}), Berichte als Artefakte).`,
@@ -139,10 +150,10 @@ jobs:
               `| gitleaks, ganze Historie | ${process.env.GITLEAKS} Funde |`,
               `| Semgrep p/default, ganzes Repo | ${process.env.SEMGREP} |`,
               `| ZAP Baseline ${process.env.LIVE_URL} | ${process.env.ZAP} |`,
-              ...(reached ? [] : [
+              ...(blocked ? [
                 "",
-                `**Achtung:** Die Startseite antwortete dem Runner mit HTTP ${status}. ZAP hat dann vermutlich nur die Sperrseite gesehen, nicht die App.`,
-              ]),
+                `**Achtung:** ZAP bekam von der Startseite HTTP ${blocked} statt 200 und hat nur die Sperrseite geprüft, nicht die App.`,
+              ] : []),
               ...table("**Semgrep** (höchstens 50)\n\n| Schwere | Regel | Stelle |", process.env.SEMGREP_FINDINGS),
               ...table("**ZAP**\n\n| Risiko | Hinweis | Treffer |", process.env.ZAP_ALERTS),
               "",
