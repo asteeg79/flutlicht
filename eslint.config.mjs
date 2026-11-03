@@ -54,7 +54,8 @@ export default tseslint.config(
   },
   {
     // Next lädt next.config.js als CommonJS.
-    files: ["app/next.config.js"],
+    // github-script lädt die Skripte unter .github/scripts per require().
+    files: ["app/next.config.js", ".github/scripts/**/*.cjs"],
     languageOptions: { sourceType: "commonjs", globals: { ...globals.node } },
     rules: { "@typescript-eslint/no-require-imports": "off" },
   },

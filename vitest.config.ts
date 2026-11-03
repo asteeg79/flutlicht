@@ -13,6 +13,13 @@ export default defineConfig({
         },
       },
       "app/vitest.config.mts",
+      {
+        test: {
+          name: "security",
+          environment: "node",
+          include: [".github/scripts/*.test.mjs"],
+        },
+      },
     ],
     coverage: {
       provider: "v8",

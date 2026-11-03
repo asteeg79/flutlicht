@@ -63,7 +63,8 @@ komponenten:
 #   Deploy-Key mit Schreibrecht und das Heartbeat-Secret von flutlicht.
 # - next-auth ist eine Beta-Version und Auth-Code: kein Auto-Merge.
 
-# Akzeptierte Risiken (Phase 3, Entscheidung in docs/entscheidungen.md):
+# Akzeptierte Risiken (Phase 3, Entscheidung in docs/entscheidungen.md; für den
+# Tagesabgleich security-daily.yml zusätzlich in security/accepted-risks.json):
 # - minimatch 10 in ESLint 10 (1× mittel, ReDoS über Glob-Muster): ESLint läuft
 #   nur in der Entwicklung und in der CI auf den eigenen Dateien. Behoben, sobald
 #   ESLint minimatch 11 verwendet.
