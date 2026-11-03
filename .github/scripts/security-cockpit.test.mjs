@@ -183,3 +183,45 @@ describe("Stand", () => {
     expect(r.map((x) => x.tage)).toEqual([17, -2]);
   });
 });
+
+describe("Anzeige", () => {
+  it("zeigt Laufergebnisse auf Deutsch und den CI-Stand nicht doppelt", () => {
+    const text = c.cockpitText(
+      {
+        laeufe: {
+          daily: {
+            status: "completed",
+            conclusion: "success",
+            created_at: "2026-11-03T05:41:00Z",
+            html_url: "u",
+          },
+          weekly: {
+            status: "completed",
+            conclusion: "failure",
+            created_at: "2026-11-02T06:00:00Z",
+            html_url: "u",
+          },
+        },
+        fristen: null,
+        bericht: null,
+        prs: [
+          {
+            number: 5,
+            title: "t",
+            autor: "renovate[bot]",
+            sha: "s",
+            stand: "läuft",
+            grund: "CI läuft",
+          },
+        ],
+        renovate: null,
+        risiken: [],
+      },
+      new Date("2026-11-03T06:00:00Z"),
+      "u",
+    );
+    expect(text).toContain("| Tagesabgleich | 03.11.26, 06:41 | [grün](u) |");
+    expect(text).toContain("[rot](u)");
+    expect(text).toContain("- #5 t (renovate[bot], CI läuft)\n");
+  });
+});

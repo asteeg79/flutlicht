@@ -14,6 +14,13 @@ const WORKFLOWS = {
   daily: { datei: "security-daily.yml", name: "Tagesabgleich" },
   weekly: { datei: "security-weekly-scan.yml", name: "Wochenscan" },
 };
+const ERGEBNIS = {
+  success: "grün",
+  failure: "rot",
+  cancelled: "abgebrochen",
+  timed_out: "Zeitüberschreitung",
+  skipped: "übersprungen",
+};
 const TAG_MS = 24 * 60 * 60 * 1000;
 // Ein Häkchen zählt nur in genau der Form, in der das Cockpit die Zeile schreibt.
 // Fremde Texte (PR-Titel) sind maskiert und können keine Marke enthalten.
@@ -98,7 +105,9 @@ function risiken(akzeptiert, heute) {
 function laufZeile(name, run) {
   if (!run) return `| ${name} | – | noch nie gelaufen |`;
   const ergebnis =
-    run.status === "completed" ? (run.conclusion ?? "") : "läuft";
+    run.status === "completed"
+      ? (ERGEBNIS[run.conclusion] ?? run.conclusion ?? "")
+      : "läuft";
   return `| ${name} | ${zeit(run.created_at)} | [${ergebnis}](${run.html_url}) |`;
 }
 
@@ -113,7 +122,9 @@ function fristenZeile(fristen) {
 
 function prZeile(p) {
   const text = `#${p.number} ${zelle(p.title)} (${p.autor}, CI ${p.stand})`;
-  if (p.grund) return `- ${text}: ${p.grund}`;
+  // „CI läuft“ steht schon im Text, als Grund wäre es doppelt.
+  if (p.grund && p.grund !== `CI ${p.stand}`) return `- ${text}: ${p.grund}`;
+  if (p.grund) return `- ${text}`;
   return `- [ ] mergen: ${text} <!-- cockpit:merge:${p.number}:${p.sha} -->`;
 }
 
