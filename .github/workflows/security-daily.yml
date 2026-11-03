@@ -48,7 +48,7 @@ jobs:
           chmod +x osv-scanner
           # Exit-Code 1 heißt „Lücken gefunden“, alles andere ist ein Fehler. Der Dateiname
           # requirements-ci.txt wird nicht erkannt, daher der Parser vor dem Pfad.
-          ./osv-scanner scan source --format json --output osv.json \
+          ./osv-scanner scan source --format json --output-file osv.json \
             --lockfile pnpm-lock.yaml --lockfile requirements.txt:scraper/requirements-ci.txt || [ $? -eq 1 ]
       - name: CISA KEV und endoflife.date laden
         run: |

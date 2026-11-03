@@ -86,22 +86,20 @@ function laufzeiten(inventar, appPackage, eol, heute) {
         !gesehen.has(`${e.produkt}@${e.zyklus}`) &&
         gesehen.add(`${e.produkt}@${e.zyklus}`),
     )
-    .map((e) => {
-      const zyklen = eol[e.produkt] ?? [];
-      const z = zyklen.find((c) => String(c.cycle) === e.zyklus);
-      let status = "unbekannt";
-      let ende = "";
-      if (z) {
-        if (z.eol === true) status = "abgelaufen";
-        else if (z.eol === false) status = "ok";
-        else {
-          ende = String(z.eol);
-          const tage = (Date.parse(ende) - heute.getTime()) / TAG_MS;
-          status = tage <= 0 ? "abgelaufen" : tage <= 90 ? "bald" : "ok";
-        }
-      }
-      return { ...e, status, ende };
-    });
+    .map((e) => ({ ...e, ...supportende(eol[e.produkt], e.zyklus, heute) }));
+}
+
+function supportende(zyklen, zyklus, heute) {
+  const z = (zyklen ?? []).find((c) => String(c.cycle) === zyklus);
+  if (!z) return { status: "unbekannt", ende: "" };
+  if (z.eol === true) return { status: "abgelaufen", ende: "" };
+  if (z.eol === false) return { status: "ok", ende: "" };
+  const ende = String(z.eol);
+  const tage = (Date.parse(ende) - heute.getTime()) / TAG_MS;
+  let status = "ok";
+  if (tage <= 0) status = "abgelaufen";
+  else if (tage <= 90) status = "bald";
+  return { status, ende };
 }
 
 function zeit(iso) {
@@ -116,75 +114,62 @@ function zeit(iso) {
 // Stand-Kommentar am Ende des Issues vortäuscht.
 const zelle = (s) =>
   String(s)
-    .replace(/\|/g, "\\|")
-    .replace(/[\r\n]+/g, " ")
-    .replace(/</g, "&lt;")
-    .replace(/@/g, "@​");
+    .replaceAll("|", String.raw`\|`)
+    .replaceAll(/[\r\n]+/g, " ")
+    .replaceAll("<", "&lt;")
+    .replaceAll("@", "@\u200b");
 
-/** Reine Auswertung: neuer Stand, Issue-Text und Hinweise für die Erwähnung. */
-function auswerten({
-  funde: alle,
-  akzeptiert,
-  laufzeiten: lz,
-  stand,
-  heute,
-  lauf,
-}) {
-  const jetzt = heute.toISOString();
-  const neu = { seit: {}, gemeldet: {} };
-  const offen = [];
-  const angenommen = [];
-  const alarme = [];
-  for (const f of alle) {
-    const ok = akzeptiert.find((a) => f.ids.includes(a.id));
-    if (ok && Date.parse(ok.pruefen_bis) > heute.getTime()) {
-      angenommen.push({ ...f, ...ok });
-      continue;
-    }
-    const seit = stand.seit?.[f.key] ?? jetzt;
-    const frist = new Date(
-      Date.parse(seit) + FRISTEN_TAGE[f.schwere] * TAG_MS,
-    ).toISOString();
-    const faellig = Date.parse(frist) <= heute.getTime();
-    neu.seit[f.key] = seit;
-    let gemeldet = stand.gemeldet?.[f.key];
-    if (
-      !stand.seit?.[f.key] &&
-      (f.schwere === "kritisch" || f.schwere === "hoch")
-    ) {
-      alarme.push(
-        `neu, ${f.schwere}${f.kev ? " (aktiv ausgenutzt)" : ""}: ${f.id} in ${f.paket}, Frist ${zeit(frist)}`,
-      );
-      gemeldet = "neu";
-    }
-    if (faellig && gemeldet !== "faellig") {
-      alarme.push(
-        `Frist abgelaufen: ${f.id} in ${f.paket} (${f.schwere}, seit ${zeit(seit)})`,
-      );
-      gemeldet = "faellig";
-    }
-    if (gemeldet) neu.gemeldet[f.key] = gemeldet;
-    offen.push({ ...f, seit, frist, faellig, abgelaufenesOk: ok });
+/** Frist und Alarme eines offenen Funds; schreibt den Stand nach `neu`. */
+function fundBewerten(f, stand, neu, heute, alarme) {
+  const bekannt = stand.seit?.[f.key];
+  const seit = bekannt ?? heute.toISOString();
+  const frist = new Date(
+    Date.parse(seit) + FRISTEN_TAGE[f.schwere] * TAG_MS,
+  ).toISOString();
+  const faellig = Date.parse(frist) <= heute.getTime();
+  neu.seit[f.key] = seit;
+  let gemeldet = stand.gemeldet?.[f.key];
+  if (!bekannt && (f.schwere === "kritisch" || f.schwere === "hoch")) {
+    const kev = f.kev ? " (aktiv ausgenutzt)" : "";
+    alarme.push(
+      `neu, ${f.schwere}${kev}: ${f.id} in ${f.paket}, Frist ${zeit(frist)}`,
+    );
+    gemeldet = "neu";
   }
-  for (const l of lz) {
-    const key = `eol|${l.produkt}@${l.zyklus}`;
-    if (l.status === "abgelaufen" && stand.gemeldet?.[key] !== "faellig") {
-      alarme.push(`Supportende erreicht: ${l.produkt} ${l.zyklus}`);
-      neu.gemeldet[key] = "faellig";
-    } else if (stand.gemeldet?.[key]) {
-      neu.gemeldet[key] = stand.gemeldet[key];
-    }
+  if (faellig && gemeldet !== "faellig") {
+    alarme.push(
+      `Frist abgelaufen: ${f.id} in ${f.paket} (${f.schwere}, seit ${zeit(seit)})`,
+    );
+    gemeldet = "faellig";
   }
-  offen.sort(
-    (a, b) =>
-      REIHENFOLGE.indexOf(a.schwere) - REIHENFOLGE.indexOf(b.schwere) ||
-      a.frist.localeCompare(b.frist),
-  );
-  const warnLz = lz.filter(
-    (l) => l.status === "abgelaufen" || l.status === "bald",
-  );
+  if (gemeldet) neu.gemeldet[f.key] = gemeldet;
+  return { ...f, seit, frist, faellig };
+}
+
+/** Alarm beim erreichten Supportende, einmal je Laufzeit und Zyklus. */
+function laufzeitBewerten(l, stand, neu, alarme) {
+  const key = `eol|${l.produkt}@${l.zyklus}`;
+  if (l.status === "abgelaufen" && stand.gemeldet?.[key] !== "faellig") {
+    alarme.push(`Supportende erreicht: ${l.produkt} ${l.zyklus}`);
+    neu.gemeldet[key] = "faellig";
+  } else if (stand.gemeldet?.[key]) {
+    neu.gemeldet[key] = stand.gemeldet[key];
+  }
+}
+
+function fundZeile(f) {
+  const hinweise = [];
+  if (f.kev) hinweise.push("aktiv ausgenutzt");
+  if (f.abgelaufenesOk) hinweise.push("Akzeptanz abgelaufen");
+  const luecke = hinweise.length ? `${f.id} (${hinweise.join(", ")})` : f.id;
+  const frist = f.faellig ? `**abgelaufen** ${zeit(f.frist)}` : zeit(f.frist);
+  const dateien = f.dateien.map((d) => "`" + d + "`").join(", ");
+  return `| ${f.schwere} | ${luecke}: ${zelle(f.titel)} | \`${f.paket}\` | ${dateien} | ${zeit(f.seit)} | ${frist} |`;
+}
+
+function issueText({ offen, angenommen, lz, neu, heute, lauf }) {
   const zeilen = [
-    `Tagesabgleich vom ${zeit(jetzt)} ([Lauf](${lauf})). Fristen ab dem ersten Fund: kritisch 24 h, hoch 7 Tage, mittel 30 Tage, niedrig 90 Tage. Aktiv ausgenutzte Lücken (CISA KEV) gelten als kritisch.`,
+    `Tagesabgleich vom ${zeit(heute.toISOString())} ([Lauf](${lauf})). Fristen ab dem ersten Fund: kritisch 24 h, hoch 7 Tage, mittel 30 Tage, niedrig 90 Tage. Aktiv ausgenutzte Lücken (CISA KEV) gelten als kritisch.`,
     "",
   ];
   if (offen.length) {
@@ -193,19 +178,8 @@ function auswerten({
       "",
       "| Schwere | Lücke | Paket | Datei | seit | Frist |",
       "| --- | --- | --- | --- | --- | --- |",
+      ...offen.map(fundZeile),
     );
-    for (const f of offen) {
-      const frist = `${f.faellig ? "**abgelaufen** " : ""}${zeit(f.frist)}`;
-      const hinweis = [
-        f.kev ? "aktiv ausgenutzt" : "",
-        f.abgelaufenesOk ? "Akzeptanz abgelaufen" : "",
-      ]
-        .filter(Boolean)
-        .join(", ");
-      zeilen.push(
-        `| ${f.schwere} | ${f.id}${hinweis ? ` (${hinweis})` : ""}: ${zelle(f.titel)} | \`${f.paket}\` | ${f.dateien.map((d) => `\`${d}\``).join(", ")} | ${zeit(f.seit)} | ${frist} |`,
-      );
-    }
   } else {
     zeilen.push("**Offen:** keine.");
   }
@@ -216,11 +190,11 @@ function auswerten({
       "",
       "| Lücke | Paket | Grund | prüfen bis |",
       "| --- | --- | --- | --- |",
+      ...angenommen.map(
+        (a) =>
+          `| ${a.id} | \`${a.paket}\` | ${zelle(a.grund)} | ${a.pruefen_bis} |`,
+      ),
     );
-    for (const a of angenommen)
-      zeilen.push(
-        `| ${a.id} | \`${a.paket}\` | ${zelle(a.grund)} | ${a.pruefen_bis} |`,
-      );
   }
   zeilen.push(
     "",
@@ -228,21 +202,57 @@ function auswerten({
     "",
     "| Laufzeit | Version | Supportende | Stand |",
     "| --- | --- | --- | --- |",
+    ...lz.map(
+      (l) => `| ${l.produkt} | ${l.zyklus} | ${l.ende || "–"} | ${l.status} |`,
+    ),
+    "",
+    `<!-- stand: ${JSON.stringify(neu)} -->`,
   );
-  for (const l of lz)
-    zeilen.push(
-      `| ${l.produkt} | ${l.zyklus} | ${l.ende || "–"} | ${l.status} |`,
-    );
-  zeilen.push("", `<!-- stand: ${JSON.stringify(neu)} -->`);
+  return zeilen.join("\n");
+}
+
+/** Reine Auswertung: neuer Stand, Issue-Text und Hinweise für die Erwähnung. */
+function auswerten({
+  funde: alle,
+  akzeptiert,
+  laufzeiten: lz,
+  stand,
+  heute,
+  lauf,
+}) {
+  const neu = { seit: {}, gemeldet: {} };
+  const offen = [];
+  const angenommen = [];
+  const alarme = [];
+  for (const f of alle) {
+    const ok = akzeptiert.find((a) => f.ids.includes(a.id));
+    if (ok && Date.parse(ok.pruefen_bis) > heute.getTime()) {
+      angenommen.push({ ...f, ...ok });
+    } else {
+      offen.push({
+        ...fundBewerten(f, stand, neu, heute, alarme),
+        abgelaufenesOk: ok,
+      });
+    }
+  }
+  for (const l of lz) laufzeitBewerten(l, stand, neu, alarme);
+  offen.sort(
+    (a, b) =>
+      REIHENFOLGE.indexOf(a.schwere) - REIHENFOLGE.indexOf(b.schwere) ||
+      a.frist.localeCompare(b.frist),
+  );
+  const warnLz = lz.filter(
+    (l) => l.status === "abgelaufen" || l.status === "bald",
+  );
   return {
     neu,
     alarme,
-    text: zeilen.join("\n"),
+    text: issueText({ offen, angenommen, lz, neu, heute, lauf }),
     leer: !offen.length && !warnLz.length,
   };
 }
 
-module.exports = async ({ github, context, core }) => {
+module.exports = async function abgleich({ github, context, core }) {
   const basis = process.env.GITHUB_WORKSPACE ?? process.cwd();
   const lese = (datei) =>
     JSON.parse(fs.readFileSync(path.join(basis, datei), "utf8"));
@@ -276,6 +286,8 @@ module.exports = async ({ github, context, core }) => {
   });
   if (context.eventName === "pull_request") {
     // Probelauf für Änderungen am Abgleich: nur anzeigen, kein Issue und keine Erwähnung.
+    core.info(ergebnis.text);
+    core.info(`Alarme: ${ergebnis.alarme.join("; ") || "keine"}`);
     await core.summary
       .addRaw(ergebnis.text)
       .addRaw(`\n\n**Alarme:** ${ergebnis.alarme.join("; ") || "keine"}\n`)
