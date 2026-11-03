@@ -31,7 +31,7 @@ jobs:
           node-version: 24
           check-latest: true
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Pipeline (raw → data)
         run: pnpm --filter pipeline build
       - name: Commit & push data
