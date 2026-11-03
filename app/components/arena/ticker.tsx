@@ -9,7 +9,7 @@ export interface TickerItem {
 
 /**
  * Kurs-Laufband (Arena 5 „Kurs-Ticker“): 28 s je Durchlauf, die Liste steht zweimal
- * hintereinander, damit die Schleife nahtlos ist. Bei reduced-motion steht es still.
+ * hintereinander, damit die Schleife nahtlos ist.
  */
 export function Ticker({ items }: { items: TickerItem[] }) {
   if (items.length === 0) return null;

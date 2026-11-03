@@ -306,7 +306,6 @@ body {
 /*
  * Arena-Animationen (README 8): nur transform/opacity/filter/box-shadow.
  * Einmal-Animationen gibt es doppelt (…0/…1), damit ein Wechsel des Namens sie neu startet.
- * Alles mit der Klasse arena-anim steht bei prefers-reduced-motion still.
  */
 @keyframes arena-pulse {
   0%,
@@ -677,15 +676,5 @@ body {
   }
   100% {
     transform: none;
-  }
-}
-
-@media (prefers-reduced-motion: reduce) {
-  /* README 8: keine Bewegung außer sofortigen Zustandswechseln, auch keine Übergänge. */
-  *,
-  *::before,
-  *::after {
-    animation: none !important;
-    transition: none !important;
   }
 }

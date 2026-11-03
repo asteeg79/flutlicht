@@ -15,7 +15,7 @@ eine Phase je Commit `feat(arena): Phase N – …`. Jede Phase endet mit
 - Neue Bausteine in `app/components/arena/`. Logik steckt in reinen `.ts`-Dateien
   daneben und hat einen Vitest-Test (die App testet ohne DOM).
 - Oberfläche: „fixiert“ statt „gesperrt“, Zahlen deutsch, Minus als „−“.
-- Jede Animation hängt an der Klasse `arena-anim` und ist per `prefers-reduced-motion` aus.
+- Jede Animation hängt an der Klasse `arena-anim` und ist per `prefers-reduced-motion` aus (am 2026-11-03 aufgehoben, siehe Entscheidungen).
 - E2E-Selektoren über `data-testid` oder Rollen, nicht über Fließtext.
 
 ## Phasen
