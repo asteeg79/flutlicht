@@ -274,6 +274,14 @@ module.exports = async ({ github, context, core }) => {
     heute,
     lauf: `${context.serverUrl}/${repo.owner}/${repo.repo}/actions/runs/${context.runId}`,
   });
+  if (context.eventName === "pull_request") {
+    // Probelauf für Änderungen am Abgleich: nur anzeigen, kein Issue und keine Erwähnung.
+    await core.summary
+      .addRaw(ergebnis.text)
+      .addRaw(`\n\n**Alarme:** ${ergebnis.alarme.join("; ") || "keine"}\n`)
+      .write();
+    return;
+  }
   if (ergebnis.leer) {
     if (issue) {
       await github.rest.issues.createComment({

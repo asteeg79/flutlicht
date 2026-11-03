@@ -13,6 +13,11 @@ on:
   schedule:
     - cron: "41 5 * * *"
   workflow_dispatch:
+  # Probelauf bei Änderungen am Abgleich selbst: Ergebnis nur in der Job-Zusammenfassung.
+  pull_request:
+    paths:
+      - .github/workflows/security-daily.yml
+      - .github/scripts/security-fristen.cjs
 
 concurrency:
   group: security-daily
