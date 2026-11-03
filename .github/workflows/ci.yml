@@ -36,14 +36,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           check-latest: true
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Lint (ESLint)
         run: pnpm lint
       - name: Format-Check (Prettier)
@@ -57,22 +57,23 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 15
     steps:
-      - uses: actions/checkout@v6
-      - uses: pnpm/action-setup@v6
-      - uses: actions/setup-node@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: pnpm/action-setup@0977fd99725f1db4007ccb2928dbb4e90d06cc86 # v6
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38 # v6
         with:
           node-version: 24
           check-latest: true
           cache: pnpm
-      - run: pnpm install --frozen-lockfile
+      - run: pnpm install --frozen-lockfile --ignore-scripts
       - name: Playwright-Browser
         # WebKit für die iPhone-Profile (Safari-Engine), Chromium für Android.
-        run: pnpm --filter @fm/app exec playwright install --with-deps chromium webkit
+        working-directory: app
+        run: ./node_modules/.bin/playwright install --with-deps chromium webkit
       - name: E2E (Playwright, inkl. emulierter iPhones und Android-Geräte)
         run: pnpm --filter @fm/app test:e2e
       - name: Geräte-Screenshots
         if: always()
-        uses: actions/upload-artifact@v7
+        uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
         with:
           name: geraete-screenshots
           path: app/test-results/devices/
@@ -83,12 +84,14 @@ jobs:
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
-      - uses: actions/checkout@v6
-      - uses: actions/setup-python@v6
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/setup-python@ece7cb06caefa5fff74198d8649806c4678c61a1 # v6
         with:
           python-version: "3.11"
       # Die Tests brauchen botasaurus nicht (wird erst im Transport importiert).
-      - run: pip install pytest pillow
+      # Feste Versionen mit Hashes, nur fertige Wheels: keine Setup-Skripte.
+      - run: |
+          pip install --only-binary :all: --require-hashes -r scraper/requirements-ci.txt
       - name: Scraper-Tests (pytest, ohne Netzwerk)
         working-directory: scraper
         run: python -m pytest -q
