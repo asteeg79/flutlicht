@@ -52,12 +52,13 @@ dem Pi kommt nur dazu, wenn er von unterwegs erreichbar ist. Bisher ist er das n
 
 **Schritte**
 
-1. Pilot in Flutlicht mit dem `GITHUB_TOKEN`, nur für Flutlicht. Ein Merge über das `GITHUB_TOKEN` startet keine weiteren Workflows auf `main`. Für den Pilot reicht das, weil Vercel über seine eigene GitHub-App deployt.
+1. Pilot in Flutlicht (`security-cockpit.yml`). Ohne App nimmt er das `GITHUB_TOKEN`. Das darf keine PRs mergen, die `.github/workflows/` ändern, also fast keinen Renovate-PR, und sein Merge startet keine Workflows auf `main`. Mit der Cockpit-App aus Schritt 2, zunächst nur in Flutlicht installiert, fallen beide Grenzen weg.
 2. In Phase 4 zieht es nach `security-agent` und deckt alle neun Repos ab. Den Zugriff bekommt es über eine eigene GitHub-App mit den kleinsten nötigen Rechten:
    - Contents und Pull requests schreiben (Mergen)
    - Issues schreiben
    - Checks lesen
    - Actions schreiben (Scans anstoßen)
+   - Workflows schreiben (PRs mergen, die Workflows ändern)
    - Dependabot alerts lesen
 
    Der Schlüssel liegt nur als Secret in `security-agent`, nicht auf einem Gerät.
