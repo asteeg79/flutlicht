@@ -36,7 +36,7 @@ jobs:
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
     steps:
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - name: gitleaks (Commits des PRs)
@@ -72,7 +72,7 @@ jobs:
           else
             echo "::warning::Secret ANTHROPIC_API_KEY fehlt, Claude-Review übersprungen."
           fi
-      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         if: steps.key.outputs.present == 'true'
         with:
           ref: ${{ github.event.pull_request.head.sha }}
