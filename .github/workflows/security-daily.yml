@@ -1,0 +1,65 @@
+name: Security-Tagesabgleich
+
+# Security-Agent, Phase 3 (Pilot): täglicher Abgleich gegen die Advisory-Feeds.
+# - OSV-Scanner prüft pnpm-lock.yaml und scraper/requirements-ci.txt gegen OSV (enthält GHSA).
+# - CISA KEV markiert Lücken, die aktiv ausgenutzt werden; sie gelten als kritisch.
+# - endoflife.date prüft die Laufzeiten aus security/inventory.yml und Next.js.
+# Das Issue „Sicherheitslücken: offene Fristen“ (Label security-deadlines) hält den Stand
+# mit Fristen je Schwere: kritisch 24 h, hoch 7 Tage, mittel 30 Tage, niedrig 90 Tage.
+# Neue kritische oder hohe Funde und abgelaufene Fristen erwähnen den Besitzer im Issue,
+# GitHub schickt dann Mail und Push nach seinen Einstellungen.
+# Akzeptierte Risiken stehen in security/accepted-risks.json.
+on:
+  schedule:
+    - cron: "41 5 * * *"
+  workflow_dispatch:
+  # Probelauf bei Änderungen am Abgleich selbst: Ergebnis nur in der Job-Zusammenfassung.
+  pull_request:
+    paths:
+      - .github/workflows/security-daily.yml
+      - .github/scripts/security-fristen.cjs
+
+concurrency:
+  group: security-daily
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+env:
+  OSV_SCANNER_VERSION: "2.7.0"
+  OSV_SCANNER_SHA256: 160c6253e2922e9e0a6a9771c5c4c40a4b3c6090b34a3cdd5e80c96cc2e4218b
+
+jobs:
+  abgleich:
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: read
+      issues: write
+    steps:
+      - uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+      - name: OSV-Scanner
+        run: |
+          curl -sSfL --proto '=https' --tlsv1.2 -o osv-scanner "https://github.com/google/osv-scanner/releases/download/v${OSV_SCANNER_VERSION}/osv-scanner_linux_amd64"
+          echo "${OSV_SCANNER_SHA256}  osv-scanner" | sha256sum -c -
+          chmod +x osv-scanner
+          # Exit-Code 1 heißt „Lücken gefunden“, alles andere ist ein Fehler. Der Dateiname
+          # requirements-ci.txt wird nicht erkannt, daher der Parser vor dem Pfad.
+          ./osv-scanner scan source --format json --output-file osv.json \
+            --lockfile pnpm-lock.yaml --lockfile requirements.txt:scraper/requirements-ci.txt || [ $? -eq 1 ]
+      - name: CISA KEV und endoflife.date laden
+        run: |
+          curl -sSfL --proto '=https' --tlsv1.2 -o kev.json \
+            https://www.cisa.gov/sites/default/files/feeds/known_exploited_vulnerabilities.json
+          for produkt in nodejs python nextjs; do
+            curl -sSfL --proto '=https' --tlsv1.2 -o "eol-$produkt.json" "https://endoflife.date/api/$produkt.json"
+          done
+      - name: Fristen und Issue
+        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8
+        with:
+          script: |
+            const run = require(`${process.env.GITHUB_WORKSPACE}/.github/scripts/security-fristen.cjs`);
+            await run({ github, context, core });
