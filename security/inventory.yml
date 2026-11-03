@@ -32,7 +32,7 @@ komponenten:
   - name: scraper
     pfad: scraper/
     runtime: { sprache: python, version: 3.13 } # CI testet mit 3.11
-    abhaengigkeiten: scraper/requirements-pi.txt (aus pyproject.toml: botasaurus, pillow; mit Hashes)
+    abhaengigkeiten: scraper/requirements-pi.txt (aus pyproject.toml mit botasaurus und pillow, mit Hashes)
     hosting:
       art: eigener Rechner (Raspberry Pi 5 raspdev, Debian 13, Chromium)
       live_url: keine # nur ausgehende Abrufe, von außen nicht erreichbar
