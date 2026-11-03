@@ -38,6 +38,7 @@ Spezifikation ist `KONZEPT.md`**, die Reihenfolge der Arbeit steht in Abschnitt 
   der PRs liest dieselbe Datei.
 - `security/inventory.yml` (Runtime, Hosting, Patch-Weg) bei Änderungen an Runtime,
   Hosting oder Deploy-Weg mitpflegen.
+- Phasen, Cockpit und Rollout des Security-Agenten stehen in `security/plan.md`.
 - PRs prüft `security-pr-review.yml` (gitleaks, Semgrep, Claude), montags läuft
   `security-weekly-scan.yml` mit ZAP gegen die Live-App.
 
