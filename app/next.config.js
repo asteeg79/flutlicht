@@ -1,5 +1,6 @@
 // Übernommen aus Workgrid next.config.js, angepasst: Google-Hosts aus der CSP entfernt,
-// @fm/core wird mitübersetzt (TypeScript-Quellen im Workspace), COOP und COEP ergänzt.
+// @fm/core wird mitübersetzt (TypeScript-Quellen im Workspace), COOP und COEP ergänzt,
+// Domain-Redirect aus der Middleware hierher verlegt.
 // Hinweis: next-pwa wurde entfernt (dessen aggressiver Cache verursachte
 // veraltete App-Zustände). Stattdessen ein eigener, schlanker Service Worker
 // (public/sw.js, registriert via components/pwa/ServiceWorkerRegister): macht
@@ -112,6 +113,19 @@ const nextConfig = {
       {
         source: "/:path*",
         headers: securityHeaders,
+      },
+    ];
+  },
+  // Kanonische Domain: Die Vercel-URL leitet auf die eigene Domain um, /api ausgenommen
+  // (server-zu-server, z. B. der Tick). Vercel erledigt das im Routing, vor der Middleware;
+  // die Startseite braucht deshalb keine Middleware.
+  async redirects() {
+    return [
+      {
+        source: "/:path((?!api(?:/|$)).*)",
+        has: [{ type: "host", value: "flutlicht.vercel.app" }],
+        destination: "https://flutlicht.a-tec.dev/:path",
+        permanent: true,
       },
     ];
   },

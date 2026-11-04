@@ -97,19 +97,8 @@ describe("API-Riegel in der Middleware", () => {
 });
 
 describe("Domain und Matcher", () => {
-  it("leitet die Vercel-URL auf die eigene Domain um, API ausgenommen", async () => {
-    const res = await middleware(
-      request("/team?x=1", { host: "flutlicht.vercel.app" }),
-    );
-    expect(res.status).toBe(308);
-    expect(res.headers.get("location")).toBe(
-      "https://flutlicht.a-tec.dev/team?x=1",
-    );
-    session = { user: { id: "u1" } };
-    expect(
-      (await middleware(request("/api/me", { host: "flutlicht.vercel.app" })))
-        .status,
-    ).toBe(200);
+  it("lässt die Startseite aus (Domain-Redirect liegt in next.config.js)", () => {
+    expect(mod.config.matcher).not.toContain("/");
   });
 
   it("deckt alle geschützten Seiten im Matcher ab", () => {
