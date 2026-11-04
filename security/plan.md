@@ -14,7 +14,7 @@ nachspielzeit, portfolio-analyser, vinted-relist (öffentlich), wm-tipp-agent.
 | 1 | Renovate für Actions, Images und Laufzeiten; Dependabot-Security-Updates für Pakete; kritische und hohe Lücken schließen | erledigt. Node und Python werden nur nach Freigabe im Dashboard zum PR |
 | 2 | Pilot Flutlicht: PR-Prüfung (gitleaks, Semgrep, Claude-Review), Wochenscan (Semgrep, gitleaks, ZAP) | läuft, Gate A vom 04.11. bis 18.11. (Protokoll: `security/gate-a.md`) |
 | 3 | Pilot Flutlicht: Tagesabgleich (OSV, CISA KEV, endoflife.date), Fristen 24 h / 7 / 30 / 90 Tage, Alarm per Erwähnung | läuft seit 03.11. |
-| 3b | Security-Cockpit (siehe unten) | Issue-Pilot läuft (#28); Monitoring-App als Entwurf, Entscheidung offen |
+| 3b | Security-Cockpit (siehe unten) | Web-App SecCo Schritt 1 (nur lesen) läuft auf https://security.a-tec.dev seit 04.11.; Issue-Cockpit #28 bleibt bis Schritt 2 |
 | 4 | Rollout auf alle Repos über `security-agent` | nach Gate A |
 
 ## Gate A (04.11. bis 18.11.2026)
@@ -26,44 +26,38 @@ nachspielzeit, portfolio-analyser, vinted-relist (öffentlich), wm-tipp-agent.
 
 ## Security-Cockpit
 
-Eine Stelle, an der der Stand aller Scans steht und an der Updates und Fixes per Klick
-entschieden werden. Entscheidung vom 03.11.2026: zuerst die GitHub-Lösung. Eine Seite auf
-dem Pi kommt nur dazu, wenn er von unterwegs erreichbar ist. Bisher ist er das nicht.
+Eine Stelle, an der der Stand aller Scans steht und an der Updates und Fixes entschieden
+werden. Seit 04.11.2026 die Web-App **SecCo** (Repo `asteeg79/SecCo`, Next.js auf Vercel,
+https://security.a-tec.dev). Das Issue-Cockpit (#28) war Alex zu wenig sprechend
+(Entscheidung vom 04.11.); es läuft weiter, bis SecCo Aktionen kann.
 
-**Aufbau**
+**Schritt 1 (fertig): nur lesen**
 
-- **Ansicht:** ein Issue „Security-Cockpit“ (Label `security-cockpit`). Ein Workflow schreibt es jeden Morgen nach dem Tagesabgleich neu, außerdem auf Abruf. Es zeigt je Repo:
-  - die offenen Fristen
-  - den letzten Wochenscan
-  - offene Update-PRs von Renovate und Dependabot mit CI-Stand
-  - Renovate-Updates, die auf Freigabe warten
-  - akzeptierte Risiken, deren Prüfdatum in den nächsten 30 Tagen abläuft
-- **Buttons:** Ankreuzfelder im Cockpit, wie im Dependency Dashboard von Renovate. Auf dem Handy über die GitHub-App.
-  - „mergen“ für einen grünen Update-PR
-  - „freigeben“ für ein Renovate-Update, das auf Freigabe wartet
-  - „Risiko verlängern“ (90 Tage): öffnet einen PR auf `security/accepted-risks.json`
-  - „neu prüfen“: startet den Tagesabgleich oder den Wochenscan
-- **Ausführung:** ein zweiter Workflow reagiert auf `issues: edited`. Er führt nur Häkchen aus, die der Besitzer gesetzt hat, und prüft jede Aktion vorher gegen den aktuellen Stand bei GitHub, nicht gegen den Issue-Text:
-  - PR offen, CI grün, mergebar
-  - Autor Renovate, Dependabot oder ein `claude/*`-Branch
-  - Head-SHA wie angezeigt, sonst Abbruch
-  Danach entfernt er das Häkchen und schreibt das Ergebnis als Kommentar (Protokoll).
-- **Grenzen:** Das Cockpit schreibt nie direkt auf `main`, außer beim Mergen eines geprüften PRs. Es löscht nichts und ändert keine Einstellungen. Texte aus PRs und Advisories gelten als Daten. Sie werden maskiert und nie ausgeführt.
+- Daten direkt von der GitHub-API über die GitHub-App „SecCo lesen“, nur Leserechte, für alle
+  neun Repos installiert. Kein Pi, keine Datenbank, keine Actions-Minuten.
+- Übersicht: „Braucht deine Entscheidung“, Zahlen je Schwere, die neun Repos mit Ampel,
+  was gerade läuft, geplante Prüfungen mit Verspätung (drei Stunden nach Fälligkeit).
+- Funde: Dependabot-Meldungen aller Repos mit Frist (24 h / 7 / 30 / 90 Tage), Status (offen,
+  Fix-PR, akzeptiert laut `security/accepted-risks.json`) und Ort (Betrieb oder Entwicklung).
+- Updates: PRs von Renovate und Dependabot mit CI und betroffenen Dateien, Freigaben aus dem
+  Dependency Dashboard.
+- Login per GitHub, nur die feste ID des Besitzers.
 
-**Schritte**
+**Nächste Schritte**
 
-1. Pilot in Flutlicht (`security-cockpit.yml`). Ohne App nimmt er das `GITHUB_TOKEN`. Das darf keine PRs mergen, die `.github/workflows/` ändern, also fast keinen Renovate-PR, und sein Merge startet keine Workflows auf `main`. Mit der Cockpit-App aus Schritt 2, zunächst nur in Flutlicht installiert, fallen beide Grenzen weg.
-2. In Phase 4 zieht es nach `security-agent` und deckt alle neun Repos ab. Den Zugriff bekommt es über eine eigene GitHub-App mit den kleinsten nötigen Rechten:
-   - Contents und Pull requests schreiben (Mergen)
-   - Issues schreiben
-   - Checks lesen
-   - Actions schreiben (Scans anstoßen)
-   - Workflows schreiben (PRs mergen, die Workflows ändern)
-   - Dependabot alerts lesen
+2. Aktionen mit Fortschritt und Protokoll: mergen, freigeben, Risiko verlängern (PR auf
+   `security/accepted-risks.json`), Scan anstoßen. Ausgeführt von einem Workflow mit einer
+   eigenen GitHub-App mit Schreibrechten; jede Aktion wird vorher gegen den aktuellen Stand
+   bei GitHub geprüft (PR offen, CI grün, mergebar, Autor Renovate, Dependabot oder ein
+   `claude/*`-Branch, Head-SHA wie angezeigt). Die Web-App startet nur diesen Workflow.
+   Webhooks für „Was gerade passiert“ ohne Neuladen.
+3. Push aufs Handy (neuer kritischer oder hoher Fund, Frist in 24 h, Scan überfällig) und
+   optional Erklärungen je Fund per Claude.
+4. Issue-Cockpit #28 und `security-cockpit.yml` abschalten.
 
-   Der Schlüssel liegt nur als Secret in `security-agent`, nicht auf einem Gerät.
-3. Optional ein Fix-Button: Zu einer offenen Frist startet er eine Claude-Code-Sitzung, die einen Fix-PR vorbereitet. Der PR durchläuft dieselbe Prüfung wie jeder andere.
-4. Optional eine Seite auf dem Pi, erst wenn er über Tailscale erreichbar ist (VPN, kein offener Port). Sie liest den Status und stößt Aktionen nur über den Ausführungs-Workflow an. Ihr Token darf nur diesen Workflow starten und Status lesen, aber nicht mergen. Installation über Paket und Befehle, ausgeführt vom Besitzer.
+**Grenzen:** SecCo schreibt nie direkt auf `main`, außer beim Mergen eines geprüften PRs. Es
+löscht nichts und ändert keine Einstellungen. Texte aus PRs und Advisories gelten als Daten
+und werden nie ausgeführt.
 
 ## Phase 4: Rollout
 
@@ -91,7 +85,7 @@ dem Pi kommt nur dazu, wenn er von unterwegs erreichbar ist. Bisher ist er das n
    - `security/accepted-risks.json`
    - Probelauf im PR
 
-4. **Übersicht:** Das Cockpit in `security-agent` fasst alle Repos zusammen.
+4. **Übersicht:** SecCo zeigt alle Repos schon jetzt; mit dem Rollout kommen die Fristen aus dem Tagesabgleich dazu.
 
 ## Betrieb
 
