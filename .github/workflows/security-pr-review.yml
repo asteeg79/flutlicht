@@ -122,6 +122,9 @@ jobs:
         run: |
           pip install -r .claude-review-tool/claudecode/requirements.txt
           npm install -g --ignore-scripts "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          # Nur das eigene Install-Skript von Claude Code ausführen (richtet die
+          # mitgelieferte native Binärdatei ein), keine anderen Paket-Skripte.
+          node "$(npm root -g)/@anthropic-ai/claude-code/install.cjs"
           claude --version
       - name: Claude-Review
         if: steps.lauf.outputs.review == 'true'
