@@ -9,7 +9,15 @@ packages:
 minimumReleaseAge: 1440
 trustPolicy: no-downgrade
 blockExoticSubdeps: true
-# pnpm 10 führt Install-Skripte nur für freigegebene Pakete aus. esbuild braucht
-# seines nicht, die Binärdatei kommt über die optionalen Abhängigkeiten.
-ignoredBuiltDependencies:
-  - esbuild
+# pnpm führt Install-Skripte nur für freigegebene Pakete aus (pnpm 11: allowBuilds).
+# esbuild braucht seines nicht, die Binärdatei kommt über die optionalen Abhängigkeiten.
+allowBuilds:
+  esbuild: false
+# Geprüfte Ausnahmen von trustPolicy (pnpm 11 prüft auch bestehende Lockfile-Einträge),
+# Begründung in docs/entscheidungen.md (04.11.2026). Nur exakte Versionen.
+trustPolicyExclude:
+  # Bisher ist nur ein Schnappschuss (0.0.0-manual) mit Provenance erschienen; alle
+  # regulären Releases kommen ohne, von den Maintainern des Pakets.
+  - next-auth@5.0.0-beta.32
+  # @types/node 22 pinnt ~6.21.0; derselbe Maintainer wie bei den Versionen mit Provenance.
+  - undici-types@6.21.0
