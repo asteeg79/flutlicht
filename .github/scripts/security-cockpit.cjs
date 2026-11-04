@@ -324,7 +324,9 @@ async function ausfuehren(api, e) {
   }
   const dash = await dashboard(github, repo);
   const neu = dash && renovateAnkreuzen(dash.body, e.aktion, e.ziel);
-  if (!neu) return `Renovate: ${e.ziel} steht nicht mehr im Dashboard.`;
+  // Meist hat Renovate den PR inzwischen erstellt; dann steht der Eintrag unter „Open“.
+  if (!neu)
+    return `Renovate: ${e.ziel} ist nicht mehr auswählbar, der PR ist vermutlich schon offen.`;
   await github.rest.issues.update({
     ...repo,
     issue_number: dash.number,
