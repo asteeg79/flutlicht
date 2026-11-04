@@ -120,7 +120,7 @@ jobs:
       - name: Werkzeuge installieren
         if: steps.lauf.outputs.review == 'true'
         run: |
-          pip install -r .claude-review-tool/claudecode/requirements.txt
+          pip install --only-binary :all: --require-hashes -r .github/claude-review-requirements.txt
           npm install -g --ignore-scripts "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
           # Nur das eigene Install-Skript von Claude Code ausführen (richtet die
           # mitgelieferte native Binärdatei ein), keine anderen Paket-Skripte.
