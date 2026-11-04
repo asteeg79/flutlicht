@@ -25,6 +25,8 @@ Wiederkehrende Fehlalarme des Claude-Reviews kommen am Ende als bekannte Ausnahm
 | 03.11. | Wochenscan, gitleaks | ganze Historie | kein Fund | |
 | 03.11. | Tagesabgleich | minimatch 10 in ESLint (GHSA-g3hv-75wg-m249, mittel) | treffend, akzeptiert | Nur Entwicklung und CI; `security/accepted-risks.json` bis 01.02.2027 |
 | 04.11. | Claude-Review, #38 | keine Funde (Cockpit-Text, Review-Workflow) | kein Fund | Erster Lauf mit Prüfanleitung |
+| 04.11. | Claude-Review, #40 | keine Funde (Domain-Redirect in `next.config.js`, Middleware) | kein Fund | |
+| 04.11. | Claude-Review, #41 | keine Funde (pnpm 11, Trust-Ausnahmen) | kein Fund | Die Ausnahmen für next-auth und undici-types hat das Review nicht beanstandet; begründet in `docs/entscheidungen.md` |
 
 ## Kosten
 
@@ -33,6 +35,8 @@ Je Claude-Review: Tokens und Dollar aus der Anthropic Console, Laufzeit aus dem 
 | Datum | PR | Laufzeit | Kosten |
 | --- | --- | --- | --- |
 | 04.11. | #38 | 17 s Review, 45 s Job | [aus der Console] |
+| 04.11. | #40 | 38 s Job | [aus der Console] |
+| 04.11. | #41 | 40 s Job | [aus der Console] |
 
 ## Auswertung am 18.11.
 
