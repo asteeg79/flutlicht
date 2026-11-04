@@ -115,6 +115,8 @@ Das ist neben der bestehenden CI ein Teil der 2.000 Freiminuten; öffentliche Re
 
 ## Offene Entscheidungen
 
+- Beobachten: `middleware.ts` → `proxy.ts` in Flutlicht, sobald Next.js Anweisungen für die Edge-Runtime veröffentlicht oder `middleware.ts` entfernt (Entscheidung vom 04.11.).
+
 - Auto-Merge für Patch-Updates. Vorschlag: nein. Das Cockpit macht das Mergen zu einem Klick.
 - Alarmkanal. Vorschlag: die Erwähnung bei GitHub, also Mail und Push nach den GitHub-Einstellungen.
 - CSP mit Nonces in Flutlicht. Sie kostet die statische Startseite.

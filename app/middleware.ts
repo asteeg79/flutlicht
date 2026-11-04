@@ -1,6 +1,8 @@
-// Übernommen aus Workgrid middleware.ts, angepasst: Domain-Redirect auf die neue
-// Domain, Matcher für die Routen von Flutlicht, strenges Limit für Login,
-// Registrierung und Reset (KONZEPT 8.3).
+// Übernommen aus Workgrid middleware.ts, angepasst: Matcher für die Routen von
+// Flutlicht, strenges Limit für Login, Registrierung und Reset (KONZEPT 8.3).
+// Der Domain-Redirect liegt in next.config.js (redirects).
+// Bleibt bewusst middleware.ts statt proxy.ts: proxy läuft nur auf Node.js, die
+// Middleware auf der Edge ohne Kaltstart (docs/entscheidungen.md, 03.11. und 04.11.).
 import NextAuth from "next-auth";
 import { NextResponse, type NextRequest } from "next/server";
 import { authConfig } from "@/lib/auth.config";
@@ -8,9 +10,6 @@ import { AUTH_LIMITED_PATHS, isRateLimited } from "@/lib/rate-limit";
 import { isPublicApiPath } from "@/lib/public-api-paths";
 
 const { auth } = NextAuth(authConfig);
-
-const VERCEL_HOST = "flutlicht.vercel.app";
-const CANONICAL_ORIGIN = "https://flutlicht.a-tec.dev";
 
 function getClientIp(req: NextRequest): string {
   const fwd = req.headers.get("x-forwarded-for");
@@ -30,14 +29,6 @@ function tooMany() {
 // der API-Riegel unten kann selbst mit 401 JSON antworten.
 export default auth(async (req) => {
   const { pathname } = req.nextUrl;
-
-  // Kanonische Domain erzwingen; /api ausgenommen (server-zu-server, z. B. der Tick).
-  if (req.nextUrl.hostname === VERCEL_HOST && !pathname.startsWith("/api")) {
-    return NextResponse.redirect(
-      new URL(pathname + req.nextUrl.search, CANONICAL_ORIGIN),
-      308,
-    );
-  }
 
   if (pathname.startsWith("/api")) {
     const ip = getClientIp(req);
@@ -67,9 +58,9 @@ export default auth(async (req) => {
 
 // Next.js liest den Matcher statisch aus: keine Ausdrücke, nur Literale.
 // Muss PROTECTED_PREFIXES aus lib/auth.config.ts abdecken (middleware.auth.test.ts).
+// Die statische Startseite „/“ braucht keine Middleware und bleibt draußen.
 export const config = {
   matcher: [
-    "/",
     "/login",
     "/registrieren",
     "/passwort-reset",
