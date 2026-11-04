@@ -19,5 +19,3 @@ trustPolicyExclude:
   # Bisher ist nur ein Schnappschuss (0.0.0-manual) mit Provenance erschienen; alle
   # regulären Releases kommen ohne, von den Maintainern des Pakets.
   - next-auth@5.0.0-beta.32
-  # @types/node 22 pinnt ~6.21.0; derselbe Maintainer wie bei den Versionen mit Provenance.
-  - undici-types@6.21.0
