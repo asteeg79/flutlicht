@@ -61,6 +61,9 @@ jobs:
     permissions:
       contents: read
       pull-requests: write
+    env:
+      REVIEW_TOOL_SHA: 0c6a49f1fa56a1d472575da86a94dbc1edb78eda # anthropics/claude-code-security-review, main vom 11.02.2026
+      CLAUDE_CODE_VERSION: 2.1.311 # npm-Tag „stable“ am 04.11.2026, braucht Node 22+
     steps:
       - name: Ohne ANTHROPIC_API_KEY überspringen
         id: key
@@ -77,12 +80,94 @@ jobs:
         with:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 2
-      - uses: anthropics/claude-code-security-review@0c6a49f1fa56a1d472575da86a94dbc1edb78eda # main, 2026-02-11
+      # Das Review läuft mit dem Code der Action anthropics/claude-code-security-review
+      # (fester Commit), aber nicht über die Action selbst: Sie richtet Node 18 ein, und
+      # Claude Code gibt es für Node 18 nur bis 2.1.197, das claude-opus-5-5 nicht kennt.
+      # Außerdem setzt sie die „schon gelaufen“-Marke vor dem Lauf, sucht die Prüfanleitung
+      # im eigenen Ordner statt im Repo und meldet Fehler nur als Warnung.
+      - name: Schon geprüft? (ein Review je PR, wie im Original)
         if: steps.key.outputs.present == 'true'
+        id: marke
+        uses: actions/cache/restore@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
         with:
-          comment-pr: true
-          claude-api-key: ${{ secrets.ANTHROPIC_API_KEY }}
-          claude-model: claude-opus-5-5
-          claudecode-timeout: 20
-          exclude-directories: raw,data,reuse,app/public
-          custom-security-scan-instructions: security/review-instructions.md
+          path: .claude-review-marke
+          key: claude-review-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+          restore-keys: claude-review-${{ github.event.pull_request.number }}-
+      - name: Entscheiden, ob das Review läuft
+        if: steps.key.outputs.present == 'true'
+        id: lauf
+        run: |
+          if [ -f .claude-review-marke/ok ]; then
+            echo "::notice::Claude-Review lief für diesen PR schon erfolgreich."
+          else
+            echo "review=true" >> "$GITHUB_OUTPUT"
+          fi
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        if: steps.lauf.outputs.review == 'true'
+        with:
+          repository: anthropics/claude-code-security-review
+          ref: ${{ env.REVIEW_TOOL_SHA }}
+          path: .claude-review-tool
+          persist-credentials: false
+      - uses: actions/setup-python@6d4fd22b20465ccc0f7354476588e8df7c9ca0e0 # v7
+        if: steps.lauf.outputs.review == 'true'
+        with:
+          python-version: "3.13"
+      - uses: actions/setup-node@949feb2413d6458794dcd2491c4babbbce0c15c1 # v7
+        if: steps.lauf.outputs.review == 'true'
+        with:
+          node-version: 24
+      - name: Werkzeuge installieren
+        if: steps.lauf.outputs.review == 'true'
+        run: |
+          pip install -r .claude-review-tool/claudecode/requirements.txt
+          npm install -g --ignore-scripts "@anthropic-ai/claude-code@${CLAUDE_CODE_VERSION}"
+          claude --version
+      - name: Claude-Review
+        if: steps.lauf.outputs.review == 'true'
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
+          ENABLE_CLAUDE_FILTERING: "true"
+          EXCLUDE_DIRECTORIES: raw,data,reuse,app/public
+          CUSTOM_SECURITY_SCAN_INSTRUCTIONS: ${{ github.workspace }}/security/review-instructions.md
+          CLAUDE_MODEL: claude-opus-5-5
+          CLAUDE_TIMEOUT: "20"
+          REPO_PATH: ${{ github.workspace }}
+        run: |
+          cd .claude-review-tool
+          export PYTHONPATH="$PWD"
+          status=0
+          python -u claudecode/github_action_audit.py > "$RUNNER_TEMP/review.json" 2> "$RUNNER_TEMP/review.log" || status=$?
+          cp "$RUNNER_TEMP/review.json" "$RUNNER_TEMP/review.log" "$GITHUB_WORKSPACE/" || true
+          if [ "$status" -ne 0 ] || jq -e '.error' "$RUNNER_TEMP/review.json" > /dev/null 2>&1; then
+            echo "::error::Claude-Review fehlgeschlagen: $(jq -r '.error // "unbekannt"' "$RUNNER_TEMP/review.json" 2>/dev/null | head -c 600)"
+            tail -n 40 "$RUNNER_TEMP/review.log"
+            exit 1
+          fi
+          jq '.findings // []' "$RUNNER_TEMP/review.json" > "$GITHUB_WORKSPACE/findings.json"
+          echo "Claude-Review: $(jq length "$GITHUB_WORKSPACE/findings.json") Funde"
+      - name: Funde als PR-Kommentar
+        if: steps.lauf.outputs.review == 'true'
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: node .claude-review-tool/scripts/comment-pr-findings.js
+      - uses: actions/upload-artifact@cf430e030ddbb5b0abf93d22962f4752f3646cd9 # v7
+        if: always() && steps.lauf.outputs.review == 'true'
+        with:
+          name: claude-review
+          path: |
+            review.json
+            review.log
+            findings.json
+          retention-days: 14
+          if-no-files-found: ignore
+      - name: Marke setzen (erst nach erfolgreichem Review)
+        if: steps.lauf.outputs.review == 'true'
+        run: mkdir -p .claude-review-marke && date -u +%FT%TZ > .claude-review-marke/ok
+      - uses: actions/cache/save@55cc8345863c7cc4c66a329aec7e433d2d1c52a9 # v6.1.0
+        if: steps.lauf.outputs.review == 'true'
+        with:
+          path: .claude-review-marke
+          key: claude-review-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
