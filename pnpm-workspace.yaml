@@ -19,3 +19,7 @@ trustPolicyExclude:
   # Bisher ist nur ein Schnappschuss (0.0.0-manual) mit Provenance erschienen; alle
   # regulären Releases kommen ohne, von den Maintainern des Pakets.
   - next-auth@5.0.0-beta.32
+# GHSA-g3hv-75wg-m249 (ReDoS in minimatch < 11.0.1): ESLint 10 und
+# typescript-eslint verlangen noch ^10. Entfernen, sobald sie minimatch 11 nutzen.
+overrides:
+  minimatch: 11.0.4

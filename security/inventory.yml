@@ -65,8 +65,7 @@ komponenten:
 
 # Akzeptierte Risiken (Phase 3, Entscheidung in docs/entscheidungen.md; für den
 # Tagesabgleich security-daily.yml zusätzlich in security/accepted-risks.json):
-# - minimatch 10 in ESLint 10 (1× mittel, ReDoS über Glob-Muster): ESLint läuft
-#   nur in der Entwicklung und in der CI auf den eigenen Dateien. Behoben, sobald
-#   ESLint minimatch 11 verwendet.
+# - Das minimatch-Risiko aus ESLint 10 (1× mittel) ist seit dem Override auf
+#   minimatch 11.0.4 in pnpm-workspace.yaml behoben.
 # - Das postcss-Risiko aus next 15 (2× hoch, 2× mittel) ist seit dem Upgrade auf
 #   next 16 behoben (postcss 8.5).
