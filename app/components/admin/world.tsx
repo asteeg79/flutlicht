@@ -78,7 +78,11 @@ export function Status() {
             <Row label="Spiele ohne Daten" value={String(status.pending)} />
             <Row
               label="Tick zuletzt"
-              value={status.tick.map((t) => t.key).join(", ") || "–"}
+              value={
+                status.tick
+                  ? `${status.tick.key} · ${when(status.tick.at)}`
+                  : "–"
+              }
             />
           </dl>
         </>

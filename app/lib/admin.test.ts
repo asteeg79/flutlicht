@@ -383,7 +383,10 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
       scraper: { message: "raw: match-provisional" },
       compute: { conclusion: "success" },
     });
-    expect(status.tick.map((t) => t.key)).toEqual(["remind24:8:x", "final:7"]);
+    expect(status.tick).toEqual({
+      key: "remind24:8:x",
+      at: "2026-10-29T20:00:00Z",
+    });
     // Über 45 Min. ohne Lebenszeichen: der Scraper gilt als still.
     const later = await admin.adminStatus(
       gh,
@@ -420,7 +423,7 @@ describe("raw/manual/ per Commit (KONZEPT 11)", () => {
       fixtures: null,
       pending: 1,
     });
-    expect(status.tick).toHaveLength(1);
+    expect(status.tick).toEqual({ key: "final:7", at: "2026-10-12T08:00:00Z" });
   });
 });
 

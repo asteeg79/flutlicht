@@ -322,7 +322,8 @@ export interface AdminStatus {
     url: string;
   } | null;
   pending: number;
-  tick: { key: string; at: string }[];
+  /** Letzter erledigter Tick-Eintrag. */
+  tick: { key: string; at: string } | null;
 }
 
 /** Status-Übersicht (KONZEPT 11): Scraper (Commit, Lebenszeichen), letzte Pipeline-Läufe, offene Spiele, Tick. */
@@ -362,9 +363,9 @@ export async function adminStatus(
             status: scraper.status,
           },
     pending: fixtures.filter((f) => f.dataState === "pending").length,
-    tick: Object.entries(tickDone)
-      .map(([key, at]) => ({ key, at }))
-      .sort((a, b) => b.at.localeCompare(a.at))
-      .slice(0, 8),
+    tick:
+      Object.entries(tickDone)
+        .map(([key, at]) => ({ key, at }))
+        .sort((a, b) => b.at.localeCompare(a.at))[0] ?? null,
   };
 }
