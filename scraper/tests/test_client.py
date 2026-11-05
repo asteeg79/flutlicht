@@ -178,6 +178,21 @@ def test_browser_404_ist_keine_sperre(make_client, tmp_path):
     assert not (tmp_path / "state.json").exists()
 
 
+def test_chromium_fehlerseite_ist_keine_sperre(make_client, tmp_path):
+    # 26.10.2026 auf dem Pi: Chromium meldete ERR_CERT_VERIFIER_CHANGED, der Abruf erreichte
+    # Sofascore nie. Der Job scheitert und wird wiederholt, der Abrufweg bleibt „direct“.
+    page = _page_response(
+        {"status": 0, "error": True, "text": "This site can’t be reached\n\nERR_CERT_VERIFIER_CHANGED"}
+    )
+    fallback = FakeTransport(ok())
+    client, _ = make_client(FakeTransport(page), fallback)
+    with pytest.raises(FetchError) as e:
+        client.get_json("u1")
+    assert e.value.status == 0
+    assert fallback.urls == []
+    assert not (tmp_path / "state.json").exists()
+
+
 def test_browser_seite_wird_zu_status_und_inhalt():
     png = base64.b64encode(b"\x89PNG").decode()
     assert _page_response({"status": 200, "png": png}) == RawResponse(200, b"\x89PNG")

@@ -188,9 +188,12 @@ def _looks_valid(body: bytes, expect_json: bool) -> bool:
 
 
 # Status aus der Navigation (kein zweiter Abruf); ein Bild wird über ein Canvas zu PNG.
+# Eine Chromium-Fehlerseite (Netz, Zertifikat) hat die Adresse chrome-error://chromewebdata/.
 _READ_PAGE_JS = """
 const nav = performance.getEntriesByType("navigation")[0];
 const status = (nav && nav.responseStatus) || 0;
+if (location.protocol === "chrome-error:")
+  return { status, error: true, text: document.body ? document.body.innerText : "" };
 const img = document.contentType.startsWith("image/") ? document.images[0] : null;
 if (!img) return { status, text: document.body ? document.body.innerText : "" };
 if (!img.complete || !img.naturalWidth) return { status, text: "" };
@@ -275,6 +278,9 @@ def _page_response(page: dict[str, Any]) -> RawResponse:
         body = base64.b64decode(page["png"])
     else:
         body = (page.get("text") or "").encode()
+    if page.get("error"):
+        # Der Abruf erreichte Sofascore nicht: Fehlschlag (Status 0), keine Sperre.
+        return RawResponse(0, body)
     status = page.get("status") or 0
     if not status:
         # Ältere Chromium-Versionen kennen responseStatus nicht: ungültige Antwort zählt als Sperre.
