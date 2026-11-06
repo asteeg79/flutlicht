@@ -35,9 +35,34 @@ permissions:
   contents: read
 
 jobs:
+  # Version von @playwright/test aus dem Lockfile: Das Container-Image unten muss dazu
+  # passen, sonst fehlen die Browser. So zieht es mit, wenn Renovate Playwright hebt.
+  playwright:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    outputs:
+      version: ${{ steps.version.outputs.version }}
+    steps:
+      - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
+        with:
+          sparse-checkout: pnpm-lock.yaml
+          sparse-checkout-cone-mode: false
+      - id: version
+        run: |
+          version=$(grep -oE "^  '@playwright/test@[0-9]+\.[0-9]+\.[0-9]+'" pnpm-lock.yaml | head -1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
+          test -n "$version"
+          echo "version=$version" >> "$GITHUB_OUTPUT"
+
   e2e:
+    needs: playwright
     runs-on: ubuntu-latest
     timeout-minutes: 15
+    # Offizielles Playwright-Image mit Chromium (Android-Profile), WebKit (iPhone-Profile)
+    # und allen Systempaketen. Vorher holte `playwright install --with-deps` die Pakete per
+    # apt; am 06.11.2026 hing das am Ubuntu-Spiegel der Runner, bis das Zeitlimit griff.
+    container:
+      image: mcr.microsoft.com/playwright:v${{ needs.playwright.outputs.version }}-noble
+      options: --ipc=host
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
       - uses: pnpm/action-setup@73e46992e05b19abd31f2f3c20e0e7370d762115 # v6
@@ -47,10 +72,6 @@ jobs:
           check-latest: true
           cache: pnpm
       - run: pnpm install --frozen-lockfile --ignore-scripts
-      - name: Playwright-Browser
-        # WebKit für die iPhone-Profile (Safari-Engine), Chromium für Android.
-        working-directory: app
-        run: ./node_modules/.bin/playwright install --with-deps chromium webkit
       - name: E2E (Playwright, inkl. emulierter iPhones und Android-Geräte)
         run: pnpm --filter @fm/app test:e2e
       - name: Geräte-Screenshots
