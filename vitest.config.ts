@@ -15,6 +15,13 @@ export default defineConfig({
       "app/vitest.config.mts",
       {
         test: {
+          name: "scripts",
+          environment: "node",
+          include: ["scripts/*.test.mjs"],
+        },
+      },
+      {
+        test: {
           name: "security",
           environment: "node",
           include: [".github/scripts/*.test.mjs"],

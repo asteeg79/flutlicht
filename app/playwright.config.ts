@@ -14,6 +14,9 @@ export const testEnv = {
   RATE_LIMIT_PER_MIN: "1000000",
   AUTH_RATE_LIMIT: "1000000",
   PORT: String(PORT),
+  // Hält das Transferfenster offen, auch an Spieltag-Wochenenden; verschiebt nur die
+  // gestagten Anstoßzeiten (scripts/e2e-window.mjs über scripts/stage-data.mjs).
+  FM_E2E_TRANSFER_WINDOW: "open",
 };
 
 /** Geräte für e2e/devices.spec.ts (Projektname → Playwright-Profil). */
