@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-07T16:52:46.009Z",
+  "fetchedAt": "2026-11-07T20:56:38.158Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -7910,7 +7910,7 @@
         "tla": null,
         "wikidataId": "Q15755"
       },
-      "lastUpdateDateTime": "2026-11-07T17:50:15.06",
+      "lastUpdateDateTime": "2026-11-07T17:55:34.02",
       "matchIsFinished": true,
       "matchResults": [
         {
@@ -8017,9 +8017,9 @@
           "goalID": 152384,
           "scoreTeam1": 5,
           "scoreTeam2": 2,
-          "matchMinute": 92,
-          "goalGetterID": 0,
-          "goalGetterName": "",
+          "matchMinute": 93,
+          "goalGetterID": 28147,
+          "goalGetterName": "Uchenna Ogundu",
           "scoringTeamId": 95,
           "isPenalty": false,
           "isOwnGoal": false,
@@ -8062,7 +8062,7 @@
         "tla": null,
         "wikidataId": "Q15789"
       },
-      "lastUpdateDateTime": "2026-11-07T17:50:34.067",
+      "lastUpdateDateTime": "2026-11-07T17:53:06.043",
       "matchIsFinished": true,
       "matchResults": [
         {
@@ -8246,7 +8246,7 @@
     {
       "matchID": 83230,
       "matchDateTime": "2026-11-07T18:30:00",
-      "timeZoneID": "W. Europe Standard Time",
+      "timeZoneID": null,
       "leagueId": 4937,
       "leagueName": "1. Fußball-Bundesliga 2026/2027",
       "leagueSeason": 2026,
@@ -8275,10 +8275,45 @@
         "tla": null,
         "wikidataId": null
       },
-      "lastUpdateDateTime": "2026-09-10T17:28:25.883",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-11-07T20:27:05.163",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 130967,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 1,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130968,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 1,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 152389,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 7,
+          "goalGetterID": 24990,
+          "goalGetterName": "M. Mittelstädt",
+          "scoringTeamId": 16,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": null,
       "numberOfViewers": null
     },
