@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-08T17:05:54.504Z",
+  "fetchedAt": "2026-11-08T21:13:30.535Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -8373,7 +8373,7 @@
         "tla": null,
         "wikidataId": "Q104761"
       },
-      "lastUpdateDateTime": "2026-11-08T17:24:57.797",
+      "lastUpdateDateTime": "2026-11-08T21:20:15.487",
       "matchIsFinished": true,
       "matchResults": [
         {
@@ -8443,7 +8443,7 @@
         "locationCity": "Köln",
         "locationStadium": "RheinEnergieStadion "
       },
-      "numberOfViewers": null
+      "numberOfViewers": 50000
     },
     {
       "matchID": 83232,
@@ -8477,8 +8477,8 @@
         "tla": null,
         "wikidataId": "Q141971"
       },
-      "lastUpdateDateTime": "2026-11-08T17:30:15.387",
-      "matchIsFinished": false,
+      "lastUpdateDateTime": "2026-11-08T21:20:27.223",
+      "matchIsFinished": true,
       "matchResults": [
         {
           "resultID": 130993,
@@ -8493,7 +8493,7 @@
         {
           "resultID": 130994,
           "resultName": "Endergebnis",
-          "pointsTeam1": 0,
+          "pointsTeam1": 2,
           "pointsTeam2": 0,
           "resultOrderID": 2,
           "resultTypeID": 2,
@@ -8501,13 +8501,40 @@
           "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
         }
       ],
-      "goals": [],
+      "goals": [
+        {
+          "goalID": 152430,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 55,
+          "goalGetterID": 785,
+          "goalGetterName": "R. Khedira",
+          "scoringTeamId": 112,
+          "isPenalty": false,
+          "isOwnGoal": true,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 152431,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 67,
+          "goalGetterID": 24246,
+          "goalGetterName": "Y. Suzuki",
+          "scoringTeamId": 112,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 1484,
         "locationCity": "Freiburg",
         "locationStadium": "Europa-Park Stadion"
       },
-      "numberOfViewers": null
+      "numberOfViewers": 33400
     },
     {
       "matchID": 83231,
@@ -8541,16 +8568,77 @@
         "tla": null,
         "wikidataId": "Q32494"
       },
-      "lastUpdateDateTime": "2026-11-08T11:52:51.033",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-11-08T21:42:05.193",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 130997,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 2,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130998,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 2,
+          "pointsTeam2": 1,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 152435,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 10,
+          "goalGetterID": 20687,
+          "goalGetterName": "F. Asllani",
+          "scoringTeamId": 175,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 152462,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 26,
+          "goalGetterID": 19004,
+          "goalGetterName": "T. Lemperle",
+          "scoringTeamId": 175,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 152468,
+          "scoreTeam1": 2,
+          "scoreTeam2": 1,
+          "matchMinute": 81,
+          "goalGetterID": 22890,
+          "goalGetterName": "J. Adamu",
+          "scoringTeamId": 9,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 1905,
         "locationCity": "Sinsheim",
         "locationStadium": "SNP Arena"
       },
-      "numberOfViewers": null
+      "numberOfViewers": 28369
     },
     {
       "matchID": 83237,
