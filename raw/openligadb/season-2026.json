@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-08T11:59:39.021Z",
+  "fetchedAt": "2026-11-08T17:05:54.504Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -8373,10 +8373,71 @@
         "tla": null,
         "wikidataId": "Q104761"
       },
-      "lastUpdateDateTime": "2026-11-08T11:52:27",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-11-08T17:24:57.797",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 130983,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 1,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130984,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 1,
+          "pointsTeam2": 2,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 152422,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 7,
+          "goalGetterID": 27187,
+          "goalGetterName": "A. Garcia",
+          "scoringTeamId": 6,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 152427,
+          "scoreTeam1": 0,
+          "scoreTeam2": 2,
+          "matchMinute": 85,
+          "goalGetterID": 18331,
+          "goalGetterName": "P. Schick",
+          "scoringTeamId": 6,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 152428,
+          "scoreTeam1": 1,
+          "scoreTeam2": 2,
+          "matchMinute": 92,
+          "goalGetterID": 21344,
+          "goalGetterName": "S. El Mala",
+          "scoringTeamId": 65,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 509,
         "locationCity": "Köln",
@@ -8416,9 +8477,30 @@
         "tla": null,
         "wikidataId": "Q141971"
       },
-      "lastUpdateDateTime": "2026-11-08T11:52:39.633",
+      "lastUpdateDateTime": "2026-11-08T17:30:15.387",
       "matchIsFinished": false,
-      "matchResults": [],
+      "matchResults": [
+        {
+          "resultID": 130993,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 130994,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": {
         "locationID": 1484,

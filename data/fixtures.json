@@ -1177,8 +1177,12 @@
     "awayTeamId": 2681,
     "kickoffUtc": "2026-11-08T14:30:00Z",
     "originalKickoffUtc": "2026-11-08T14:30:00Z",
-    "status": "scheduled",
-    "dataState": "none"
+    "status": "finished",
+    "score": {
+      "home": 1,
+      "away": 2
+    },
+    "dataState": "pending"
   },
   {
     "matchday": 9,
@@ -1188,7 +1192,7 @@
     "awayTeamId": 2547,
     "kickoffUtc": "2026-11-08T16:30:00Z",
     "originalKickoffUtc": "2026-11-08T16:30:00Z",
-    "status": "scheduled",
+    "status": "live",
     "dataState": "none"
   },
   {
