@@ -40,8 +40,12 @@ jobs:
   playwright:
     runs-on: ubuntu-latest
     timeout-minutes: 5
+    permissions:
+      contents: read
+      pull-requests: read # für „Schon im PR geprüft?“
     outputs:
       version: ${{ steps.version.outputs.version }}
+      e2e: ${{ steps.pr.outputs.e2e }}
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
@@ -52,9 +56,29 @@ jobs:
           version=$(grep -oE "^  '@playwright/test@[0-9]+\.[0-9]+\.[0-9]+'" pnpm-lock.yaml | head -1 | grep -oE "[0-9]+\.[0-9]+\.[0-9]+")
           test -n "$version"
           echo "version=$version" >> "$GITHUB_OUTPUT"
+      # Ein Push auf main aus einem gemergten PR wurde im PR schon per E2E geprüft; der
+      # zweite Lauf entfällt (Actions-Minuten, Auswertung 11.11.2026). Direkte Pushes ohne
+      # PR und alle PRs prüft E2E weiterhin. Im Zweifel (API nicht erreichbar) läuft E2E.
+      - name: Schon im PR geprüft?
+        id: pr
+        env:
+          GH_TOKEN: ${{ github.token }}
+          EVENT: ${{ github.event_name }}
+        run: |
+          e2e=true
+          if [ "$EVENT" = push ]; then
+            n=$(gh api "repos/$GITHUB_REPOSITORY/commits/$GITHUB_SHA/pulls" \
+              --jq '[.[] | select(.merged_at != null)] | length' 2>/dev/null || echo 0)
+            if [ "${n:-0}" -gt 0 ]; then
+              e2e=false
+              echo "::notice::Commit stammt aus einem gemergten PR, E2E lief dort schon."
+            fi
+          fi
+          echo "e2e=$e2e" >> "$GITHUB_OUTPUT"
 
   e2e:
     needs: playwright
+    if: needs.playwright.outputs.e2e == 'true'
     runs-on: ubuntu-latest
     timeout-minutes: 15
     # Offizielles Playwright-Image mit Chromium (Android-Profile), WebKit (iPhone-Profile)
