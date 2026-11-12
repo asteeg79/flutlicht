@@ -28,45 +28,45 @@ env:
   SEMGREP_VERSION: "1.182.0"
 
 jobs:
-  scanners:
+  # Scanner und Claude in einem Job: Jeder Job wird auf ganze Minuten aufgerundet, beide
+  # dauern meist unter einer Minute (Actions-Minuten, Auswertung 11.11.2026). Die Scanner
+  # laufen weiter, auch wenn sie etwas finden, damit das Claude-Review trotzdem kommt; der
+  # letzte Schritt lässt den Job dann scheitern.
+  review:
     if: github.event.pull_request.head.repo.full_name == github.repository
     runs-on: ubuntu-latest
-    timeout-minutes: 10
+    timeout-minutes: 30
+    permissions:
+      contents: read
+      pull-requests: write
     env:
       BASE_SHA: ${{ github.event.pull_request.base.sha }}
       HEAD_SHA: ${{ github.event.pull_request.head.sha }}
+      REVIEW_TOOL_SHA: 0c6a49f1fa56a1d472575da86a94dbc1edb78eda # anthropics/claude-code-security-review, main vom 11.02.2026
+      CLAUDE_CODE_VERSION: 2.1.311 # npm-Tag „stable“ am 04.11.2026, braucht Node 22+
     steps:
       - uses: actions/checkout@3d3c42e5aac5ba805825da76410c181273ba90b1 # v7
         with:
           fetch-depth: 0
       - name: gitleaks (Commits des PRs)
+        id: gitleaks
+        continue-on-error: true
         run: |
           curl -sSfL --proto '=https' --tlsv1.2 -o gitleaks.tgz "https://github.com/gitleaks/gitleaks/releases/download/v${GITLEAKS_VERSION}/gitleaks_${GITLEAKS_VERSION}_linux_x64.tar.gz"
           echo "${GITLEAKS_SHA256}  gitleaks.tgz" | sha256sum -c -
           tar xzf gitleaks.tgz gitleaks && rm gitleaks.tgz
           ./gitleaks git . --no-banner --redact --log-opts="${BASE_SHA}..${HEAD_SHA}"
       - name: Semgrep (nur neue Funde, Schwere ERROR)
+        id: semgrep
+        continue-on-error: true
         run: |
           pipx install "semgrep==${SEMGREP_VERSION}"
           semgrep scan --config p/default --metrics=off --disable-version-check \
             --baseline-commit "$BASE_SHA" --severity ERROR --error \
             --exclude raw --exclude data --exclude reuse --exclude app/public
-
-  claude-review:
-    if: >-
-      github.event.pull_request.head.repo.full_name == github.repository &&
-      github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
-    runs-on: ubuntu-latest
-    timeout-minutes: 25
-    permissions:
-      contents: read
-      pull-requests: write
-    env:
-      REVIEW_TOOL_SHA: 0c6a49f1fa56a1d472575da86a94dbc1edb78eda # anthropics/claude-code-security-review, main vom 11.02.2026
-      CLAUDE_CODE_VERSION: 2.1.311 # npm-Tag „stable“ am 04.11.2026, braucht Node 22+
-    steps:
       - name: Ohne ANTHROPIC_API_KEY überspringen
         id: key
+        if: github.actor != 'renovate[bot]' && github.actor != 'dependabot[bot]'
         env:
           ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
         run: |
@@ -174,3 +174,14 @@ jobs:
         with:
           path: .claude-review-marke
           key: claude-review-${{ github.event.pull_request.number }}-${{ github.event.pull_request.head.sha }}
+      - name: Ergebnis der Scanner
+        if: always()
+        env:
+          GITLEAKS: ${{ steps.gitleaks.outcome }}
+          SEMGREP: ${{ steps.semgrep.outcome }}
+        run: |
+          echo "gitleaks: $GITLEAKS, Semgrep: $SEMGREP"
+          if [ "$GITLEAKS" = failure ] || [ "$SEMGREP" = failure ]; then
+            echo "::error::Scanner haben etwas gefunden (siehe Schritte gitleaks und Semgrep)."
+            exit 1
+          fi
