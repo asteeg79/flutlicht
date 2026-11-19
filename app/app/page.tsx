@@ -16,11 +16,11 @@ export default function StartPage() {
     >
       <div
         aria-hidden
-        className="arena-anim absolute -top-[60px] left-[4%] h-[760px] w-[150px] origin-top animate-[arena-beam-l_3s_ease-in-out_infinite] bg-[linear-gradient(180deg,rgb(255_213_74/0.5),rgb(255_213_74/0)_75%)] [clip-path:polygon(42%_0,58%_0,100%_100%,0_100%)]"
+        className="arena-anim absolute top-[-60px] left-[4%] h-[760px] w-[150px] origin-top animate-[arena-beam-l_3s_ease-in-out_infinite] bg-[linear-gradient(180deg,rgb(255_213_74/0.5),rgb(255_213_74/0)_75%)] [clip-path:polygon(42%_0,58%_0,100%_100%,0_100%)]"
       />
       <div
         aria-hidden
-        className="arena-anim absolute -top-[60px] right-[4%] h-[760px] w-[150px] origin-top animate-[arena-beam-r_3s_ease-in-out_infinite] bg-[linear-gradient(180deg,rgb(255_244_214/0.4),rgb(255_244_214/0)_75%)] [clip-path:polygon(42%_0,58%_0,100%_100%,0_100%)]"
+        className="arena-anim absolute top-[-60px] right-[4%] h-[760px] w-[150px] origin-top animate-[arena-beam-r_3s_ease-in-out_infinite] bg-[linear-gradient(180deg,rgb(255_244_214/0.4),rgb(255_244_214/0)_75%)] [clip-path:polygon(42%_0,58%_0,100%_100%,0_100%)]"
       />
       <div className="relative">
         <Wordmark />

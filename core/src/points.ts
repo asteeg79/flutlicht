@@ -80,12 +80,9 @@ export function ratingPoints(rating: number | null, minutes: number): number {
 
 /** Gelb-Rot ersetzt die vorherige Gelbe Karte, eine glatt Rote kommt hinzu. */
 function cardPoints(p: PlayerMatchInput): number {
-  const second = p.yellowRed
-    ? SCORING.yellowRed
-    : p.yellow
-      ? SCORING.yellow
-      : 0;
-  return second + (p.red ? SCORING.red : 0);
+  const red = p.red ? SCORING.red : 0;
+  if (p.yellowRed) return SCORING.yellowRed + red;
+  return (p.yellow ? SCORING.yellow : 0) + red;
 }
 
 export interface SlotScore {

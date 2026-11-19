@@ -104,7 +104,7 @@ function Row({
     <div className="flex justify-between gap-4">
       <dt className="shrink-0 text-muted">{label}</dt>
       <dd
-        className={`min-w-0 whitespace-pre-line text-right [overflow-wrap:anywhere] ${alert ? "text-down" : ""}`}
+        className={`min-w-0 whitespace-pre-line text-right wrap-anywhere ${alert ? "text-down" : ""}`}
       >
         {value}
       </dd>

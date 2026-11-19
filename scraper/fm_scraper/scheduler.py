@@ -71,6 +71,133 @@ def _counts(f: dict, grace: timedelta) -> bool:
     return _kickoff(f) - original <= grace
 
 
+When = Callable[[str, Callable[[], datetime]], datetime]
+"""Zeitpunkt einer Aufgabe: beim ersten Mal gezogen und in state["planned"] gemerkt."""
+
+
+def _round_task(
+    now: datetime, by_md: dict[int, list[dict]], raw_dir: Path, done: dict[str, str], when: When, rng: random.Random
+) -> list[Task]:
+    """round-events: Dienstag 10–14 Uhr vor dem nächsten Spieltag ohne Round-Datei."""
+    md = next((md for md in sorted(by_md) if not all(f["status"] == "finished" for f in by_md[md])), None)
+    if md is None or round_path(raw_dir, md).exists():
+        return []
+    first = min(_kickoff(f) for f in by_md[md])
+    if first - now > timedelta(days=8):
+        return []
+    kick_day = first.astimezone(BERLIN).date()
+    tuesday = max(kick_day - timedelta(days=(kick_day.weekday() - 1) % 7), now.astimezone(BERLIN).date())
+    key = f"round:{md}"
+    t = when(key, lambda: _random_between(rng, _at(tuesday, 10), _at(tuesday, 14)))
+    # Auch nach dem Anpfiff noch holen: ohne Event-IDs gibt es weder vorläufige noch finale Daten.
+    return [Task(key, "round-events", matchday=md)] if key not in done and t <= now else []
+
+
+def _provisional_tasks(
+    now: datetime, fixtures: list[dict], raw_dir: Path, done: dict[str, str], when: When, rng: random.Random
+) -> list[Task]:
+    """match-provisional: Anpfiff + 135–155 Min., bis zu 3 Versuche im Abstand von 15 Min.,
+    nur innerhalb von 24 h nach Anpfiff."""
+    tasks: list[Task] = []
+    for f in fixtures:
+        event = f.get("sofascoreEventId")
+        if event is None or f["status"] == "postponed" or f["dataState"] not in ("none", "pending"):
+            continue
+        key = f"prov:{event}"
+        kickoff = _kickoff(f)
+        if key in done or match_final.has_final(raw_dir, event) or not now - PROVISIONAL_WINDOW <= kickoff <= now:
+            continue
+        t = when(key, lambda k=kickoff: k + timedelta(minutes=rng.uniform(*PROVISIONAL_MINUTES)))
+        if t <= now:
+            tasks.append(Task(key, "match-provisional", matchday=f["matchday"], event=event))
+    return tasks
+
+
+def _open_final(
+    by_md: dict[int, list[dict]], state: dict[str, Any], raw_dir: Path, grace: timedelta
+) -> tuple[int, list[dict]] | None:
+    """Frühester Spieltag, dessen gezählte Spiele beendet sind, dem finale Daten fehlen und
+    der noch nicht versucht wurde; mit seinen gezählten Spielen."""
+    for md in sorted(by_md):
+        games = [f for f in by_md[md] if _counts(f, grace)]
+        if not games or not all(f["status"] == "finished" for f in games):
+            continue
+        finals = [match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games]
+        if all(finals):
+            continue
+        key = f"final:{md}"
+        # „Erledigt“ ohne eine einzige finale Datei zählt nicht: Bis 12.10.2026 meldete match-final
+        # „ok“, ohne etwas abzurufen, wenn die Rundendatei von vor dem Spieltag stammte.
+        empty = key not in state.get("gaveUp", {}) and not any(finals)
+        if key in state["done"] and not empty:
+            continue  # versucht (ggf. aufgegeben); nicht die späteren Spieltage blockieren
+        return md, games
+    return None
+
+
+def _final_task(
+    now: datetime,
+    by_md: dict[int, list[dict]],
+    state: dict[str, Any],
+    raw_dir: Path,
+    when: When,
+    rng: random.Random,
+    grace: timedelta,
+) -> list[Task]:
+    """match-final bzw. backfill: höchstens ein Spieltag pro Tag, am Morgen nach dem letzten Spiel 08–10 Uhr."""
+    found = _open_final(by_md, state, raw_dir, grace)
+    if found is None:
+        return []
+    md, games = found
+    key = f"final:{md}"
+    today = now.astimezone(BERLIN).date()
+    finals_today = {
+        k
+        for k, v in state["done"].items()
+        if k.startswith("final:") and datetime.fromisoformat(v).astimezone(BERLIN).date() == today
+    }
+    if finals_today - {key}:
+        return []
+    last = max(_kickoff(f) for f in games).astimezone(BERLIN).date()
+    day = max(last + timedelta(days=1), today)
+    t = when(key, lambda: _random_between(rng, _at(day, 8), _at(day, 10)))
+    if t > now:
+        return []
+    job = "match-final" if round_path(raw_dir, md).exists() else "backfill"
+    return [Task(key, job, matchday=md)]
+
+
+def _squads_task(now: datetime, raw_dir: Path, done: dict[str, str], when: When, rng: random.Random) -> list[Task]:
+    """squads: montags und donnerstags 10–18 Uhr; im Transferfenster (Jan., Juli, Aug.) alle 2 Tage."""
+    today = now.astimezone(BERLIN).date()
+    if today.month in TRANSFER_MONTHS:
+        day = date.fromordinal(today.toordinal() - today.toordinal() % 2)
+    else:
+        day = max(today - timedelta(days=(today.weekday() - wd) % 7) for wd in SQUAD_WEEKDAYS)
+    key = f"squads:{day.isoformat()}"
+    t = when(key, lambda: _random_between(rng, _at(day, 10), _at(day, 18)))
+    if key not in done and t <= now and not squads.fetched_since(raw_dir, day):
+        return [Task(key, "squads")]
+    return []
+
+
+def _images_task(
+    now: datetime, state: dict[str, Any], images_missing: Callable[[], bool], when: When, rng: random.Random
+) -> list[Task]:
+    """images: fehlende Bilder, höchstens ein Lauf pro Stunde. Die Prüfung liest alle Kader;
+    ist nichts offen, gilt das bis zur nächsten Stunde."""
+    local_now = now.astimezone(BERLIN)
+    key = f"images:{local_now.strftime('%Y-%m-%dT%H')}"
+    if key in state["done"] or state.get("imagesComplete") == key:
+        return []
+    if not images_missing():
+        state["imagesComplete"] = key
+        return []
+    hour = local_now.replace(minute=0, second=0, microsecond=0)
+    t = when(key, lambda: _random_between(rng, hour, hour + timedelta(minutes=40)))
+    return [Task(key, "images")] if t <= now else []
+
+
 def plan(
     now: datetime,
     fixtures: list[dict],
@@ -85,8 +212,7 @@ def plan(
     `grace`: Kulanz für verlegte Spiele aus data/season.json (postponedGraceDays)."""
     planned: dict[str, str] = state.setdefault("planned", {})
     done: dict[str, str] = state.setdefault("done", {})
-    local_now = now.astimezone(BERLIN)
-    if config.NIGHT_HOURS[0] <= local_now.hour < config.NIGHT_HOURS[1]:
+    if config.NIGHT_HOURS[0] <= now.astimezone(BERLIN).hour < config.NIGHT_HOURS[1]:
         return []
 
     def when(key: str, draw: Callable[[], datetime]) -> datetime:
@@ -94,94 +220,18 @@ def plan(
             planned[key] = _out_of_night(draw(), rng).astimezone(timezone.utc).isoformat()
         return datetime.fromisoformat(planned[key])
 
-    tasks: list[Task] = []
     by_md: dict[int, list[dict]] = {}
     for f in fixtures:
         by_md.setdefault(f["matchday"], []).append(f)
 
-    # round-events: Dienstag 10–14 Uhr vor dem nächsten Spieltag ohne Round-Datei.
-    for md in sorted(by_md):
-        games = by_md[md]
-        if all(f["status"] == "finished" for f in games):
-            continue
-        if round_path(raw_dir, md).exists():
-            break
-        first = min(_kickoff(f) for f in games)
-        if first - now > timedelta(days=8):
-            break
-        kick_day = first.astimezone(BERLIN).date()
-        tuesday = max(kick_day - timedelta(days=(kick_day.weekday() - 1) % 7), local_now.date())
-        key = f"round:{md}"
-        t = when(key, lambda: _random_between(rng, _at(tuesday, 10), _at(tuesday, 14)))
-        # Auch nach dem Anpfiff noch holen: ohne Event-IDs gibt es weder vorläufige noch finale Daten.
-        if key not in done and t <= now:
-            tasks.append(Task(key, "round-events", matchday=md))
-        break
-
-    # match-provisional: Anpfiff + 135–155 Min., bis zu 3 Versuche im Abstand von 15 Min.,
-    # nur innerhalb von 24 h nach Anpfiff.
-    for f in fixtures:
-        event = f.get("sofascoreEventId")
-        if event is None or f["status"] == "postponed" or f["dataState"] not in ("none", "pending"):
-            continue
-        key = f"prov:{event}"
-        if key in done or match_final.has_final(raw_dir, event):
-            continue
-        kickoff = _kickoff(f)
-        if kickoff > now or now - kickoff > PROVISIONAL_WINDOW:
-            continue
-        t = when(key, lambda k=kickoff: k + timedelta(minutes=rng.uniform(*PROVISIONAL_MINUTES)))
-        if t <= now:
-            tasks.append(Task(key, "match-provisional", matchday=f["matchday"], event=event))
-
-    # match-final bzw. backfill: höchstens ein Spieltag pro Tag, am Morgen nach dem letzten Spiel 08–10 Uhr.
-    finals_today = {k for k, v in done.items() if k.startswith("final:") and datetime.fromisoformat(v).astimezone(BERLIN).date() == local_now.date()}
-    for md in sorted(by_md):
-        games = [f for f in by_md[md] if _counts(f, grace)]
-        if not games or not all(f["status"] == "finished" for f in games):
-            continue
-        if all(match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games):
-            continue
-        key = f"final:{md}"
-        # „Erledigt“ ohne eine einzige finale Datei zählt nicht: Bis 12.10.2026 meldete match-final
-        # „ok“, ohne etwas abzurufen, wenn die Rundendatei von vor dem Spieltag stammte.
-        empty = key not in state.get("gaveUp", {}) and not any(match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games)
-        if key in done and not empty:
-            continue  # versucht (ggf. aufgegeben); nicht die späteren Spieltage blockieren
-        if finals_today - {key}:
-            break
-        last = max(_kickoff(f) for f in games).astimezone(BERLIN).date()
-        day = max(last + timedelta(days=1), local_now.date())
-        t = when(key, lambda d=day: _random_between(rng, _at(d, 8), _at(d, 10)))
-        if t <= now:
-            has_round = round_path(raw_dir, md).exists()
-            tasks.append(Task(key, "match-final" if has_round else "backfill", matchday=md))
-        break
-
-    # squads: montags und donnerstags 10–18 Uhr; im Transferfenster (Jan., Juli, Aug.) alle 2 Tage.
-    today = local_now.date()
-    if today.month in TRANSFER_MONTHS:
-        day = date.fromordinal(today.toordinal() - today.toordinal() % 2)
-    else:
-        day = max(today - timedelta(days=(today.weekday() - wd) % 7) for wd in SQUAD_WEEKDAYS)
-    key = f"squads:{day.isoformat()}"
-    t = when(key, lambda: _random_between(rng, _at(day, 10), _at(day, 18)))
-    if key not in done and t <= now and not squads.fetched_since(raw_dir, day):
-        tasks.append(Task(key, "squads"))
-
-    # images: fehlende Bilder, höchstens ein Lauf pro Stunde. Die Prüfung liest alle Kader;
-    # ist nichts offen, gilt das bis zur nächsten Stunde.
-    key = f"images:{local_now.strftime('%Y-%m-%dT%H')}"
-    if key not in done and state.get("imagesComplete") != key:
-        if images_missing():
-            hour = local_now.replace(minute=0, second=0, microsecond=0)
-            t = when(key, lambda: _random_between(rng, hour, hour + timedelta(minutes=40)))
-            if t <= now:
-                tasks.append(Task(key, "images"))
-        else:
-            state["imagesComplete"] = key
-
-    return tasks
+    # Reihenfolge fest: Die Zufallszeitpunkte werden in dieser Folge gezogen.
+    return [
+        *_round_task(now, by_md, raw_dir, done, when, rng),
+        *_provisional_tasks(now, fixtures, raw_dir, done, when, rng),
+        *_final_task(now, by_md, state, raw_dir, when, rng, grace),
+        *_squads_task(now, raw_dir, done, when, rng),
+        *_images_task(now, state, images_missing, when, rng),
+    ]
 
 
 def record(state: dict[str, Any], task: Task, now: datetime, outcome: str, error: str | None = None) -> None:
@@ -282,6 +332,7 @@ def run_once(clock: Callable[[], datetime] = _utc_now) -> int:
     from . import gitsync, heartbeat
     from .client import STATE_FILE as PAUSE_FILE
     from .client import FetchError, PauseRequired, default_client
+    from .errors import JobError
     from .teams import load_teams
 
     now = clock()
@@ -333,7 +384,7 @@ def run_once(clock: Callable[[], datetime] = _utc_now) -> int:
                 except PauseRequired as e:
                     log.warning("Abbruch aller Jobs: %s", e)
                     break
-                except (FetchError, SystemExit) as e:
+                except (FetchError, JobError) as e:
                     log.warning("%s fehlgeschlagen: %s", task.key, e)
                     outcome, paths, error = "failed", (), str(e)[:300]
                 except Exception as e:
