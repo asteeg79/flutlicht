@@ -1,5 +1,5 @@
 // Übernommen aus WM-Tipp eslint.config.mjs, angepasst: Pakete app/core/pipeline,
-// sonarjs weggelassen (laut KONZEPT 14 optional), reuse/ und raw/ ignoriert.
+// sonarjs weggelassen (laut KONZEPT 14 optional), raw/ ignoriert.
 // - typescript-eslint "recommended" (ohne typgeprüfte Regeln → schnell & ruhig)
 // - React-Hooks-Regeln nur für die App
 // - eslint-config-prettier zuletzt: deaktiviert Stilregeln, die Prettier abdeckt
@@ -17,7 +17,6 @@ export default tseslint.config(
       "**/.next/**",
       "raw/**",
       "data/**",
-      "reuse/**",
       "scraper/**",
       "app/generated/**",
       "app/public/**",
