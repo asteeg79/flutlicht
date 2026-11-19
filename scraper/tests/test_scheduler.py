@@ -1,7 +1,9 @@
 """Scheduler-Entscheidungen mit fester Uhr (KONZEPT 10: Zeitfenster, Retries, Nachtpause)."""
 
 import json
+import os
 from datetime import datetime, timedelta, timezone
+from pathlib import Path
 from zoneinfo import ZoneInfo
 
 import pytest
@@ -357,3 +359,26 @@ def test_unerwarteter_fehler_zaehlt_als_fehlversuch(tmp_path, monkeypatch, offli
     assert "images:2026-10-08T18" in state["done"]
     assert beats[1]["lastJob"]["outcome"] == "failed"
     assert beats[1]["lastJob"]["error"] == "KeyError: 'players'"
+
+
+CONTRACT = Path(__file__).parent / "fixtures" / "status-contract.json"
+
+
+def test_status_vertrag_mit_der_app():
+    """Das Lebenszeichen muss zum zod-Schema ScraperStatus passen (core/schemas/scraper.ts).
+    Diese Datei prüft core/test/scraper-contract.test.ts gegen das Schema; ändert sich
+    status(), mit FM_UPDATE_CONTRACT=1 neu schreiben und beide Tests laufen lassen."""
+    now = datetime(2026, 10, 8, 16, 0, tzinfo=timezone.utc)
+    state = {
+        "planned": {"round:9": "2026-10-13T08:30:00+00:00", "squads:2026-10-08": "2026-10-08T15:30:00+00:00"},
+        "done": {"squads:2026-10-05": "2026-10-05T09:00:00+00:00"},
+        "due": ["squads:2026-10-08"],
+        "attempts": {"squads:2026-10-08": 1},
+        "lastJob": {"key": "squads:2026-10-08", "at": "2026-10-08T15:31:00+00:00", "outcome": "failed", "error": "KeyError: 'players'"},
+        "gaveUp": {"final:3": "2026-10-06T07:00:00+00:00"},
+    }
+    pause = {"pauseUntil": "2026-10-08T21:31:00+00:00", "pauseReason": "429 Too Many Requests", "route": "page"}
+    payload = status(state, pause, now, "5cfb8a4", 2)
+    if os.environ.get("FM_UPDATE_CONTRACT"):
+        CONTRACT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
+    assert payload == json.loads(CONTRACT.read_text())
