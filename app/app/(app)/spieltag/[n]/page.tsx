@@ -105,7 +105,7 @@ export default async function MatchdayPage({
   const nextKickoff = openSlots
     .map((s) => fixtureOf((s.player ?? s.starter).teamId)?.kickoffUtc)
     .filter((k): k is string => k !== undefined)
-    .sort()[0];
+    .sort((a, b) => a.localeCompare(b))[0];
 
   // ——— Kopf ———
   let hero: ReactNode;
