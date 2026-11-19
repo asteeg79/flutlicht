@@ -1,5 +1,5 @@
 import { NextResponse } from "next/server";
-import { withUser } from "@/lib/api-route";
+import { readBody, withUser } from "@/lib/api-route";
 import { NotFound } from "@/lib/errors";
 import { updateProfile } from "@/lib/accounts";
 import { publicManager } from "@/lib/squad";
@@ -14,7 +14,7 @@ export const GET = withUser(async ({ user }) => {
 
 /** Eigenen Anzeige- und Teamnamen ändern. */
 export const PUT = withUser(async ({ user, request }) => {
-  const body = await request.json().catch(() => null);
+  const body = await readBody(request);
   const doc = await updateProfile(user.id, body);
   return NextResponse.json({
     displayName: doc.displayName,

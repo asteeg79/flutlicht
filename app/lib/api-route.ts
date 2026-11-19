@@ -111,20 +111,25 @@ async function handleErrors(
 }
 
 /**
- * Liest und validiert den Request-Body. Ersetzt das dreimal wortgleich
- * kopierte `safeParse(await request.json().catch(() => null))` — und deckt
- * dabei die zwei Handler mit ab, die bisher ungeprüftes JSON weiterreichten.
+ * Liest den Request-Body als JSON; kaputtes JSON ist 400. Für Handler, deren
+ * Fachfunktion die Eingabe selbst prüft (`parse` in lib/).
  */
+export async function readBody(
+  request: Request,
+  message = "Ungültige Eingabe",
+): Promise<unknown> {
+  try {
+    return await request.json();
+  } catch {
+    throw new BadRequest(message);
+  }
+}
+
+/** Liest und validiert den Request-Body. */
 export async function parseBody<T>(
   request: Request,
   schema: z.ZodType<T>,
   message = "Ungültige Eingabe",
 ): Promise<T> {
-  let raw: unknown;
-  try {
-    raw = await request.json();
-  } catch {
-    throw new BadRequest(message);
-  }
-  return parse(schema, raw, message);
+  return parse(schema, await readBody(request, message), message);
 }

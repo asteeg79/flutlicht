@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { deleteAccount } from "@/lib/admin";
-import { withAdmin } from "@/lib/api-route";
+import { readBody, withAdmin } from "@/lib/api-route";
 import { listAllManagers } from "@/lib/storage";
 
 /** Manager-Liste ohne Hashes; Konto löschen (KONZEPT 11, 15.4). */
@@ -19,6 +19,6 @@ export const GET = withAdmin(async () =>
 );
 
 export const DELETE = withAdmin(async ({ user, request }) => {
-  await deleteAccount(await request.json().catch(() => null), user.id);
+  await deleteAccount(await readBody(request), user.id);
   return NextResponse.json({ ok: true });
 });

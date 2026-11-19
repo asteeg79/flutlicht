@@ -1,4 +1,4 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { defaultLineup, type ManagerDoc, type MatchdayPoints } from "@fm/core";
 
 const { leagueTable, matchdayView } = await import("@/lib/standings");

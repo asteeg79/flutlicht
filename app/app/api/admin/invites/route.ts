@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { createInvite, revokeInvite } from "@/lib/admin";
-import { withAdmin } from "@/lib/api-route";
+import { readBody, withAdmin } from "@/lib/api-route";
 import { loadLeague } from "@/lib/storage";
 
 /** Einladungscodes erzeugen, anzeigen, widerrufen (KONZEPT 11). */
@@ -13,6 +13,6 @@ export const POST = withAdmin(async () =>
 );
 
 export const DELETE = withAdmin(async ({ request }) => {
-  await revokeInvite(await request.json().catch(() => null));
+  await revokeInvite(await readBody(request));
   return NextResponse.json({ ok: true });
 });
