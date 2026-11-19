@@ -339,7 +339,7 @@ def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeyp
 
     monkeypatch.setattr(scheduler, "_execute", execute)
 
-    assert scheduler.run_once(now) == 1
+    assert scheduler.run_once(lambda: now) == 1
     first, after_job = beats
     assert first == status({}, {}, now, "5cfb8a4", 0)
     assert after_job["lastJob"]["outcome"] == "failed"
@@ -347,7 +347,7 @@ def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeyp
     assert after_job["due"] == [{"key": "squads:2026-10-08", "attempts": 1}, {"key": "images:2026-10-08T18", "attempts": 0}]
     # Der nächste Lauf meldet die Pause gleich zu Beginn.
     tasks.clear()
-    scheduler.run_once(now + timedelta(minutes=5))
+    scheduler.run_once(lambda: now + timedelta(minutes=5))
     assert beats[2]["pause"] == {"until": "2026-10-08T21:41:00+00:00", "reason": "429 Too Many Requests"}
     assert beats[2]["due"] == [{"key": "squads:2026-10-08", "attempts": 1}, {"key": "images:2026-10-08T18", "attempts": 0}]
 
@@ -368,11 +368,12 @@ def test_unerwarteter_fehler_zaehlt_als_fehlversuch(tmp_path, monkeypatch, offli
 
     monkeypatch.setattr(scheduler, "_execute", execute)
 
-    assert scheduler.run_once(now) == 2
+    assert scheduler.run_once(lambda: now) == 2
     assert ran == ["squads", "images"]
     state = scheduler.load_state(tmp_path / "scheduler.json")
     assert state["attempts"] == {"squads:2026-10-08": 1}
-    assert "squads:2026-10-08" in state["planned"]
+    # Neuer Versuch 15 Min. nach dem Fehlschlag (Uhr aus run_once).
+    assert state["planned"]["squads:2026-10-08"] == (now + timedelta(minutes=15)).astimezone(timezone.utc).isoformat()
     assert "images:2026-10-08T18" in state["done"]
     assert beats[1]["lastJob"]["outcome"] == "failed"
     assert beats[1]["lastJob"]["error"] == "KeyError: 'players'"

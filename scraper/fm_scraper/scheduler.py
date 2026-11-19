@@ -266,7 +266,11 @@ def _execute(task: Task, client, raw_dir: Path) -> tuple[str, tuple[str, ...]]:
     return ("ok" if finished else "unfinished"), commit_paths(task.job)
 
 
-def run_once(now: datetime | None = None) -> int:
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def run_once(clock: Callable[[], datetime] = _utc_now) -> int:
     """Ein Scheduler-Lauf. Rückgabe: Anzahl ausgeführter Jobs."""
     import fcntl
 
@@ -275,7 +279,7 @@ def run_once(now: datetime | None = None) -> int:
     from .client import FetchError, PauseRequired, default_client
     from .teams import load_teams
 
-    now = now or datetime.now(timezone.utc)
+    now = clock()
     config.STATE_DIR.mkdir(parents=True, exist_ok=True)
     with open(LOCK_FILE, "w") as lock:
         try:
@@ -332,12 +336,12 @@ def run_once(now: datetime | None = None) -> int:
                     # Job fällig und riefe bei jedem Aufruf alle 5 Min. erneut ab (KONZEPT 5.6).
                     log.exception("%s fehlgeschlagen", task.key)
                     outcome, paths, error = "failed", (), f"{type(e).__name__}: {e}"[:300]
-                record(state, task, datetime.now(timezone.utc), outcome, error)
+                record(state, task, clock(), outcome, error)
                 save_state(STATE_FILE, state)
                 if paths:
                     gitsync.sync(config.REPO_ROOT, task.job, paths)
                 # Ein Lauf mit mehreren Jobs dauert länger als der Timer-Abstand.
-                beat(datetime.now(timezone.utc))
+                beat(clock())
                 ran += 1
         finally:
             client.close()
