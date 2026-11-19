@@ -8,7 +8,7 @@ import {
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict, parse } from "@/lib/api-route";
+import { BadRequest, Conflict, parse } from "@/lib/errors";
 import { finals, gameData } from "@/lib/game-data";
 import { updateManager } from "@/lib/manager-writes";
 import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";

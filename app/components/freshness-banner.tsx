@@ -1,7 +1,5 @@
-import { awaitingData } from "@fm/core";
+import { awaitingData, DATA_HINT_AFTER_MS, DATA_WINDOW_MS } from "@fm/core";
 import { gameData, teamById } from "@/lib/game-data";
-
-const HOUR_MS = 60 * 60 * 1000;
 
 /**
  * Frische-Banner (KONZEPT 6.3, 5.8): ein Spiel ist seit > 90 Min. beendet, aber es gibt
@@ -11,8 +9,8 @@ export function FreshnessBanner() {
   const waiting = awaitingData(
     gameData.fixtures,
     new Date(),
-    1.5 * HOUR_MS,
-    72 * HOUR_MS,
+    DATA_HINT_AFTER_MS,
+    DATA_WINDOW_MS,
   );
   if (waiting.length === 0) return null;
   const names = waiting.map(

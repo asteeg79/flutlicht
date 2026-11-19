@@ -1,7 +1,7 @@
 // Der eine Schreibweg für bestehende Manager-Dokumente (KONZEPT 7.3): frisch laden,
 // ändern, speichern. Neue Konten legt accounts.ts direkt mit saveManager an.
 import type { ManagerDoc } from "@fm/core";
-import { Conflict, NotFound } from "@/lib/api-route";
+import { Conflict, NotFound } from "@/lib/errors";
 import { loadManager, saveManager } from "@/lib/storage";
 
 type Change = (doc: ManagerDoc) => ManagerDoc | Promise<ManagerDoc>;

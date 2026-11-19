@@ -10,7 +10,7 @@ import {
   type Player,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, parse } from "@/lib/api-route";
+import { BadRequest, parse } from "@/lib/errors";
 import { finals, gameData } from "@/lib/game-data";
 import { updateManager } from "@/lib/manager-writes";
 

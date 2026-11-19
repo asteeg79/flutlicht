@@ -2,7 +2,7 @@
 // (löst compute.yml aus) und startet Neuberechnungen per repository_dispatch.
 // Muster: fetch auf api.github.com wie im WM-Tipp-Worker. Fine-grained PAT, nur dieses
 // Repo, Contents R/W + Actions R/W (GITHUB_PAT, GITHUB_REPO).
-import { Conflict, Upstream } from "@/lib/api-route";
+import { Conflict, Upstream } from "@/lib/errors";
 
 const API = "https://api.github.com";
 const BRANCH = "main";

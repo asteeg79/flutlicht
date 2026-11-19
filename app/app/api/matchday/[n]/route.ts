@@ -1,6 +1,7 @@
 import { RULES } from "@fm/core";
 import { NextResponse } from "next/server";
-import { BadRequest, withUser } from "@/lib/api-route";
+import { withUser } from "@/lib/api-route";
+import { BadRequest } from "@/lib/errors";
 import { matchdayView } from "@/lib/standings";
 import { listAllManagers } from "@/lib/storage";
 

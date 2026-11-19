@@ -1,7 +1,6 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it } from "vitest";
 import { defaultLineup, type ManagerDoc, type MatchdayPoints } from "@fm/core";
 
-vi.mock("@/lib/auth", () => ({ auth: async () => null }));
 const { leagueTable, matchdayView } = await import("@/lib/standings");
 const { players, SQUAD } = await import("@/test/fixtures");
 

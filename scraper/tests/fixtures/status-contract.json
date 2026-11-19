@@ -1,0 +1,33 @@
+{
+  "pause": {
+    "until": "2026-10-08T21:31:00+00:00",
+    "reason": "429 Too Many Requests"
+  },
+  "lastJob": {
+    "key": "squads:2026-10-08",
+    "at": "2026-10-08T15:31:00+00:00",
+    "outcome": "failed",
+    "error": "KeyError: 'players'"
+  },
+  "due": [
+    {
+      "key": "squads:2026-10-08",
+      "attempts": 1
+    }
+  ],
+  "next": [
+    {
+      "key": "round:9",
+      "at": "2026-10-13T08:30:00+00:00"
+    }
+  ],
+  "gaveUp": [
+    {
+      "key": "final:3",
+      "at": "2026-10-06T07:00:00+00:00"
+    }
+  ],
+  "commit": "5cfb8a4",
+  "unpushed": 2,
+  "route": "page"
+}

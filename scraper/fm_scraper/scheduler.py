@@ -29,7 +29,6 @@ PROVISIONAL_ATTEMPTS = 3
 FAILED_ATTEMPTS = 3
 TRANSFER_MONTHS = {1, 7, 8}
 SQUAD_WEEKDAYS = (0, 3)  # Montag, Donnerstag
-POSTPONED_GRACE = timedelta(days=3)
 # Vorläufige Daten nur bis zur Finalisierung am Folgemorgen; ältere Lücken füllt match-final/backfill.
 PROVISIONAL_WINDOW = timedelta(hours=24)
 # Das Lebenszeichen nennt die nächsten geplanten Jobs und die zuletzt aufgegebenen.
@@ -66,9 +65,10 @@ def _kickoff(f: dict) -> datetime:
     return datetime.fromisoformat(f["kickoffUtc"].replace("Z", "+00:00"))
 
 
-def _counts(f: dict) -> bool:
+def _counts(f: dict, grace: timedelta) -> bool:
+    """Zählt das Spiel für seinen Spieltag? Höchstens `grace` nach dem ursprünglichen Termin (2.9)."""
     original = datetime.fromisoformat(f["originalKickoffUtc"].replace("Z", "+00:00"))
-    return _kickoff(f) - original <= POSTPONED_GRACE
+    return _kickoff(f) - original <= grace
 
 
 def plan(
@@ -78,8 +78,11 @@ def plan(
     raw_dir: Path,
     images_missing: Callable[[], bool],
     rng: random.Random,
+    *,
+    grace: timedelta,
 ) -> list[Task]:
-    """Fällige Aufgaben; ergänzt state["planned"] um neu gezogene Zeitpunkte."""
+    """Fällige Aufgaben; ergänzt state["planned"] um neu gezogene Zeitpunkte.
+    `grace`: Kulanz für verlegte Spiele aus data/season.json (postponedGraceDays)."""
     planned: dict[str, str] = state.setdefault("planned", {})
     done: dict[str, str] = state.setdefault("done", {})
     local_now = now.astimezone(BERLIN)
@@ -134,7 +137,7 @@ def plan(
     # match-final bzw. backfill: höchstens ein Spieltag pro Tag, am Morgen nach dem letzten Spiel 08–10 Uhr.
     finals_today = {k for k, v in done.items() if k.startswith("final:") and datetime.fromisoformat(v).astimezone(BERLIN).date() == local_now.date()}
     for md in sorted(by_md):
-        games = [f for f in by_md[md] if _counts(f)]
+        games = [f for f in by_md[md] if _counts(f, grace)]
         if not games or not all(f["status"] == "finished" for f in games):
             continue
         if all(match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games):
@@ -238,8 +241,13 @@ def load_state(path: Path) -> dict[str, Any]:
 
 
 def save_state(path: Path, state: dict[str, Any]) -> None:
+    """Atomar: erst in eine Nachbardatei, dann umbenennen. Bricht der Rechner mitten im
+    Schreiben ab, bleibt der vorige Zustand vollständig erhalten."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, indent=2, sort_keys=True))
+    tmp = path.with_name(f".{path.name}.tmp")
+    with tmp.open("w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2, sort_keys=True)
+    tmp.replace(path)
 
 
 # --- Ausführung (vom systemd-Timer bzw. launchd alle 5 Min. aufgerufen) ---
@@ -263,7 +271,11 @@ def _execute(task: Task, client, raw_dir: Path) -> tuple[str, tuple[str, ...]]:
     return ("ok" if finished else "unfinished"), commit_paths(task.job)
 
 
-def run_once(now: datetime | None = None) -> int:
+def _utc_now() -> datetime:
+    return datetime.now(timezone.utc)
+
+
+def run_once(clock: Callable[[], datetime] = _utc_now) -> int:
     """Ein Scheduler-Lauf. Rückgabe: Anzahl ausgeführter Jobs."""
     import fcntl
 
@@ -272,7 +284,7 @@ def run_once(now: datetime | None = None) -> int:
     from .client import FetchError, PauseRequired, default_client
     from .teams import load_teams
 
-    now = now or datetime.now(timezone.utc)
+    now = clock()
     config.STATE_DIR.mkdir(parents=True, exist_ok=True)
     with open(LOCK_FILE, "w") as lock:
         try:
@@ -292,8 +304,10 @@ def run_once(now: datetime | None = None) -> int:
             gitsync.pull(config.REPO_ROOT)
             state["lastPull"] = now.isoformat()
 
-        fixtures_path = config.REPO_ROOT / "data" / "fixtures.json"
+        data_dir = config.REPO_ROOT / "data"
+        fixtures_path = data_dir / "fixtures.json"
         fixtures = json.loads(fixtures_path.read_text()) if fixtures_path.exists() else []
+        season = json.loads((data_dir / "season.json").read_text())
         tasks = plan(
             now,
             fixtures,
@@ -301,6 +315,7 @@ def run_once(now: datetime | None = None) -> int:
             config.RAW_DIR,
             lambda: _images_missing(config.RAW_DIR, config.IMG_DIR, load_teams(config.TEAMS_FILE)),
             random.Random(),
+            grace=timedelta(days=season["postponedGraceDays"]),
         )
         state["due"] = [task.key for task in tasks]
         save_state(STATE_FILE, state)
@@ -326,12 +341,12 @@ def run_once(now: datetime | None = None) -> int:
                     # Job fällig und riefe bei jedem Aufruf alle 5 Min. erneut ab (KONZEPT 5.6).
                     log.exception("%s fehlgeschlagen", task.key)
                     outcome, paths, error = "failed", (), f"{type(e).__name__}: {e}"[:300]
-                record(state, task, datetime.now(timezone.utc), outcome, error)
+                record(state, task, clock(), outcome, error)
                 save_state(STATE_FILE, state)
                 if paths:
                     gitsync.sync(config.REPO_ROOT, task.job, paths)
                 # Ein Lauf mit mehreren Jobs dauert länger als der Timer-Abstand.
-                beat(datetime.now(timezone.utc))
+                beat(clock())
                 ran += 1
         finally:
             client.close()

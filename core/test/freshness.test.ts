@@ -1,6 +1,9 @@
 import { describe, expect, it } from "vitest";
 import {
   awaitingData,
+  DATA_ALARM_AFTER_MS,
+  DATA_HINT_AFTER_MS,
+  MATCH_DURATION_MS,
   scraperAlarms,
   scraperSilent,
   type Fixture,
@@ -143,5 +146,15 @@ describe("scraperAlarms", () => {
         body: "⚠️ Letztes Lebenszeichen des Heim-Rechners: Sa., 10.10., 14:00 Uhr.",
       },
     ]);
+  });
+});
+
+describe("Staffelung „Daten überfällig“ (Entscheidung 19.11.)", () => {
+  it("Hinweis nach dem letzten Abrufversuch des Scrapers, Alarm danach", () => {
+    const MIN = 60 * 1000;
+    // Scraper: vorläufige Daten bis 155 Min. nach Anpfiff, dann höchstens 3 × 15 Min.
+    const lastAttempt = (155 + 3 * 15) * MIN;
+    expect(MATCH_DURATION_MS + DATA_HINT_AFTER_MS).toBeGreaterThan(lastAttempt);
+    expect(DATA_ALARM_AFTER_MS).toBeGreaterThan(DATA_HINT_AFTER_MS);
   });
 });
