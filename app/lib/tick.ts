@@ -52,25 +52,33 @@ export async function runTick(
   const result: TickResult = { finalized: [], sent: 0, failed: 0, expired: 0 };
   const at = now.toISOString();
 
-  // Finalisierung zuerst; sie ist idempotent, der Schlüssel folgt erst danach.
-  const positions = new Map(game.players.map((p) => [p.id, p.position]));
-  const calendar = matchdayCalendar(game.fixtures, finalsOf());
-  for (const action of actions) {
-    if (action.kind !== "finalize") continue;
-    await updateManagers(
-      managers.map((m) => m.userId),
+  // Finalisierung zuerst; sie ist idempotent, die Schlüssel folgen erst danach. Alle
+  // fälligen Spieltage in ihrer Reihenfolge (planTick sortiert), je Manager ein Schreibvorgang.
+  const finalizations = actions.flatMap((a) =>
+    a.kind === "finalize" ? [a] : [],
+  );
+  if (finalizations.length > 0) {
+    const positions = new Map(game.players.map((p) => [p.id, p.position]));
+    const calendar = matchdayCalendar(game.fixtures, finalsOf());
+    const steps = finalizations.map((a) =>
       matchdayFinalizer(
         managers,
-        action.matchday,
+        a.matchday,
         game.points,
         positions,
         calendar,
         game.season.firstScoredMatchday,
       ),
     );
-    state.done[action.key] = at;
+    await updateManagers(
+      managers.map((m) => m.userId),
+      (doc) => steps.reduce((d, step) => step(d), doc),
+    );
+    for (const a of finalizations) {
+      state.done[a.key] = at;
+      result.finalized.push(a.matchday);
+    }
     await saveSystemState(state);
-    result.finalized.push(action.matchday);
   }
 
   // Pushes höchstens einmal: erst den Schlüssel sichern, dann senden.
