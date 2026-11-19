@@ -35,4 +35,3 @@
 - `data/` und `app/public/` sind öffentlich und enthalten nur Spiel- und Spielerdaten, keine Nutzerdaten.
 - `/api/health` ist absichtlich öffentlich und liefert nur `ok`, Storage-Art und Datenversion.
 - Die Abrufe bei Sofascore, OpenLigaDB und Transfermarkt laufen ohne Anmeldung; das ist so gewollt.
-- `reuse/` enthält nur Vorlagen aus Altprojekten und wird nicht ausgeliefert.

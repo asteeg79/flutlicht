@@ -13,13 +13,14 @@
 
 ## 0 · Arbeitsweise
 
-1. Lies zuerst `CLAUDE.md`, dann dieses Dokument komplett, dann `reuse/README.md`.
+1. Lies zuerst `CLAUDE.md`, dann dieses Dokument komplett.
 2. Arbeite genau **einen** Meilenstein ab. Er ist fertig, wenn alle Abnahmekriterien
    erfüllt sind **und** `pnpm lint && pnpm typecheck && pnpm test` grün laufen.
    Danach committest du mit `feat(Mx): …` und hakst den Meilenstein in
    `docs/fortschritt.md` ab.
-3. **Wiederverwenden vor Neuschreiben.** `reuse/` enthält erprobten Code aus
-   Workgrid und dem WM-Tipp-Agent. Kopiere ihn, passe ihn gezielt an und
+3. **Wiederverwenden vor Neuschreiben.** `reuse/` enthielt bis M11 erprobten Code aus
+   Workgrid und dem WM-Tipp-Agent (seit dem Abschluss von M11 gelöscht, die Quellen
+   nennt Abschnitt 12). Kopiere ihn, passe ihn gezielt an und
    vermerke die Herkunft im Dateikopf (`// Übernommen aus Workgrid lib/storage.ts, angepasst: …`).
    Die Tabelle in Abschnitt 12 sagt, was wohin gehört.
 4. Reine Logik (Regeln, Punkte, Preise) liegt in `core/` und ist zu 100 % unit-getestet.
@@ -456,7 +457,6 @@ flutlicht/
 ├─ raw/                 Rohdaten (committet, vom Scraper und den Actions)
 ├─ data/                abgeleitete Daten (committet, nur von der Pipeline geschrieben)
 ├─ docs/                entscheidungen.md, fortschritt.md, betrieb.md, sofascore-felder.md
-├─ reuse/               Kopien aus Altprojekten (nur Referenz; nach M11 löschen)
 ├─ .github/workflows/   ci.yml, compute.yml, fixtures.yml, _alert.yml
 ├─ CLAUDE.md · KONZEPT.md · pnpm-workspace.yaml · package.json
 ```
@@ -787,7 +787,7 @@ im WM-Tipp-Worker.
 
 ## 12 · Wiederverwendung aus Altprojekten
 
-Die Dateien liegen als Kopie in `reuse/` (Quelle: `~/Documents/Claude/Projects/…`).
+Die Dateien lagen bis zum Abschluss von M11 als Kopie in `reuse/` (Quelle: `~/Documents/Claude/Projects/…`).
 **Nicht** blind übernehmen. Die Spalte „Anpassung“ ist Pflicht.
 
 ### 12.1 Aus Workgrid (`reuse/workgrid/`)

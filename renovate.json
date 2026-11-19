@@ -8,7 +8,7 @@
   "enabledManagers": ["github-actions", "dockerfile", "docker-compose", "npm"],
   "timezone": "Europe/Berlin",
   "schedule": ["before 7am on monday"],
-  "ignorePaths": ["reuse/**"],
+  "ignorePaths": [],
   "packageRules": [
     {
       "description": "Node und Python in den Workflows folgen Vercel bzw. dem Pi: PRs nur nach Freigabe im Dependency Dashboard",

@@ -7,7 +7,6 @@ Spezifikation ist `KONZEPT.md`**, die Reihenfolge der Arbeit steht in Abschnitt 
 ## Vor jeder Sitzung
 1. `docs/fortschritt.md` lesen: Welcher Meilenstein ist dran?
 2. Die für den Meilenstein relevanten Abschnitte in `KONZEPT.md` lesen.
-3. `reuse/README.md` lesen und vorhandene Snippets nutzen, bevor du Neues schreibst.
 
 ## Projektregeln
 - Immer nur **einen** Meilenstein bearbeiten. Er ist fertig, wenn seine Abnahmekriterien
