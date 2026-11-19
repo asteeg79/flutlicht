@@ -44,7 +44,7 @@ const ctx = (now: string) => ({
 
 const positionOf = (id: number) => players.find((p) => p.id === id)?.position;
 function swapped(l: Lineup, a: number, b: number): Lineup {
-  const r = swapPlayers(l, a, b, positionOf);
+  const r = swapPlayers(l, a, b, { positionOf, isLocked: () => false });
   if (!r.ok) throw new Error(r.message);
   return r.lineup;
 }
@@ -79,7 +79,7 @@ describe("PUT /api/lineup mit Sperren (KONZEPT 2.5, Abnahme M7)", () => {
   });
 
   it("weist den Kapitänswechsel bei gesperrtem Alt-Kapitän ab", async () => {
-    const r = setCaptain(await base(), 32);
+    const r = setCaptain(await base(), 32, { isLocked: () => false });
     if (!r.ok) throw new Error(r.message);
     await expect(put(r.lineup)).rejects.toMatchObject({
       status: 400,
@@ -90,10 +90,10 @@ describe("PUT /api/lineup mit Sperren (KONZEPT 2.5, Abnahme M7)", () => {
 
   it("macht keinen gesperrten Spieler zum neuen Kapitän", async () => {
     const doc = await withSquad();
-    const start = setCaptain(doc.lineup!, 32);
+    const start = setCaptain(doc.lineup!, 32, { isLocked: () => false });
     if (!start.ok) throw new Error(start.message);
     await withSquad(undefined, { lineup: start.lineup });
-    const r = setCaptain(start.lineup, 21); // Verein 2: gesperrt
+    const r = setCaptain(start.lineup, 21, { isLocked: () => false }); // Verein 2: gesperrt
     if (!r.ok) throw new Error(r.message);
     await expect(
       updateLineup(

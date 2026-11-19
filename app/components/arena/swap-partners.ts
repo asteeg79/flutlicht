@@ -1,5 +1,6 @@
 // Welche Spieler sind beim Tauschen gültige Partner des gewählten? Das entscheidet
-// core/swapPlayers (auch über Positionen hinweg, wenn die Formation erlaubt bleibt).
+// core/swapPlayers (auch über Positionen hinweg, wenn die Formation erlaubt bleibt,
+// und mit den Sperren aus 2.5).
 import {
   lineupPlayers,
   swapPlayers,
@@ -10,13 +11,15 @@ import {
 export function swapPartners(
   lineup: Lineup,
   selected: number,
-  positionOf: (id: number) => Position | undefined,
-  isLocked: (id: number) => boolean,
+  squad: {
+    positionOf: (id: number) => Position | undefined;
+    isLocked: (id: number) => boolean;
+  },
 ): Set<number> {
   return new Set(
     lineupPlayers(lineup).filter((id) => {
-      if (id === selected || isLocked(id)) return false;
-      const change = swapPlayers(lineup, selected, id, positionOf);
+      if (id === selected) return false;
+      const change = swapPlayers(lineup, selected, id, squad);
       return change.ok && change.lineup !== lineup;
     }),
   );
