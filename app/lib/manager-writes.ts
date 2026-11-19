@@ -1,8 +1,9 @@
 // Der eine Schreibweg für bestehende Manager-Dokumente (KONZEPT 7.3): frisch laden,
-// ändern, speichern. Neue Konten legt accounts.ts direkt mit saveManager an.
+// ändern, nur bei unverändertem Stand speichern (Compare-and-Set). Neue Konten legt
+// accounts.ts direkt mit saveManager an.
 import type { ManagerDoc } from "@fm/core";
 import { Conflict, NotFound } from "@/lib/errors";
-import { loadManager, saveManager } from "@/lib/storage";
+import { loadManagerVersioned, saveManagerIfUnchanged } from "@/lib/storage";
 
 type Change = (doc: ManagerDoc) => ManagerDoc | Promise<ManagerDoc>;
 
@@ -17,19 +18,34 @@ export interface WriteOptions {
   stamp?: Date;
 }
 
+// Versuche, wenn ein anderer Schreiber zwischen Laden und Speichern dazwischenkommt.
+const ATTEMPTS = 3;
+
+/**
+ * Laden, ändern, nur speichern, wenn das Dokument seit dem Laden unverändert ist
+ * (Compare-and-Set); sonst mit dem neuen Stand von vorn. `change` kann deshalb
+ * mehrfach laufen und darf nur das Dokument zurückgeben, nichts sonst verändern.
+ * null: Konto gibt es nicht (mehr).
+ */
 async function write(
-  doc: ManagerDoc,
+  userId: string,
   change: Change,
   { expect, stamp }: WriteOptions,
-): Promise<ManagerDoc> {
-  if (expect !== undefined && doc.updatedAt !== expect) throw new Conflict();
-  const next: ManagerDoc = {
-    ...(await change(doc)),
-    userId: doc.userId,
-    updatedAt: stamp ? stamp.toISOString() : doc.updatedAt,
-  };
-  if (JSON.stringify(next) !== JSON.stringify(doc)) await saveManager(next);
-  return next;
+): Promise<ManagerDoc | null> {
+  for (let attempt = 0; attempt < ATTEMPTS; attempt++) {
+    const stored = await loadManagerVersioned(userId);
+    if (!stored) return null;
+    const { doc, version } = stored;
+    if (expect !== undefined && doc.updatedAt !== expect) throw new Conflict();
+    const next: ManagerDoc = {
+      ...(await change(doc)),
+      userId: doc.userId,
+      updatedAt: stamp ? stamp.toISOString() : doc.updatedAt,
+    };
+    if (JSON.stringify(next) === JSON.stringify(doc)) return next;
+    if (await saveManagerIfUnchanged(next, version)) return next;
+  }
+  throw new Conflict();
 }
 
 /** Ändert ein Dokument. Wirft `change`, wird nichts gespeichert. Unbekanntes Konto: 404. */
@@ -38,9 +54,9 @@ export async function updateManager(
   change: Change,
   options: WriteOptions = {},
 ): Promise<ManagerDoc> {
-  const doc = await loadManager(userId);
-  if (!doc) throw new NotFound("Konto nicht gefunden");
-  return write(doc, change, options);
+  const next = await write(userId, change, options);
+  if (!next) throw new NotFound("Konto nicht gefunden");
+  return next;
 }
 
 /**
@@ -52,15 +68,10 @@ export async function updateManagers(
   change: Change,
   options: Omit<WriteOptions, "expect"> = {},
 ): Promise<void> {
-  for (const userId of userIds) {
-    const doc = await loadManager(userId);
-    if (doc) await write(doc, change, options);
-  }
+  for (const userId of userIds) await write(userId, change, options);
 }
 
 /** Push-Anmeldung entfernen (abgemeldet oder abgelaufen); ohne Konto oder Anmeldung nichts. */
 export async function removePush(userId: string): Promise<void> {
-  const doc = await loadManager(userId);
-  if (!doc?.push) return;
-  await write(doc, ({ push: _removed, ...rest }) => rest, {});
+  await write(userId, ({ push: _removed, ...rest }) => rest, {});
 }

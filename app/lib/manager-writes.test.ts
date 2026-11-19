@@ -125,3 +125,53 @@ describe("removePush", () => {
     expect(await storage.loadManager(doc.userId)).toEqual(doc);
   });
 });
+
+describe("Compare-and-Set: gleichzeitige Änderungen am selben Dokument", () => {
+  it("eine Änderung dazwischen bleibt erhalten, die eigene wird neu angewendet", async () => {
+    const doc = await saveDoc();
+    let calls = 0;
+    const next = await updateManager(doc.userId, async (d) => {
+      calls++;
+      if (calls === 1) {
+        // Ein anderer Schreiber (etwa die Push-Anmeldung) kommt dazwischen.
+        await storage.saveManager({ ...d, push: PUSH });
+      }
+      return { ...d, cash: 10 };
+    });
+    expect(calls).toBe(2);
+    expect(next).toMatchObject({ cash: 10, push: PUSH });
+    expect(await storage.loadManager(doc.userId)).toEqual(next);
+  });
+
+  it("hat der Nutzer selbst dazwischen gespeichert, ist sein alter Stand veraltet: 409", async () => {
+    const doc = await saveDoc();
+    let calls = 0;
+    await expect(
+      updateManager(
+        doc.userId,
+        async (d) => {
+          calls++;
+          if (calls === 1)
+            await storage.saveManager({ ...d, updatedAt: NOW.toISOString() });
+          return { ...d, cash: 10 };
+        },
+        { expect: UPDATED, stamp: NOW },
+      ),
+    ).rejects.toBeInstanceOf(Conflict);
+    expect((await storage.loadManager(doc.userId))?.cash).toBe(85);
+  });
+
+  it("dauerhaft parallele Änderungen: nach drei Versuchen 409", async () => {
+    const doc = await saveDoc();
+    let calls = 0;
+    await expect(
+      updateManager(doc.userId, async (d) => {
+        calls++;
+        await storage.saveManager({ ...d, teamName: `Neu ${calls}` });
+        return { ...d, cash: 10 };
+      }),
+    ).rejects.toBeInstanceOf(Conflict);
+    expect(calls).toBe(3);
+    expect((await storage.loadManager(doc.userId))?.cash).toBe(85);
+  });
+});

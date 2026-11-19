@@ -28,6 +28,7 @@ interface KvClient {
   del(key: string): Promise<unknown>;
   keys(pattern: string): Promise<string[]>;
   mget(...keys: string[]): Promise<(string | null)[]>;
+  eval(script: string, keys: string[], args: string[]): Promise<unknown>;
 }
 
 // KV_REST_API_* setzt die Vercel-Marketplace-Integration „Upstash for Redis“.
@@ -82,6 +83,33 @@ async function backendWrite(pathname: string, content: string): Promise<void> {
     return;
   }
   await localWrite(pathname, content);
+}
+
+// Schreibt nur, wenn unter dem Schlüssel noch genau `expected` steht: ein Befehl, atomar.
+const WRITE_IF_UNCHANGED = `if redis.call("GET", KEYS[1]) == ARGV[1] then
+  redis.call("SET", KEYS[1], ARGV[2])
+  return 1
+end
+return 0`;
+
+/** Compare-and-Set: true, wenn geschrieben wurde; false, wenn inzwischen ein anderer Stand dort liegt. */
+async function backendWriteIf(
+  pathname: string,
+  expected: string,
+  content: string,
+): Promise<boolean> {
+  if (kv) {
+    const written = await kv.eval(
+      WRITE_IF_UNCHANGED,
+      [pathname],
+      [expected, content],
+    );
+    return Number(written) === 1;
+  }
+  // Lokal (Entwicklung, Tests) läuft nur ein Prozess: Vergleichen und Schreiben genügt.
+  if ((await localRead(pathname)) !== expected) return false;
+  await localWrite(pathname, content);
+  return true;
 }
 
 async function backendDelete(pathname: string): Promise<void> {
@@ -144,10 +172,20 @@ async function readEncrypted<T>(
   key: string,
   schema: z.ZodType<T>,
 ): Promise<T | null> {
+  return (await readEncryptedVersioned(pathname, key, schema))?.value ?? null;
+}
+
+/** Wie readEncrypted, dazu der gespeicherte Geheimtext als Versionsmarke. */
+async function readEncryptedVersioned<T>(
+  pathname: string,
+  key: string,
+  schema: z.ZodType<T>,
+): Promise<{ value: T; version: string } | null> {
   const encrypted = await backendRead(pathname);
   if (!encrypted) return null;
   try {
-    return schema.parse(JSON.parse(decrypt(encrypted, key)));
+    const value = schema.parse(JSON.parse(decrypt(encrypted, key)));
+    return { value, version: encrypted };
   } catch (err) {
     throw new Error(`${pathname} nicht lesbar`, { cause: err });
   }
@@ -177,6 +215,33 @@ export function loadManager(userId: string): Promise<ManagerDoc | null> {
 
 export function saveManager(doc: ManagerDoc): Promise<void> {
   return writeEncrypted(managerPath(doc.userId), doc.userId, ManagerDoc, doc);
+}
+
+/**
+ * Dokument mit Versionsmarke für `saveManagerIfUnchanged`. Die Marke ist der
+ * gespeicherte Geheimtext; er ist bei jedem Schreiben anders (zufälliger IV).
+ */
+export async function loadManagerVersioned(
+  userId: string,
+): Promise<{ doc: ManagerDoc; version: string } | null> {
+  const stored = await readEncryptedVersioned(
+    managerPath(userId),
+    userId,
+    ManagerDoc,
+  );
+  return stored && { doc: stored.value, version: stored.version };
+}
+
+/** Speichert nur, wenn das Dokument seit dem Laden (`version`) unverändert ist. */
+export function saveManagerIfUnchanged(
+  doc: ManagerDoc,
+  version: string,
+): Promise<boolean> {
+  return backendWriteIf(
+    managerPath(doc.userId),
+    version,
+    encrypt(JSON.stringify(ManagerDoc.parse(doc)), doc.userId),
+  );
 }
 
 /** Konto löschen (KONZEPT 15.4); den E-Mail-Index räumt der Aufrufer auf. */
