@@ -23,7 +23,13 @@ import {
 } from "@fm/core";
 import { Lock, Search } from "lucide-react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useEffect, useMemo, useState, type ReactNode } from "react";
+import {
+  useEffect,
+  useMemo,
+  useReducer,
+  useState,
+  type ReactNode,
+} from "react";
 import { BoardTile } from "@/components/arena/board-tile";
 import {
   Celebration,
@@ -57,15 +63,16 @@ import {
 } from "@/components/arena/market-row";
 import { Modal, Sheet } from "@/components/arena/overlay";
 import { PageBody, TwoCol } from "@/components/arena/page-layout";
-import { SavePill, useSaveState } from "@/components/arena/save-pill";
+import { SavePill } from "@/components/arena/save-pill";
 import { PulseDot } from "@/components/arena/slant-tag";
 import { Ticker } from "@/components/arena/ticker";
 import { toast } from "@/components/arena/toast";
+import { flowIds, IDLE, transferFlow } from "@/components/arena/transfer-flow";
+import { useServerSave } from "@/hooks/useServerSave";
 import { transferBoard } from "@/components/arena/transfer-chips";
 import { TransferChips } from "@/components/arena/transfer-chips-view";
 import { PlayerPhoto } from "@/components/player-photo";
 import { DESKTOP, useMediaQuery } from "@/hooks/useMediaQuery";
-import { callApi } from "@/lib/api-client";
 import { mioNumber } from "@/lib/format";
 import { POS_LABEL } from "@/lib/positions";
 import type { PublicManager } from "@/lib/squad";
@@ -145,12 +152,12 @@ export function Market({
   const [manager, setManager] = useState(initialManager);
   const [draft, setDraft] = useState<number[]>([]);
   const [tab, setTab] = useState<"markt" | "kader">("markt");
-  const [pickId, setPickId] = useState<number | null>(initialPick);
-  const [sellId, setSellId] = useState<number | null>(null);
-  const [buyId, setBuyId] = useState<number | null>(null);
-  /** Bestätigung kam über „Holen“ (nicht über „Abgeben“): „Zurück“ führt zur Abgabe-Auswahl. */
-  const [fromPick, setFromPick] = useState(false);
-  const [busy, setBusy] = useState(false);
+  // Kauf-Verkauf-Ablauf (Holen zuerst / Abgeben zuerst / Bestätigen) als Reducer.
+  const [flow, dispatch] = useReducer(
+    transferFlow,
+    initialPick === null ? IDLE : { step: "pick", buyId: initialPick },
+  );
+  const { pickId, sellId, buyId, fromPick } = flowIds(flow);
   const [pos, setPos] = useState<Position | "ALL">(initialFilters.pos);
   const [team, setTeam] = useState<number | "ALL">(initialFilters.team);
   const [sort, setSort] = useState<Sort>(initialFilters.sort);
@@ -175,7 +182,7 @@ export function Market({
   const [popPos, setPopPos] = useState<{ pos: Position; key: number } | null>(
     null,
   );
-  const save = useSaveState();
+  const { busy, saveState, send } = useServerSave();
 
   const byId = useMemo(() => new Map(players.map((p) => [p.id, p])), [players]);
   // Suchschlüssel ohne Akzente: „kobbing“ findet „Köbbing“.
@@ -271,24 +278,13 @@ export function Market({
     delta: p.delta,
   });
 
-  async function post<T>(url: string, body: unknown): Promise<T | null> {
-    setBusy(true);
-    save.begin();
-    try {
-      const r = await callApi<T>(url, "POST", body);
-      save.done(r.ok);
-      if (r.ok) return r.data;
-      toast.error(
-        r.error ??
-          (r.status === 409
-            ? "Deine Daten haben sich geändert."
-            : "Das hat nicht geklappt. Bitte versuche es erneut."),
-      );
-      if (r.status === 409) router.refresh();
-      return null;
-    } finally {
-      setBusy(false);
-    }
+  function post<T>(url: string, body: unknown): Promise<T | null> {
+    return send<T>(
+      url,
+      "POST",
+      body,
+      "Das hat nicht geklappt. Bitte versuche es erneut.",
+    );
   }
 
   // ——— Erstkader ———
@@ -340,30 +336,20 @@ export function Market({
 
   // ——— Transfers ———
   function startPick(p: MarketPlayer) {
-    if (!canTrade) return void toast(closedText(window, bankStale));
-    setSellId(null);
-    setBuyId(null);
-    setPickId(p.id);
+    if (!canTrade) return toast(closedText(window, bankStale));
+    dispatch({ type: "pick", id: p.id });
   }
   function startSell(p: MarketPlayer) {
-    if (!canTrade) return void toast(closedText(window, bankStale));
-    setPickId(null);
-    setBuyId(null);
-    setSellId(p.id);
+    if (!canTrade) return toast(closedText(window, bankStale));
+    dispatch({ type: "sell", id: p.id });
     setTab("markt");
     setQuery("");
   }
   function cancelDeal() {
-    setPickId(null);
-    setSellId(null);
-    setBuyId(null);
-    setFromPick(false);
+    dispatch({ type: "cancel" });
   }
   function backFromConfirm() {
-    if (fromPick && buy) {
-      cancelDeal();
-      setPickId(buy.id);
-    } else setBuyId(null);
+    dispatch({ type: "back" });
   }
 
   async function confirmTransfer() {
@@ -439,7 +425,10 @@ export function Market({
           </ReasonAction>
         );
       return (
-        <PrimaryAction disabled={busy} onClick={() => setBuyId(p.id)}>
+        <PrimaryAction
+          disabled={busy}
+          onClick={() => dispatch({ type: "choose", id: p.id })}
+        >
           Holen
         </PrimaryAction>
       );
@@ -885,10 +874,7 @@ export function Market({
                   <PrimaryAction
                     className="lg:h-8.5"
                     onClick={() => {
-                      setSellId(q.id);
-                      setBuyId(pick.id);
-                      setPickId(null);
-                      setFromPick(true);
+                      dispatch({ type: "choose", id: q.id });
                     }}
                   >
                     Abgeben
@@ -1133,7 +1119,7 @@ export function Market({
       </PageBody>
       {confirm}
       {draftBar}
-      <SavePill state={save.state} />
+      <SavePill state={saveState} />
       {celebration ? (
         <Celebration data={celebration} onClose={closeCelebration} />
       ) : null}
