@@ -9,9 +9,6 @@ beforeEach(async () => {
   vi.stubEnv("APP_ENCRYPTION_SECRET", "test-secret-00000000000000000000");
 });
 
-// NextAuth wird hier nicht gebraucht (die Fehlerklassen kommen aus lib/api-route).
-vi.mock("@/lib/auth", () => ({ auth: async () => null }));
-
 const { buildInitialSquad, makeTransfer } = await import("@/lib/squad");
 const storage = await import("@/lib/storage");
 const { finalsUntil, players, saveDoc, SQUAD, UPDATED, withSquad } =

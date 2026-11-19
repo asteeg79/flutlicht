@@ -8,12 +8,9 @@ beforeEach(async () => {
   vi.stubEnv("APP_ENCRYPTION_SECRET", "test-secret-00000000000000000000");
 });
 
-// NextAuth wird hier nicht gebraucht (die Fehlerklassen kommen aus lib/api-route).
-vi.mock("@/lib/auth", () => ({ auth: async () => null }));
-
 const { removePush, updateManager, updateManagers } =
   await import("@/lib/manager-writes");
-const { BadRequest, Conflict, NotFound } = await import("@/lib/api-route");
+const { BadRequest, Conflict, NotFound } = await import("@/lib/errors");
 const storage = await import("@/lib/storage");
 const { saveDoc, UPDATED } = await import("@/test/fixtures");
 

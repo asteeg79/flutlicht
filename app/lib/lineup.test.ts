@@ -8,7 +8,6 @@ beforeEach(async () => {
   vi.stubEnv("FM_LOCAL_DATA_DIR", await mkdtemp(join(tmpdir(), "fm-lineup-")));
   vi.stubEnv("APP_ENCRYPTION_SECRET", "test-secret-00000000000000000000");
 });
-vi.mock("@/lib/auth", () => ({ auth: async () => null }));
 
 const { updateLineup } = await import("@/lib/lineup");
 const { finalsUntil, players, UPDATED, withSquad } =

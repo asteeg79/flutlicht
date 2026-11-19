@@ -23,13 +23,7 @@ import {
   type ScraperStatus,
 } from "@fm/core";
 import { z } from "zod";
-import {
-  BadRequest,
-  Forbidden,
-  NotFound,
-  parse,
-  Upstream,
-} from "@/lib/api-route";
+import { BadRequest, Forbidden, NotFound, parse, Upstream } from "@/lib/errors";
 import type { GitHub } from "@/lib/github";
 import { updateManagers } from "@/lib/manager-writes";
 import {

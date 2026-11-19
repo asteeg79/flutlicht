@@ -8,11 +8,10 @@ beforeEach(async () => {
   vi.stubEnv("FM_LOCAL_DATA_DIR", await mkdtemp(join(tmpdir(), "fm-admin-")));
   vi.stubEnv("APP_ENCRYPTION_SECRET", "test-secret-00000000000000000000");
 });
-vi.mock("@/lib/auth", () => ({ auth: async () => null }));
 
 const admin = await import("@/lib/admin");
 const storage = await import("@/lib/storage");
-const { Upstream } = await import("@/lib/api-route");
+const { Upstream } = await import("@/lib/errors");
 const { saveDoc } = await import("@/test/fixtures");
 import type { GitHub } from "@/lib/github";
 

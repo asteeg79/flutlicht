@@ -1,6 +1,7 @@
 import { PushPrefs } from "@fm/core";
 import { NextResponse } from "next/server";
-import { BadRequest, parseBody, withUser } from "@/lib/api-route";
+import { parseBody, withUser } from "@/lib/api-route";
+import { BadRequest } from "@/lib/errors";
 import { updateManager } from "@/lib/manager-writes";
 
 /** Push-Typen an/aus (KONZEPT 8.2); wie die Subscription server-verwaltet, ohne updatedAt. */

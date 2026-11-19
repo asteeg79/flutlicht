@@ -9,6 +9,7 @@ beforeEach(async () => {
   vi.stubEnv("APP_ENCRYPTION_SECRET", "test-secret-00000000000000000000");
   vi.stubEnv("CRON_SECRET", "tick-geheim");
 });
+// Die Route /api/cron/tick hängt über lib/api-route an NextAuth.
 vi.mock("@/lib/auth", () => ({ auth: async () => null }));
 
 const { runTick } = await import("@/lib/tick");

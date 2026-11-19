@@ -1,5 +1,6 @@
 import { NextResponse } from "next/server";
-import { NotFound, withUser } from "@/lib/api-route";
+import { withUser } from "@/lib/api-route";
+import { NotFound } from "@/lib/errors";
 import { updateProfile } from "@/lib/accounts";
 import { publicManager } from "@/lib/squad";
 import { loadManager } from "@/lib/storage";
