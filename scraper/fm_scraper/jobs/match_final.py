@@ -12,6 +12,7 @@ from pathlib import Path
 
 from .. import config
 from ..client import Client
+from ..errors import JobError
 from ..raw import read_raw, write_raw
 from .round_events import round_path
 
@@ -42,7 +43,7 @@ def _finished_in_fixtures(raw_dir: Path, matchday: int) -> set[int]:
 def run(client: Client, raw_dir: Path, matchday: int, event_id: int | None = None) -> list[Path]:
     rpath = round_path(raw_dir, matchday)
     if not rpath.exists():
-        raise SystemExit(f"{rpath} fehlt, zuerst round-events für Spieltag {matchday} ausführen")
+        raise JobError(f"{rpath} fehlt, zuerst round-events für Spieltag {matchday} ausführen")
     finished = _finished_in_fixtures(raw_dir, matchday)
     events = [
         e
@@ -50,9 +51,9 @@ def run(client: Client, raw_dir: Path, matchday: int, event_id: int | None = Non
         if (e["status"]["type"] == "finished" or e["id"] in finished) and event_id in (None, e["id"])
     ]
     if event_id is not None and not events:
-        raise SystemExit(f"Event {event_id} ist an Spieltag {matchday} nicht beendet oder unbekannt")
+        raise JobError(f"Event {event_id} ist an Spieltag {matchday} nicht beendet oder unbekannt")
     if not events:
-        raise SystemExit(f"Spieltag {matchday}: kein beendetes Spiel in {rpath.name} und data/fixtures.json")
+        raise JobError(f"Spieltag {matchday}: kein beendetes Spiel in {rpath.name} und data/fixtures.json")
     written: list[Path] = []
     for event in events:
         if has_final(raw_dir, event["id"]):

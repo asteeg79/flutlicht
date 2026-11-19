@@ -165,7 +165,9 @@ export function priceTimeline(
           expectation(past, player.position),
         );
         prices.set(id, price);
-        (history[key] ??= []).push({ matchday: md.matchday, price });
+        const entries = history[key] ?? [];
+        entries.push({ matchday: md.matchday, price });
+        history[key] = entries;
       }
       appearances.set(id, [...past, pp.base]);
     }

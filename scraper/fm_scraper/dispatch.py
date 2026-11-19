@@ -11,6 +11,7 @@ from zoneinfo import ZoneInfo
 
 from . import config
 from .client import Client
+from .errors import JobError
 from .jobs import backfill, dcaribou, images, match_final, match_provisional, round_events, squads, tm_crawl
 from .teams import load_teams
 
@@ -44,11 +45,11 @@ JOBS: dict[str, Job] = {
     "match-final": Job(lambda c, raw, a: _done(match_final.run(c, raw, a.matchday, a.event)), needs=("matchday",)),
     "backfill": Job(lambda c, raw, a: _done(backfill.run(c, raw, a.matchday)), needs=("matchday",)),
     "squads": Job(lambda c, raw, a: _done(squads.run(c, raw, load_teams(config.TEAMS_FILE), a.today))),
-    "dcaribou": Job(lambda c, raw, a: _done(dcaribou.run(c, raw)), client="download"),
+    "dcaribou": Job(lambda c, raw, _a: _done(dcaribou.run(c, raw)), client="download"),
     "tm-crawl": Job(lambda c, raw, a: _done(tm_crawl.run(c, raw, a.today)), client="tm"),
     # Bilder liegen zusätzlich in der App.
     "images": Job(
-        lambda c, raw, a: _done(images.run(c, raw, config.IMG_DIR, load_teams(config.TEAMS_FILE))),
+        lambda c, raw, _a: _done(images.run(c, raw, config.IMG_DIR, load_teams(config.TEAMS_FILE))),
         commit=("app/public/img", "raw"),
     ),
 }
@@ -68,10 +69,10 @@ def run_job(
 ) -> tuple[list[Path], bool]:
     """Führt einen Job aus. Rückgabe: geschriebene Dateien und ob das Spiel fertig ist."""
     if job not in JOBS:
-        raise SystemExit(f"unbekannter Job: {job}")
+        raise JobError(f"unbekannter Job: {job}")
     problem = missing(job, matchday, event)
     if problem:
-        raise SystemExit(problem)
+        raise JobError(problem)
     today = datetime.now(ZoneInfo(config.TIMEZONE)).date()
     return JOBS[job].run(client, raw, Args(matchday, event, today))
 

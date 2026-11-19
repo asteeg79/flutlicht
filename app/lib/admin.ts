@@ -167,15 +167,18 @@ export async function applyManualChange(
   const change = parse(ManualChange, raw);
   const key = "playerId" in change ? String(change.playerId) : "";
   switch (change.kind) {
-    case "mapping":
+    case "mapping": {
+      const target =
+        change.tmId === null ? "ohne Transfermarkt" : `TM ${change.tmId}`;
       return updateFile(
         gh,
         "raw/manual/mapping.json",
         ManualMapping,
         {},
         (m) => ({ ...m, [key]: change.tmId }),
-        `raw(manual): Zuordnung Spieler ${key} → ${change.tmId === null ? "ohne Transfermarkt" : `TM ${change.tmId}`}${by(admin)}`,
+        `raw(manual): Zuordnung Spieler ${key} → ${target}${by(admin)}`,
       );
+    }
     case "value":
       return updateFile(
         gh,
@@ -200,13 +203,16 @@ export async function applyManualChange(
         firstScoredMatchday: change.firstScoredMatchday,
         ...(change.startBudget ? { startBudget: change.startBudget } : {}),
       };
+      const budget = change.startBudget
+        ? `, Startbudget ${change.startBudget} Mio.`
+        : "";
       await updateFile(
         gh,
         "raw/manual/season.json",
         ManualSeason,
         next,
         () => next,
-        `raw(manual): Saisonstart Spieltag ${change.firstScoredMatchday}${change.startBudget ? `, Startbudget ${change.startBudget} Mio.` : ""}${by(admin)}`,
+        `raw(manual): Saisonstart Spieltag ${change.firstScoredMatchday}${budget}${by(admin)}`,
       );
       return moveManagersToSeasonStart(season, change.firstScoredMatchday);
     }

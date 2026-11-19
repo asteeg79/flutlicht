@@ -48,7 +48,9 @@ export const viewport: Viewport = {
   initialScale: 1,
 };
 
-export default function RootLayout({ children }: { children: ReactNode }) {
+export default function RootLayout({
+  children,
+}: Readonly<{ children: ReactNode }>) {
   return (
     // data-theme setzt das Script vor der Hydration; die Abweichung ist gewollt.
     <html

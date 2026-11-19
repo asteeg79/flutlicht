@@ -235,8 +235,9 @@ function swapInLineup(
   let captain = lineup.captain;
   if (captain === outId) {
     const price = (id: number) => players.get(id)?.price ?? 0;
-    captain = starters.reduce((best, id) =>
-      price(id) > price(best) ? id : best,
+    captain = starters.reduce(
+      (best, id) => (price(id) > price(best) ? id : best),
+      starters[0]!,
     );
   }
   return {

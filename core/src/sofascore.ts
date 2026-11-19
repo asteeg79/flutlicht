@@ -85,28 +85,26 @@ export interface SofascoreMatch {
   warnings: string[];
 }
 
-/**
- * `score` ist der Endstand (Gegentore für „zu null“ und je Gegentor ab dem 2.).
- * `positionOf` liefert die Saison-Position aus players.json; ohne sie gilt die
- * Sofascore-Position des Spielers.
- */
-export function readSofascoreMatch(
-  lineupsRaw: unknown,
-  incidentsRaw: unknown,
-  score: ScoreLine,
-  positionOf: (playerId: number) => Position | undefined = () => undefined,
-): SofascoreMatch {
-  const lineups = SofascoreLineups.parse(lineupsRaw);
-  const { incidents } = SofascoreIncidents.parse(incidentsRaw);
-  const warnings: string[] = [];
-  const byId = new Map<
-    number,
-    SofascorePlayerInput & {
-      statGoals: number | undefined;
-      statAssists: number | undefined;
-    }
-  >();
+type Lineups = z.infer<typeof SofascoreLineups>;
+type IncidentData = z.infer<typeof Incident>;
+type PlayerEntry = SofascorePlayerInput & {
+  statGoals: number | undefined;
+  statAssists: number | undefined;
+};
+/** Eingabe des Spielers zur Referenz; fehlt er in den Aufstellungen, gibt es eine Warnung. */
+type InputOf = (
+  ref: { id: number } | undefined,
+  what: string,
+) => PlayerMatchInput | undefined;
 
+/** Alle Spieler beider Aufstellungen mit Startwerten; ohne Position nur eine Warnung. */
+function readLineups(
+  lineups: Lineups,
+  score: ScoreLine,
+  positionOf: (playerId: number) => Position | undefined,
+  warnings: string[],
+): Map<number, PlayerEntry> {
+  const byId = new Map<number, PlayerEntry>();
   for (const [side, isHome] of [
     [lineups.home, true],
     [lineups.away, false],
@@ -144,62 +142,76 @@ export function readSofascoreMatch(
       });
     }
   }
+  return byId;
+}
 
-  const inputOf = (ref: { id: number } | undefined, what: string) => {
-    const entry = ref && byId.get(ref.id);
-    if (!entry)
-      warnings.push(
-        `${what}: Spieler ${ref?.id ?? "?"} fehlt in den Aufstellungen`,
-      );
-    return entry?.input;
-  };
-
-  for (const inc of incidents) {
-    const type = inc.incidentType;
-    const cls = inc.incidentClass ?? "";
-    if (IGNORED_TYPES.has(type)) continue;
-    if (type === "goal") {
-      const scorer = inputOf(inc.player, `Tor (${cls})`);
-      if (cls === "ownGoal") {
-        if (scorer) scorer.ownGoals++;
-        continue;
-      }
-      if (!GOAL_CLASSES.has(cls))
-        warnings.push(`Unbekannte Tor-Klasse "${cls}", als Tor gewertet`);
-      if (scorer) scorer.goals++;
-      if (inc.assist1) {
-        const assist = inputOf(inc.assist1, "Vorlage");
-        if (assist) assist.assists++;
-      }
-    } else if (type === "card") {
-      if (inc.rescinded || (inc.manager && !inc.player)) continue;
-      const carded = inputOf(inc.player, `Karte (${cls})`);
-      if (cls === "yellow" || cls === "yellowRed" || cls === "red") {
-        if (carded) carded[cls] = true;
-      } else {
-        warnings.push(`Unbekannte Karten-Klasse "${cls}", ignoriert`);
-      }
-    } else if (type === "inGamePenalty") {
-      if (cls !== "missed") {
-        warnings.push(`Unbekannte Elfmeter-Klasse "${cls}", ignoriert`);
-        continue;
-      }
-      const shooter = inputOf(inc.player, "Elfmeter verschossen");
-      if (shooter) shooter.penMissed++;
-      if (inc.reason === "goalkeeperSave") {
-        const keeper = inc.footballPassingNetworkAction?.find(
-          (a) => a.eventType === "penalty-save",
-        )?.goalkeeper;
-        const saver = inputOf(keeper, "Elfmeter gehalten");
-        if (saver) saver.penSaved++;
-      }
-    } else {
-      warnings.push(`Unbekannter Incident-Typ "${type}", ignoriert`);
-    }
+function applyGoal(
+  inc: IncidentData,
+  cls: string,
+  inputOf: InputOf,
+  warnings: string[],
+): void {
+  const scorer = inputOf(inc.player, `Tor (${cls})`);
+  if (cls === "ownGoal") {
+    if (scorer) scorer.ownGoals++;
+    return;
   }
+  if (!GOAL_CLASSES.has(cls))
+    warnings.push(`Unbekannte Tor-Klasse "${cls}", als Tor gewertet`);
+  if (scorer) scorer.goals++;
+  if (inc.assist1) {
+    const assist = inputOf(inc.assist1, "Vorlage");
+    if (assist) assist.assists++;
+  }
+}
 
-  // Vorlagen: Fallback auf statistics.goalAssist, falls ein assist1 in den Incidents fehlt.
-  for (const entry of byId.values()) {
+function applyCard(
+  inc: IncidentData,
+  cls: string,
+  inputOf: InputOf,
+  warnings: string[],
+): void {
+  if (inc.rescinded || (inc.manager && !inc.player)) return;
+  const carded = inputOf(inc.player, `Karte (${cls})`);
+  if (cls !== "yellow" && cls !== "yellowRed" && cls !== "red") {
+    warnings.push(`Unbekannte Karten-Klasse "${cls}", ignoriert`);
+    return;
+  }
+  if (carded) carded[cls] = true;
+}
+
+function applyPenalty(
+  inc: IncidentData,
+  cls: string,
+  inputOf: InputOf,
+  warnings: string[],
+): void {
+  if (cls !== "missed") {
+    warnings.push(`Unbekannte Elfmeter-Klasse "${cls}", ignoriert`);
+    return;
+  }
+  const shooter = inputOf(inc.player, "Elfmeter verschossen");
+  if (shooter) shooter.penMissed++;
+  if (inc.reason !== "goalkeeperSave") return;
+  const keeper = inc.footballPassingNetworkAction?.find(
+    (a) => a.eventType === "penalty-save",
+  )?.goalkeeper;
+  const saver = inputOf(keeper, "Elfmeter gehalten");
+  if (saver) saver.penSaved++;
+}
+
+const APPLY = new Map([
+  ["goal", applyGoal],
+  ["card", applyCard],
+  ["inGamePenalty", applyPenalty],
+]);
+
+/** Vorlagen: Fallback auf statistics.goalAssist, falls ein assist1 in den Incidents fehlt. */
+function checkStatistics(
+  entries: Iterable<PlayerEntry>,
+  warnings: string[],
+): void {
+  for (const entry of entries) {
     const { input, statGoals, statAssists } = entry;
     if (statAssists !== undefined && statAssists > input.assists) {
       warnings.push(
@@ -213,6 +225,42 @@ export function readSofascoreMatch(
       );
     }
   }
+}
+
+/**
+ * `score` ist der Endstand (Gegentore für „zu null“ und je Gegentor ab dem 2.).
+ * `positionOf` liefert die Saison-Position aus players.json; ohne sie gilt die
+ * Sofascore-Position des Spielers.
+ */
+export function readSofascoreMatch(
+  lineupsRaw: unknown,
+  incidentsRaw: unknown,
+  score: ScoreLine,
+  positionOf: (playerId: number) => Position | undefined = () => undefined,
+): SofascoreMatch {
+  const lineups = SofascoreLineups.parse(lineupsRaw);
+  const { incidents } = SofascoreIncidents.parse(incidentsRaw);
+  const warnings: string[] = [];
+  const byId = readLineups(lineups, score, positionOf, warnings);
+
+  const inputOf: InputOf = (ref, what) => {
+    const entry = ref && byId.get(ref.id);
+    if (!entry)
+      warnings.push(
+        `${what}: Spieler ${ref?.id ?? "?"} fehlt in den Aufstellungen`,
+      );
+    return entry?.input;
+  };
+
+  for (const inc of incidents) {
+    const type = inc.incidentType;
+    if (IGNORED_TYPES.has(type)) continue;
+    const apply = APPLY.get(type);
+    if (apply) apply(inc, inc.incidentClass ?? "", inputOf, warnings);
+    else warnings.push(`Unbekannter Incident-Typ "${type}", ignoriert`);
+  }
+
+  checkStatistics(byId.values(), warnings);
 
   const players = [...byId.values()].map(({ playerId, teamId, input }) => ({
     playerId,

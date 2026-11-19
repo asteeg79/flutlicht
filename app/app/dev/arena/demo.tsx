@@ -103,7 +103,7 @@ const rowDown: RowPlayer = {
   form: -1,
 };
 
-function Panel({ theme }: { theme: "dark" | "light" }) {
+function Panel({ theme }: Readonly<{ theme: "dark" | "light" }>) {
   const [cash, setCash] = useState(4.6);
   const [anim, setAnim] = useState(0);
   const board = transferBoard(
@@ -409,7 +409,10 @@ function Panel({ theme }: { theme: "dark" | "light" }) {
   );
 }
 
-function Demo({ title, children }: { title: string; children: ReactNode }) {
+function Demo({
+  title,
+  children,
+}: Readonly<{ title: string; children: ReactNode }>) {
   return (
     <section>
       <h2 className="mb-2 font-display text-[26px] font-black uppercase">

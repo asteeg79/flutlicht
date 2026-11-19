@@ -3,8 +3,10 @@
 import json
 from pathlib import Path
 
+from .errors import JobError
+
 
 def load_teams(path: Path) -> list[dict]:
     if not path.exists():
-        raise SystemExit(f"{path} fehlt, zuerst die Vereinszuordnung anlegen")
+        raise JobError(f"{path} fehlt, zuerst die Vereinszuordnung anlegen")
     return json.loads(path.read_text(encoding="utf-8"))

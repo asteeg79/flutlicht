@@ -203,7 +203,11 @@ export function swapPlayers(
         "Der Kapitän bleibt in der Startelf. Wähle zuerst einen anderen Kapitän.",
     };
   }
-  const swap = (id: number) => (id === a ? b : id === b ? a : id);
+  const swap = (id: number) => {
+    if (id === a) return b;
+    if (id === b) return a;
+    return id;
+  };
   const order = (id: number) => POSITIONS.indexOf(positionOf(id)!);
   const starters = lineup.starters
     .map(swap)
@@ -264,6 +268,59 @@ const ROLE_NAME: Record<Exclude<Position, "GK">, string> = {
   FWD: "Stürmer",
 };
 
+interface FormationSquad {
+  positionOf: (id: number) => Position | undefined;
+  priceOf: (id: number) => number;
+  isLocked: (id: number) => boolean;
+}
+
+type FieldPosition = "DEF" | "MID" | "FWD";
+type PositionPick = { ok: true; ids: number[] } | { ok: false; why: string };
+
+/** Die `count` billigsten Starter der Position, die gehen dürfen (weder Kapitän noch gesperrt). */
+function startersToBench(
+  lineup: Lineup,
+  pos: FieldPosition,
+  count: number,
+  squad: FormationSquad,
+): PositionPick {
+  const candidates = lineup.starters
+    .filter(
+      (id) =>
+        squad.positionOf(id) === pos &&
+        id !== lineup.captain &&
+        !squad.isLocked(id),
+    )
+    .sort((a, b) => squad.priceOf(a) - squad.priceOf(b));
+  if (candidates.length >= count)
+    return { ok: true, ids: candidates.slice(0, count) };
+  const why =
+    candidates.length === 0
+      ? `Kein ${ROLE_NAME[pos]} kann die Startelf verlassen`
+      : `Nur ${candidates.length} ${ROLE_NAME[pos]} können die Startelf verlassen`;
+  return { ok: false, why: `${why} (gesperrt oder Kapitän)` };
+}
+
+/** Die ersten `count` ungesperrten Bankspieler der Position, in der Reihenfolge B1→B3. */
+function benchToStarters(
+  lineup: Lineup,
+  pos: FieldPosition,
+  count: number,
+  squad: FormationSquad,
+): PositionPick {
+  const candidates = lineup.bench.b.filter(
+    (id) => squad.positionOf(id) === pos && !squad.isLocked(id),
+  );
+  if (candidates.length >= count)
+    return { ok: true, ids: candidates.slice(0, count) };
+  const missing = count - candidates.length;
+  const what =
+    missing === 1
+      ? `fehlt ein ungesperrter ${ROLE_NAME[pos]}`
+      : `fehlen ${missing} ungesperrte ${ROLE_NAME[pos]}`;
+  return { ok: false, why: `Dafür ${what} auf der Bank` };
+}
+
 /**
  * Wechselt direkt in eine andere Formation (2.3). Aus Positionen mit Überzahl gehen
  * die billigsten Starter auf die Bank, weder Kapitän noch gesperrt (2.4, 2.5); für
@@ -273,11 +330,7 @@ const ROLE_NAME: Record<Exclude<Position, "GK">, string> = {
 export function changeFormation(
   lineup: Lineup,
   target: Formation,
-  squad: {
-    positionOf: (id: number) => Position | undefined;
-    priceOf: (id: number) => number;
-    isLocked: (id: number) => boolean;
-  },
+  squad: FormationSquad,
 ): LineupChange {
   if (lineup.formation === target) return { ok: true, lineup };
   const now = formationCounts(lineup.formation);
@@ -286,43 +339,17 @@ export function changeFormation(
   const ins: number[] = [];
   for (const pos of ["DEF", "MID", "FWD"] as const) {
     const diff = now[pos] - want[pos];
-    if (diff > 0) {
-      const candidates = lineup.starters
-        .filter(
-          (id) =>
-            squad.positionOf(id) === pos &&
-            id !== lineup.captain &&
-            !squad.isLocked(id),
-        )
-        .sort((a, b) => squad.priceOf(a) - squad.priceOf(b));
-      if (candidates.length < diff) {
-        const why =
-          candidates.length === 0
-            ? `Kein ${ROLE_NAME[pos]} kann die Startelf verlassen`
-            : `Nur ${candidates.length} ${ROLE_NAME[pos]} können die Startelf verlassen`;
-        return {
-          ok: false,
-          message: `${target} geht gerade nicht: ${why} (gesperrt oder Kapitän).`,
-        };
-      }
-      outs.push(...candidates.slice(0, diff));
-    } else if (diff < 0) {
-      const candidates = lineup.bench.b.filter(
-        (id) => squad.positionOf(id) === pos && !squad.isLocked(id),
-      );
-      if (candidates.length < -diff) {
-        const missing = -diff - candidates.length;
-        const what =
-          missing === 1
-            ? `fehlt ein ungesperrter ${ROLE_NAME[pos]}`
-            : `fehlen ${missing} ungesperrte ${ROLE_NAME[pos]}`;
-        return {
-          ok: false,
-          message: `${target} geht gerade nicht: Dafür ${what} auf der Bank.`,
-        };
-      }
-      ins.push(...candidates.slice(0, -diff));
-    }
+    if (diff === 0) continue;
+    const pick =
+      diff > 0
+        ? startersToBench(lineup, pos, diff, squad)
+        : benchToStarters(lineup, pos, -diff, squad);
+    if (!pick.ok)
+      return {
+        ok: false,
+        message: `${target} geht gerade nicht: ${pick.why}.`,
+      };
+    (diff > 0 ? outs : ins).push(...pick.ids);
   }
   const order = (id: number) => POSITIONS.indexOf(squad.positionOf(id)!);
   const starters = [
@@ -341,6 +368,37 @@ export function changeFormation(
       bench: { ...lineup.bench, b },
     },
   };
+}
+
+/** Feldspieler einer Formation: gesperrte Starter bleiben, die übrigen Plätze füllen die besten freien; null, wenn es nicht aufgeht. */
+function fillFormation(
+  formation: Formation,
+  lockedStarters: readonly number[],
+  free: readonly number[],
+  positionOf: (id: number) => Position | undefined,
+): number[] | null {
+  const need = formationCounts(formation);
+  const starters: number[] = [];
+  for (const pos of ["DEF", "MID", "FWD"] as const) {
+    const fixed = lockedStarters.filter((id) => positionOf(id) === pos);
+    const pool = free.filter((id) => positionOf(id) === pos);
+    const missing = need[pos] - fixed.length;
+    if (missing < 0 || pool.length < missing) return null;
+    starters.push(...fixed, ...pool.slice(0, missing));
+  }
+  return starters;
+}
+
+/** Mehr Starter mit Spiel, dann höhere Summe; bei Gleichstand gewinnt die aktuelle Formation. */
+function beats(
+  key: readonly [number, number],
+  best: readonly [number, number] | undefined,
+  isCurrent: boolean,
+): boolean {
+  if (!best) return true;
+  if (key[0] !== best[0]) return key[0] > best[0];
+  if (key[1] !== best[1]) return key[1] > best[1];
+  return isCurrent;
 }
 
 /**
@@ -391,31 +449,19 @@ export function autoLineup(
     ...new Set<Formation>([...SELECTABLE_FORMATIONS, lineup.formation]),
   ];
   for (const formation of candidates) {
-    const need = formationCounts(formation);
-    const starters: number[] = [];
-    let feasible = true;
-    for (const pos of ["DEF", "MID", "FWD"] as const) {
-      const fixed = lockedStarters.filter((id) => squad.positionOf(id) === pos);
-      const pool = free.filter((id) => squad.positionOf(id) === pos);
-      const missing = need[pos] - fixed.length;
-      if (missing < 0 || pool.length < missing) {
-        feasible = false;
-        break;
-      }
-      starters.push(...fixed, ...pool.slice(0, missing));
-    }
-    if (!feasible) continue;
+    const starters = fillFormation(
+      formation,
+      lockedStarters,
+      free,
+      squad.positionOf,
+    );
+    if (!starters) continue;
     const key: [number, number] = [
       starters.filter(squad.hasMatch).length,
       starters.reduce((sum, id) => sum + value(id), 0),
     ];
-    const wins =
-      !best ||
-      key[0] > best.key[0] ||
-      (key[0] === best.key[0] &&
-        (key[1] > best.key[1] ||
-          (key[1] === best.key[1] && formation === lineup.formation)));
-    if (wins) best = { formation, starters, key };
+    if (beats(key, best?.key, formation === lineup.formation))
+      best = { formation, starters, key };
   }
   if (!best) return { ok: true, lineup };
 
