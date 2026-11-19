@@ -2,13 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   applyTransfer,
   cashAfterTransfer,
-  currentMatchday,
-  isBreakWindow,
   rollTransferBank,
   scoreManager,
   transferQuote,
   transferViolation,
-  transferWindow,
   type OpenTransferWindow,
   type TransferPlayer,
   type TransferState,
@@ -20,88 +17,6 @@ import {
   positions,
   squadPlayers,
 } from "./helpers";
-
-const fixtures = [
-  { matchday: 8, kickoffUtc: "2026-10-17T13:30:00Z" },
-  { matchday: 8, kickoffUtc: "2026-10-18T15:30:00Z" },
-  { matchday: 9, kickoffUtc: "2026-10-24T13:30:00Z" },
-];
-const finalsUntil = (md: number, lastAt: string) =>
-  new Map(
-    Array.from({ length: md }, (_, i) => [
-      i + 1,
-      new Date(i + 1 === md ? lastAt : "2026-08-01T07:00:00Z"),
-    ]),
-  );
-
-describe("currentMatchday", () => {
-  it("ist der kleinste nicht finale Spieltag", () => {
-    expect(currentMatchday(new Map())).toBe(1);
-    expect(currentMatchday(finalsUntil(7, "2026-10-12T07:00:00Z"))).toBe(8);
-    expect(currentMatchday(finalsUntil(34, "2027-05-24T07:00:00Z"))).toBeNull();
-  });
-});
-
-describe("transferWindow (KONZEPT 2.6)", () => {
-  const finals = finalsUntil(7, "2026-10-12T07:00:00Z");
-
-  it("ist zwischen Finalisierung und erster Sperre offen", () => {
-    const w = transferWindow(
-      fixtures,
-      finals,
-      new Date("2026-10-14T10:00:00Z"),
-    );
-    expect(w).toEqual({
-      open: true,
-      matchday: 8,
-      closesAt: new Date("2026-10-17T12:00:00Z"),
-      isBreak: false,
-    });
-  });
-
-  it("ist ab der ersten Sperre geschlossen", () => {
-    expect(
-      transferWindow(fixtures, finals, new Date("2026-10-17T12:00:00Z")),
-    ).toEqual({ open: false });
-  });
-
-  it("erkennt eine Pause ab 10 Tagen", () => {
-    const w = transferWindow(
-      fixtures,
-      finalsUntil(7, "2026-10-07T12:00:00Z"),
-      new Date("2026-10-10T00:00:00Z"),
-    );
-    expect(w).toMatchObject({ open: true, isBreak: true });
-    expect(
-      isBreakWindow(
-        new Date("2026-10-07T12:00:01Z"),
-        new Date("2026-10-17T12:00:00Z"),
-      ),
-    ).toBe(false);
-  });
-
-  it("zählt den Saisonstart als Pause", () => {
-    const w = transferWindow(
-      [{ matchday: 1, kickoffUtc: "2026-08-28T18:30:00Z" }],
-      new Map(),
-      new Date("2026-08-01T00:00:00Z"),
-    );
-    expect(w).toMatchObject({ open: true, matchday: 1, isBreak: true });
-  });
-
-  it("ist geschlossen, wenn die Saison vorbei ist oder Spiele fehlen", () => {
-    expect(
-      transferWindow(
-        fixtures,
-        finalsUntil(34, "2027-05-24T07:00:00Z"),
-        new Date(),
-      ),
-    ).toEqual({ open: false });
-    expect(
-      transferWindow([], finals, new Date("2026-10-14T10:00:00Z")),
-    ).toEqual({ open: false });
-  });
-});
 
 const openWindow: OpenTransferWindow = {
   open: true,

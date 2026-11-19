@@ -1,9 +1,8 @@
 import {
-  currentMatchday,
   lastPricedMatchday,
+  matchdayCalendar,
   priceChange,
   startPrice,
-  transferWindow,
 } from "@fm/core";
 import {
   Market,
@@ -27,7 +26,8 @@ export default async function MarketPage({
     searchParams,
   ]);
   const ctx = liveContext();
-  const w = transferWindow(ctx.fixtures, ctx.finals, ctx.now);
+  const calendar = matchdayCalendar(ctx.fixtures, ctx.finals);
+  const w = calendar.transferWindow(ctx.now);
   const window: MarketWindow = w.open
     ? {
         open: true,
@@ -35,7 +35,7 @@ export default async function MarketPage({
         closesAt: w.closesAt.toISOString(),
         isBreak: w.isBreak,
       }
-    : { open: false, reopensAfter: currentMatchday(ctx.finals) };
+    : { open: false, reopensAfter: calendar.current };
   // Auf dem Markt: aktive Spieler und alle, die schon im eigenen Kader stehen.
   // Nur die Felder und Statistiken, die der Markt anzeigt (spart rund ein Drittel).
   const inSquad = new Set(manager.squad);

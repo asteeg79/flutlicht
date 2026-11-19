@@ -3,18 +3,19 @@
 import { randomInt } from "node:crypto";
 import {
   CODE_ALPHABET,
-  currentMatchday,
-  firstLock,
-  firstMatchdayFor,
+  matchdayCalendar,
+  moveToSeasonStart,
   ManualMapping,
   ManualMatch,
   ManualPositions,
   ManualSeason,
+  seasonChangeViolation,
   ManualValues,
   normalizeCode,
   POSITIONS,
   RULES,
   scraperSilent,
+  type CalendarFixture,
   type Fixture,
   type League,
   type ManagerDoc,
@@ -30,6 +31,7 @@ import {
   Upstream,
 } from "@/lib/api-route";
 import type { GitHub } from "@/lib/github";
+import { updateManagers } from "@/lib/manager-writes";
 import {
   deleteManager,
   listAllManagers,
@@ -38,7 +40,6 @@ import {
   loadManager,
   saveEmailIndex,
   saveLeague,
-  saveManager,
 } from "@/lib/storage";
 
 // --- Codes (league.json.enc) ---
@@ -157,7 +158,7 @@ export const ManualChange = z.discriminatedUnion("kind", [
 
 export interface SeasonContext {
   now: Date;
-  fixtures: readonly Pick<Fixture, "matchday" | "kickoffUtc">[];
+  fixtures: readonly CalendarFixture[];
   finals: ReadonlyMap<number, Date>;
   firstScoredMatchday: number;
 }
@@ -228,42 +229,28 @@ async function moveManagersToSeasonStart(
   ctx: SeasonContext,
   firstScoredMatchday: number,
 ): Promise<void> {
-  const firstMatchday = firstMatchdayFor(
+  const firstMatchday = matchdayCalendar(
     ctx.fixtures,
     ctx.finals,
-    ctx.now,
-    firstScoredMatchday,
+  ).firstMatchdayFor(ctx.now, firstScoredMatchday);
+  const userIds = (await listAllManagers()).map((d) => d.userId);
+  await updateManagers(
+    userIds,
+    (doc) => moveToSeasonStart(doc, firstMatchday),
+    { stamp: ctx.now },
   );
-  for (const doc of await listAllManagers()) {
-    await saveManager({
-      ...doc,
-      firstMatchday,
-      transferBank: {
-        matchday: firstMatchday,
-        available: RULES.freeTransfersPerMatchday,
-      },
-      updatedAt: ctx.now.toISOString(),
-    });
-  }
 }
 
 /** Startbudget und ersten Spieltag nur vor dem ersten gewerteten Spieltag ändern (KONZEPT 11). */
 function assertSeasonEditable(ctx: SeasonContext, requested: number): void {
-  const lockOf = (md: number) =>
-    firstLock(ctx.fixtures.filter((f) => f.matchday === md));
-  const started = lockOf(ctx.firstScoredMatchday);
-  if (started === null || ctx.now >= started) {
-    throw new Forbidden(
-      "Die Saison läuft schon; Startbudget und erster Spieltag sind fest.",
-    );
-  }
-  const current = currentMatchday(ctx.finals) ?? RULES.matchdays;
-  const lock = lockOf(requested);
-  if (requested < current || lock === null || ctx.now >= lock) {
-    throw new BadRequest(
-      `Spieltag ${requested} hat schon begonnen. Wähle einen späteren.`,
-    );
-  }
+  const v = seasonChangeViolation(
+    matchdayCalendar(ctx.fixtures, ctx.finals),
+    ctx.firstScoredMatchday,
+    requested,
+    ctx.now,
+  );
+  if (v?.code === "season-started") throw new Forbidden(v.message);
+  if (v) throw new BadRequest(v.message);
 }
 
 const MatchInput = ManualMatch.omit({ enteredBy: true, enteredAt: true });

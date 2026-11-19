@@ -1,13 +1,11 @@
 import {
-  currentMatchday,
   formatMio,
   latestAppearance,
-  lineupForMatchday,
   lockAt,
+  matchdayCalendar,
   pad2,
-  participation,
   playerSeason,
-  scoreManager,
+  roundScore,
 } from "@fm/core";
 import Link from "next/link";
 import { BoardTile } from "@/components/arena/board-tile";
@@ -28,7 +26,7 @@ import {
 } from "@/lib/game-data";
 import { POS_LABEL } from "@/lib/positions";
 import { currentLeagueTable, currentManager } from "@/lib/session";
-import { lockLabel, nextLock } from "@/lib/shell";
+import { lockLabel } from "@/lib/shell";
 import { liveContext, publicManager } from "@/lib/squad";
 
 export const metadata = { title: "Team" };
@@ -65,11 +63,9 @@ export default async function TeamPage() {
   }
 
   const ctx = liveContext();
-  const matchday = currentMatchday(ctx.finals);
-  const fixtures =
-    matchday === null
-      ? []
-      : ctx.fixtures.filter((f) => f.matchday === matchday);
+  const calendar = matchdayCalendar(ctx.fixtures, ctx.finals);
+  const matchday = calendar.current;
+  const fixtures = matchday === null ? [] : calendar.fixturesOf(matchday);
   const name = (id: number) => teamById.get(id)?.shortName ?? "";
   const squad: SquadEntry[] = manager.squad.flatMap((id) => {
     const p = playerById.get(id);
@@ -103,32 +99,25 @@ export default async function TeamPage() {
   const scored = table.matchdays.length > 0 && row !== undefined;
   const lastFinal = table.matchdays.filter((m) => m.status === "final").at(-1);
   const points = gameData.points.find((p) => p.matchday === matchday);
-  const lineup = points
-    ? lineupForMatchday(manager, points.matchday, points.status)
+  const round = points
+    ? roundScore(
+        manager,
+        points,
+        positionById,
+        gameData.season.firstScoredMatchday,
+      )
     : null;
   const live =
-    points &&
-    lineup &&
-    participation(
-      manager,
-      points.matchday,
-      gameData.season.firstScoredMatchday,
-    ) === "scored"
+    points && round?.kind === "scored"
       ? {
           matchday: points.matchday,
           status: points.status,
-          total: scoreManager(
-            points.matchday,
-            lineup,
-            points.players,
-            manager.transfers,
-            positionById,
-          ).total,
+          total: round.score.total,
         }
       : null;
 
   const now = ctx.now;
-  const lock = nextLock(ctx.fixtures, ctx.finals, now);
+  const lock = calendar.nextLock(now);
   const serverNow = now.toISOString();
 
   return (

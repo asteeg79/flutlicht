@@ -18,6 +18,16 @@ from .round_events import round_path
 PHASE = "final"
 
 
+def _final_dir(raw_dir: Path, event_id: int) -> Path:
+    # int(): Die Event-ID kommt aus der Rundendatei und landet im Pfad.
+    return raw_dir / "sofascore" / "matches" / str(int(event_id)) / PHASE
+
+
+def has_final(raw_dir: Path, event_id: int | None) -> bool:
+    """Liegen die finalen Daten des Spiels schon vor? Ohne Event-ID nie."""
+    return event_id is not None and (_final_dir(raw_dir, event_id) / "incidents.json").exists()
+
+
 def _finished_in_fixtures(raw_dir: Path, matchday: int) -> set[int]:
     path = raw_dir.parent / "data" / "fixtures.json"
     if not path.exists():
@@ -45,11 +55,11 @@ def run(client: Client, raw_dir: Path, matchday: int, event_id: int | None = Non
         raise SystemExit(f"Spieltag {matchday}: kein beendetes Spiel in {rpath.name} und data/fixtures.json")
     written: list[Path] = []
     for event in events:
-        match_dir = raw_dir / "sofascore" / "matches" / str(event["id"]) / PHASE
-        if (match_dir / "incidents.json").exists():
+        if has_final(raw_dir, event["id"]):
             continue
+        match_dir = _final_dir(raw_dir, event["id"])
         for kind in ("lineups", "incidents"):
-            url = f"{config.API}/event/{event['id']}/{kind}"
+            url = f"{config.API}/event/{int(event['id'])}/{kind}"
             path = match_dir / f"{kind}.json"
             write_raw(path, url, PHASE, client.get_json(url))
             written.append(path)

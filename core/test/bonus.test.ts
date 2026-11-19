@@ -7,6 +7,8 @@ import {
   participation,
   type ManagerDoc,
   type MatchdayPoints,
+  matchdayCalendar,
+  matchdayFinalizer,
 } from "../src";
 import { lineup442, positions, SQUAD_IDS } from "./helpers";
 
@@ -128,6 +130,25 @@ describe("matchdayBonuses", () => {
   it("frühere Spieltage: keine Prämie", () => {
     expect(matchdayBonuses(managers, md(6), positions, 8).size).toBe(0);
   });
+
+  it("matchdayFinalizer: Prämie aus allen Managern, gebucht auf das frisch geladene Dokument", () => {
+    const calendar = matchdayCalendar([], new Map());
+    const finalize = matchdayFinalizer(
+      managers,
+      8,
+      [md(8)],
+      positions,
+      calendar,
+      8,
+    );
+    // Zwischen Liste und Speichern hat „a“ den Kapitän gewechselt; die Prämie bleibt die der Liste.
+    const fresh = { ...managers[0]!, lineup: { ...lineup442, captain: 1 } };
+    const next = finalize(fresh);
+    expect(next.matchdayBonuses).toEqual({ "8": 1.4 });
+    expect(next.cash).toBe(2.4);
+    expect(next.lineupHistory["8"]?.captain).toBe(1);
+    expect(finalize(managers[1]!).matchdayBonuses).toEqual({ "8": 0 });
+  });
 });
 
 describe("finalizeManager mit Prämie", () => {
@@ -140,16 +161,25 @@ describe("finalizeManager mit Prämie", () => {
     [7, new Date("2026-10-26T07:00:00Z")],
     [8, new Date("2026-11-02T07:00:00Z")],
   ]);
+  const calendar = matchdayCalendar(
+    fixtures.map((f) => ({
+      ...f,
+      homeTeamId: 1,
+      awayTeamId: 2,
+      status: "scheduled" as const,
+    })),
+    finals,
+  );
 
   it("schreibt die Prämie genau einmal gut", () => {
     const a = doc("a", { transferBank: { matchday: 8, available: 2 } });
-    const next = finalizeManager(a, 8, fixtures, finals, {
+    const next = finalizeManager(a, 8, calendar, {
       firstScoredMatchday: 8,
       bonus: 0.5,
     });
     expect(next.cash).toBe(1.5);
     expect(next.matchdayBonuses).toEqual({ "8": 0.5 });
-    const again = finalizeManager(next, 8, fixtures, finals, {
+    const again = finalizeManager(next, 8, calendar, {
       firstScoredMatchday: 8,
       bonus: 0.5,
     });
@@ -158,7 +188,7 @@ describe("finalizeManager mit Prämie", () => {
 
   it("Schattenbetrieb: nichts gutschreiben, aber die Aufstellung einfrieren", () => {
     const a = doc("a", { transferBank: { matchday: 7, available: 2 } });
-    const next = finalizeManager(a, 7, fixtures, finals, {
+    const next = finalizeManager(a, 7, calendar, {
       firstScoredMatchday: 8,
       bonus: 0.9,
     });

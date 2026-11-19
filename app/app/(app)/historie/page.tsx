@@ -15,7 +15,7 @@ import { PageBody, SectionTitle, TwoCol } from "@/components/arena/page-layout";
 import { PlayerPhoto } from "@/components/player-photo";
 import { signedMio } from "@/components/points";
 import { lastName, mioNumber } from "@/lib/format";
-import { gameData, playerById, positionById } from "@/lib/game-data";
+import { finals, gameData, playerById, positionById } from "@/lib/game-data";
 import { currentManager } from "@/lib/session";
 
 export const metadata = { title: "Transfer-Historie" };
@@ -69,9 +69,7 @@ export default async function HistoryPage() {
   });
   // Nur echte Daten: final gewertete Spieltage des Managers (2.7), Prämie wie gutgeschrieben.
   const first = gameData.season.firstScoredMatchday;
-  const finals = new Set(
-    gameData.points.filter((p) => p.status === "final").map((p) => p.matchday),
-  );
+  const finalized = finals();
   const scores =
     scoreLeague([me], gameData.points, positionById, first).get(me.userId) ??
     new Map();
@@ -82,7 +80,7 @@ export default async function HistoryPage() {
     priceAt,
     scored: new Map(
       [...scores]
-        .filter(([md]) => finals.has(md))
+        .filter(([md]) => finalized.has(md))
         .map(([md, s]) => [
           md,
           { points: s.total, bonus: me.matchdayBonuses?.[String(md)] ?? 0 },

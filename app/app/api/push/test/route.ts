@@ -1,7 +1,8 @@
 import { NextResponse } from "next/server";
 import { BadRequest, NotFound, withUser } from "@/lib/api-route";
 import { sendPush } from "@/lib/push";
-import { loadManager, saveManager } from "@/lib/storage";
+import { removePush } from "@/lib/manager-writes";
+import { loadManager } from "@/lib/storage";
 
 export const runtime = "nodejs";
 
@@ -20,8 +21,7 @@ export const POST = withUser(async ({ user }) => {
     tag: "test",
   });
   if (result === "expired") {
-    const { push: _removed, ...rest } = doc;
-    await saveManager(rest);
+    await removePush(user.id);
     throw new BadRequest(
       "Die Push-Anmeldung ist abgelaufen. Bitte schalte Push neu ein.",
     );
