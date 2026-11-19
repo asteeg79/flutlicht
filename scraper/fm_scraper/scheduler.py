@@ -241,8 +241,13 @@ def load_state(path: Path) -> dict[str, Any]:
 
 
 def save_state(path: Path, state: dict[str, Any]) -> None:
+    """Atomar: erst in eine Nachbardatei, dann umbenennen. Bricht der Rechner mitten im
+    Schreiben ab, bleibt der vorige Zustand vollständig erhalten."""
     path.parent.mkdir(parents=True, exist_ok=True)
-    path.write_text(json.dumps(state, indent=2, sort_keys=True))
+    tmp = path.with_name(f".{path.name}.tmp")
+    with tmp.open("w", encoding="utf-8") as f:
+        json.dump(state, f, indent=2, sort_keys=True)
+    tmp.replace(path)
 
 
 # --- Ausführung (vom systemd-Timer bzw. launchd alle 5 Min. aufgerufen) ---

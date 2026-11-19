@@ -400,3 +400,13 @@ def test_status_vertrag_mit_der_app():
     if os.environ.get("FM_UPDATE_CONTRACT"):
         CONTRACT.write_text(json.dumps(payload, indent=2, ensure_ascii=False) + "\n")
     assert payload == json.loads(CONTRACT.read_text())
+
+
+def test_zustand_wird_atomar_gespeichert(tmp_path):
+    """Erst in eine Nachbardatei, dann umbenennen: Ein Abbruch hinterlässt keinen halben Zustand."""
+    path = tmp_path / "state" / "scheduler.json"
+    scheduler.save_state(path, {"done": {"round:5": "x"}, "planned": {}})
+    scheduler.save_state(path, {"done": {"round:6": "y"}})
+    assert scheduler.load_state(path) == {"done": {"round:6": "y"}}
+    assert [p.name for p in path.parent.iterdir()] == ["scheduler.json"]
+    assert scheduler.load_state(tmp_path / "fehlt.json") == {}
