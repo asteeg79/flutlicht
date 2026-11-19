@@ -273,7 +273,7 @@ function Row({
         >
           {p?.name ?? `Spieler ${id}`}
         </Link>
-        <span className="mt-[3px] block text-[11px] font-medium text-muted">
+        <span className="mt-0.75 block text-[11px] font-medium text-muted">
           {detail}
         </span>
       </span>

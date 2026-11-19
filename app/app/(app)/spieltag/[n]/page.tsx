@@ -577,7 +577,7 @@ function SlotRow({
     >
       <span className="relative h-10 w-10">
         <PlayerPhoto src={shown.image} className="h-10 w-10" />
-        <span className="absolute -right-2 -bottom-[3px] bg-kreide px-1 py-px font-display text-[11px] leading-[11px] font-black text-nacht">
+        <span className="absolute -right-2 bottom-[-3px] bg-kreide px-1 py-px font-display text-[11px] leading-[11px] font-black text-nacht">
           {POS_LABEL[shown.position]}
         </span>
       </span>
