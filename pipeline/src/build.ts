@@ -39,6 +39,7 @@ import { buildPlayers } from "./steps/players";
 import { buildPoints, chooseMatchData } from "./steps/points";
 import { sanityCheck } from "./steps/sanity";
 import { buildSeason } from "./steps/season";
+import { byCodeUnit } from "./order";
 
 const DAY_MS = 24 * 60 * 60 * 1000;
 
@@ -193,7 +194,7 @@ export function computeData(
   for (const f of files) hash.update(f.file).update(f.json);
   const generatedAt = [openliga.fetchedAt, ...points.map((p) => p.generatedAt)]
     .map((t) => new Date(t).toISOString())
-    .sort((a, b) => a.localeCompare(b))
+    .sort(byCodeUnit)
     .at(-1)!;
   prepare("meta.json", Meta, {
     dataVersion: hash.digest("hex").slice(0, 12),

@@ -19,6 +19,7 @@ import type { OpenligaMatch, RoundEvent } from "./steps/fixtures";
 import type { MatchSources } from "./steps/points";
 import { openligaSeasonPath, originalKickoffsPath } from "./fetch-openligadb";
 import { readJson, readJsonOptional } from "./io/json";
+import { byCodeUnit } from "./order";
 
 const Envelope = z.object({ fetchedAt: z.string(), data: z.unknown() });
 
@@ -32,12 +33,12 @@ async function listDirs(dir: string): Promise<string[]> {
   return entries
     .filter((e) => e.isDirectory())
     .map((e) => e.name)
-    .sort();
+    .sort(byCodeUnit);
 }
 
 async function listJson(dir: string, ext = ".json"): Promise<string[]> {
   if (!existsSync(dir)) return [];
-  return (await readdir(dir)).filter((f) => f.endsWith(ext)).sort();
+  return (await readdir(dir)).filter((f) => f.endsWith(ext)).sort(byCodeUnit);
 }
 
 const SofaSquad = z.object({
@@ -291,9 +292,7 @@ export async function readMatchSources(
       entry(Number(event))[phase] = {
         lineups: lineups.data,
         incidents: incidents.data,
-        at: [lineups.fetchedAt, incidents.fetchedAt]
-          .sort((a, b) => a.localeCompare(b))
-          .at(-1)!,
+        at: [lineups.fetchedAt, incidents.fetchedAt].sort(byCodeUnit).at(-1)!,
       };
     }
   }

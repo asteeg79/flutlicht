@@ -13,6 +13,7 @@ import {
   type Player,
   type PlayerPoints,
 } from "@fm/core";
+import { byCodeUnit } from "../order";
 
 export type MatchData =
   | { kind: "manual"; match: ManualMatch; at: string }
@@ -106,7 +107,7 @@ export function buildPoints(
     out.push({
       matchday,
       status,
-      generatedAt: stamps.sort().at(-1) ?? now.toISOString(),
+      generatedAt: stamps.sort(byCodeUnit).at(-1) ?? now.toISOString(),
       players: Object.fromEntries(
         Object.entries(points).sort(([a], [b]) => Number(a) - Number(b)),
       ),
