@@ -4,10 +4,12 @@ import { randomInt } from "node:crypto";
 import {
   CODE_ALPHABET,
   matchdayCalendar,
+  moveToSeasonStart,
   ManualMapping,
   ManualMatch,
   ManualPositions,
   ManualSeason,
+  seasonChangeViolation,
   ManualValues,
   normalizeCode,
   POSITIONS,
@@ -234,32 +236,21 @@ async function moveManagersToSeasonStart(
   const userIds = (await listAllManagers()).map((d) => d.userId);
   await updateManagers(
     userIds,
-    (doc) => ({
-      ...doc,
-      firstMatchday,
-      transferBank: {
-        matchday: firstMatchday,
-        available: RULES.freeTransfersPerMatchday,
-      },
-    }),
+    (doc) => moveToSeasonStart(doc, firstMatchday),
     { stamp: ctx.now },
   );
 }
 
 /** Startbudget und ersten Spieltag nur vor dem ersten gewerteten Spieltag ändern (KONZEPT 11). */
 function assertSeasonEditable(ctx: SeasonContext, requested: number): void {
-  const calendar = matchdayCalendar(ctx.fixtures, ctx.finals);
-  if (calendar.started(ctx.firstScoredMatchday, ctx.now)) {
-    throw new Forbidden(
-      "Die Saison läuft schon; Startbudget und erster Spieltag sind fest.",
-    );
-  }
-  const current = calendar.current ?? RULES.matchdays;
-  if (requested < current || calendar.started(requested, ctx.now)) {
-    throw new BadRequest(
-      `Spieltag ${requested} hat schon begonnen. Wähle einen späteren.`,
-    );
-  }
+  const v = seasonChangeViolation(
+    matchdayCalendar(ctx.fixtures, ctx.finals),
+    ctx.firstScoredMatchday,
+    requested,
+    ctx.now,
+  );
+  if (v?.code === "season-started") throw new Forbidden(v.message);
+  if (v) throw new BadRequest(v.message);
 }
 
 const MatchInput = ManualMatch.omit({ enteredBy: true, enteredAt: true });

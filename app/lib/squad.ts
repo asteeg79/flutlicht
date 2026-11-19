@@ -1,13 +1,10 @@
 // Erstkader und Transfers (KONZEPT 2.2, 2.6, 2.7, 8.2). Die Regeln stehen in core;
 // geschrieben wird über lib/manager-writes (optimistische Sperre per updatedAt).
 import {
+  applyInitialSquad,
   applyTransfer,
-  defaultLineup,
   matchdayCalendar,
   RULES,
-  subtractMio,
-  sumPrices,
-  validateSquad,
   type Fixture,
   type ManagerDoc,
   type Player,
@@ -65,43 +62,16 @@ export async function buildInitialSquad(
   const next = await updateManager(
     userId,
     (doc) => {
-      if (doc.squad.length > 0)
-        throw new BadRequest(
-          "Dein Kader steht schon. Änderungen laufen über Transfers.",
-        );
-
-      const byId = new Map(ctx.players.map((p) => [p.id, p]));
-      const picked = input.players.map((id) => byId.get(id));
-      if (picked.some((p) => p === undefined))
-        throw new BadRequest("Unbekannter Spieler.");
-      const squad = picked as Player[];
-      const violations = validateSquad(squad, ctx.startBudget);
-      if (violations.length > 0)
-        throw new BadRequest(violations.map((v) => v.message).join(" "));
-
-      // Wer den Kader erst nach der ersten Sperre seines Startspieltags baut, startet später.
-      const firstMatchday = Math.max(
-        doc.firstMatchday,
-        matchdayCalendar(ctx.fixtures, ctx.finals).firstMatchdayFor(
-          ctx.now,
-          ctx.firstScoredMatchday,
-        ),
-      );
-      return {
-        ...doc,
-        squad: squad.map((p) => p.id),
-        initialPrices: Object.fromEntries(squad.map((p) => [p.id, p.price])),
-        cash: subtractMio(
-          ctx.startBudget,
-          sumPrices(squad.map((p) => p.price)),
-        ),
-        lineup: defaultLineup(squad),
-        firstMatchday,
-        transferBank: {
-          matchday: firstMatchday,
-          available: RULES.freeTransfersPerMatchday,
-        },
-      };
+      const result = applyInitialSquad(doc, input.players, {
+        players: ctx.players,
+        calendar: matchdayCalendar(ctx.fixtures, ctx.finals),
+        now: ctx.now,
+        startBudget: ctx.startBudget,
+        firstScoredMatchday: ctx.firstScoredMatchday,
+      });
+      if (!result.ok)
+        throw new BadRequest(result.violations.map((v) => v.message).join(" "));
+      return result.state;
     },
     { expect: input.updatedAt, stamp: ctx.now },
   );

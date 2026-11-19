@@ -11,6 +11,7 @@ import {
   subtractMio,
   sumPrices,
   transferQuote,
+  tradeBlocker,
   transferViolation,
   validateSquad,
   type Player,
@@ -205,12 +206,10 @@ export function Market({
   const quote = coreWindow.open
     ? transferQuote(manager.transferBank, coreWindow, manager.firstMatchday)
     : null;
-  const bankStale =
-    quote !== null &&
-    window.open &&
-    !quote.unlimited &&
-    manager.transferBank.matchday !== window.matchday;
-  const canTrade = !draftMode && window.open && !bankStale;
+  // Dieselbe Prüfung wie der Server (core/tradeBlocker).
+  const blocker = tradeBlocker(manager, coreWindow);
+  const bankStale = blocker?.code === "bank-stale";
+  const canTrade = !draftMode && blocker === null;
   const ctx = { players: byId, window: coreWindow };
   const clubName = (p: MarketPlayer) => club.get(p.teamId)?.shortName;
 

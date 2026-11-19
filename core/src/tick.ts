@@ -1,6 +1,8 @@
 // Taktgeber (KONZEPT 9): entscheidet rein und deterministisch, welche Aktionen fällig
 // sind. Jede Aktion hat einen Schlüssel und wird höchstens einmal ausgeführt; die App
 // führt aus, merkt sich die Schlüssel in system-state und sendet die Pushes.
+import { matchdayBonuses, type MatchdayBonus } from "./bonus";
+import type { Position } from "./config/rules";
 import { scraperAlarms } from "./freshness";
 import { isScoredMatchday, participation } from "./participation";
 import {
@@ -288,4 +290,28 @@ export function finalizeManager(
     bank = rollTransferBank(bank, unlimited);
   }
   return { ...doc, ...money, lineupHistory, transferBank: bank };
+}
+
+/**
+ * Finalisierung von Spieltag `matchday` für alle Manager. Die Prämie hängt am Median
+ * aller (2.7), deshalb wird sie aus `managers` vorab berechnet; die zurückgegebene
+ * Funktion finalisiert danach jedes Dokument, auch ein inzwischen frisch geladenes.
+ */
+export function matchdayFinalizer(
+  managers: readonly ManagerDoc[],
+  matchday: number,
+  points: readonly MatchdayPoints[],
+  positions: ReadonlyMap<number, Position>,
+  calendar: Pick<MatchdayCalendar, "isBreak">,
+  firstScoredMatchday: number,
+): (doc: ManagerDoc) => ManagerDoc {
+  const md = points.find((p) => p.matchday === matchday);
+  const bonuses = md
+    ? matchdayBonuses(managers, md, positions, firstScoredMatchday)
+    : new Map<string, MatchdayBonus>();
+  return (doc) =>
+    finalizeManager(doc, matchday, calendar, {
+      firstScoredMatchday,
+      bonus: bonuses.get(doc.userId)?.bonus ?? 0,
+    });
 }

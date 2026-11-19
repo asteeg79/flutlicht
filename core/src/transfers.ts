@@ -85,12 +85,13 @@ const violation = (code: string, message: string): Violation => ({
   message,
 });
 
-/** Warum `outId` gerade nicht gegen `inId` getauscht werden kann; null = möglich (2.6, 2.7). */
-export function transferViolation(
-  state: TransferState,
-  outId: number,
-  inId: number,
-  { window, players }: Pick<TransferContext, "window" | "players">,
+/**
+ * Kann der Manager gerade überhaupt tauschen? Fenster zu, oder die Transferbank ist
+ * noch nicht bis zum aktuellen Spieltag fortgeschrieben (Finalisierung läuft). null = ja.
+ */
+export function tradeBlocker(
+  state: Pick<TransferState, "transferBank" | "firstMatchday">,
+  window: TransferWindow,
 ): Violation | null {
   if (!window.open) {
     return violation("window-closed", "Das Transferfenster ist geschlossen.");
@@ -105,6 +106,18 @@ export function transferViolation(
       "Das Transferfenster wird gerade vorbereitet. Bitte versuche es in ein paar Minuten erneut.",
     );
   }
+  return null;
+}
+
+/** Warum `outId` gerade nicht gegen `inId` getauscht werden kann; null = möglich (2.6, 2.7). */
+export function transferViolation(
+  state: TransferState,
+  outId: number,
+  inId: number,
+  { window, players }: Pick<TransferContext, "window" | "players">,
+): Violation | null {
+  const blocked = tradeBlocker(state, window);
+  if (blocked) return blocked;
   if (state.lineup === null) {
     return violation("no-squad", "Stelle zuerst deinen Erstkader auf.");
   }

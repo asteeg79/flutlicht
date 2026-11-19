@@ -4,7 +4,7 @@ import {
   findInvite,
   findReset,
   matchdayCalendar,
-  RULES,
+  newManagerState,
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
@@ -106,16 +106,7 @@ export async function registerManager(
     role: admin ? "admin" : "player",
     createdAt: at,
     updatedAt: at,
-    firstMatchday,
-    squad: [],
-    cash: gameData.season.startBudget,
-    lineup: null,
-    lineupHistory: {},
-    transfers: [],
-    transferBank: {
-      matchday: firstMatchday,
-      available: RULES.freeTransfersPerMatchday,
-    },
+    ...newManagerState(firstMatchday, gameData.season.startBudget),
   };
   // Reihenfolge: Dokument, dann Index, dann Code verbrauchen. Bricht es
   // zwischendrin ab, bleibt höchstens ein unerreichbares Dokument zurück.

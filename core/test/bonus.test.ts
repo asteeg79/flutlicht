@@ -8,6 +8,7 @@ import {
   type ManagerDoc,
   type MatchdayPoints,
   matchdayCalendar,
+  matchdayFinalizer,
 } from "../src";
 import { lineup442, positions, SQUAD_IDS } from "./helpers";
 
@@ -128,6 +129,25 @@ describe("matchdayBonuses", () => {
 
   it("frühere Spieltage: keine Prämie", () => {
     expect(matchdayBonuses(managers, md(6), positions, 8).size).toBe(0);
+  });
+
+  it("matchdayFinalizer: Prämie aus allen Managern, gebucht auf das frisch geladene Dokument", () => {
+    const calendar = matchdayCalendar([], new Map());
+    const finalize = matchdayFinalizer(
+      managers,
+      8,
+      [md(8)],
+      positions,
+      calendar,
+      8,
+    );
+    // Zwischen Liste und Speichern hat „a“ den Kapitän gewechselt; die Prämie bleibt die der Liste.
+    const fresh = { ...managers[0]!, lineup: { ...lineup442, captain: 1 } };
+    const next = finalize(fresh);
+    expect(next.matchdayBonuses).toEqual({ "8": 1.4 });
+    expect(next.cash).toBe(2.4);
+    expect(next.lineupHistory["8"]?.captain).toBe(1);
+    expect(finalize(managers[1]!).matchdayBonuses).toEqual({ "8": 0 });
   });
 });
 

@@ -1,11 +1,6 @@
 // Ausführung des Taktgebers (KONZEPT 9). Was fällig ist, entscheidet core/planTick;
 // hier: Finalisierung speichern, Schlüssel merken, Pushes senden.
-import {
-  finalizeManager,
-  matchdayBonuses,
-  matchdayCalendar,
-  planTick,
-} from "@fm/core";
+import { matchdayCalendar, matchdayFinalizer, planTick } from "@fm/core";
 import { finals, gameData } from "@/lib/game-data";
 import { removePush, updateManagers } from "@/lib/manager-writes";
 import {
@@ -61,23 +56,16 @@ export async function runTick(
   const calendar = matchdayCalendar(game.fixtures, finalsOf());
   for (const action of actions) {
     if (action.kind !== "finalize") continue;
-    // Prämien vorab für alle, weil der Median alle Manager braucht (2.7).
-    const md = game.points.find((p) => p.matchday === action.matchday);
-    const bonuses = md
-      ? matchdayBonuses(
-          managers,
-          md,
-          positions,
-          game.season.firstScoredMatchday,
-        )
-      : new Map();
     await updateManagers(
       managers.map((m) => m.userId),
-      (doc) =>
-        finalizeManager(doc, action.matchday, calendar, {
-          firstScoredMatchday: game.season.firstScoredMatchday,
-          bonus: bonuses.get(doc.userId)?.bonus ?? 0,
-        }),
+      matchdayFinalizer(
+        managers,
+        action.matchday,
+        game.points,
+        positions,
+        calendar,
+        game.season.firstScoredMatchday,
+      ),
     );
     state.done[action.key] = at;
     await saveSystemState(state);

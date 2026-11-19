@@ -4,6 +4,7 @@ export * from "./config/rules";
 export * from "./config/scoring";
 export * from "./lineup";
 export * from "./calendar";
+export * from "./lifecycle";
 export * from "./points";
 export * from "./prices";
 export * from "./rounding";
