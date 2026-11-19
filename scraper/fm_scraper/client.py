@@ -16,7 +16,7 @@ import time
 from dataclasses import dataclass
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
-from typing import Any, Callable, Protocol, Sequence
+from typing import Any, Callable, Literal, Protocol, Sequence
 from zoneinfo import ZoneInfo
 
 from . import config
@@ -29,16 +29,46 @@ class PauseRequired(Exception):
 
 
 class FetchError(Exception):
-    def __init__(self, url: str, status: int):
-        super().__init__(f"HTTP {status} für {url}")
+    """Abruf gescheitert, ohne Sperre: anderer HTTP-Status oder Ziel nicht erreicht (status None)."""
+
+    def __init__(self, url: str, status: int | None):
+        super().__init__(f"HTTP {status} für {url}" if status is not None else f"{url} nicht erreichbar")
         self.url = url
         self.status = status
 
 
 @dataclass
 class RawResponse:
-    status: int
+    """Was ein Abrufweg gesehen hat. `status` None: Der Browser kennt keinen Status (älteres
+    Chromium). `reached` False: Das Ziel wurde nie erreicht (Chromium-Fehlerseite)."""
+
+    status: int | None
     body: bytes
+    reached: bool = True
+
+
+Outcome = Literal["ok", "rate-limited", "blocked", "unreachable", "error"]
+
+
+def classify(response: RawResponse, expect_json: bool) -> Outcome:
+    """Die eine Stelle, die entscheidet, was eine Antwort bedeutet.
+
+    ok: gültiger Inhalt. rate-limited: 429, Pause. blocked: 403 oder Bot-Challenge (HTML
+    statt JSON), nächster Abrufweg. unreachable: Ziel nie erreicht, Fehlschlag ohne Sperre.
+    error: jeder andere Status (etwa 404), Fehlschlag ohne Sperre."""
+    if not response.reached:
+        return "unreachable"
+    if response.status is None:
+        # Älteres Chromium ohne Status: nur JSON oder ein Bild aus dem Canvas (PNG) zählt.
+        seen = _looks_valid(response.body, True) or response.body.startswith(b"\x89PNG")
+        return "ok" if seen and _looks_valid(response.body, expect_json) else "blocked"
+    if response.status == 200:
+        return "ok" if _looks_valid(response.body, expect_json) else "blocked"
+    if response.status == 429:
+        return "rate-limited"
+    if response.status == 403:
+        return "blocked"
+    return "error"
 
 
 class Transport(Protocol):
@@ -85,12 +115,13 @@ class Client:
     def _fetch(self, url: str, expect_json: bool) -> bytes:
         while True:
             response = self._send(url)
-            if response.status == 200 and _looks_valid(response.body, expect_json):
+            outcome = classify(response, expect_json)
+            if outcome == "ok":
                 self._remember_route()
                 return response.body
-            if response.status == 429:
+            if outcome == "rate-limited":
                 self._start_pause("429 Too Many Requests")
-            if not _is_blocked(response, expect_json):
+            if outcome != "blocked":
                 raise FetchError(url, response.status)
             log.warning("%s bei %s über „%s“: %r", response.status, url, self._route_name(), response.body[:200])
             self.close()
@@ -168,12 +199,6 @@ class Client:
     def _write_state(self, state: dict[str, Any]) -> None:
         self._state_file.parent.mkdir(parents=True, exist_ok=True)
         self._state_file.write_text(json.dumps(state, indent=2))
-
-
-def _is_blocked(response: RawResponse, expect_json: bool) -> bool:
-    return response.status == 403 or (
-        response.status == 200 and not _looks_valid(response.body, expect_json)
-    )
 
 
 def _looks_valid(body: bytes, expect_json: bool) -> bool:
@@ -278,18 +303,14 @@ def _page_response(page: dict[str, Any]) -> RawResponse:
         body = base64.b64decode(page["png"])
     else:
         body = (page.get("text") or "").encode()
-    if page.get("error"):
-        # Der Abruf erreichte Sofascore nicht: Fehlschlag (Status 0), keine Sperre.
-        return RawResponse(0, body)
-    status = page.get("status") or 0
-    if not status:
-        # Ältere Chromium-Versionen kennen responseStatus nicht: ungültige Antwort zählt als Sperre.
-        status = 200 if _looks_valid(body, expect_json=not page.get("png")) else 403
-    return RawResponse(status, body)
+    # Ältere Chromium-Versionen kennen responseStatus nicht (0): dann entscheidet der Inhalt.
+    status = page.get("status") or None
+    # Chromium-Fehlerseite: Der Abruf erreichte Sofascore nie, keine Sperre.
+    return RawResponse(status, body, reached=not page.get("error"))
 
 
 class UrllibTransport:
-    """Schlichtes HTTP für den lokalen transfermarkt-api-Dienst."""
+    """Schlichtes HTTP ohne Browser: lokaler transfermarkt-api-Dienst und Downloads außerhalb von Sofascore."""
 
     def get(self, url: str) -> RawResponse:
         import urllib.error
@@ -309,6 +330,12 @@ def tm_client() -> Client:
         config.STATE_DIR / "tm-state.json",
         pacing=config.TM_PACING_SECONDS,
     )
+
+
+def download_client() -> Client:
+    """Client für einzelne Downloads außerhalb von Sofascore (dcaribou-Datensatz auf R2):
+    ohne Browser, eigene Pausendatei. Eine Sperre dort pausiert die Sofascore-Jobs nicht."""
+    return Client([("http", UrllibTransport)], config.STATE_DIR / "download-state.json")
 
 
 # Pausen-Zustand des Sofascore-Clients; der Scheduler meldet ihn mit dem Lebenszeichen.

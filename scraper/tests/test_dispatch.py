@@ -39,6 +39,8 @@ def test_jeder_job_ruft_mit_seinem_client_ab():
 
     assert dispatch.client_for("tm-crawl") is client.tm_client
     assert dispatch.client_for("squads") is client.default_client
+    # Der R2-Download läuft ohne Browser und ohne die Sofascore-Pause.
+    assert dispatch.client_for("dcaribou") is client.download_client
 
 
 def test_pflichtargumente_kommen_aus_der_registry():

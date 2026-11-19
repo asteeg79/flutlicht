@@ -28,8 +28,9 @@ class Job:
     # kann False melden, dann ist ein neuer Versuch fällig).
     run: Callable[[Client, Path, Args], tuple[list[Path], bool]]
     needs: tuple[Literal["matchday", "event"], ...] = ()
-    # "sofascore": Browser mit Rückfallwegen und gemeinsamer Pause; "tm": eigener HTTP-Client.
-    client: Literal["sofascore", "tm"] = "sofascore"
+    # "sofascore": Browser mit Rückfallwegen und gemeinsamer Pause; "tm" und "download":
+    # schlichtes HTTP mit eigener Pause, damit eine Sperre dort Sofascore nicht anhält.
+    client: Literal["sofascore", "tm", "download"] = "sofascore"
     commit: tuple[str, ...] = ("raw",)
 
 
@@ -43,7 +44,7 @@ JOBS: dict[str, Job] = {
     "match-final": Job(lambda c, raw, a: _done(match_final.run(c, raw, a.matchday, a.event)), needs=("matchday",)),
     "backfill": Job(lambda c, raw, a: _done(backfill.run(c, raw, a.matchday)), needs=("matchday",)),
     "squads": Job(lambda c, raw, a: _done(squads.run(c, raw, load_teams(config.TEAMS_FILE), a.today))),
-    "dcaribou": Job(lambda c, raw, a: _done(dcaribou.run(c, raw))),
+    "dcaribou": Job(lambda c, raw, a: _done(dcaribou.run(c, raw)), client="download"),
     "tm-crawl": Job(lambda c, raw, a: _done(tm_crawl.run(c, raw, a.today)), client="tm"),
     # Bilder liegen zusätzlich in der App.
     "images": Job(
@@ -81,6 +82,6 @@ def commit_paths(job: str) -> tuple[str, ...]:
 
 def client_for(job: str) -> Callable[[], Client]:
     """Fabrik des Clients, mit dem der Job abruft."""
-    from .client import default_client, tm_client
+    from .client import default_client, download_client, tm_client
 
-    return tm_client if JOBS[job].client == "tm" else default_client
+    return {"sofascore": default_client, "tm": tm_client, "download": download_client}[JOBS[job].client]
