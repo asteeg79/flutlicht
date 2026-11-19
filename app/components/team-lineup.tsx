@@ -14,7 +14,7 @@ import {
 } from "@fm/core";
 import { Lock } from "lucide-react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
+import { useServerSave } from "@/hooks/useServerSave";
 import { useEffect, useRef, useState } from "react";
 import { SectionTitle, TwoCol } from "@/components/arena/page-layout";
 import {
@@ -27,13 +27,12 @@ import {
   type TokenAnim,
 } from "@/components/arena/pitch";
 import { Sheet } from "@/components/arena/overlay";
-import { SavePill, useSaveState } from "@/components/arena/save-pill";
+import { SavePill } from "@/components/arena/save-pill";
 import { swapPartners } from "@/components/arena/swap-partners";
 import { toast } from "@/components/arena/toast";
 import { PlayerPhoto } from "@/components/player-photo";
 import type { PointsInfo } from "@/components/player-points-info";
 import { useServerClock } from "@/hooks/useServerClock";
-import { callApi } from "@/lib/api-client";
 import { formatForm, formatWeekdayTime } from "@/lib/format";
 import type { PublicManager } from "@/lib/squad";
 
@@ -86,15 +85,13 @@ export function TeamLineup({
   initialManager,
   squad,
   serverNow,
-}: {
+}: Readonly<{
   initialManager: PublicManager;
   squad: SquadEntry[];
   serverNow: string;
-}) {
-  const router = useRouter();
+}>) {
   const [manager, setManager] = useState(initialManager);
   const [selected, setSelected] = useState<number | null>(null);
-  const [busy, setBusy] = useState(false);
   const [autoBy, setAutoBy] = useState<"form" | "points">("form");
   const [fx, setFx] = useState<Fx | null>(null);
   const [shake, setShake] = useState<{ id: number; key: number } | null>(null);
@@ -114,7 +111,7 @@ export function TeamLineup({
     const t = setTimeout(() => setShake(null), 500);
     return () => clearTimeout(t);
   }, [shake]);
-  const save = useSaveState();
+  const { busy, saveState, send } = useServerSave();
   const now = useServerClock(serverNow);
   const [loadedAt] = useState(() => Date.parse(serverNow));
 
@@ -144,39 +141,28 @@ export function TeamLineup({
       if (announced.current.has(id)) continue;
       announced.current.add(id);
       const p = byId.get(id);
-      if (p)
-        toast(
-          `${p.shortName} ist jetzt fixiert${p.match ? ` (${p.match})` : ""}.`,
-        );
+      if (p) {
+        const where = p.match ? ` (${p.match})` : "";
+        toast(`${p.shortName} ist jetzt fixiert${where}.`);
+      }
     }
     // byId hängt nur an squad, das sich nicht ändert.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [lockedKey]);
 
-  async function persist(next: Lineup) {
+  /** Sofort anzeigen, dann speichern; schlägt es fehl, gilt wieder der vorige Stand. */
+  function persist(next: Lineup) {
     const previous = manager;
     setManager({ ...manager, lineup: next });
-    setBusy(true);
-    save.begin();
-    try {
-      const r = await callApi<PublicManager>("/api/lineup", "PUT", {
-        lineup: next,
-        updatedAt: previous.updatedAt,
-      });
-      if (!r.ok) {
-        setManager(previous);
-        save.done(false);
-        toast.error(
-          r.error ?? "Die Aufstellung konnte nicht gespeichert werden.",
-        );
-        if (r.status === 409) router.refresh();
-        return;
-      }
-      setManager(r.data);
-      save.done(true);
-    } finally {
-      setBusy(false);
-    }
+    send<PublicManager>(
+      "/api/lineup",
+      "PUT",
+      { lineup: next, updatedAt: previous.updatedAt },
+      "Die Aufstellung konnte nicht gespeichert werden.",
+    ).then(
+      (saved) => setManager(saved ?? previous),
+      () => setManager(previous),
+    );
   }
 
   function tap(id: number) {
@@ -208,7 +194,7 @@ export function TeamLineup({
       names: [byId.get(first)?.lastName ?? "", p?.lastName ?? ""],
       key: nextKey(),
     });
-    void persist(change.lineup);
+    persist(change.lineup);
   }
 
   function autoPick() {
@@ -226,9 +212,14 @@ export function TeamLineup({
       hasMatch: (id) => byId.get(id)?.opponent != null,
       isLocked,
     });
-    if (!change.ok) return void toast.error(change.message);
-    if (JSON.stringify(change.lineup) === JSON.stringify(lineup))
-      return void toast("Die Aufstellung ist schon die beste.");
+    if (!change.ok) {
+      toast.error(change.message);
+      return;
+    }
+    if (JSON.stringify(change.lineup) === JSON.stringify(lineup)) {
+      toast("Die Aufstellung ist schon die beste.");
+      return;
+    }
     setFx({ kind: "pop", key: nextKey() });
     toast(
       `Aufgestellt nach ${autoBy === "form" ? "Form" : "Punkten"} – die beste Elf steht.${lockedIds.length > 0 ? " Fixierte blieben, wo sie sind." : ""}`,
@@ -239,7 +230,7 @@ export function TeamLineup({
         `${byId.get(change.lineup.captain)?.shortName} trägt jetzt die Binde – Punkte ×${SCORING.captainMultiplier}.`,
       );
     }
-    void persist(change.lineup);
+    persist(change.lineup);
   }
 
   function pickFormation(target: Formation) {
@@ -250,9 +241,12 @@ export function TeamLineup({
       priceOf: (id) => byId.get(id)?.price ?? 0,
       isLocked,
     });
-    if (!change.ok) return void toast.error(change.message);
+    if (!change.ok) {
+      toast.error(change.message);
+      return;
+    }
     setFx({ kind: "pop", key: nextKey() });
-    void persist(change.lineup);
+    persist(change.lineup);
   }
 
   function makeCaptain() {
@@ -260,10 +254,13 @@ export function TeamLineup({
     const change = setCaptain(lineup, selected, { isLocked });
     const name = byId.get(selected)?.shortName;
     setSelected(null);
-    if (!change.ok) return void toast.error(change.message);
+    if (!change.ok) {
+      toast.error(change.message);
+      return;
+    }
     setStamp({ id: selected, key: nextKey() });
     toast(`${name} trägt die Binde – Punkte ×${SCORING.captainMultiplier}!`);
-    void persist(change.lineup);
+    persist(change.lineup);
   }
 
   const partners =
@@ -287,20 +284,20 @@ export function TeamLineup({
       p.points.latest && p.points.latest.minutes > 0
         ? p.points.latest.base
         : null;
+    let posState: "error" | "partner" | "normal" = "normal";
+    if (badgeError?.ids.includes(id)) posState = "error";
+    else if (partners.has(id)) posState = "partner";
+    const pointsLabel = points === null ? "" : `, ${points} Punkte`;
     return {
       player: p,
       locked,
       selected: selected === id,
       dimmed: selected !== null && selected !== id && !partners.has(id),
-      posState: badgeError?.ids.includes(id)
-        ? ("error" as const)
-        : partners.has(id)
-          ? ("partner" as const)
-          : ("normal" as const),
+      posState,
       posErrorKey: badgeError?.key,
       anim: animFor(id),
       lockSnapKey: snapKey(id),
-      ariaLabel: `${p.name}, ${POSITION_LABELS[p.position]}${captain ? ", Kapitän" : ""}${points !== null ? `, ${points} Punkte` : ""}${locked ? ", fixiert" : " – antippen zum Tauschen"}`,
+      ariaLabel: `${p.name}, ${POSITION_LABELS[p.position]}${captain ? ", Kapitän" : ""}${pointsLabel}${locked ? ", fixiert" : " – antippen zum Tauschen"}`,
       onTap: () => tap(id),
       points,
       captain,
@@ -345,10 +342,7 @@ export function TeamLineup({
         main={
           <>
             {lockedIds.length > 0 ? (
-              <div
-                role="status"
-                className="mb-3.5 flex items-center gap-2.5 border-l-4 border-lampe bg-surface px-3 py-2.25 text-xs leading-snug font-semibold"
-              >
+              <output className="mb-3.5 flex items-center gap-2.5 border-l-4 border-lampe bg-surface px-3 py-2.25 text-xs leading-snug font-semibold">
                 <Lock
                   aria-hidden
                   className="h-4 w-4 shrink-0 text-accent"
@@ -357,30 +351,31 @@ export function TeamLineup({
                 {lockedIds.length} Spieler fixiert – ihr Spiel beginnt bald oder
                 läuft, sie bleiben, wo sie sind. Alle anderen kannst du noch
                 tauschen.
-              </div>
+              </output>
             ) : null}
             <div className="mb-3 flex items-center justify-between gap-4 lg:mb-3.5">
-              <div
-                role="group"
+              <fieldset
                 aria-label="Formation wählen"
-                className="grid flex-1 grid-cols-5 gap-1 lg:flex-none lg:grid-cols-[repeat(5,88px)] lg:gap-1.5"
+                className="min-w-0 flex-1 lg:flex-none"
               >
-                {QUICK_FORMATIONS.map((f) => (
-                  <button
-                    key={f}
-                    type="button"
-                    onClick={() => pickFormation(f)}
-                    aria-pressed={lineup.formation === f}
-                    className={`slant h-11 font-display text-[clamp(12px,4.3vw,20px)] font-black whitespace-nowrap lg:text-[22px] ${
-                      lineup.formation === f
-                        ? "bg-lampe text-nacht"
-                        : "bg-surface text-muted"
-                    }`}
-                  >
-                    {f}
-                  </button>
-                ))}
-              </div>
+                <div className="grid grid-cols-5 gap-1 lg:grid-cols-[repeat(5,88px)] lg:gap-1.5">
+                  {QUICK_FORMATIONS.map((f) => (
+                    <button
+                      key={f}
+                      type="button"
+                      onClick={() => pickFormation(f)}
+                      aria-pressed={lineup.formation === f}
+                      className={`slant h-11 font-display text-[clamp(12px,4.3vw,20px)] font-black whitespace-nowrap lg:text-[22px] ${
+                        lineup.formation === f
+                          ? "bg-lampe text-nacht"
+                          : "bg-surface text-muted"
+                      }`}
+                    >
+                      {f}
+                    </button>
+                  ))}
+                </div>
+              </fieldset>
               <p className="hidden text-xs font-semibold text-muted lg:block">
                 Klick auf einen Spieler, dann auf einen gelb markierten Partner
                 – Tausch. Zahl = Punkte beim letzten Einsatz.
@@ -480,7 +475,7 @@ export function TeamLineup({
           </>
         }
       />
-      <SavePill state={save.state} />
+      <SavePill state={saveState} />
     </div>
   );
 }
@@ -492,13 +487,13 @@ function Selection({
   canCap,
   onCaptain,
   onCancel,
-}: {
+}: Readonly<{
   player: SquadEntry;
   locked: boolean;
   canCap: boolean;
   onCaptain: () => void;
   onCancel: () => void;
-}) {
+}>) {
   const { latest, season } = player.points;
   const tile = "bg-white/[0.07] px-2.5 py-2";
   const tileLabel =
@@ -528,11 +523,7 @@ function Selection({
               <Lock aria-hidden className="h-3 w-3" strokeWidth={2.6} />
             ) : null}
             {player.opponent ?? "kein Spiel"}
-            {player.lockAt
-              ? locked
-                ? " · fixiert"
-                : ` · fixiert ab ${formatWeekdayTime(player.lockAt)}`
-              : ""}
+            {lockText(player.lockAt, locked)}
             <Link
               href={`/spieler/${player.id}`}
               className="ml-auto shrink-0 font-semibold text-lampe lg:hidden"
@@ -590,4 +581,10 @@ function Selection({
       </div>
     </>
   );
+}
+
+/** „ · fixiert“ oder „ · fixiert ab Sa. 15:30“; leer ohne Spiel. */
+function lockText(lockAt: string | null, locked: boolean): string {
+  if (!lockAt) return "";
+  return locked ? " · fixiert" : ` · fixiert ab ${formatWeekdayTime(lockAt)}`;
 }
