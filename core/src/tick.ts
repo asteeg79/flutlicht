@@ -12,7 +12,7 @@ import {
 } from "./calendar";
 import { fixtureCounts, HAS_DATA } from "./matchday";
 import { round1 } from "./rounding";
-import { scoreLeague, standings } from "./standings";
+import { matchdayRanks, scoreLeague, standings } from "./standings";
 import { TIMEZONE } from "./time";
 import { rollTransferBank } from "./transfers";
 import type { Fixture, MatchdayPoints, Player } from "./schemas/data";
@@ -165,14 +165,15 @@ export function planTick(input: TickInput): TickAction[] {
         positions,
         input.firstScoredMatchday,
       );
-      const totals = [...scores].flatMap(([id, byMd]) => {
+      const totals = [...scores].flatMap(([userId, byMd]) => {
         const s = byMd.get(md);
-        return s ? [{ id, total: s.total }] : [];
+        return s ? [{ userId, total: s.total }] : [];
       });
+      const ranks = matchdayRanks(totals);
       for (const m of input.managers) {
-        const mine = totals.find((t) => t.id === m.userId);
-        if (!mine) continue;
-        const place = totals.filter((t) => t.total > mine.total).length + 1;
+        const mine = totals.find((t) => t.userId === m.userId);
+        const place = ranks.get(m.userId);
+        if (!mine || place === undefined) continue;
         const status = points.status === "final" ? "final" : "vorläufig";
         push(
           m,
@@ -199,19 +200,9 @@ export function planTick(input: TickInput): TickAction[] {
       positions,
       input.firstScoredMatchday,
     );
+    const statusOf = new Map(input.points.map((p) => [p.matchday, p.status]));
     for (const md of scored) {
-      const upTo = new Map(
-        input.points
-          .filter((p) => p.matchday <= md.matchday)
-          .map((p) => [p.matchday, p.status]),
-      );
-      const cut = new Map(
-        [...scores].map(([id, byMd]) => [
-          id,
-          new Map([...byMd].filter(([n]) => n <= md.matchday)),
-        ]),
-      );
-      const table = standings(cut, upTo);
+      const table = standings(scores, statusOf, md.matchday);
       const winners = (table.winners[md.matchday] ?? [])
         .map(
           (id) =>
@@ -219,10 +210,12 @@ export function planTick(input: TickInput): TickAction[] {
         )
         .join(", ");
       const top = Math.max(
-        ...[...cut.values()].map((b) => b.get(md.matchday)?.total ?? -Infinity),
+        ...[...scores.values()].map(
+          (b) => b.get(md.matchday)?.total ?? -Infinity,
+        ),
       );
       for (const m of input.managers) {
-        const mine = cut.get(m.userId)?.get(md.matchday);
+        const mine = scores.get(m.userId)?.get(md.matchday);
         const row = table.rows.find((r) => r.userId === m.userId);
         if (!mine || !row) continue;
         push(

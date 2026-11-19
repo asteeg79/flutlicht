@@ -1,13 +1,11 @@
 import {
   formatMio,
   latestAppearance,
-  lineupForMatchday,
   lockAt,
   matchdayCalendar,
   pad2,
-  participation,
   playerSeason,
-  scoreManager,
+  roundScore,
 } from "@fm/core";
 import Link from "next/link";
 import { BoardTile } from "@/components/arena/board-tile";
@@ -101,27 +99,20 @@ export default async function TeamPage() {
   const scored = table.matchdays.length > 0 && row !== undefined;
   const lastFinal = table.matchdays.filter((m) => m.status === "final").at(-1);
   const points = gameData.points.find((p) => p.matchday === matchday);
-  const lineup = points
-    ? lineupForMatchday(manager, points.matchday, points.status)
+  const round = points
+    ? roundScore(
+        manager,
+        points,
+        positionById,
+        gameData.season.firstScoredMatchday,
+      )
     : null;
   const live =
-    points &&
-    lineup &&
-    participation(
-      manager,
-      points.matchday,
-      gameData.season.firstScoredMatchday,
-    ) === "scored"
+    points && round?.kind === "scored"
       ? {
           matchday: points.matchday,
           status: points.status,
-          total: scoreManager(
-            points.matchday,
-            lineup,
-            points.players,
-            manager.transfers,
-            positionById,
-          ).total,
+          total: round.score.total,
         }
       : null;
 
