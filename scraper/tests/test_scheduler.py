@@ -12,6 +12,8 @@ from fm_scraper import client, config, gitsync, heartbeat, scheduler
 from fm_scraper.scheduler import Task, plan, record, status
 
 BERLIN = ZoneInfo("Europe/Berlin")
+# Wie data/season.json (postponedGraceDays).
+GRACE = timedelta(days=3)
 
 
 class Earliest:
@@ -49,7 +51,7 @@ def run_plan(now, fixtures, tmp_path, state=None, images_missing=False):
     today = now.astimezone(BERLIN).date()
     for i in range(7):
         state.setdefault("done", {})[f"squads:{(today - timedelta(days=i)).isoformat()}"] = "x"
-    return plan(now, fixtures, state, tmp_path, lambda: images_missing, Earliest()), state
+    return plan(now, fixtures, state, tmp_path, lambda: images_missing, Earliest(), grace=GRACE), state
 
 
 def write_round(tmp_path, md):
@@ -108,8 +110,8 @@ def test_provisorisch_drei_versuche_im_abstand_von_15_minuten(tmp_path):
     task = tasks[0]
     record(state, task, now, "unfinished")
     assert state["attempts"]["prov:501"] == 1
-    assert "prov:501" not in keys(plan(now + timedelta(minutes=14), MD5, state, tmp_path, lambda: False, Earliest()))
-    assert "prov:501" in keys(plan(now + timedelta(minutes=15), MD5, state, tmp_path, lambda: False, Earliest()))
+    assert "prov:501" not in keys(plan(now + timedelta(minutes=14), MD5, state, tmp_path, lambda: False, Earliest(), grace=GRACE))
+    assert "prov:501" in keys(plan(now + timedelta(minutes=15), MD5, state, tmp_path, lambda: False, Earliest(), grace=GRACE))
     record(state, task, now + timedelta(minutes=15), "unfinished")
     record(state, task, now + timedelta(minutes=30), "unfinished")
     assert "prov:501" in state["done"]
@@ -146,8 +148,8 @@ def test_backfill_ein_spieltag_pro_tag(tmp_path):
     assert tasks == [Task("final:3", "backfill", matchday=3)]
     record(state, tasks[0], now, "ok")
     write_final(tmp_path, 301)
-    assert keys(plan(now + timedelta(hours=1), old, state, tmp_path, lambda: False, Earliest())) == []
-    assert "final:4" in keys(plan(at("2026-09-27 08:00"), old, state, tmp_path, lambda: False, Earliest()))
+    assert keys(plan(now + timedelta(hours=1), old, state, tmp_path, lambda: False, Earliest(), grace=GRACE)) == []
+    assert "final:4" in keys(plan(at("2026-09-27 08:00"), old, state, tmp_path, lambda: False, Earliest(), grace=GRACE))
 
 
 def test_verlegte_spiele_halten_die_finalisierung_nicht_auf(tmp_path):
@@ -159,13 +161,26 @@ def test_verlegte_spiele_halten_die_finalisierung_nicht_auf(tmp_path):
     assert "final:5" in keys(run_plan(at("2026-10-10 09:00"), games, tmp_path)[0])
 
 
+def test_kulanz_fuer_verlegte_spiele_kommt_aus_season_json(tmp_path):
+    """Mit 60 Tagen Kulanz zählt das 41 Tage verlegte Spiel noch; final:5 wartet darauf."""
+    games = [
+        dict(MD5[0], status="finished"),
+        fixture(5, 503, "2026-11-20 20:30", "postponed", original="2026-10-10 15:30"),
+    ]
+    write_round(tmp_path, 5)
+    now = at("2026-10-10 09:00")
+    _, state = run_plan(now, [], tmp_path)
+    tasks = plan(now, games, state, tmp_path, lambda: False, Earliest(), grace=timedelta(days=60))
+    assert "final:5" not in keys(tasks)
+
+
 def test_squads_montags_und_donnerstags_und_im_transferfenster_alle_zwei_tage(tmp_path):
-    assert keys(plan(at("2026-10-05 09:59"), [], {}, tmp_path, lambda: False, Earliest())) == []
-    assert keys(plan(at("2026-10-05 10:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-05"]
+    assert keys(plan(at("2026-10-05 09:59"), [], {}, tmp_path, lambda: False, Earliest(), grace=GRACE)) == []
+    assert keys(plan(at("2026-10-05 10:00"), [], {}, tmp_path, lambda: False, Earliest(), grace=GRACE)) == ["squads:2026-10-05"]
     monday_done = {"done": {"squads:2026-10-05": "x"}}
-    assert keys(plan(at("2026-10-07 12:00"), [], monday_done, tmp_path, lambda: False, Earliest())) == []
-    assert keys(plan(at("2026-10-08 10:00"), [], monday_done, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-08"]
-    jan = plan(at("2027-01-12 10:00"), [], {}, tmp_path, lambda: False, Earliest())
+    assert keys(plan(at("2026-10-07 12:00"), [], monday_done, tmp_path, lambda: False, Earliest(), grace=GRACE)) == []
+    assert keys(plan(at("2026-10-08 10:00"), [], monday_done, tmp_path, lambda: False, Earliest(), grace=GRACE)) == ["squads:2026-10-08"]
+    jan = plan(at("2027-01-12 10:00"), [], {}, tmp_path, lambda: False, Earliest(), grace=GRACE)
     assert keys(jan)[0].startswith("squads:2027-01-1")
 
 
@@ -174,8 +189,8 @@ def test_images_hoechstens_stuendlich(tmp_path):
     tasks, state = run_plan(now, [], tmp_path, images_missing=True)
     assert keys(tasks) == ["images:2026-10-07T09"]
     record(state, tasks[0], now, "ok")
-    assert keys(plan(at("2026-10-07 09:30"), [], state, tmp_path, lambda: True, Earliest())) == []
-    assert keys(plan(at("2026-10-07 10:00"), [], state, tmp_path, lambda: True, Earliest())) == ["images:2026-10-07T10"]
+    assert keys(plan(at("2026-10-07 09:30"), [], state, tmp_path, lambda: True, Earliest(), grace=GRACE)) == []
+    assert keys(plan(at("2026-10-07 10:00"), [], state, tmp_path, lambda: True, Earliest(), grace=GRACE)) == ["images:2026-10-07T10"]
 
 
 def test_bilder_werden_ohne_offene_bilder_nur_einmal_pro_stunde_geprueft(tmp_path):
@@ -187,9 +202,9 @@ def test_bilder_werden_ohne_offene_bilder_nur_einmal_pro_stunde_geprueft(tmp_pat
 
     state = {}
     for minute in ("09:00", "09:05", "09:55"):
-        plan(at(f"2026-10-07 {minute}"), [], state, tmp_path, nothing_missing, Earliest())
+        plan(at(f"2026-10-07 {minute}"), [], state, tmp_path, nothing_missing, Earliest(), grace=GRACE)
     assert len(checks) == 1
-    plan(at("2026-10-07 10:00"), [], state, tmp_path, nothing_missing, Earliest())
+    plan(at("2026-10-07 10:00"), [], state, tmp_path, nothing_missing, Earliest(), grace=GRACE)
     assert len(checks) == 2
     assert not any(k.startswith("images:") for k in state["planned"])
 
@@ -222,14 +237,14 @@ def write_squads(tmp_path, day, team_ids, all_teams=(1, 2)):
 
 def test_squads_nicht_doppelt_wenn_schon_ein_stand_existiert(tmp_path):
     write_squads(tmp_path, "2026-10-05", [1, 2])
-    assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == []
-    assert keys(plan(at("2026-10-08 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-08"]
+    assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest(), grace=GRACE)) == []
+    assert keys(plan(at("2026-10-08 12:00"), [], {}, tmp_path, lambda: False, Earliest(), grace=GRACE)) == ["squads:2026-10-08"]
 
 
 def test_squads_abgebrochener_stand_wird_fortgesetzt(tmp_path):
     """Pause nach einem Teil der Vereine: Der Tagesordner existiert, ist aber unvollständig."""
     write_squads(tmp_path, "2026-10-05", [1])
-    assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-05"]
+    assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest(), grace=GRACE)) == ["squads:2026-10-05"]
 
 
 def test_status_nennt_pause_faellige_geplante_und_aufgegebene_jobs():
@@ -298,8 +313,10 @@ def offline(tmp_path, monkeypatch):
     monkeypatch.setattr(gitsync, "pull", lambda repo: None)
     monkeypatch.setattr(gitsync, "head", lambda repo: ("5cfb8a4", 0))
     monkeypatch.setattr(heartbeat, "send", beats.append)
+    (tmp_path / "data").mkdir()
+    (tmp_path / "data" / "season.json").write_text('{"postponedGraceDays": 3}')
 
-    def fake_plan(_now, _fixtures, state, *_rest):
+    def fake_plan(_now, _fixtures, state, *_rest, **_kw):
         state.setdefault("planned", {})
         state.setdefault("done", {})
         return tasks

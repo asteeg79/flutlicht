@@ -26,6 +26,8 @@ export const Season = z.object({
   /** Mio. */
   startBudget: z.number().positive(),
   matchdays: z.int().positive(),
+  /** Kulanz für verlegte Spiele (2.9); der Scheduler liest sie von hier (RULES.postponedGraceDays). */
+  postponedGraceDays: z.int().positive(),
 });
 export type Season = z.infer<typeof Season>;
 

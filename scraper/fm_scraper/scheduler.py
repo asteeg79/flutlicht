@@ -29,7 +29,6 @@ PROVISIONAL_ATTEMPTS = 3
 FAILED_ATTEMPTS = 3
 TRANSFER_MONTHS = {1, 7, 8}
 SQUAD_WEEKDAYS = (0, 3)  # Montag, Donnerstag
-POSTPONED_GRACE = timedelta(days=3)
 # Vorläufige Daten nur bis zur Finalisierung am Folgemorgen; ältere Lücken füllt match-final/backfill.
 PROVISIONAL_WINDOW = timedelta(hours=24)
 # Das Lebenszeichen nennt die nächsten geplanten Jobs und die zuletzt aufgegebenen.
@@ -66,9 +65,10 @@ def _kickoff(f: dict) -> datetime:
     return datetime.fromisoformat(f["kickoffUtc"].replace("Z", "+00:00"))
 
 
-def _counts(f: dict) -> bool:
+def _counts(f: dict, grace: timedelta) -> bool:
+    """Zählt das Spiel für seinen Spieltag? Höchstens `grace` nach dem ursprünglichen Termin (2.9)."""
     original = datetime.fromisoformat(f["originalKickoffUtc"].replace("Z", "+00:00"))
-    return _kickoff(f) - original <= POSTPONED_GRACE
+    return _kickoff(f) - original <= grace
 
 
 def plan(
@@ -78,8 +78,11 @@ def plan(
     raw_dir: Path,
     images_missing: Callable[[], bool],
     rng: random.Random,
+    *,
+    grace: timedelta,
 ) -> list[Task]:
-    """Fällige Aufgaben; ergänzt state["planned"] um neu gezogene Zeitpunkte."""
+    """Fällige Aufgaben; ergänzt state["planned"] um neu gezogene Zeitpunkte.
+    `grace`: Kulanz für verlegte Spiele aus data/season.json (postponedGraceDays)."""
     planned: dict[str, str] = state.setdefault("planned", {})
     done: dict[str, str] = state.setdefault("done", {})
     local_now = now.astimezone(BERLIN)
@@ -134,7 +137,7 @@ def plan(
     # match-final bzw. backfill: höchstens ein Spieltag pro Tag, am Morgen nach dem letzten Spiel 08–10 Uhr.
     finals_today = {k for k, v in done.items() if k.startswith("final:") and datetime.fromisoformat(v).astimezone(BERLIN).date() == local_now.date()}
     for md in sorted(by_md):
-        games = [f for f in by_md[md] if _counts(f)]
+        games = [f for f in by_md[md] if _counts(f, grace)]
         if not games or not all(f["status"] == "finished" for f in games):
             continue
         if all(match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games):
@@ -292,8 +295,10 @@ def run_once(now: datetime | None = None) -> int:
             gitsync.pull(config.REPO_ROOT)
             state["lastPull"] = now.isoformat()
 
-        fixtures_path = config.REPO_ROOT / "data" / "fixtures.json"
+        data_dir = config.REPO_ROOT / "data"
+        fixtures_path = data_dir / "fixtures.json"
         fixtures = json.loads(fixtures_path.read_text()) if fixtures_path.exists() else []
+        season = json.loads((data_dir / "season.json").read_text())
         tasks = plan(
             now,
             fixtures,
@@ -301,6 +306,7 @@ def run_once(now: datetime | None = None) -> int:
             config.RAW_DIR,
             lambda: _images_missing(config.RAW_DIR, config.IMG_DIR, load_teams(config.TEAMS_FILE)),
             random.Random(),
+            grace=timedelta(days=season["postponedGraceDays"]),
         )
         state["due"] = [task.key for task in tasks]
         save_state(STATE_FILE, state)

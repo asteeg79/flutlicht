@@ -1,5 +1,6 @@
 // Pipeline-Schritt season (KONZEPT 4.2, 7.1): vMax und Startbudget festschreiben.
 import {
+  RULES,
   selectRegulars,
   startBudget,
   type ManualSeason,
@@ -31,6 +32,7 @@ export function buildSeason(
   const regulars = selectRegulars(candidates, minutes);
   return {
     ...SEASON_CONSTANTS,
+    postponedGraceDays: RULES.postponedGraceDays,
     firstScoredMatchday: manual.firstScoredMatchday,
     vMaxEur,
     startBudget:
