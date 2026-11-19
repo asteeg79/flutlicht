@@ -1,7 +1,10 @@
 """Scheduler-Entscheidungen mit fester Uhr (KONZEPT 10: Zeitfenster, Retries, Nachtpause)."""
 
+import json
 from datetime import datetime, timedelta, timezone
 from zoneinfo import ZoneInfo
+
+import pytest
 
 from fm_scraper import client, config, gitsync, heartbeat, scheduler
 from fm_scraper.scheduler import Task, plan, record, status
@@ -205,10 +208,26 @@ def test_round_events_auch_nach_dem_anpfiff(tmp_path):
     assert "round:5" in keys(run_plan(at("2026-10-09 23:00"), MD5, tmp_path)[0])
 
 
+def write_squads(tmp_path, day, team_ids, all_teams=(1, 2)):
+    teams = tmp_path / "manual" / "teams.json"
+    teams.parent.mkdir(parents=True, exist_ok=True)
+    teams.write_text(json.dumps([{"id": t} for t in all_teams]))
+    folder = tmp_path / "sofascore" / "squads" / day
+    folder.mkdir(parents=True, exist_ok=True)
+    for t in team_ids:
+        (folder / f"{t}.json.gz").write_bytes(b"")
+
+
 def test_squads_nicht_doppelt_wenn_schon_ein_stand_existiert(tmp_path):
-    (tmp_path / "sofascore" / "squads" / "2026-10-05").mkdir(parents=True)
+    write_squads(tmp_path, "2026-10-05", [1, 2])
     assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == []
     assert keys(plan(at("2026-10-08 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-08"]
+
+
+def test_squads_abgebrochener_stand_wird_fortgesetzt(tmp_path):
+    """Pause nach einem Teil der Vereine: Der Tagesordner existiert, ist aber unvollständig."""
+    write_squads(tmp_path, "2026-10-05", [1])
+    assert keys(plan(at("2026-10-05 12:00"), [], {}, tmp_path, lambda: False, Earliest())) == ["squads:2026-10-05"]
 
 
 def test_status_nennt_pause_faellige_geplante_und_aufgegebene_jobs():
@@ -263,10 +282,11 @@ def test_status_ohne_zustand_und_nach_abgelaufener_pause():
     }
 
 
-def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeypatch):
-    """run_once ohne Netz und ohne Git: zwei fällige Jobs, der erste scheitert, der zweite trifft auf die Pause."""
-    now = at("2026-10-08 18:00")
+@pytest.fixture
+def offline(tmp_path, monkeypatch):
+    """run_once ohne Netz und ohne Git. Liefert die Lebenszeichen und die Liste der fälligen Jobs."""
     beats: list[dict] = []
+    tasks: list[Task] = []
     monkeypatch.setattr(config, "STATE_DIR", tmp_path)
     monkeypatch.setattr(config, "REPO_ROOT", tmp_path)
     monkeypatch.setattr(scheduler, "STATE_FILE", tmp_path / "scheduler.json")
@@ -276,7 +296,6 @@ def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeyp
     monkeypatch.setattr(gitsync, "pull", lambda repo: None)
     monkeypatch.setattr(gitsync, "head", lambda repo: ("5cfb8a4", 0))
     monkeypatch.setattr(heartbeat, "send", beats.append)
-    tasks = [Task("squads:2026-10-08", "squads"), Task("images:2026-10-08T18", "images")]
 
     def fake_plan(_now, _fixtures, state, *_rest):
         state.setdefault("planned", {})
@@ -284,6 +303,14 @@ def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeyp
         return tasks
 
     monkeypatch.setattr(scheduler, "plan", fake_plan)
+    return beats, tasks
+
+
+def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeypatch, offline):
+    """Zwei fällige Jobs, der erste scheitert, der zweite trifft auf die Pause."""
+    now = at("2026-10-08 18:00")
+    beats, tasks = offline
+    tasks += [Task("squads:2026-10-08", "squads"), Task("images:2026-10-08T18", "images")]
 
     def execute(task, _client, _raw):
         if task.job == "squads":
@@ -304,3 +331,29 @@ def test_lauf_meldet_sich_vor_und_nach_jedem_job_mit_dem_stand(tmp_path, monkeyp
     scheduler.run_once(now + timedelta(minutes=5))
     assert beats[2]["pause"] == {"until": "2026-10-08T21:41:00+00:00", "reason": "429 Too Many Requests"}
     assert beats[2]["due"] == [{"key": "squads:2026-10-08", "attempts": 1}, {"key": "images:2026-10-08T18", "attempts": 0}]
+
+
+def test_unerwarteter_fehler_zaehlt_als_fehlversuch(tmp_path, monkeypatch, offline):
+    """Ein Fehler außerhalb von FetchError (etwa ein geändertes Schema) darf den Job nicht
+    bei jedem Aufruf alle 5 Min. neu starten (KONZEPT 5.6), und der nächste Job läuft weiter."""
+    now = at("2026-10-08 18:00")
+    beats, tasks = offline
+    tasks += [Task("squads:2026-10-08", "squads"), Task("images:2026-10-08T18", "images")]
+    ran: list[str] = []
+
+    def execute(task, _client, _raw):
+        ran.append(task.job)
+        if task.job == "squads":
+            raise KeyError("players")
+        return "ok", ()
+
+    monkeypatch.setattr(scheduler, "_execute", execute)
+
+    assert scheduler.run_once(now) == 2
+    assert ran == ["squads", "images"]
+    state = scheduler.load_state(tmp_path / "scheduler.json")
+    assert state["attempts"] == {"squads:2026-10-08": 1}
+    assert "squads:2026-10-08" in state["planned"]
+    assert "images:2026-10-08T18" in state["done"]
+    assert beats[1]["lastJob"]["outcome"] == "failed"
+    assert beats[1]["lastJob"]["error"] == "KeyError: 'players'"

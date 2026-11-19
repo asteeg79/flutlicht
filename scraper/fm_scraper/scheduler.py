@@ -17,6 +17,7 @@ from typing import Any, Callable
 from zoneinfo import ZoneInfo
 
 from . import config
+from .jobs import squads
 from .jobs.round_events import round_path
 
 log = logging.getLogger(__name__)
@@ -167,9 +168,12 @@ def plan(
     key = f"squads:{day.isoformat()}"
     t = when(key, lambda: _random_between(rng, _at(day, 10), _at(day, 18)))
     snapshots = raw_dir / "sofascore" / "squads"
-    latest = max((p.name for p in snapshots.iterdir() if p.is_dir()), default="") if snapshots.exists() else ""
-    # Ein Kader-Stand ab dem geplanten Tag (etwa von Hand geholt) gilt als erledigt.
-    if key not in done and t <= now and latest < day.isoformat():
+    # Ein vollständiger Kader-Stand ab dem geplanten Tag (etwa von Hand geholt) gilt als erledigt.
+    # Ein abgebrochener nicht: Der Job holt dann nur die fehlenden Vereine.
+    fetched = snapshots.exists() and any(
+        p.is_dir() and p.name >= day.isoformat() and squads.complete(raw_dir, p.name) for p in snapshots.iterdir()
+    )
+    if key not in done and t <= now and not fetched:
         tasks.append(Task(key, "squads"))
 
     # images: fehlende Bilder, höchstens ein Lauf pro Stunde. Die Prüfung liest alle Kader;
@@ -327,6 +331,11 @@ def run_once(now: datetime | None = None) -> int:
                 except (FetchError, SystemExit) as e:
                     log.warning("%s fehlgeschlagen: %s", task.key, e)
                     outcome, paths, error = "failed", (), str(e)[:300]
+                except Exception as e:
+                    # Unerwartet (etwa ein geändertes Schema): als Fehlversuch zählen. Sonst bliebe der
+                    # Job fällig und riefe bei jedem Aufruf alle 5 Min. erneut ab (KONZEPT 5.6).
+                    log.exception("%s fehlgeschlagen", task.key)
+                    outcome, paths, error = "failed", (), f"{type(e).__name__}: {e}"[:300]
                 record(state, task, datetime.now(timezone.utc), outcome, error)
                 save_state(STATE_FILE, state)
                 if paths:
