@@ -135,8 +135,9 @@ export function defaultLineup(
   const benchField = [def[4]!, mid[4]!, fwd[2]!];
   const price = new Map(squad.map((p) => [p.id, p.price]));
   benchField.sort((a, b) => price.get(b)! - price.get(a)! || a - b);
-  const captain = starters.reduce((best, id) =>
-    price.get(id)! > price.get(best)! ? id : best,
+  const captain = starters.reduce(
+    (best, id) => (price.get(id)! > price.get(best)! ? id : best),
+    starters[0]!,
   );
   return {
     formation: "4-4-2",
