@@ -1,16 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
-  lineupForMatchday,
   matchdayRanks,
   roundScore,
   scoreLeague,
   standings,
   visibleScore,
   type Lineup,
-  type ManagerScore,
   type MatchdayPoints,
-  type ScoringManager,
 } from "../src";
+import { type ManagerScore } from "../src/points";
+import { lineupForMatchday, type ScoringManager } from "../src/standings";
 import { lineup442, positions } from "./helpers";
 
 /** Spielerpunkte: [Basispunkte, Minuten, reale Startelf] */

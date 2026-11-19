@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { formatDate, formatKickoff, pad2 } from "../src";
+import { formatDate, pad2 } from "../src";
+import { formatKickoff } from "../src/time";
 
 describe("Zeiten in Europe/Berlin", () => {
   it("rechnet UTC in Sommer- und Winterzeit um", () => {

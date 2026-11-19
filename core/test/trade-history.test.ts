@@ -1,11 +1,11 @@
 import { describe, expect, it } from "vitest";
 import {
-  initialSquad,
   matchdayLedger,
   priceBefore,
   tradeHistory,
   type Transfer,
 } from "../src";
+import { initialSquad } from "../src/trades";
 
 const t = (
   matchday: number,
