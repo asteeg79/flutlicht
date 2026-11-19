@@ -8,7 +8,7 @@ beforeEach(async () => {
   vi.stubEnv("APP_ENCRYPTION_SECRET", "test-secret-00000000000000000000");
 });
 
-const { removePush, updateManager, updateManagers } =
+const { addPushDevice, removePushDevices, updateManager, updateManagers } =
   await import("@/lib/manager-writes");
 const { BadRequest, Conflict, NotFound } = await import("@/lib/errors");
 const storage = await import("@/lib/storage");
@@ -16,11 +16,12 @@ const { saveDoc, UPDATED } = await import("@/test/fixtures");
 
 const NOW = new Date("2026-11-19T12:00:00.000Z");
 const OTHER = "22222222-2222-4222-8222-222222222222";
+const device = (n: number) => ({
+  endpoint: `https://push.example.org/${n}`,
+  keys: { p256dh: "p", auth: "a" },
+});
 const PUSH = {
-  subscription: {
-    endpoint: "https://push.example.org/1",
-    keys: { p256dh: "p", auth: "a" },
-  },
+  subscriptions: [device(1)],
   prefs: { reminder: true, daily: false, final: true },
 };
 
@@ -109,20 +110,60 @@ describe("updateManagers", () => {
   });
 });
 
-describe("removePush", () => {
-  it("entfernt die Anmeldung, ohne den Stempel zu ändern", async () => {
+describe("Push je Gerät", () => {
+  it("meldet weitere Geräte an, ein bekanntes ersetzt, Einstellungen bleiben", async () => {
     const doc = await saveDoc({ push: PUSH });
-    await removePush(doc.userId);
+    await addPushDevice(doc.userId, device(2));
+    const renewed = { ...device(1), keys: { p256dh: "neu", auth: "neu" } };
+    const next = await addPushDevice(doc.userId, renewed);
+    expect(next.push).toEqual({
+      subscriptions: [device(2), renewed],
+      prefs: PUSH.prefs,
+    });
+    expect(next.updatedAt).toBe(UPDATED);
+  });
+
+  it("erstes Gerät bekommt alle Benachrichtigungen, mehr als zehn verdrängen das älteste", async () => {
+    const doc = await saveDoc();
+    for (let n = 1; n <= 11; n++) await addPushDevice(doc.userId, device(n));
+    const push = (await storage.loadManager(doc.userId))!.push!;
+    expect(push.prefs).toEqual({ reminder: true, daily: true, final: true });
+    expect(push.subscriptions.map((s) => s.endpoint.split("/").pop())).toEqual([
+      "2",
+      "3",
+      "4",
+      "5",
+      "6",
+      "7",
+      "8",
+      "9",
+      "10",
+      "11",
+    ]);
+  });
+
+  it("meldet ein Gerät ab, die anderen bleiben; ohne Gerät entfällt Push", async () => {
+    const doc = await saveDoc({
+      push: { ...PUSH, subscriptions: [device(1), device(2)] },
+    });
+    await removePushDevices(doc.userId, [device(1).endpoint]);
+    expect(
+      (await storage.loadManager(doc.userId))?.push?.subscriptions,
+    ).toEqual([device(2)]);
+    await removePushDevices(doc.userId, [device(2).endpoint]);
     const after = await storage.loadManager(doc.userId);
     expect(after?.push).toBeUndefined();
     expect(after?.updatedAt).toBe(UPDATED);
   });
 
-  it("ohne Konto oder ohne Anmeldung passiert nichts", async () => {
-    await expect(removePush(OTHER)).resolves.toBeUndefined();
-    const doc = await saveDoc();
-    await removePush(doc.userId);
-    expect(await storage.loadManager(doc.userId)).toEqual(doc);
+  it("ohne Angabe alle Geräte; ohne Konto oder Anmeldung passiert nichts", async () => {
+    await expect(removePushDevices(OTHER)).resolves.toBeUndefined();
+    const doc = await saveDoc({ push: PUSH });
+    await removePushDevices(doc.userId);
+    expect((await storage.loadManager(doc.userId))?.push).toBeUndefined();
+    const plain = await saveDoc({ userId: OTHER, email: "ana@example.org" });
+    await removePushDevices(OTHER);
+    expect(await storage.loadManager(OTHER)).toEqual(plain);
   });
 });
 

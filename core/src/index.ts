@@ -66,6 +66,7 @@ export {
   Lineup,
   ManagerDoc,
   PushPrefs,
+  MAX_PUSH_DEVICES,
   PushSubscriptionJson,
   SystemState,
   Transfer,

@@ -49,3 +49,29 @@ export async function sendPush(
     return "failed";
   }
 }
+
+export interface DeliveryReport {
+  sent: number;
+  failed: number;
+  /** Abgelaufene Geräte (endpoint); die gehören abgemeldet. */
+  expired: string[];
+}
+
+/** An jedes Gerät eines Managers senden, nacheinander. */
+export async function sendToAll(
+  subscriptions: readonly PushTarget[],
+  payload: PushPayload,
+  send: (
+    target: PushTarget,
+    payload: PushPayload,
+  ) => Promise<PushResult> = sendPush,
+): Promise<DeliveryReport> {
+  const report: DeliveryReport = { sent: 0, failed: 0, expired: [] };
+  for (const target of subscriptions) {
+    const outcome = await send(target, payload);
+    if (outcome === "sent") report.sent++;
+    else if (outcome === "failed") report.failed++;
+    else report.expired.push(target.endpoint);
+  }
+  return report;
+}

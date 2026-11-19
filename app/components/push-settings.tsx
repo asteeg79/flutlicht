@@ -46,9 +46,14 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
 
   async function sendTest() {
     setBusy(true);
-    const r = await callApi("/api/push/test", "POST");
+    const r = await callApi<{ sent: number }>("/api/push/test", "POST");
     setBusy(false);
-    if (r.ok) toast.success("Test-Push ist unterwegs.");
+    if (r.ok)
+      toast.success(
+        r.data.sent === 1
+          ? "Test-Push ist unterwegs."
+          : `Test-Push ist an ${r.data.sent} Geräte unterwegs.`,
+      );
     else toast.error(r.error ?? "Der Test-Push hat nicht geklappt.");
   }
 

@@ -1,10 +1,17 @@
 // Der eine Schreibweg für bestehende Manager-Dokumente (KONZEPT 7.3): frisch laden,
 // ändern, nur bei unverändertem Stand speichern (Compare-and-Set). Neue Konten legt
 // accounts.ts direkt mit saveManager an.
-import type { ManagerDoc } from "@fm/core";
+import {
+  DEFAULT_PUSH_PREFS,
+  MAX_PUSH_DEVICES,
+  type ManagerDoc,
+} from "@fm/core";
 import { Conflict, NotFound } from "@/lib/errors";
 import { loadManagerVersioned, saveManagerIfUnchanged } from "@/lib/storage";
 
+type PushSubscription = NonNullable<
+  ManagerDoc["push"]
+>["subscriptions"][number];
 type Change = (doc: ManagerDoc) => ManagerDoc | Promise<ManagerDoc>;
 
 export interface WriteOptions {
@@ -71,7 +78,48 @@ export async function updateManagers(
   for (const userId of userIds) await write(userId, change, options);
 }
 
-/** Push-Anmeldung entfernen (abgemeldet oder abgelaufen); ohne Konto oder Anmeldung nichts. */
-export async function removePush(userId: string): Promise<void> {
-  await write(userId, ({ push: _removed, ...rest }) => rest, {});
+/**
+ * Gerät für Push anmelden (server-eigen, ohne Stempel). Ein schon bekanntes Gerät
+ * (gleicher endpoint) wird ersetzt; über MAX_PUSH_DEVICES fällt das älteste weg.
+ */
+export function addPushDevice(
+  userId: string,
+  subscription: PushSubscription,
+): Promise<ManagerDoc> {
+  return updateManager(userId, (doc) => ({
+    ...doc,
+    push: {
+      subscriptions: [
+        ...(doc.push?.subscriptions ?? []).filter(
+          (s) => s.endpoint !== subscription.endpoint,
+        ),
+        subscription,
+      ].slice(-MAX_PUSH_DEVICES),
+      prefs: doc.push?.prefs ?? DEFAULT_PUSH_PREFS,
+    },
+  }));
+}
+
+/**
+ * Geräte abmelden (abgemeldet oder abgelaufen); ohne `endpoints` alle. Bleibt keines,
+ * entfällt Push samt Einstellungen. Ohne Konto oder Anmeldung passiert nichts.
+ */
+export async function removePushDevices(
+  userId: string,
+  endpoints?: readonly string[],
+): Promise<void> {
+  await write(
+    userId,
+    (doc) => {
+      if (!doc.push) return doc;
+      const rest = endpoints
+        ? doc.push.subscriptions.filter((s) => !endpoints.includes(s.endpoint))
+        : [];
+      if (rest.length > 0)
+        return { ...doc, push: { ...doc.push, subscriptions: rest } };
+      const { push: _removed, ...withoutPush } = doc;
+      return withoutPush;
+    },
+    {},
+  );
 }

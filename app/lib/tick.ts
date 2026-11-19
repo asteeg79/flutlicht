@@ -2,9 +2,10 @@
 // hier: Finalisierung speichern, Schlüssel merken, Pushes senden.
 import { matchdayCalendar, matchdayFinalizer, planTick } from "@fm/core";
 import { finals, gameData } from "@/lib/game-data";
-import { removePush, updateManagers } from "@/lib/manager-writes";
+import { removePushDevices, updateManagers } from "@/lib/manager-writes";
 import {
   sendPush,
+  sendToAll,
   type PushPayload,
   type PushResult,
   type PushTarget,
@@ -80,19 +81,17 @@ export async function runTick(
   for (const p of pushes) {
     const doc = await loadManager(p.userId);
     if (!doc?.push) continue;
-    const outcome = await send(doc.push.subscription, {
-      title: p.title,
-      body: p.body,
-      url: p.url,
-      tag: p.key,
-    });
-    if (outcome === "sent") result.sent++;
-    else if (outcome === "failed") result.failed++;
-    else {
-      // Abgelaufene Subscription entfernen (Workgrid-Muster).
-      result.expired++;
-      await removePush(p.userId);
-    }
+    const report = await sendToAll(
+      doc.push.subscriptions,
+      { title: p.title, body: p.body, url: p.url, tag: p.key },
+      send,
+    );
+    result.sent += report.sent;
+    result.failed += report.failed;
+    result.expired += report.expired.length;
+    // Abgelaufene Geräte abmelden (Workgrid-Muster), die übrigen bleiben.
+    if (report.expired.length > 0)
+      await removePushDevices(p.userId, report.expired);
   }
   return result;
 }
