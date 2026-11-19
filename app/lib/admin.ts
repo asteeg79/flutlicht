@@ -30,6 +30,7 @@ import {
   Upstream,
 } from "@/lib/api-route";
 import type { GitHub } from "@/lib/github";
+import { updateManagers } from "@/lib/manager-writes";
 import {
   deleteManager,
   listAllManagers,
@@ -38,7 +39,6 @@ import {
   loadManager,
   saveEmailIndex,
   saveLeague,
-  saveManager,
 } from "@/lib/storage";
 
 // --- Codes (league.json.enc) ---
@@ -234,17 +234,19 @@ async function moveManagersToSeasonStart(
     ctx.now,
     firstScoredMatchday,
   );
-  for (const doc of await listAllManagers()) {
-    await saveManager({
+  const userIds = (await listAllManagers()).map((d) => d.userId);
+  await updateManagers(
+    userIds,
+    (doc) => ({
       ...doc,
       firstMatchday,
       transferBank: {
         matchday: firstMatchday,
         available: RULES.freeTransfersPerMatchday,
       },
-      updatedAt: ctx.now.toISOString(),
-    });
-  }
+    }),
+    { stamp: ctx.now },
+  );
 }
 
 /** Startbudget und ersten Spieltag nur vor dem ersten gewerteten Spieltag ändern (KONZEPT 11). */

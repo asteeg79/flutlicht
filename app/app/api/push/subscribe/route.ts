@@ -3,8 +3,8 @@
 // updatedAt nicht (keine 409 für parallele Aufstellungsänderungen).
 import { DEFAULT_PUSH_PREFS, PushSubscriptionJson } from "@fm/core";
 import { NextResponse } from "next/server";
-import { NotFound, parseBody, withUser } from "@/lib/api-route";
-import { loadManager, saveManager } from "@/lib/storage";
+import { parseBody, withUser } from "@/lib/api-route";
+import { removePush, updateManager } from "@/lib/manager-writes";
 
 export const runtime = "nodejs";
 
@@ -14,23 +14,14 @@ export const POST = withUser(async ({ user, request }) => {
     PushSubscriptionJson,
     "Ungültige Subscription",
   );
-  const doc = await loadManager(user.id);
-  if (!doc) throw new NotFound();
-  await saveManager({
+  const next = await updateManager(user.id, (doc) => ({
     ...doc,
     push: { subscription, prefs: doc.push?.prefs ?? DEFAULT_PUSH_PREFS },
-  });
-  return NextResponse.json({
-    ok: true,
-    prefs: doc.push?.prefs ?? DEFAULT_PUSH_PREFS,
-  });
+  }));
+  return NextResponse.json({ ok: true, prefs: next.push!.prefs });
 });
 
 export const DELETE = withUser(async ({ user }) => {
-  const doc = await loadManager(user.id);
-  if (doc?.push) {
-    const { push: _removed, ...rest } = doc;
-    await saveManager(rest);
-  }
+  await removePush(user.id);
   return NextResponse.json({ ok: true });
 });

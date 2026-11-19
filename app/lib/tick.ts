@@ -2,6 +2,7 @@
 // hier: Finalisierung speichern, Schlüssel merken, Pushes senden.
 import { finalizeManager, matchdayBonuses, planTick } from "@fm/core";
 import { finals, gameData } from "@/lib/game-data";
+import { removePush, updateManagers } from "@/lib/manager-writes";
 import {
   sendPush,
   type PushPayload,
@@ -13,7 +14,6 @@ import {
   loadManager,
   loadScraperHeartbeat,
   loadSystemState,
-  saveManager,
   saveSystemState,
 } from "@/lib/storage";
 
@@ -66,22 +66,14 @@ export async function runTick(
           game.season.firstScoredMatchday,
         )
       : new Map();
-    for (const m of managers) {
-      // Frisch laden: zwischen Liste und Speichern kann der Manager etwas geändert haben.
-      const doc = await loadManager(m.userId);
-      if (!doc) continue;
-      const next = finalizeManager(
-        doc,
-        action.matchday,
-        game.fixtures,
-        finalDates,
-        {
+    await updateManagers(
+      managers.map((m) => m.userId),
+      (doc) =>
+        finalizeManager(doc, action.matchday, game.fixtures, finalDates, {
           firstScoredMatchday: game.season.firstScoredMatchday,
-          bonus: bonuses.get(m.userId)?.bonus ?? 0,
-        },
-      );
-      if (JSON.stringify(next) !== JSON.stringify(doc)) await saveManager(next);
-    }
+          bonus: bonuses.get(doc.userId)?.bonus ?? 0,
+        }),
+    );
     state.done[action.key] = at;
     await saveSystemState(state);
     result.finalized.push(action.matchday);
@@ -106,8 +98,7 @@ export async function runTick(
     else {
       // Abgelaufene Subscription entfernen (Workgrid-Muster).
       result.expired++;
-      const { push: _removed, ...rest } = doc;
-      await saveManager(rest);
+      await removePush(p.userId);
     }
   }
   return result;

@@ -8,8 +8,9 @@ import {
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict, NotFound, parse } from "@/lib/api-route";
+import { BadRequest, Conflict, parse } from "@/lib/api-route";
 import { finals, gameData } from "@/lib/game-data";
+import { updateManager } from "@/lib/manager-writes";
 import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import {
   loadEmailIndex,
@@ -143,11 +144,7 @@ export async function updateProfile(
   raw: unknown,
 ): Promise<ManagerDoc> {
   const input = parse(ProfileInput, raw);
-  const doc = await loadManager(userId);
-  if (!doc) throw new NotFound("Konto nicht gefunden");
-  const next = { ...doc, ...input };
-  await saveManager(next);
-  return next;
+  return updateManager(userId, (doc) => ({ ...doc, ...input }));
 }
 
 export async function resetPassword(raw: unknown, now: Date): Promise<void> {
@@ -159,10 +156,10 @@ export async function resetPassword(raw: unknown, now: Date): Promise<void> {
   if (!reset || !doc) throw new BadRequest(INVALID_RESET);
 
   const at = now.toISOString();
-  await saveManager({
-    ...doc,
-    passwordHash: await hashPassword(input.password),
-    updatedAt: at,
+  // Erst hashen, dann frisch laden und schreiben: Das Hashen dauert.
+  const passwordHash = await hashPassword(input.password);
+  await updateManager(doc.userId, (d) => ({ ...d, passwordHash }), {
+    stamp: now,
   });
   await saveLeague({
     ...league,
