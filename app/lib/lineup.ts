@@ -1,10 +1,9 @@
 // Aufstellung ändern (KONZEPT 2.3–2.5, 8.2). Der Server entscheidet über Sperren,
 // maßgeblich ist die Serverzeit und die aktuelle Anstoßzeit laut fixtures.json.
 import {
-  currentMatchday,
   diffLineupRespectsLocks,
   Lineup,
-  lockedPlayers,
+  matchdayCalendar,
   validateLineup,
   type Player,
 } from "@fm/core";
@@ -19,17 +18,6 @@ import {
 } from "@/lib/squad";
 
 const LineupInput = z.object({ lineup: Lineup, updatedAt: z.string().min(1) });
-
-/** Gesperrte Spieler des Kaders am aktuellen Spieltag. */
-export function lockedInSquad(
-  squad: readonly Player[],
-  ctx: GameContext,
-): Set<number> {
-  const md = currentMatchday(ctx.finals);
-  const fixtures =
-    md === null ? [] : ctx.fixtures.filter((f) => f.matchday === md);
-  return lockedPlayers(squad, ctx.now, fixtures);
-}
 
 export async function updateLineup(
   userId: string,
@@ -54,7 +42,10 @@ export async function updateLineup(
       const violations = diffLineupRespectsLocks(
         doc.lineup,
         input.lineup,
-        lockedInSquad(squad, ctx),
+        matchdayCalendar(ctx.fixtures, ctx.finals).lockedPlayers(
+          squad,
+          ctx.now,
+        ),
       );
       if (violations.length > 0) {
         const v = violations[0]!;

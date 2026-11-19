@@ -3,7 +3,7 @@ import { randomUUID } from "node:crypto";
 import {
   findInvite,
   findReset,
-  firstMatchdayFor,
+  matchdayCalendar,
   RULES,
   type ManagerDoc,
 } from "@fm/core";
@@ -93,12 +93,10 @@ export async function registerManager(
   if (!admin && !invite) throw new BadRequest(INVALID_INVITE);
 
   const at = now.toISOString();
-  const firstMatchday = firstMatchdayFor(
+  const firstMatchday = matchdayCalendar(
     gameData.fixtures,
     finals(),
-    now,
-    gameData.season.firstScoredMatchday,
-  );
+  ).firstMatchdayFor(now, gameData.season.firstScoredMatchday);
   const doc: ManagerDoc = {
     userId: randomUUID(),
     email: input.email,

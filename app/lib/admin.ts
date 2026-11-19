@@ -3,9 +3,7 @@
 import { randomInt } from "node:crypto";
 import {
   CODE_ALPHABET,
-  currentMatchday,
-  firstLock,
-  firstMatchdayFor,
+  matchdayCalendar,
   ManualMapping,
   ManualMatch,
   ManualPositions,
@@ -15,6 +13,7 @@ import {
   POSITIONS,
   RULES,
   scraperSilent,
+  type CalendarFixture,
   type Fixture,
   type League,
   type ManagerDoc,
@@ -157,7 +156,7 @@ export const ManualChange = z.discriminatedUnion("kind", [
 
 export interface SeasonContext {
   now: Date;
-  fixtures: readonly Pick<Fixture, "matchday" | "kickoffUtc">[];
+  fixtures: readonly CalendarFixture[];
   finals: ReadonlyMap<number, Date>;
   firstScoredMatchday: number;
 }
@@ -228,12 +227,10 @@ async function moveManagersToSeasonStart(
   ctx: SeasonContext,
   firstScoredMatchday: number,
 ): Promise<void> {
-  const firstMatchday = firstMatchdayFor(
+  const firstMatchday = matchdayCalendar(
     ctx.fixtures,
     ctx.finals,
-    ctx.now,
-    firstScoredMatchday,
-  );
+  ).firstMatchdayFor(ctx.now, firstScoredMatchday);
   const userIds = (await listAllManagers()).map((d) => d.userId);
   await updateManagers(
     userIds,
@@ -251,17 +248,14 @@ async function moveManagersToSeasonStart(
 
 /** Startbudget und ersten Spieltag nur vor dem ersten gewerteten Spieltag ändern (KONZEPT 11). */
 function assertSeasonEditable(ctx: SeasonContext, requested: number): void {
-  const lockOf = (md: number) =>
-    firstLock(ctx.fixtures.filter((f) => f.matchday === md));
-  const started = lockOf(ctx.firstScoredMatchday);
-  if (started === null || ctx.now >= started) {
+  const calendar = matchdayCalendar(ctx.fixtures, ctx.finals);
+  if (calendar.started(ctx.firstScoredMatchday, ctx.now)) {
     throw new Forbidden(
       "Die Saison läuft schon; Startbudget und erster Spieltag sind fest.",
     );
   }
-  const current = currentMatchday(ctx.finals) ?? RULES.matchdays;
-  const lock = lockOf(requested);
-  if (requested < current || lock === null || ctx.now >= lock) {
+  const current = calendar.current ?? RULES.matchdays;
+  if (requested < current || calendar.started(requested, ctx.now)) {
     throw new BadRequest(
       `Spieltag ${requested} hat schon begonnen. Wähle einen späteren.`,
     );

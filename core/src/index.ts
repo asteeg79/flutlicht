@@ -3,7 +3,7 @@ export * from "./config/market";
 export * from "./config/rules";
 export * from "./config/scoring";
 export * from "./lineup";
-export * from "./locks";
+export * from "./calendar";
 export * from "./points";
 export * from "./prices";
 export * from "./rounding";

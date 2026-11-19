@@ -1,4 +1,4 @@
-import { firstLock } from "@fm/core";
+import { matchdayCalendar } from "@fm/core";
 import { Invites, Managers, type ManagerRow } from "@/components/admin/codes";
 import {
   ManualMatchForm,
@@ -14,7 +14,7 @@ import {
 } from "@/components/admin/world";
 import { HeroHeader } from "@/components/arena/hero-header";
 import { PageBody } from "@/components/arena/page-layout";
-import { gameData } from "@/lib/game-data";
+import { finals, gameData } from "@/lib/game-data";
 import { allManagers, requireAdmin } from "@/lib/session";
 import { loadLeague } from "@/lib/storage";
 
@@ -53,10 +53,10 @@ export default async function AdminPage() {
 
   // Saisonstart änderbar, solange die erste Sperre des ersten gewerteten Spieltags aussteht.
   const firstScored = gameData.season.firstScoredMatchday;
-  const lock = firstLock(
-    gameData.fixtures.filter((f) => f.matchday === firstScored),
+  const seasonEditable = !matchdayCalendar(gameData.fixtures, finals()).started(
+    firstScored,
+    new Date(),
   );
-  const seasonEditable = lock !== null && new Date() < lock;
 
   // Nachtrag: „manuell nachtragen“ zuerst, dann die übrigen beendeten Spiele mit Sofascore-Event.
   const needed = new Set(

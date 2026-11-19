@@ -3,12 +3,16 @@
 // führt aus, merkt sich die Schlüssel in system-state und sendet die Pushes.
 import { scraperAlarms } from "./freshness";
 import { isScoredMatchday, participation } from "./participation";
-import { firstLock } from "./locks";
+import {
+  finalizedAt,
+  matchdayCalendar,
+  type MatchdayCalendar,
+} from "./calendar";
 import { fixtureCounts, HAS_DATA } from "./matchday";
 import { round1 } from "./rounding";
 import { scoreLeague, standings } from "./standings";
 import { TIMEZONE } from "./time";
-import { currentMatchday, isBreakWindow, rollTransferBank } from "./transfers";
+import { rollTransferBank } from "./transfers";
 import type { Fixture, MatchdayPoints, Player } from "./schemas/data";
 import type { ManagerDoc } from "./schemas/manager";
 import type { ScraperHeartbeat } from "./schemas/scraper";
@@ -87,13 +91,12 @@ export function planTick(input: TickInput): TickAction[] {
   };
   const byId = new Map(input.players.map((p) => [p.id, p]));
   const positions = new Map(input.players.map((p) => [p.id, p.position]));
-  const finalSet = new Set(
-    input.points.filter((p) => p.status === "final").map((p) => p.matchday),
-  );
-  const current = currentMatchday(finalSet);
+  const finals = finalizedAt(input.points);
+  const calendar = matchdayCalendar(input.fixtures, finals);
+  const current = calendar.current;
 
   // Finalisierung aller finalen Spieltage, die noch nicht verbucht sind.
-  for (const md of [...finalSet].sort((a, b) => a - b)) {
+  for (const md of [...finals.keys()].sort((a, b) => a - b)) {
     const key = `final:${md}`;
     if (!input.done.has(key))
       actions.push({ kind: "finalize", key, matchday: md });
@@ -101,8 +104,8 @@ export function planTick(input: TickInput): TickAction[] {
 
   // Erinnerungen 24 h / 3 h vor der ersten Sperre des aktuellen Spieltags.
   if (current !== null) {
-    const fixtures = input.fixtures.filter((f) => f.matchday === current);
-    const lock = firstLock(fixtures);
+    const fixtures = calendar.fixturesOf(current);
+    const lock = calendar.firstLock(current);
     const until = lock === null ? -1 : lock.getTime() - input.now.getTime();
     const window =
       until > 3 * HOUR_MS && until <= 24 * HOUR_MS
@@ -259,8 +262,7 @@ export function planTick(input: TickInput): TickAction[] {
 export function finalizeManager(
   doc: ManagerDoc,
   matchday: number,
-  fixtures: readonly Pick<Fixture, "matchday" | "kickoffUtc">[],
-  finals: ReadonlyMap<number, Date>,
+  calendar: Pick<MatchdayCalendar, "isBreak">,
   /** Spieltagsprämie (2.7), vorab für alle Manager mit `matchdayBonuses` berechnet. */
   bonus: { firstScoredMatchday: number; bonus: number },
 ): ManagerDoc {
@@ -281,13 +283,8 @@ export function finalizeManager(
     : {};
   let bank = doc.transferBank;
   while (bank.matchday <= matchday) {
-    const lock = firstLock(
-      fixtures.filter((f) => f.matchday === bank.matchday),
-    );
     const unlimited =
-      bank.matchday <= doc.firstMatchday ||
-      (lock !== null &&
-        isBreakWindow(finals.get(bank.matchday - 1) ?? null, lock));
+      bank.matchday <= doc.firstMatchday || calendar.isBreak(bank.matchday);
     bank = rollTransferBank(bank, unlimited);
   }
   return { ...doc, ...money, lineupHistory, transferBank: bank };

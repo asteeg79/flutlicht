@@ -3,6 +3,7 @@
 import "server-only";
 import { z } from "zod";
 import {
+  finalizedAt,
   Fixtures,
   ManualNeeded,
   MappingReview,
@@ -50,13 +51,9 @@ export const positionById = new Map(
 );
 export const statsById = playerStats(gameData.points);
 
-/** Finalisierte Spieltage → Zeitpunkt der Finalisierung (Stand der finalen Daten). */
+/** Finalisierte Spieltage → Zeitpunkt der Finalisierung (core/finalizedAt). */
 export function finals(): Map<number, Date> {
-  return new Map(
-    gameData.points
-      .filter((p) => p.status === "final")
-      .map((p) => [p.matchday, new Date(p.generatedAt)]),
-  );
+  return finalizedAt(gameData.points);
 }
 
 /** Gegner aus Sicht von `teamId` mit Heim/Auswärts: „Bayern (H)“. */

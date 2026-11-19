@@ -1,9 +1,8 @@
 // Transferfenster, freie Transfers und Tausch (KONZEPT 2.3, 2.6, 2.7).
 import { RULES } from "./config/rules";
-import { firstLock } from "./locks";
 import { toTenths } from "./rounding";
 import { isBuyable } from "./squad";
-import type { Fixture, Player } from "./schemas/data";
+import type { Player } from "./schemas/data";
 import type {
   Lineup,
   ManagerDoc,
@@ -12,48 +11,11 @@ import type {
 } from "./schemas/manager";
 import type { Violation } from "./violations";
 
-const DAY_MS = 24 * 60 * 60 * 1000;
-
-/** Aktueller Spieltag: der kleinste, der noch nicht final ist (2.1). null nach dem 34. */
-export function currentMatchday(
-  finals: Pick<ReadonlySet<number>, "has">,
-): number | null {
-  for (let md = 1; md <= RULES.matchdays; md++) if (!finals.has(md)) return md;
-  return null;
-}
-
-/** Pause: zwischen Finalisierung und erster Sperre liegen ≥ 10 Tage. Saisonstart zählt als Pause. */
-export function isBreakWindow(opensAt: Date | null, closesAt: Date): boolean {
-  if (opensAt === null) return true;
-  return closesAt.getTime() - opensAt.getTime() >= RULES.breakMinDays * DAY_MS;
-}
-
+/** Transferfenster des aktuellen Spieltags; berechnet vom Spieltags-Kalender. */
 export type TransferWindow =
   | { open: false }
   | { open: true; matchday: number; closesAt: Date; isBreak: boolean };
 export type OpenTransferWindow = Extract<TransferWindow, { open: true }>;
-
-/**
- * Transferfenster für den aktuellen Spieltag N: offen ab der Finalisierung von N−1
- * bis zur ersten Sperre von N. `finals` = finalisierte Spieltage → Zeitpunkt der Finalisierung.
- */
-export function transferWindow(
-  fixtures: readonly Pick<Fixture, "matchday" | "kickoffUtc">[],
-  finals: ReadonlyMap<number, Date>,
-  now: Date,
-): TransferWindow {
-  const matchday = currentMatchday(finals);
-  if (matchday === null) return { open: false };
-  const closesAt = firstLock(fixtures.filter((f) => f.matchday === matchday));
-  if (closesAt === null || now >= closesAt) return { open: false };
-  const opensAt = finals.get(matchday - 1) ?? null;
-  return {
-    open: true,
-    matchday,
-    closesAt,
-    isBreak: isBreakWindow(opensAt, closesAt),
-  };
-}
 
 /** Unbegrenzt: vor dem ersten gewerteten Spieltag des Managers und in Pausen (2.6). */
 function isUnlimited(

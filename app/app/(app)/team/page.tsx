@@ -1,9 +1,9 @@
 import {
-  currentMatchday,
   formatMio,
   latestAppearance,
   lineupForMatchday,
   lockAt,
+  matchdayCalendar,
   pad2,
   participation,
   playerSeason,
@@ -28,7 +28,7 @@ import {
 } from "@/lib/game-data";
 import { POS_LABEL } from "@/lib/positions";
 import { currentLeagueTable, currentManager } from "@/lib/session";
-import { lockLabel, nextLock } from "@/lib/shell";
+import { lockLabel } from "@/lib/shell";
 import { liveContext, publicManager } from "@/lib/squad";
 
 export const metadata = { title: "Team" };
@@ -65,11 +65,9 @@ export default async function TeamPage() {
   }
 
   const ctx = liveContext();
-  const matchday = currentMatchday(ctx.finals);
-  const fixtures =
-    matchday === null
-      ? []
-      : ctx.fixtures.filter((f) => f.matchday === matchday);
+  const calendar = matchdayCalendar(ctx.fixtures, ctx.finals);
+  const matchday = calendar.current;
+  const fixtures = matchday === null ? [] : calendar.fixturesOf(matchday);
   const name = (id: number) => teamById.get(id)?.shortName ?? "";
   const squad: SquadEntry[] = manager.squad.flatMap((id) => {
     const p = playerById.get(id);
@@ -128,7 +126,7 @@ export default async function TeamPage() {
       : null;
 
   const now = ctx.now;
-  const lock = nextLock(ctx.fixtures, ctx.finals, now);
+  const lock = calendar.nextLock(now);
   const serverNow = now.toISOString();
 
   return (

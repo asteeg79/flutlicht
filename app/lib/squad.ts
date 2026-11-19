@@ -3,11 +3,10 @@
 import {
   applyTransfer,
   defaultLineup,
-  firstMatchdayFor,
+  matchdayCalendar,
   RULES,
   subtractMio,
   sumPrices,
-  transferWindow,
   validateSquad,
   type Fixture,
   type ManagerDoc,
@@ -83,9 +82,7 @@ export async function buildInitialSquad(
       // Wer den Kader erst nach der ersten Sperre seines Startspieltags baut, startet später.
       const firstMatchday = Math.max(
         doc.firstMatchday,
-        firstMatchdayFor(
-          ctx.fixtures,
-          ctx.finals,
+        matchdayCalendar(ctx.fixtures, ctx.finals).firstMatchdayFor(
           ctx.now,
           ctx.firstScoredMatchday,
         ),
@@ -130,7 +127,9 @@ export async function makeTransfer(
     (doc) => {
       const result = applyTransfer(doc, input.out, input.in, {
         players: new Map(ctx.players.map((p) => [p.id, p])),
-        window: transferWindow(ctx.fixtures, ctx.finals, ctx.now),
+        window: matchdayCalendar(ctx.fixtures, ctx.finals).transferWindow(
+          ctx.now,
+        ),
         now: ctx.now,
       });
       if (!result.ok)

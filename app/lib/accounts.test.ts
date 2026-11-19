@@ -21,7 +21,7 @@ const { registerManager, resetPassword, updateProfile } =
 const { authorizeCredentials } = await import("@/lib/auth");
 const storage = await import("@/lib/storage");
 const { finals, gameData } = await import("@/lib/game-data");
-const { firstMatchdayFor } = await import("@fm/core");
+const { matchdayCalendar } = await import("@fm/core");
 
 const NOW = new Date("2026-09-25T12:00:00Z");
 const input = (over: Record<string, unknown> = {}) => ({
@@ -48,12 +48,10 @@ describe("registerManager (KONZEPT 8.2)", () => {
     await seedInvites();
     const doc = await registerManager(input(), NOW);
     // Echte Daten: Der Einstieg hängt davon ab, welche Spieltage schon final sind (core/league.test.ts).
-    const firstMatchday = firstMatchdayFor(
+    const firstMatchday = matchdayCalendar(
       gameData.fixtures,
       finals(),
-      NOW,
-      gameData.season.firstScoredMatchday,
-    );
+    ).firstMatchdayFor(NOW, gameData.season.firstScoredMatchday);
     expect(doc).toMatchObject({
       email: "tom@example.org",
       role: "player",

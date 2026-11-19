@@ -2,7 +2,8 @@
 // und Spieltagsansicht. Rechnen tut ausschließlich core; hier wird nur zusammengestellt
 // und gefiltert, was andere Manager sehen dürfen (2.8).
 import {
-  isLocked,
+  finalizedAt,
+  matchdayCalendar,
   isScoredMatchday,
   isShadowMatchday,
   lineupForMatchday,
@@ -205,8 +206,11 @@ export function matchdayView(
   const shadow = isShadowMatchday(n, first);
   const md = game.points.find((p) => p.matchday === n);
   if (!md) return { matchday: n, status: "upcoming", shadow, managers: [] };
-  const { byId, positions, ref } = refs(game);
-  const fixtures = game.fixtures.filter((f) => f.matchday === n);
+  const { positions, ref } = refs(game);
+  const locked = matchdayCalendar(
+    game.fixtures,
+    finalizedAt(game.points),
+  ).lockedPlayers(game.players, now, n);
   const bonuses = matchdayBonuses(managers, md, positions, first);
 
   const views = managers.flatMap((m): ManagerMatchdayView[] => {
@@ -217,8 +221,7 @@ export function matchdayView(
     const own = m.userId === viewerId;
     const visible = (id: number) => {
       if (own || md.status === "final") return true;
-      const p = byId.get(id);
-      return p !== undefined && isLocked(p, now, fixtures);
+      return locked.has(id);
     };
     const slots = score.slots
       .filter((s) => visible(s.starterId))
