@@ -233,3 +233,11 @@ def test_fetch_aus_der_seite_wird_zu_status_und_inhalt():
     assert _fetched_response({"status": 200, "text": "{}"}) == RawResponse(200, b"{}")
     assert _fetched_response({"status": 200, "b64": webp}) == RawResponse(200, b"RIFF....WEBP")
     assert _fetched_response({"status": 403, "text": '{"error": {"code": 403}}'}).status == 403
+
+
+def test_log_maskiert_zeilenumbrueche_aus_daten(make_client, caplog):
+    client, _ = make_client(FakeTransport(ok()))
+    with caplog.at_level("INFO"):
+        client.get_json("u1\nGEFAELSCHT")
+    assert all("\n" not in r.getMessage() for r in caplog.records)
+    assert "u1\\nGEFAELSCHT" in caplog.text

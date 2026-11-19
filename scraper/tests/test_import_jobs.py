@@ -28,6 +28,15 @@ def test_squads_legt_nach_datum_ab_und_ueberspringt_vorhandene(make_client, tmp_
     assert read_raw(day / "2547.json.gz") == {"players": []}
 
 
+def test_ids_aus_daten_muessen_zahlen_sein(make_client, tmp_path):
+    """Eine ID aus Rohdaten landet in der URL: keine Zahl, kein Abruf."""
+    request = FakeTransport(ok(b'{"players": []}'))
+    client, _ = make_client(request)
+    with pytest.raises(ValueError):
+        squads.run(client, tmp_path, [{"id": "2547/../x"}], date(2026, 9, 25))
+    assert request.urls == []
+
+
 def test_write_raw_gz_schreibt_kompakt_und_ohne_zeitstempel(tmp_path):
     path = tmp_path / "x.json.gz"
     write_raw(path, "u", "squad", {"players": []}, datetime(2026, 10, 21, tzinfo=timezone.utc))

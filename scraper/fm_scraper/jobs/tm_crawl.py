@@ -20,8 +20,10 @@ def run(client: Client, raw_dir: Path, today: date) -> list[Path]:
     write_raw(clubs_path, url, "tm-crawl", clubs)
     written = [clubs_path]
     for club in clubs["clubs"]:
-        path = day_dir / f"club-{club['id']}.json"
-        url = f"{config.TM_API}/clubs/{club['id']}/players"
+        # Nur Zahlen in Pfad und URL: Die ID kommt aus der Antwort des Dienstes.
+        club_id = int(club["id"])
+        path = day_dir / f"club-{club_id}.json"
+        url = f"{config.TM_API}/clubs/{club_id}/players"
         write_raw(path, url, "tm-crawl", client.get_json(url))
         written.append(path)
     return written

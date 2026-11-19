@@ -123,7 +123,7 @@ class Client:
                 self._start_pause("429 Too Many Requests")
             if outcome != "blocked":
                 raise FetchError(url, response.status)
-            log.warning("%s bei %s über „%s“: %r", response.status, url, self._route_name(), response.body[:200])
+            log.warning("%s bei %r über „%s“: %r", response.status, url, self._route_name(), response.body[:200])
             self.close()
             self._index += 1
             if self._index == len(self._routes):
@@ -142,7 +142,8 @@ class Client:
             self._sleep(self._uniform(*self._pacing))
         self._requests_made += 1
         transport = self._open()
-        log.info("GET %s", url)
+        # %r: Zeilenumbrüche aus Daten landen maskiert im Log, nicht als eigene Zeile.
+        log.info("GET %r", url)
         return transport.get(url)
 
     def _open(self) -> Transport:
@@ -156,7 +157,7 @@ class Client:
             try:
                 self._transport = start()
             except Exception as e:  # der Browser-Start kann an vielem scheitern
-                log.warning("Abrufweg „%s“ startet nicht: %s", name, e)
+                log.warning("Abrufweg „%s“ startet nicht: %r", name, e)
                 self._index += 1
                 if self._index == len(self._routes):
                     self._start_pause(f"Abrufweg „{name}“ startet nicht: {e}"[:300], reset_route=True)
@@ -188,7 +189,7 @@ class Client:
         if reset_route:
             state.pop("route", None)
         self._write_state(state)
-        log.warning("%s: Job abgebrochen, Pause bis %s", reason, until.isoformat())
+        log.warning("%r: Job abgebrochen, Pause bis %s", reason, until.isoformat())
         raise PauseRequired(reason)
 
     def _read_state(self) -> dict[str, Any]:

@@ -19,7 +19,8 @@ PHASE = "final"
 
 
 def _final_dir(raw_dir: Path, event_id: int) -> Path:
-    return raw_dir / "sofascore" / "matches" / str(event_id) / PHASE
+    # int(): Die Event-ID kommt aus der Rundendatei und landet im Pfad.
+    return raw_dir / "sofascore" / "matches" / str(int(event_id)) / PHASE
 
 
 def has_final(raw_dir: Path, event_id: int | None) -> bool:
@@ -58,7 +59,7 @@ def run(client: Client, raw_dir: Path, matchday: int, event_id: int | None = Non
             continue
         match_dir = _final_dir(raw_dir, event["id"])
         for kind in ("lineups", "incidents"):
-            url = f"{config.API}/event/{event['id']}/{kind}"
+            url = f"{config.API}/event/{int(event['id'])}/{kind}"
             path = match_dir / f"{kind}.json"
             write_raw(path, url, PHASE, client.get_json(url))
             written.append(path)

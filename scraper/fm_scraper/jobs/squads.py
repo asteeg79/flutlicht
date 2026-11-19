@@ -14,7 +14,8 @@ from ..teams import load_teams
 
 
 def _path(raw_dir: Path, day: str, team_id: int) -> Path:
-    return raw_dir / "sofascore" / "squads" / day / f"{team_id}.json.gz"
+    # int(): Die ID kommt aus teams.json und landet im Pfad und in der URL.
+    return raw_dir / "sofascore" / "squads" / day / f"{int(team_id)}.json.gz"
 
 
 def _complete(raw_dir: Path, day: str) -> bool:
@@ -40,7 +41,7 @@ def run(client: Client, raw_dir: Path, teams: list[dict], today: date) -> list[P
         path = _path(raw_dir, today.isoformat(), team["id"])
         if path.exists():
             continue
-        url = f"{config.API}/team/{team['id']}/players"
+        url = f"{config.API}/team/{int(team['id'])}/players"
         write_raw(path, url, "squad", client.get_json(url))
         written.append(path)
     return written
