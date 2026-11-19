@@ -27,7 +27,7 @@ import {
   readDcaribou,
   readImageIds,
   readManual,
-  readMatchData,
+  readMatchSources,
   readMinutes,
   readOpenliga,
   readRounds,
@@ -36,7 +36,7 @@ import {
 } from "./raw";
 import { buildFixtures } from "./steps/fixtures";
 import { buildPlayers } from "./steps/players";
-import { buildPoints } from "./steps/points";
+import { buildPoints, chooseMatchData } from "./steps/points";
 import { sanityCheck } from "./steps/sanity";
 import { buildSeason } from "./steps/season";
 
@@ -70,38 +70,77 @@ export function manualNeeded(
     }));
 }
 
-export async function build(
+/** Alles, was die Rechnung aus raw/ braucht; gelesen von readInputs. */
+export interface RawInputs {
+  manual: Awaited<ReturnType<typeof readManual>>;
+  openliga: Awaited<ReturnType<typeof readOpenliga>>;
+  matches: Awaited<ReturnType<typeof readMatchSources>>;
+  snapshots: Awaited<ReturnType<typeof readSquadSnapshots>>;
+  tmCrawl: Awaited<ReturnType<typeof readTmCrawl>>;
+  dcaribou: Awaited<ReturnType<typeof readDcaribou>>;
+  minutes: Awaited<ReturnType<typeof readMinutes>>;
+  rounds: Awaited<ReturnType<typeof readRounds>>;
+  imageIds: Awaited<ReturnType<typeof readImageIds>>;
+}
+
+/** Eine fertige, validierte Datei für data/ (Pfad relativ zu data/). */
+export interface DataFile {
+  file: string;
+  json: string;
+  write: (dataDir: string) => Promise<void>;
+}
+
+export async function readInputs(
   rawDir: string,
-  dataDir: string,
   imgDir: string,
-  warn: (message: string) => void = console.warn,
-): Promise<void> {
-  const manual = await readManual(rawDir);
-  const openliga = await readOpenliga(rawDir);
+  warn: (message: string) => void,
+): Promise<RawInputs> {
+  return {
+    manual: await readManual(rawDir),
+    openliga: await readOpenliga(rawDir),
+    matches: await readMatchSources(rawDir),
+    snapshots: await readSquadSnapshots(rawDir, warn),
+    tmCrawl: await readTmCrawl(rawDir),
+    dcaribou: await readDcaribou(rawDir),
+    minutes: await readMinutes(rawDir),
+    rounds: await readRounds(rawDir),
+    imageIds: await readImageIds(join(imgDir, "players")),
+  };
+}
+
+/**
+ * Die Rechnung raw/ → data/ ohne Ein- und Ausgabe: alle Dateien validiert, dazu
+ * meta.json mit Hash über den Inhalt. Wirft beim Sanity-Guard, dann wird nichts geschrieben.
+ */
+export function computeData(
+  raw: RawInputs,
+  warn: (message: string) => void,
+): DataFile[] {
+  const { manual, openliga } = raw;
   const now = new Date(openliga.fetchedAt);
-  const matchData = await readMatchData(rawDir);
+  const matchData = chooseMatchData(raw.matches);
 
   const teams = buildTeams(manual.teams);
   const imported = buildPlayers({
     teams: manual.teams,
-    snapshots: await readSquadSnapshots(rawDir, warn),
-    tmCrawl: await readTmCrawl(rawDir),
-    dcaribou: await readDcaribou(rawDir),
+    snapshots: raw.snapshots,
+    tmCrawl: raw.tmCrawl,
+    dcaribou: raw.dcaribou,
     manualPositions: manual.positions,
     manualValues: manual.values,
     manualMapping: manual.mapping,
-    imageIds: await readImageIds(join(imgDir, "players")),
+    imageIds: raw.imageIds,
   });
   const season = buildSeason(
     imported.players,
-    await readMinutes(rawDir),
+    raw.minutes,
     manual.season,
     imported.vMaxEur,
   );
   const fixtures = buildFixtures({
     matches: openliga.matches,
     originals: openliga.originals,
-    rounds: await readRounds(rawDir),
+    rounds: raw.rounds,
     teams: manual.teams,
     dataKindOf: (id) => matchData.get(id)?.kind,
     now,
@@ -127,15 +166,13 @@ export async function build(
     lastFinalMatchday = md.matchday;
   }
 
-  // Erst alles validieren, dann schreiben: ein Fehler hinterlässt kein halbes data/.
-  const prepared: { file: string; json: string; write: () => Promise<void> }[] =
-    [];
+  const files: DataFile[] = [];
   const prepare = <T>(file: string, schema: z.ZodType<T>, value: T) => {
     const valid = schema.parse(value);
-    prepared.push({
+    files.push({
       file,
       json: JSON.stringify(valid),
-      write: () => writeJson(join(dataDir, file), schema, valid),
+      write: (dataDir) => writeJson(join(dataDir, file), schema, valid),
     });
   };
   prepare("teams.json", Teams, teams);
@@ -153,22 +190,40 @@ export async function build(
   );
 
   const hash = createHash("sha256");
-  for (const p of prepared) hash.update(p.file).update(p.json);
+  for (const f of files) hash.update(f.file).update(f.json);
   const generatedAt = [openliga.fetchedAt, ...points.map((p) => p.generatedAt)]
     .map((t) => new Date(t).toISOString())
-    .sort()
+    .sort((a, b) => a.localeCompare(b))
     .at(-1)!;
   prepare("meta.json", Meta, {
     dataVersion: hash.digest("hex").slice(0, 12),
     generatedAt,
     lastFinalMatchday,
   });
+  return files;
+}
 
-  for (const p of prepared) await p.write();
+/** Schreibt die Dateien und entfernt Spieltagsdateien, die es nicht mehr gibt. */
+export async function writeData(
+  dataDir: string,
+  files: readonly DataFile[],
+): Promise<void> {
+  for (const f of files) await f.write(dataDir);
   await removeStalePoints(
     dataDir,
-    new Set(points.map((p) => pointsFile(p.matchday))),
+    new Set(files.map((f) => f.file).filter((f) => f.startsWith("points/"))),
   );
+}
+
+/** `pipeline build`: lesen, rechnen (erst alles validieren), dann schreiben; ein Fehler hinterlässt kein halbes data/. */
+export async function build(
+  rawDir: string,
+  dataDir: string,
+  imgDir: string,
+  warn: (message: string) => void = console.warn,
+): Promise<void> {
+  const files = computeData(await readInputs(rawDir, imgDir, warn), warn);
+  await writeData(dataDir, files);
 }
 
 function pointsFile(matchday: number): string {

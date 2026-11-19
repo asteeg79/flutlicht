@@ -16,7 +16,7 @@ import {
 import { parseCsv } from "./csv";
 import type { SquadSnapshot, ValuedCandidate } from "./steps/players";
 import type { OpenligaMatch, RoundEvent } from "./steps/fixtures";
-import type { MatchData } from "./steps/points";
+import type { MatchSources } from "./steps/points";
 import { openligaSeasonPath, originalKickoffsPath } from "./fetch-openligadb";
 import { readJson, readJsonOptional } from "./io/json";
 
@@ -265,11 +265,18 @@ export async function readRounds(rawDir: string): Promise<RoundEvent[]> {
   return out;
 }
 
-/** Spieldaten je Event: Admin-Nachtrag vor Sofascore-final vor Sofascore-provisional (6.5). */
-export async function readMatchData(
+/** Alle Spieldaten-Quellen je Event; welche gilt, entscheidet steps/points#chooseMatchData. */
+export async function readMatchSources(
   rawDir: string,
-): Promise<Map<number, MatchData>> {
-  const out = new Map<number, MatchData>();
+): Promise<Map<number, MatchSources>> {
+  const out = new Map<number, MatchSources>();
+  const entry = (id: number) => {
+    const existing = out.get(id);
+    if (existing) return existing;
+    const created: MatchSources = {};
+    out.set(id, created);
+    return created;
+  };
   const base = join(rawDir, "sofascore", "matches");
   for (const event of await listDirs(base)) {
     for (const phase of ["provisional", "final"] as const) {
@@ -281,18 +288,19 @@ export async function readMatchData(
         continue;
       const lineups = await readJson(join(dir, "lineups.json"), Envelope);
       const incidents = await readJson(join(dir, "incidents.json"), Envelope);
-      out.set(Number(event), {
-        kind: phase,
+      entry(Number(event))[phase] = {
         lineups: lineups.data,
         incidents: incidents.data,
-        at: [lineups.fetchedAt, incidents.fetchedAt].sort().at(-1)!,
-      });
+        at: [lineups.fetchedAt, incidents.fetchedAt]
+          .sort((a, b) => a.localeCompare(b))
+          .at(-1)!,
+      };
     }
   }
   const manualDir = join(rawDir, "manual", "matches");
   for (const file of await listJson(manualDir)) {
     const match = await readJson(join(manualDir, file), ManualMatch);
-    out.set(match.eventId, { kind: "manual", match, at: match.enteredAt });
+    entry(match.eventId).manual = match;
   }
   return out;
 }

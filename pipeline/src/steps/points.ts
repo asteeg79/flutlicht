@@ -23,6 +23,39 @@ export type MatchData =
       at: string;
     };
 
+/** Sofascore-Abruf eines Spiels in einer Phase: lineups, incidents, Zeitpunkt. */
+export interface SofascorePhase {
+  lineups: unknown;
+  incidents: unknown;
+  at: string;
+}
+
+/** Alles, was raw/ zu einem Spiel hat; welche Quelle gilt, entscheidet chooseMatchData. */
+export interface MatchSources {
+  provisional?: SofascorePhase;
+  final?: SofascorePhase;
+  manual?: ManualMatch;
+}
+
+/** Je Spiel genau eine Quelle: Admin-Nachtrag vor Sofascore-final vor Sofascore-vorläufig (6.5). */
+export function chooseMatchData(
+  sources: ReadonlyMap<number, MatchSources>,
+): Map<number, MatchData> {
+  const out = new Map<number, MatchData>();
+  for (const [eventId, s] of sources) {
+    if (s.manual)
+      out.set(eventId, {
+        kind: "manual",
+        match: s.manual,
+        at: s.manual.enteredAt,
+      });
+    else if (s.final) out.set(eventId, { kind: "final", ...s.final });
+    else if (s.provisional)
+      out.set(eventId, { kind: "provisional", ...s.provisional });
+  }
+  return out;
+}
+
 export function buildPoints(
   fixtures: readonly Fixture[],
   data: ReadonlyMap<number, MatchData>,
