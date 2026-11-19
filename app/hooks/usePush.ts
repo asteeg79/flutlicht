@@ -48,7 +48,7 @@ export function usePush() {
       // Dieses Gerät beim Server (neu) anmelden: Es kann fehlen, etwa weil es vor der
       // Umstellung auf mehrere Geräte von einem anderen verdrängt wurde. Doppelt geht nicht.
       if (sub && Notification.permission === "granted")
-        void fetch("/api/push/subscribe", {
+        fetch("/api/push/subscribe", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(sub),

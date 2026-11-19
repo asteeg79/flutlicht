@@ -120,7 +120,11 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
           </ul>
           <button
             type="button"
-            onClick={sendTest}
+            onClick={() => {
+              sendTest().catch(() =>
+                toast.error("Der Test-Push hat nicht geklappt."),
+              );
+            }}
             disabled={busy}
             className="mt-1 h-11 border-2 border-line px-3.5 font-display text-base font-black uppercase disabled:opacity-60"
           >
