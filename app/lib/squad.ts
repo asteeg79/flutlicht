@@ -1,22 +1,18 @@
 // Erstkader und Transfers (KONZEPT 2.2, 2.6, 2.7, 8.2). Die Regeln stehen in core;
-// hier nur Laden, optimistische Sperre (updatedAt) und Speichern.
+// geschrieben wird über lib/manager-writes (optimistische Sperre per updatedAt).
 import {
+  applyInitialSquad,
   applyTransfer,
-  defaultLineup,
-  firstMatchdayFor,
+  matchdayCalendar,
   RULES,
-  subtractMio,
-  sumPrices,
-  transferWindow,
-  validateSquad,
   type Fixture,
   type ManagerDoc,
   type Player,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict, NotFound, parse } from "@/lib/api-route";
+import { BadRequest, parse } from "@/lib/errors";
 import { finals, gameData } from "@/lib/game-data";
-import { loadManager, saveManager } from "@/lib/storage";
+import { updateManager } from "@/lib/manager-writes";
 
 export interface GameContext {
   now: Date;
@@ -48,17 +44,6 @@ export function publicManager(doc: ManagerDoc): PublicManager {
 
 const UpdatedAt = z.string().min(1);
 
-/** Lädt das Dokument und prüft, dass der Client den aktuellen Stand kennt. */
-export async function loadFresh(
-  userId: string,
-  updatedAt: string,
-): Promise<ManagerDoc> {
-  const doc = await loadManager(userId);
-  if (!doc) throw new NotFound("Konto nicht gefunden");
-  if (doc.updatedAt !== updatedAt) throw new Conflict();
-  return doc;
-}
-
 /** Feste Meldung: diese Schemas haben keine deutschen zod-Meldungen. */
 export const INVALID = "Ungültige Eingabe";
 
@@ -74,45 +59,22 @@ export async function buildInitialSquad(
   ctx: GameContext,
 ): Promise<PublicManager> {
   const input = parse(InitialInput, raw, INVALID);
-  const doc = await loadFresh(userId, input.updatedAt);
-  if (doc.squad.length > 0)
-    throw new BadRequest(
-      "Dein Kader steht schon. Änderungen laufen über Transfers.",
-    );
-
-  const byId = new Map(ctx.players.map((p) => [p.id, p]));
-  const picked = input.players.map((id) => byId.get(id));
-  if (picked.some((p) => p === undefined))
-    throw new BadRequest("Unbekannter Spieler.");
-  const squad = picked as Player[];
-  const violations = validateSquad(squad, ctx.startBudget);
-  if (violations.length > 0)
-    throw new BadRequest(violations.map((v) => v.message).join(" "));
-
-  // Wer den Kader erst nach der ersten Sperre seines Startspieltags baut, startet später.
-  const firstMatchday = Math.max(
-    doc.firstMatchday,
-    firstMatchdayFor(
-      ctx.fixtures,
-      ctx.finals,
-      ctx.now,
-      ctx.firstScoredMatchday,
-    ),
-  );
-  const next: ManagerDoc = {
-    ...doc,
-    squad: squad.map((p) => p.id),
-    initialPrices: Object.fromEntries(squad.map((p) => [p.id, p.price])),
-    cash: subtractMio(ctx.startBudget, sumPrices(squad.map((p) => p.price))),
-    lineup: defaultLineup(squad),
-    firstMatchday,
-    transferBank: {
-      matchday: firstMatchday,
-      available: RULES.freeTransfersPerMatchday,
+  const next = await updateManager(
+    userId,
+    (doc) => {
+      const result = applyInitialSquad(doc, input.players, {
+        players: ctx.players,
+        calendar: matchdayCalendar(ctx.fixtures, ctx.finals),
+        now: ctx.now,
+        startBudget: ctx.startBudget,
+        firstScoredMatchday: ctx.firstScoredMatchday,
+      });
+      if (!result.ok)
+        throw new BadRequest(result.violations.map((v) => v.message).join(" "));
+      return result.state;
     },
-    updatedAt: ctx.now.toISOString(),
-  };
-  await saveManager(next);
+    { expect: input.updatedAt, stamp: ctx.now },
+  );
   return publicManager(next);
 }
 
@@ -128,19 +90,25 @@ export async function makeTransfer(
   ctx: GameContext,
 ): Promise<{ manager: PublicManager; captainChanged: boolean; free: boolean }> {
   const input = parse(TransferInput, raw, INVALID);
-  const doc = await loadFresh(userId, input.updatedAt);
-  const result = applyTransfer(doc, input.out, input.in, {
-    players: new Map(ctx.players.map((p) => [p.id, p])),
-    window: transferWindow(ctx.fixtures, ctx.finals, ctx.now),
-    now: ctx.now,
-  });
-  if (!result.ok)
-    throw new BadRequest(result.violations.map((v) => v.message).join(" "));
-  const next = { ...result.state, updatedAt: ctx.now.toISOString() };
-  await saveManager(next);
-  return {
-    manager: publicManager(next),
-    captainChanged: result.captainChanged,
-    free: result.transfer.free,
-  };
+  let captainChanged = false;
+  let free = false;
+  const next = await updateManager(
+    userId,
+    (doc) => {
+      const result = applyTransfer(doc, input.out, input.in, {
+        players: new Map(ctx.players.map((p) => [p.id, p])),
+        window: matchdayCalendar(ctx.fixtures, ctx.finals).transferWindow(
+          ctx.now,
+        ),
+        now: ctx.now,
+      });
+      if (!result.ok)
+        throw new BadRequest(result.violations.map((v) => v.message).join(" "));
+      captainChanged = result.captainChanged;
+      free = result.transfer.free;
+      return result.state;
+    },
+    { expect: input.updatedAt, stamp: ctx.now },
+  );
+  return { manager: publicManager(next), captainChanged, free };
 }

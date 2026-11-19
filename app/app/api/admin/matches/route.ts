@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
 import { saveManualMatch } from "@/lib/admin";
-import { withAdmin } from "@/lib/api-route";
+import { readBody, withAdmin } from "@/lib/api-route";
 import { gameData } from "@/lib/game-data";
 import { github } from "@/lib/github";
 
@@ -8,7 +8,7 @@ import { github } from "@/lib/github";
 export const PUT = withAdmin(async ({ admin, request }) => {
   const path = await saveManualMatch(
     github(),
-    await request.json().catch(() => null),
+    await readBody(request),
     admin,
     new Date(),
     gameData.fixtures,

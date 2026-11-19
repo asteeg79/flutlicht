@@ -1,13 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  finalizeManager,
   planTick,
   type Fixture,
   type ManagerDoc,
   type MatchdayPoints,
   type ScraperStatus,
-  type TickInput,
+  matchdayCalendar,
 } from "../src";
+import { finalizeManager, type TickInput } from "../src/tick";
 import { lineup442, SQUAD_IDS, squadPlayers } from "./helpers";
 
 // Kader aus helpers: je 3 Spieler bei den Vereinen 100–104 (IDs 1–3 → 100, …, 13–15 → 104).
@@ -341,21 +341,29 @@ describe("finalizeManager", () => {
     [7, new Date("2026-10-26T07:00:00Z")],
     [8, new Date("2026-11-02T07:00:00Z")],
   ]);
+  const calendar = matchdayCalendar(
+    md8.map((f) => ({
+      ...f,
+      homeTeamId: 1,
+      awayTeamId: 2,
+      status: "scheduled" as const,
+    })),
+    finals,
+  );
 
   it("friert die Aufstellung ein und schreibt die Transferbank fort", () => {
     const doc = manager("a", "Anna", {
       firstMatchday: 7,
       transferBank: { matchday: 8, available: 1 },
     });
-    const next = finalizeManager(doc, 8, md8, finals, NO_BONUS);
+    const next = finalizeManager(doc, 8, calendar, NO_BONUS);
     expect(next.lineupHistory["8"]).toEqual(lineup442);
     expect(next.transferBank).toEqual({ matchday: 9, available: 3 });
     // Idempotent: zweiter Aufruf ändert nichts, auch nicht nach Änderung der Aufstellung.
     const again = finalizeManager(
       { ...next, lineup: { ...lineup442, captain: 14 } },
       8,
-      md8,
-      finals,
+      calendar,
       NO_BONUS,
     );
     expect(again.lineupHistory["8"]).toEqual(lineup442);
@@ -367,24 +375,21 @@ describe("finalizeManager", () => {
       firstMatchday: 8,
       transferBank: { matchday: 8, available: 2 },
     });
-    expect(finalizeManager(doc, 8, md8, finals, NO_BONUS).transferBank).toEqual(
-      {
-        matchday: 9,
-        available: 2,
-      },
-    );
+    expect(finalizeManager(doc, 8, calendar, NO_BONUS).transferBank).toEqual({
+      matchday: 9,
+      available: 2,
+    });
   });
 
   it("friert ohne Aufstellung und vor dem ersten gewerteten Spieltag nichts ein", () => {
-    expect(
-      finalizeManager(cleo, 8, md8, finals, NO_BONUS).lineupHistory,
-    ).toEqual({});
+    expect(finalizeManager(cleo, 8, calendar, NO_BONUS).lineupHistory).toEqual(
+      {},
+    );
     expect(
       finalizeManager(
         manager("a", "Anna", { firstMatchday: 9 }),
         8,
-        md8,
-        finals,
+        calendar,
         NO_BONUS,
       ).lineupHistory,
     ).toEqual({});

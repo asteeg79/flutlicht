@@ -62,9 +62,10 @@ def run(client: Client, raw_dir: Path, img_dir: Path, teams: list[dict]) -> list
     missing = _read_missing(raw_dir)
     # Das Limit zählt Abrufe, auch die ohne Bild (5.5: höchstens 60 pro Stunde).
     for kind, id_ in todo(raw_dir, img_dir, teams)[: config.IMAGES_PER_RUN]:
-        path = img_dir / kind / f"{id_}.webp"
+        # int(): Die ID kommt aus den Kadern und landet im Pfad und in der URL.
+        path = img_dir / kind / f"{int(id_)}.webp"
         try:
-            image = client.get_bytes(f"{config.API}/{'team' if kind == 'clubs' else 'player'}/{id_}/image")
+            image = client.get_bytes(f"{config.API}/{'team' if kind == 'clubs' else 'player'}/{int(id_)}/image")
         except FetchError as e:
             if e.status != 404:
                 raise

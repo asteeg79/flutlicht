@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { clamp, round1, roundHalfAwayFromZero, toTenths } from "../src";
+import { clamp } from "../src";
+import { round1, roundHalfAwayFromZero, toTenths } from "../src/rounding";
 
 describe("roundHalfAwayFromZero", () => {
   it("rundet .5 von der Null weg", () => {

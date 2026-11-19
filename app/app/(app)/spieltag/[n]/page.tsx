@@ -2,6 +2,7 @@ import {
   formatMio,
   lockAt,
   MARKET,
+  matchdayRanks,
   RULES,
   SCORING,
   type Fixture,
@@ -31,7 +32,6 @@ import { gameData, opponentLabel, playerById, teamById } from "@/lib/game-data";
 import { POS_LABEL } from "@/lib/positions";
 import { allManagers, currentManager } from "@/lib/session";
 import {
-  matchdayRanks,
   matchdayView,
   type ManagerMatchdayView,
   type MatchdayView,
@@ -105,7 +105,7 @@ export default async function MatchdayPage({
   const nextKickoff = openSlots
     .map((s) => fixtureOf((s.player ?? s.starter).teamId)?.kickoffUtc)
     .filter((k): k is string => k !== undefined)
-    .sort()[0];
+    .sort((a, b) => a.localeCompare(b))[0];
 
   // ——— Kopf ———
   let hero: ReactNode;

@@ -1,5 +1,6 @@
 // Gemeinsame Testdaten: ein gültiger Kader (2 TW, 5 ABW, 5 MF, 3 ST) und eine 4-4-2-Aufstellung.
-import type { Lineup, Position, TransferPlayer } from "../src";
+import type { Lineup, Position } from "../src";
+import type { TransferPlayer } from "../src/transfers";
 
 /** IDs 1–2 TW, 3–7 ABW, 8–12 MF, 13–15 ST. */
 export function positionOf(id: number): Position {

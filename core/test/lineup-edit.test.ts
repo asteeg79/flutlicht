@@ -1,15 +1,11 @@
 import { describe, expect, it } from "vitest";
-import {
-  formationOf,
-  setCaptain,
-  swapPlayers,
-  validateLineup,
-  type Lineup,
-} from "../src";
+import { setCaptain, swapPlayers, validateLineup, type Lineup } from "../src";
+import { formationOf } from "../src/lineup";
 import { lineup442, positionOf, squadPlayers } from "./helpers";
 
+const free = () => false;
 const swap = (l: Lineup, a: number, b: number) =>
-  swapPlayers(l, a, b, positionOf);
+  swapPlayers(l, a, b, { positionOf, isLocked: free });
 
 describe("formationOf", () => {
   it("leitet die Formation ab und erkennt unerlaubte", () => {
@@ -123,13 +119,49 @@ describe("swapPlayers (KONZEPT 2.3)", () => {
 
 describe("setCaptain (KONZEPT 2.4)", () => {
   it("macht nur Starter zum Kapitän", () => {
-    expect(setCaptain(lineup442, 14)).toEqual({
+    expect(setCaptain(lineup442, 14, { isLocked: free })).toEqual({
       ok: true,
       lineup: { ...lineup442, captain: 14 },
     });
-    expect(setCaptain(lineup442, 7)).toEqual({
+    expect(setCaptain(lineup442, 7, { isLocked: free })).toEqual({
       ok: false,
       message: "Nur ein Spieler aus der Startelf kann Kapitän sein.",
     });
+  });
+
+  it("gesperrt: weder Kapitän werden noch aufhören, Kapitän zu sein (2.5)", () => {
+    // lineup442: Kapitän 13
+    const lockedNew = setCaptain(lineup442, 14, {
+      isLocked: (id) => id === 14,
+    });
+    expect(lockedNew.ok).toBe(false);
+    const lockedOld = setCaptain(lineup442, 14, {
+      isLocked: (id) => id === 13,
+    });
+    expect(lockedOld.ok).toBe(false);
+    expect(setCaptain(lineup442, 13, { isLocked: () => true })).toEqual({
+      ok: true,
+      lineup: lineup442,
+    });
+  });
+});
+
+describe("swapPlayers mit Sperren (KONZEPT 2.5)", () => {
+  it("gesperrte Spieler bleiben auf ihrem Platz", () => {
+    // 3 (Starter, ABW) gegen 7 (B1, ABW): erlaubt, solange keiner gesperrt ist.
+    expect(swap(lineup442, 3, 7).ok).toBe(true);
+    for (const locked of [3, 7]) {
+      const r = swapPlayers(lineup442, 3, 7, {
+        positionOf,
+        isLocked: (id) => id === locked,
+      });
+      expect(r.ok).toBe(false);
+    }
+  });
+
+  it("zwei Starter antippen bleibt ohne Änderung, auch wenn einer gesperrt ist", () => {
+    expect(
+      swapPlayers(lineup442, 3, 4, { positionOf, isLocked: (id) => id === 3 }),
+    ).toEqual({ ok: true, lineup: lineup442 });
   });
 });

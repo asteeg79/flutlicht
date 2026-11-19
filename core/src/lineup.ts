@@ -135,8 +135,9 @@ export function defaultLineup(
   const benchField = [def[4]!, mid[4]!, fwd[2]!];
   const price = new Map(squad.map((p) => [p.id, p.price]));
   benchField.sort((a, b) => price.get(b)! - price.get(a)! || a - b);
-  const captain = starters.reduce((best, id) =>
-    price.get(id)! > price.get(best)! ? id : best,
+  const captain = starters.reduce(
+    (best, id) => (price.get(id)! > price.get(best)! ? id : best),
+    starters[0]!,
   );
   return {
     formation: "4-4-2",
@@ -164,14 +165,19 @@ export type LineupChange =
 /**
  * Tauscht die Rollen zweier Spieler (Startelf, Ersatz-TW, B1–B3). Die Formation
  * ergibt sich aus der neuen Startelf. Torhüter tauschen nur mit Torhütern, der
- * Kapitän bleibt in der Startelf (2.3, 2.4).
+ * Kapitän bleibt in der Startelf (2.3, 2.4), gesperrte Spieler bleiben auf ihrem
+ * Platz (2.5).
  */
 export function swapPlayers(
   lineup: Lineup,
   a: number,
   b: number,
-  positionOf: (id: number) => Position | undefined,
+  squad: {
+    positionOf: (id: number) => Position | undefined;
+    isLocked: (id: number) => boolean;
+  },
 ): LineupChange {
+  const { positionOf } = squad;
   const roleA = roleOf(lineup, a);
   const roleB = roleOf(lineup, b);
   if (roleA === null || roleB === null)
@@ -181,6 +187,12 @@ export function swapPlayers(
     };
   if (a === b || (roleA === "starter" && roleB === "starter"))
     return { ok: true, lineup };
+  if (squad.isLocked(a) || squad.isLocked(b))
+    return {
+      ok: false,
+      message:
+        "Gesperrte Spieler bleiben auf ihrem Platz – ihr Spiel beginnt bald oder läuft schon.",
+    };
   if ((positionOf(a) === "GK") !== (positionOf(b) === "GK")) {
     return { ok: false, message: "Torhüter tauschen nur mit Torhütern." };
   }
@@ -218,12 +230,30 @@ export function swapPlayers(
   };
 }
 
-/** Kapitän setzen; nur Starter können Kapitän sein (2.4). */
-export function setCaptain(lineup: Lineup, id: number): LineupChange {
+/**
+ * Kapitän setzen; nur Starter können Kapitän sein (2.4). Gesperrte Spieler werden
+ * weder Kapitän noch hören sie auf, es zu sein (2.5).
+ */
+export function setCaptain(
+  lineup: Lineup,
+  id: number,
+  squad: { isLocked: (id: number) => boolean },
+): LineupChange {
   if (!lineup.starters.includes(id))
     return {
       ok: false,
       message: "Nur ein Spieler aus der Startelf kann Kapitän sein.",
+    };
+  if (id === lineup.captain) return { ok: true, lineup };
+  if (squad.isLocked(lineup.captain))
+    return {
+      ok: false,
+      message: "Dein Kapitän ist schon fixiert und behält die Binde.",
+    };
+  if (squad.isLocked(id))
+    return {
+      ok: false,
+      message: "Gesperrte Spieler können nicht mehr Kapitän werden.",
     };
   return { ok: true, lineup: { ...lineup, captain: id } };
 }

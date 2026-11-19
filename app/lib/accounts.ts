@@ -3,13 +3,14 @@ import { randomUUID } from "node:crypto";
 import {
   findInvite,
   findReset,
-  firstMatchdayFor,
-  RULES,
+  matchdayCalendar,
+  newManagerState,
   type ManagerDoc,
 } from "@fm/core";
 import { z } from "zod";
-import { BadRequest, Conflict, NotFound, parse } from "@/lib/api-route";
+import { BadRequest, Conflict, parse } from "@/lib/errors";
 import { finals, gameData } from "@/lib/game-data";
+import { updateManager } from "@/lib/manager-writes";
 import { hashPassword, MIN_PASSWORD_LENGTH } from "@/lib/password";
 import {
   loadEmailIndex,
@@ -92,12 +93,10 @@ export async function registerManager(
   if (!admin && !invite) throw new BadRequest(INVALID_INVITE);
 
   const at = now.toISOString();
-  const firstMatchday = firstMatchdayFor(
+  const firstMatchday = matchdayCalendar(
     gameData.fixtures,
     finals(),
-    now,
-    gameData.season.firstScoredMatchday,
-  );
+  ).firstMatchdayFor(now, gameData.season.firstScoredMatchday);
   const doc: ManagerDoc = {
     userId: randomUUID(),
     email: input.email,
@@ -107,16 +106,7 @@ export async function registerManager(
     role: admin ? "admin" : "player",
     createdAt: at,
     updatedAt: at,
-    firstMatchday,
-    squad: [],
-    cash: gameData.season.startBudget,
-    lineup: null,
-    lineupHistory: {},
-    transfers: [],
-    transferBank: {
-      matchday: firstMatchday,
-      available: RULES.freeTransfersPerMatchday,
-    },
+    ...newManagerState(firstMatchday, gameData.season.startBudget),
   };
   // Reihenfolge: Dokument, dann Index, dann Code verbrauchen. Bricht es
   // zwischendrin ab, bleibt höchstens ein unerreichbares Dokument zurück.
@@ -143,11 +133,7 @@ export async function updateProfile(
   raw: unknown,
 ): Promise<ManagerDoc> {
   const input = parse(ProfileInput, raw);
-  const doc = await loadManager(userId);
-  if (!doc) throw new NotFound("Konto nicht gefunden");
-  const next = { ...doc, ...input };
-  await saveManager(next);
-  return next;
+  return updateManager(userId, (doc) => ({ ...doc, ...input }));
 }
 
 export async function resetPassword(raw: unknown, now: Date): Promise<void> {
@@ -159,10 +145,10 @@ export async function resetPassword(raw: unknown, now: Date): Promise<void> {
   if (!reset || !doc) throw new BadRequest(INVALID_RESET);
 
   const at = now.toISOString();
-  await saveManager({
-    ...doc,
-    passwordHash: await hashPassword(input.password),
-    updatedAt: at,
+  // Erst hashen, dann frisch laden und schreiben: Das Hashen dauert.
+  const passwordHash = await hashPassword(input.password);
+  await updateManager(doc.userId, (d) => ({ ...d, passwordHash }), {
+    stamp: now,
   });
   await saveLeague({
     ...league,

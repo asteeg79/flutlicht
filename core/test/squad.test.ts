@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  draftAddViolation,
-  isBuyable,
-  sumPrices,
-  validateSquad,
-  type SquadCandidate,
-} from "../src";
+import { draftAddViolation, isBuyable, sumPrices, validateSquad } from "../src";
+import { type SquadCandidate } from "../src/squad";
 import { squadPlayers } from "./helpers";
 
 const codes = (players: readonly SquadCandidate[], budget = 65) =>

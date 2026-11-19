@@ -1,6 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from "vitest";
 
-vi.mock("@/lib/auth", () => ({ auth: async () => null }));
 const { github } = await import("@/lib/github");
 
 beforeEach(() => {

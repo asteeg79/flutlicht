@@ -192,7 +192,7 @@ export function TeamLineup({
     }
     if (selected === null) return setSelected(id);
     if (selected === id) return setSelected(null);
-    const change = swapPlayers(lineup, selected, id, positionOf);
+    const change = swapPlayers(lineup, selected, id, { positionOf, isLocked });
     const first = selected;
     setSelected(null);
     if (!change.ok) {
@@ -257,7 +257,7 @@ export function TeamLineup({
 
   function makeCaptain() {
     if (selected === null) return;
-    const change = setCaptain(lineup, selected);
+    const change = setCaptain(lineup, selected, { isLocked });
     const name = byId.get(selected)?.shortName;
     setSelected(null);
     if (!change.ok) return void toast.error(change.message);
@@ -269,7 +269,7 @@ export function TeamLineup({
   const partners =
     selected === null
       ? new Set<number>()
-      : swapPartners(lineup, selected, positionOf, isLocked);
+      : swapPartners(lineup, selected, { positionOf, isLocked });
   let order = 0;
   const animFor = (id: number): TokenAnim | null => {
     const i = order++;
@@ -333,11 +333,11 @@ export function TeamLineup({
 
   const sel = selected === null ? undefined : byId.get(selected);
   const cap = byId.get(lineup.captain);
+  // Dieselbe Regel wie beim Setzen (core/setCaptain, inkl. Sperren 2.5).
   const canCap =
     sel !== undefined &&
-    lineup.starters.includes(sel.id) &&
     lineup.captain !== sel.id &&
-    !isLocked(lineup.captain);
+    setCaptain(lineup, sel.id, { isLocked }).ok;
 
   return (
     <div className={sel ? "pb-44 lg:pb-0" : undefined}>

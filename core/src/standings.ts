@@ -1,7 +1,7 @@
 // Wertung der Runde (KONZEPT 2.8, 8.4): Spieltagspunkte je Manager, Tabelle, Spieltagssieger.
 import type { Position } from "./config/rules";
 import { participation } from "./participation";
-import { scoreManager, type ManagerScore } from "./points";
+import { scoreManager, type ManagerScore, type SlotScore } from "./points";
 import type { MatchdayPoints } from "./schemas/data";
 import type { Lineup, ManagerDoc } from "./schemas/manager";
 
@@ -26,6 +26,63 @@ export function lineupForMatchday(
   return manager.lineup;
 }
 
+export interface RoundScore {
+  /** Gewertet oder Schattenbetrieb (Spieltag vor dem ersten gewerteten, 2.7). */
+  kind: "scored" | "shadow";
+  lineup: Lineup;
+  score: ManagerScore;
+}
+
+/**
+ * Wertung eines Managers an einem Spieltag: ob er teilnimmt, mit welcher Aufstellung
+ * und mit wie vielen Punkten. null ohne Teilnahme oder ohne Aufstellung.
+ */
+export function roundScore(
+  manager: ScoringManager,
+  md: MatchdayPoints,
+  positions: ReadonlyMap<number, Position>,
+  firstScoredMatchday: number,
+): RoundScore | null {
+  const kind = participation(manager, md.matchday, firstScoredMatchday);
+  if (kind === null) return null;
+  const lineup = lineupForMatchday(manager, md.matchday, md.status);
+  if (!lineup) return null;
+  return {
+    kind,
+    lineup,
+    score: scoreManager(
+      md.matchday,
+      lineup,
+      md.players,
+      manager.transfers,
+      positions,
+    ),
+  };
+}
+
+/**
+ * Was ein Betrachter von einer Wertung sehen darf (2.8): die eigene ganz, nach der
+ * Finalisierung alle; fremde Starter erst ab ihrer Sperre, den Kapitänsbonus erst
+ * ab der Sperre des Kapitäns.
+ */
+export function visibleScore(
+  round: RoundScore,
+  view: {
+    own: boolean;
+    status: MatchdayPoints["status"];
+    locked: ReadonlySet<number>;
+  },
+): { slots: SlotScore[]; captainBonus: number; hidden: number } {
+  const visible = (id: number) =>
+    view.own || view.status === "final" || view.locked.has(id);
+  const slots = round.score.slots.filter((s) => visible(s.starterId));
+  return {
+    slots,
+    captainBonus: visible(round.lineup.captain) ? round.score.captainBonus : 0,
+    hidden: round.score.slots.length - slots.length,
+  };
+}
+
 /** Punkte je Manager und Spieltag; nur gewertete Spieltage (`participation`). */
 export function scoreLeague(
   managers: readonly ScoringManager[],
@@ -37,14 +94,8 @@ export function scoreLeague(
   for (const m of managers) {
     const byMatchday = new Map<number, ManagerScore>();
     for (const md of points) {
-      if (participation(m, md.matchday, firstScoredMatchday) !== "scored")
-        continue;
-      const lineup = lineupForMatchday(m, md.matchday, md.status);
-      if (!lineup) continue;
-      byMatchday.set(
-        md.matchday,
-        scoreManager(md.matchday, lineup, md.players, m.transfers, positions),
-      );
+      const round = roundScore(m, md, positions, firstScoredMatchday);
+      if (round?.kind === "scored") byMatchday.set(md.matchday, round.score);
     }
     out.set(m.userId, byMatchday);
   }
@@ -66,11 +117,17 @@ export interface StandingRow {
  * Gesamttabelle nach Punktesumme. Tie-Break: mehr Spieltagssiege → höchster
  * Einzelspieltag → gleichauf (gleicher Rang). Spieltagssieger ist die höchste
  * Punktzahl eines finalen Spieltags; bei Gleichstand gewinnen alle (2.8).
+ * Mit `until` nur die Spieltage bis einschließlich `until` (Tabelle von damals).
  */
 export function standings(
-  scores: ReadonlyMap<string, ReadonlyMap<number, ManagerScore>>,
-  statusOf: ReadonlyMap<number, MatchdayPoints["status"]>,
+  allScores: ReadonlyMap<string, ReadonlyMap<number, ManagerScore>>,
+  allStatus: ReadonlyMap<number, MatchdayPoints["status"]>,
+  until: number = Infinity,
 ): { rows: StandingRow[]; winners: Record<number, string[]> } {
+  const upTo = <V>(m: ReadonlyMap<number, V>) =>
+    new Map([...m].filter(([md]) => md <= until));
+  const scores = new Map([...allScores].map(([id, byMd]) => [id, upTo(byMd)]));
+  const statusOf = upTo(allStatus);
   const winners: Record<number, string[]> = {};
   for (const [matchday, status] of statusOf) {
     if (status !== "final") continue;
@@ -104,4 +161,17 @@ export function standings(
     rank: rows.findIndex((other) => compare(other, row) === 0) + 1,
   }));
   return { rows: ranked, winners };
+}
+
+/** Rang je Manager an einem Spieltag nach Punkten; Gleichstand teilt sich den Rang (1, 1, 3 …). */
+export function matchdayRanks(
+  managers: readonly { userId: string; total: number }[],
+): Map<string, number> {
+  const totals = managers.map((m) => m.total);
+  return new Map(
+    managers.map((m) => [
+      m.userId,
+      totals.filter((t) => t > m.total).length + 1,
+    ]),
+  );
 }

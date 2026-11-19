@@ -1,13 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
-  lineupForMatchday,
+  matchdayRanks,
+  roundScore,
   scoreLeague,
   standings,
+  visibleScore,
   type Lineup,
-  type ManagerScore,
   type MatchdayPoints,
-  type ScoringManager,
 } from "../src";
+import { type ManagerScore } from "../src/points";
+import { lineupForMatchday, type ScoringManager } from "../src/standings";
 import { lineup442, positions } from "./helpers";
 
 /** Spielerpunkte: [Basispunkte, Minuten, reale Startelf] */
@@ -274,5 +276,89 @@ describe("lineupForMatchday (KONZEPT 8.4)", () => {
   it("wertet Manager ohne Aufstellung nicht", () => {
     const empty: ScoringManager = { ...C, lineup: null };
     expect(scoreLeague([empty], [MD9], positions, 8).get("C")!.size).toBe(0);
+  });
+});
+
+describe("roundScore: wer an einem Spieltag mit welcher Aufstellung wie viele Punkte hat", () => {
+  it("gewertet ab dem ersten Spieltag, mit der eingefrorenen Aufstellung", () => {
+    const r = roundScore(A, MD8, positions, 8);
+    expect(r?.kind).toBe("scored");
+    expect(r?.lineup.captain).toBe(13);
+    expect(r?.score.total).toBe(76);
+  });
+
+  it("Schattenbetrieb am Spieltag vor dem ersten gewerteten, Nachzügler nicht", () => {
+    expect(roundScore(A, MD8, positions, 9)?.kind).toBe("shadow");
+    expect(roundScore(C, MD8, positions, 8)).toBeNull();
+    expect(
+      roundScore({ ...A, lineup: null, lineupHistory: {} }, MD8, positions, 8),
+    ).toBeNull();
+  });
+});
+
+describe("visibleScore: fremde Aufstellungen erst ab der Sperre (KONZEPT 2.8)", () => {
+  const running = { ...MD8, status: "running" as const };
+  const round = roundScore(A, running, positions, 8)!;
+
+  it("fremd und laufend: nur gesperrte Starter, Kapitänsbonus erst mit gesperrtem Kapitän", () => {
+    const v = visibleScore(round, {
+      own: false,
+      status: "running",
+      locked: new Set([1, 3]),
+    });
+    expect(v.slots.map((s) => s.starterId)).toEqual([1, 3]);
+    expect(v.hidden).toBe(9);
+    expect(v.captainBonus).toBe(0);
+    const withCaptain = visibleScore(round, {
+      own: false,
+      status: "running",
+      locked: new Set([1, 3, 14]),
+    });
+    expect(withCaptain.captainBonus).toBe(round.score.captainBonus);
+  });
+
+  it("eigene Aufstellung und finale Spieltage: alles sichtbar", () => {
+    for (const v of [
+      visibleScore(round, { own: true, status: "running", locked: new Set() }),
+      visibleScore(round, { own: false, status: "final", locked: new Set() }),
+    ]) {
+      expect(v.slots).toHaveLength(11);
+      expect(v.hidden).toBe(0);
+    }
+  });
+});
+
+describe("standings bis zu einem Spieltag", () => {
+  it("lässt spätere Spieltage weg (Bewegung ▲/▼, Endergebnis-Push)", () => {
+    const scores = scoreLeague([A, B, C], [MD8, MD9], positions, 8);
+    const statusOf = new Map([
+      [8, "final" as const],
+      [9, "final" as const],
+    ]);
+    const upTo8 = standings(scores, statusOf, 8);
+    expect(Object.keys(upTo8.winners)).toEqual(["8"]);
+    expect(
+      upTo8.rows.every((r) =>
+        Object.keys(r.byMatchday).every((md) => md === "8"),
+      ),
+    ).toBe(true);
+    expect(standings(scores, statusOf, 9)).toEqual(standings(scores, statusOf));
+  });
+});
+
+describe("matchdayRanks", () => {
+  it("Rang nach Punkten, Gleichstand teilt sich den Platz", () => {
+    const ranks = matchdayRanks([
+      { userId: "a", total: 40 },
+      { userId: "b", total: 55 },
+      { userId: "c", total: 40 },
+      { userId: "d", total: 12 },
+    ]);
+    expect([...ranks]).toEqual([
+      ["a", 2],
+      ["b", 1],
+      ["c", 2],
+      ["d", 4],
+    ]);
   });
 });

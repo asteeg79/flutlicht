@@ -1,11 +1,5 @@
 import { describe, expect, it } from "vitest";
-import {
-  findInvite,
-  findReset,
-  firstMatchdayFor,
-  League,
-  normalizeCode,
-} from "../src";
+import { findInvite, findReset, League, normalizeCode } from "../src";
 
 const U1 = "11111111-1111-4111-8111-111111111111";
 const U2 = "22222222-2222-4222-8222-222222222222";
@@ -63,33 +57,5 @@ describe("Codes (KONZEPT 8.3)", () => {
       findReset(league, "RSET2345", U1, new Date("2026-09-26T10:00:00Z")),
     ).toBeUndefined();
     expect(findReset(league, "DONE2345", U1, within)).toBeUndefined();
-  });
-});
-
-describe("firstMatchdayFor", () => {
-  const fixtures = [
-    { matchday: 5, kickoffUtc: "2026-10-09T18:30:00Z" },
-    { matchday: 6, kickoffUtc: "2026-10-16T18:30:00Z" },
-  ];
-  const finals = new Map(
-    [1, 2, 3, 4].map((md) => [md, new Date("2026-09-22T07:00:00Z")]),
-  );
-
-  it("nimmt den aktuellen Spieltag vor seiner ersten Sperre, danach den nächsten", () => {
-    expect(
-      firstMatchdayFor(fixtures, finals, new Date("2026-10-09T16:59:00Z"), 1),
-    ).toBe(5);
-    expect(
-      firstMatchdayFor(fixtures, finals, new Date("2026-10-09T17:00:00Z"), 1),
-    ).toBe(6);
-  });
-  it("startet nie vor dem ersten gewerteten Spieltag und nie nach dem 34.", () => {
-    expect(
-      firstMatchdayFor(fixtures, finals, new Date("2026-09-25T10:00:00Z"), 8),
-    ).toBe(8);
-    const allFinal = new Map(
-      Array.from({ length: 34 }, (_, i) => [i + 1, new Date()]),
-    );
-    expect(firstMatchdayFor(fixtures, allFinal, new Date(), 1)).toBe(34);
   });
 });

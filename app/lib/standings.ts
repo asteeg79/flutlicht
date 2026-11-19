@@ -1,16 +1,16 @@
 // Wertung zur Laufzeit (KONZEPT 8.4): data/points + alle Manager-Dokumente → Tabelle
-// und Spieltagsansicht. Rechnen tut ausschließlich core; hier wird nur zusammengestellt
-// und gefiltert, was andere Manager sehen dürfen (2.8).
+// und Spieltagsansicht. Rechnen und die Sichtbarkeit fremder Aufstellungen (2.8)
+// entscheidet core; hier wird nur für die Anzeige zusammengestellt.
 import {
-  isLocked,
+  finalizedAt,
+  matchdayCalendar,
   isScoredMatchday,
   isShadowMatchday,
-  lineupForMatchday,
   matchdayBonuses,
-  participation,
+  roundScore,
   scoreLeague,
-  scoreManager,
   standings,
+  visibleScore,
   type Fixture,
   type ManagerDoc,
   type MatchdayPoints,
@@ -112,21 +112,16 @@ export function leagueTable(
   const scored = game.points
     .filter((p) => isScoredMatchday(p.matchday, first))
     .map((p) => p.matchday);
-  const last = scored.at(-1);
+  const previous = scored.at(-2);
   const before =
-    scored.length >= 2
-      ? new Map(
-          standings(
-            new Map(
-              [...scores].map(([id, byMd]) => [
-                id,
-                new Map([...byMd].filter(([md]) => md !== last)),
-              ]),
-            ),
-            new Map([...statusOf].filter(([md]) => md !== last)),
-          ).rows.map((r) => [r.userId, r.rank]),
-        )
-      : null;
+    previous === undefined
+      ? null
+      : new Map(
+          standings(scores, statusOf, previous).rows.map((r) => [
+            r.userId,
+            r.rank,
+          ]),
+        );
   return {
     rows: rows.map((r) => ({
       ...r,
@@ -205,38 +200,33 @@ export function matchdayView(
   const shadow = isShadowMatchday(n, first);
   const md = game.points.find((p) => p.matchday === n);
   if (!md) return { matchday: n, status: "upcoming", shadow, managers: [] };
-  const { byId, positions, ref } = refs(game);
-  const fixtures = game.fixtures.filter((f) => f.matchday === n);
+  const { positions, ref } = refs(game);
+  const locked = matchdayCalendar(
+    game.fixtures,
+    finalizedAt(game.points),
+  ).lockedPlayers(game.players, now, n);
   const bonuses = matchdayBonuses(managers, md, positions, first);
 
   const views = managers.flatMap((m): ManagerMatchdayView[] => {
-    if (participation(m, n, first) === null) return [];
-    const lineup = lineupForMatchday(m, n, md.status);
-    if (!lineup) return [];
-    const score = scoreManager(n, lineup, md.players, m.transfers, positions);
+    const round = roundScore(m, md, positions, first);
+    if (!round) return [];
+    const { lineup, score } = round;
     const own = m.userId === viewerId;
-    const visible = (id: number) => {
-      if (own || md.status === "final") return true;
-      const p = byId.get(id);
-      return p !== undefined && isLocked(p, now, fixtures);
-    };
-    const slots = score.slots
-      .filter((s) => visible(s.starterId))
-      .map((s): SlotView => ({
-        starter: ref(s.starterId),
-        player: s.playerId === null ? null : ref(s.playerId),
-        subbedIn: s.subbedIn,
-        minutes:
-          s.playerId === null ? 0 : (md.players[s.playerId]?.minutes ?? 0),
-        base: s.base,
-        startBonus: s.startBonus,
-        points: s.points,
-        captain: s.starterId === lineup.captain,
-        parts:
-          s.playerId === null ? null : (md.players[s.playerId]?.parts ?? null),
-        rating:
-          s.playerId === null ? null : (md.players[s.playerId]?.rating ?? null),
-      }));
+    const shown = visibleScore(round, { own, status: md.status, locked });
+    const slots = shown.slots.map((s): SlotView => ({
+      starter: ref(s.starterId),
+      player: s.playerId === null ? null : ref(s.playerId),
+      subbedIn: s.subbedIn,
+      minutes: s.playerId === null ? 0 : (md.players[s.playerId]?.minutes ?? 0),
+      base: s.base,
+      startBonus: s.startBonus,
+      points: s.points,
+      captain: s.starterId === lineup.captain,
+      parts:
+        s.playerId === null ? null : (md.players[s.playerId]?.parts ?? null),
+      rating:
+        s.playerId === null ? null : (md.players[s.playerId]?.rating ?? null),
+    }));
     return [
       {
         userId: m.userId,
@@ -244,30 +234,14 @@ export function matchdayView(
         teamName: m.teamName,
         own,
         total: score.total,
-        captainBonus: visible(lineup.captain) ? score.captainBonus : 0,
+        captainBonus: shown.captainBonus,
         transferPenalty: score.transferPenalty,
         slots,
-        hidden: score.slots.length - slots.length,
+        hidden: shown.hidden,
         bonus: bonuses.get(m.userId) ?? null,
       },
     ];
   });
   views.sort((a, b) => Number(b.own) - Number(a.own) || b.total - a.total);
   return { matchday: n, status: md.status, shadow, managers: views };
-}
-
-/**
- * Rang je Manager an einem Spieltag nach Punkten (Arena „Im Spieltag Platz 2 von 8“);
- * Gleichstand teilt sich den Rang (1, 1, 3 …), wie in der Tabelle.
- */
-export function matchdayRanks(
-  managers: readonly Pick<ManagerMatchdayView, "userId" | "total">[],
-): Map<string, number> {
-  const totals = managers.map((m) => m.total);
-  return new Map(
-    managers.map((m) => [
-      m.userId,
-      totals.filter((t) => t > m.total).length + 1,
-    ]),
-  );
 }

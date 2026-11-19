@@ -7,6 +7,16 @@ import type { ScraperHeartbeat } from "./schemas/scraper";
 /** Angenommene Spieldauer ab Anpfiff inklusive Pause und Nachspielzeit. */
 export const MATCH_DURATION_MS = 2 * 60 * 60 * 1000;
 
+// Gestaffelt (Entscheidung 19.11.): erst ein Hinweis für alle, dann ein Alarm für die
+// Admins. Der Scraper holt vorläufige Daten 135–155 Min. nach Anpfiff, höchstens drei
+// Versuche im Abstand von 15 Min.; der Hinweis kommt nach dem letzten Versuch.
+/** Frische-Banner der App: so lange nach Spielende ohne Daten. */
+export const DATA_HINT_AFTER_MS = 90 * 60 * 1000;
+/** Alarm „Scraper überfällig“ der Pipeline: so lange nach Spielende ohne Daten. */
+export const DATA_ALARM_AFTER_MS = 3 * 60 * 60 * 1000;
+/** Ältere Lücken (nach Anpfiff) stehen in review/manual-needed.json, ohne Banner und Alarm. */
+export const DATA_WINDOW_MS = 72 * 60 * 60 * 1000;
+
 /**
  * Spiele ohne Daten (`pending`), die seit mehr als `graceMs` beendet sind; ältere als
  * `windowMs` nach Anpfiff zählen nicht mehr (die stehen in review/manual-needed.json).

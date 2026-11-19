@@ -1,12 +1,10 @@
 // Spieltagsprämie (KONZEPT 2.7): Geld für Spieltagspunkte über dem Median der Liga.
 // Der Spieltag vor dem ersten gewerteten läuft im Schattenbetrieb: berechnet, nicht gutgeschrieben.
 import { MARKET } from "./config/market";
-import { participation } from "./participation";
 import type { Position } from "./config/rules";
-import { scoreManager } from "./points";
 import { clamp, median, round1 } from "./rounding";
 import type { MatchdayPoints } from "./schemas/data";
-import { lineupForMatchday, type ScoringManager } from "./standings";
+import { roundScore, type ScoringManager } from "./standings";
 
 /** Prämie in Mio.: 0,03 je Punkt über dem Median aller Teilnehmer, 0 bis 2 Mio. */
 export function matchdayBonus(
@@ -37,17 +35,12 @@ export function matchdayBonuses(
 ): Map<string, MatchdayBonus> {
   const totals = new Map<string, { total: number; shadow: boolean }>();
   for (const m of managers) {
-    const kind = participation(m, md.matchday, firstScoredMatchday);
-    const lineup = kind && lineupForMatchday(m, md.matchday, md.status);
-    if (!lineup) continue;
-    const { total } = scoreManager(
-      md.matchday,
-      lineup,
-      md.players,
-      m.transfers,
-      positions,
-    );
-    totals.set(m.userId, { total, shadow: kind === "shadow" });
+    const round = roundScore(m, md, positions, firstScoredMatchday);
+    if (!round) continue;
+    totals.set(m.userId, {
+      total: round.score.total,
+      shadow: round.kind === "shadow",
+    });
   }
   const all = [...totals.values()].map((t) => t.total);
   const mid = median(all);

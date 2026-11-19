@@ -4,7 +4,15 @@ from datetime import datetime, timezone
 
 import pytest
 
-from fm_scraper.client import Client, FetchError, PauseRequired, RawResponse, _fetched_response, _page_response
+from fm_scraper.client import (
+    Client,
+    FetchError,
+    PauseRequired,
+    RawResponse,
+    _fetched_response,
+    _page_response,
+    classify,
+)
 from tests.conftest import FakeTransport, ok
 
 
@@ -188,7 +196,8 @@ def test_chromium_fehlerseite_ist_keine_sperre(make_client, tmp_path):
     client, _ = make_client(FakeTransport(page), fallback)
     with pytest.raises(FetchError) as e:
         client.get_json("u1")
-    assert e.value.status == 0
+    assert e.value.status is None
+    assert str(e.value) == "u1 nicht erreichbar"
     assert fallback.urls == []
     assert not (tmp_path / "state.json").exists()
 
@@ -197,10 +206,26 @@ def test_browser_seite_wird_zu_status_und_inhalt():
     png = base64.b64encode(b"\x89PNG").decode()
     assert _page_response({"status": 200, "png": png}) == RawResponse(200, b"\x89PNG")
     assert _page_response({"status": 200, "text": "{}"}) == RawResponse(200, b"{}")
-    # Ohne responseStatus (älteres Chromium): nur gültiger Inhalt zählt als 200.
-    assert _page_response({"status": 0, "text": "{}"}).status == 200
-    assert _page_response({"status": 0, "text": "<html>"}).status == 403
-    assert _page_response({"status": 0, "png": png}).status == 200
+    # Ohne responseStatus (älteres Chromium) meldet der Browser keinen Status, classify entscheidet.
+    assert _page_response({"status": 0, "text": "{}"}) == RawResponse(None, b"{}")
+    assert _page_response({"status": 0, "error": True, "text": "x"}).reached is False
+
+
+def test_classify_ist_die_eine_entscheidung_ueber_eine_antwort():
+    png = b"\x89PNG...."
+    assert classify(RawResponse(200, b"{}"), expect_json=True) == "ok"
+    assert classify(RawResponse(200, b"<html>"), expect_json=True) == "blocked"
+    assert classify(RawResponse(200, png), expect_json=False) == "ok"
+    assert classify(RawResponse(403, b"{}"), expect_json=True) == "blocked"
+    assert classify(RawResponse(429, b""), expect_json=True) == "rate-limited"
+    assert classify(RawResponse(404, b"{}"), expect_json=False) == "error"
+    assert classify(RawResponse(None, b"x", reached=False), expect_json=True) == "unreachable"
+    # Ohne Status: gültiges JSON oder PNG, sonst Sperre (wie bisher die 403 des Browsers).
+    assert classify(RawResponse(None, b"{}"), expect_json=True) == "ok"
+    assert classify(RawResponse(None, b"<html>"), expect_json=True) == "blocked"
+    assert classify(RawResponse(None, png), expect_json=False) == "ok"
+    assert classify(RawResponse(None, png), expect_json=True) == "blocked"
+    assert classify(RawResponse(None, b""), expect_json=False) == "blocked"
 
 
 def test_fetch_aus_der_seite_wird_zu_status_und_inhalt():
@@ -208,3 +233,11 @@ def test_fetch_aus_der_seite_wird_zu_status_und_inhalt():
     assert _fetched_response({"status": 200, "text": "{}"}) == RawResponse(200, b"{}")
     assert _fetched_response({"status": 200, "b64": webp}) == RawResponse(200, b"RIFF....WEBP")
     assert _fetched_response({"status": 403, "text": '{"error": {"code": 403}}'}).status == 403
+
+
+def test_log_maskiert_zeilenumbrueche_aus_daten(make_client, caplog):
+    client, _ = make_client(FakeTransport(ok()))
+    with caplog.at_level("INFO"):
+        client.get_json("u1\nGEFAELSCHT")
+    assert all("\n" not in r.getMessage() for r in caplog.records)
+    assert "u1\\nGEFAELSCHT" in caplog.text

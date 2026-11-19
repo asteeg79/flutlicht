@@ -93,6 +93,7 @@ describe("Schemas (KONZEPT 7)", () => {
         vMaxEur: 140_000_000,
         startBudget: 65,
         matchdays: 34,
+        postponedGraceDays: 3,
       }).success,
     ).toBe(true);
     expect(
