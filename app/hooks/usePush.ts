@@ -45,6 +45,14 @@ export function usePush() {
         supported ? (Notification.permission as PushState) : "unsupported",
       );
       setSubscribed(!!sub);
+      // Dieses Gerät beim Server (neu) anmelden: Es kann fehlen, etwa weil es vor der
+      // Umstellung auf mehrere Geräte von einem anderen verdrängt wurde. Doppelt geht nicht.
+      if (sub && Notification.permission === "granted")
+        fetch("/api/push/subscribe", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(sub),
+        }).catch(() => undefined);
     })();
     return () => {
       active = false;
@@ -95,7 +103,12 @@ export function usePush() {
       const reg = await navigator.serviceWorker.ready;
       const sub = await reg.pushManager.getSubscription();
       if (sub) await sub.unsubscribe();
-      await fetch("/api/push/subscribe", { method: "DELETE" });
+      // Nur dieses Gerät abmelden, die anderen bekommen weiter Benachrichtigungen.
+      await fetch("/api/push/subscribe", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ endpoint: sub?.endpoint }),
+      });
       setSubscribed(false);
       toast.success("Push-Benachrichtigungen sind aus.");
     } catch (err) {

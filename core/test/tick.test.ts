@@ -36,7 +36,7 @@ const manager = (
   lineupHistory: {},
   transfers: [],
   transferBank: { matchday: 9, available: 2 },
-  push: { subscription, prefs },
+  push: { subscriptions: [subscription], prefs },
   ...over,
 });
 const anna = manager("a", "Anna");
@@ -167,7 +167,10 @@ describe("Erinnerungen (KONZEPT 9)", () => {
 
   it("respektiert die Push-Einstellung", () => {
     const off = manager("a", "Anna", {
-      push: { subscription, prefs: { ...prefs, reminder: false } },
+      push: {
+        subscriptions: [subscription],
+        prefs: { ...prefs, reminder: false },
+      },
     });
     expect(keys(input({ managers: [off] }))).toEqual([]);
   });
@@ -294,7 +297,7 @@ describe("Scraper-Alarm", () => {
     const off = manager("b", "Ben", {
       role: "admin",
       push: {
-        subscription,
+        subscriptions: [subscription],
         prefs: { reminder: false, daily: false, final: false },
       },
     });

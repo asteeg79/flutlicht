@@ -58,6 +58,31 @@ export const PushSubscriptionJson = z.object({
   keys: z.object({ p256dh: z.string(), auth: z.string() }),
 });
 
+/** Höchstens so viele Geräte je Manager; ein neues verdrängt das älteste. */
+export const MAX_PUSH_DEVICES = 10;
+
+/**
+ * Push je Manager: eine Anmeldung je Gerät, gemeinsame Einstellungen. Dokumente bis
+ * 19.11.2026 hatten genau eine (`subscription`); sie wird beim Lesen zum ersten Gerät.
+ */
+export const PushSettings = z.preprocess(
+  (v) =>
+    v !== null &&
+    typeof v === "object" &&
+    "subscription" in v &&
+    !("subscriptions" in v)
+      ? {
+          subscriptions: [v.subscription],
+          prefs: (v as { prefs?: unknown }).prefs,
+        }
+      : v,
+  z.object({
+    subscriptions: z.array(PushSubscriptionJson).min(1).max(MAX_PUSH_DEVICES),
+    prefs: PushPrefs,
+  }),
+);
+export type PushSettings = z.infer<typeof PushSettings>;
+
 export const ManagerDoc = z.object({
   userId: z.uuid(),
   email: z.email(),
@@ -86,9 +111,7 @@ export const ManagerDoc = z.object({
   initialPrices: z.record(NumericKey, z.number()).optional(),
   /** Gutgeschriebene Spieltagsprämien in Mio. je Spieltag (2.7); fehlt bei alten Dokumenten. */
   matchdayBonuses: z.record(NumericKey, z.number()).optional(),
-  push: z
-    .object({ subscription: PushSubscriptionJson, prefs: PushPrefs })
-    .optional(),
+  push: PushSettings.optional(),
 });
 export type ManagerDoc = z.infer<typeof ManagerDoc>;
 

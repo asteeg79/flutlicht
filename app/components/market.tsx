@@ -559,7 +559,7 @@ export function Market({
         label="Guthaben"
         value={<CountUp value={cash} decimals={1} flash />}
         unit=" MIO"
-        className="lg:min-w-[150px]"
+        className="lg:min-w-37.5"
       />
       <BoardTile
         label={
@@ -569,7 +569,7 @@ export function Market({
           </>
         }
         value={null}
-        className="lg:min-w-[230px]"
+        className="lg:min-w-57.5"
       >
         <div className="mt-0.5 flex items-center gap-2 lg:gap-2.5">
           <p
@@ -600,10 +600,10 @@ export function Market({
   const filters = (
     <div className="mb-1">
       <div className="grid grid-cols-[minmax(0,1fr)_128px] gap-2 max-[359px]:grid-cols-[minmax(0,1fr)_108px] lg:grid-cols-[minmax(0,1fr)_180px]">
-        <label className="flex h-[46px] items-center gap-2 border-2 border-line bg-surface px-3 lg:h-11">
+        <label className="flex h-11.5 items-center gap-2 border-2 border-line bg-surface px-3 lg:h-11">
           <Search
             aria-hidden
-            className="h-[18px] w-[18px] shrink-0 text-muted"
+            className="h-4.5 w-4.5 shrink-0 text-muted"
             strokeWidth={2.4}
           />
           <input
@@ -621,7 +621,7 @@ export function Market({
           onChange={(e) =>
             setTeam(e.target.value === "ALL" ? "ALL" : Number(e.target.value))
           }
-          className={`h-[46px] min-w-0 border-2 bg-surface px-2 text-[13px] font-bold text-text lg:h-11 ${team === "ALL" ? "border-line" : "border-lampe"}`}
+          className={`h-11.5 min-w-0 border-2 bg-surface px-2 text-[13px] font-bold text-text lg:h-11 ${team === "ALL" ? "border-line" : "border-lampe"}`}
         >
           <option value="ALL">Alle Vereine</option>
           {[...teams]
@@ -646,7 +646,7 @@ export function Market({
                 type="button"
                 aria-pressed={pos === p}
                 onClick={() => setPos(p)}
-                className={`h-11 flex-1 border-2 font-display text-[17px] font-black tracking-[0.04em] lg:min-w-[52px] lg:flex-none lg:px-2 lg:text-base ${
+                className={`h-11 flex-1 border-2 font-display text-[17px] font-black tracking-[0.04em] lg:min-w-13 lg:flex-none lg:px-2 lg:text-base ${
                   pos === p
                     ? "border-chip-on-bg bg-chip-on-bg text-chip-on-text"
                     : "border-line text-text"
@@ -733,7 +733,7 @@ export function Market({
     <div className="arena-anim mb-3 flex animate-[arena-rise_.3s_ease-out_both] items-center gap-3 bg-karte-tief px-3 py-2.5 text-white lg:px-3.5">
       <PlayerPhoto
         src={selling.image}
-        className="h-[42px] w-[42px] border-2 border-white lg:h-10 lg:w-10"
+        className="h-10.5 w-10.5 border-2 border-white lg:h-10 lg:w-10"
       />
       <div className="min-w-0 flex-1">
         <p className="text-[11px] font-bold tracking-[0.12em] uppercase">
@@ -767,7 +767,7 @@ export function Market({
           <h3
             className={
               compact
-                ? "mt-3 mb-0.5 font-display text-[13px] font-extrabold tracking-[0.1em] text-muted uppercase"
+                ? "mt-3 mb-0.5 font-display text-[13px] font-extrabold tracking-widest text-muted uppercase"
                 : "mb-1 font-display text-2xl font-black uppercase"
             }
           >
@@ -780,13 +780,11 @@ export function Market({
             {members.map((s) => (
               <li
                 key={s.id}
-                className={`grid items-center border-b border-line ${compact ? "grid-cols-[30px_minmax(0,1fr)_auto_auto] gap-2 py-[5px]" : "grid-cols-[42px_minmax(0,1fr)_auto_auto] gap-2.5 py-[9px]"}`}
+                className={`grid items-center border-b border-line ${compact ? "grid-cols-[30px_minmax(0,1fr)_auto_auto] gap-2 py-1.25" : "grid-cols-[42px_minmax(0,1fr)_auto_auto] gap-2.5 py-2.25"}`}
               >
                 <PlayerPhoto
                   src={s.image}
-                  className={
-                    compact ? "h-[30px] w-[30px]" : "h-[42px] w-[42px]"
-                  }
+                  className={compact ? "h-7.5 w-7.5" : "h-10.5 w-10.5"}
                 />
                 <span className="min-w-0">
                   <span
@@ -852,7 +850,7 @@ export function Market({
         getauscht wird {POS_LABEL[pick.position]} gegen{" "}
         {POS_LABEL[pick.position]}.
       </p>
-      <ul className="max-h-[236px] overflow-y-auto lg:max-h-none">
+      <ul className="max-h-59 overflow-y-auto lg:max-h-none">
         {squad
           .filter((q) => q.position === pick.position)
           .sort((a, b) => a.price - b.price)
@@ -861,7 +859,7 @@ export function Market({
             return (
               <li
                 key={q.id}
-                className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-2.5 border-b border-white/10 py-2 lg:grid-cols-[36px_minmax(0,1fr)_auto] lg:py-[7px]"
+                className="grid grid-cols-[40px_minmax(0,1fr)_auto] items-center gap-2.5 border-b border-white/10 py-2 lg:grid-cols-[36px_minmax(0,1fr)_auto] lg:py-1.75"
               >
                 <PlayerPhoto
                   src={q.image}
@@ -877,7 +875,7 @@ export function Market({
                   </span>
                 </span>
                 {v ? (
-                  <span className="w-[96px] text-right text-[11px] leading-tight font-semibold text-karte-hell">
+                  <span className="w-24 text-right text-[11px] leading-tight font-semibold text-karte-hell">
                     {shortReason(v, {
                       club: clubName(pick),
                       missing: missingCash(manager.cash, q.price, pick.price),
@@ -885,7 +883,7 @@ export function Market({
                   </span>
                 ) : (
                   <PrimaryAction
-                    className="lg:h-[34px]"
+                    className="lg:h-8.5"
                     onClick={() => {
                       setSellId(q.id);
                       setBuyId(pick.id);
@@ -903,7 +901,7 @@ export function Market({
       <button
         type="button"
         onClick={cancelDeal}
-        className="mt-3 h-11 w-full border-2 border-white/40 font-display text-[19px] font-black uppercase lg:h-[42px] lg:text-lg"
+        className="mt-3 h-11 w-full border-2 border-white/40 font-display text-[19px] font-black uppercase lg:h-10.5 lg:text-lg"
       >
         Abbrechen
       </button>
@@ -965,7 +963,7 @@ export function Market({
           <button
             type="button"
             onClick={backFromConfirm}
-            className="h-[50px] border-2 border-white/40 font-display text-xl font-black uppercase"
+            className="h-12.5 border-2 border-white/40 font-display text-xl font-black uppercase"
           >
             Zurück
           </button>
@@ -973,7 +971,7 @@ export function Market({
             type="button"
             disabled={busy}
             onClick={confirmTransfer}
-            className="slant h-[50px] bg-lampe font-display text-2xl font-black text-nacht uppercase shadow-[0_0_30px_rgb(255_213_74/0.4)] disabled:opacity-60"
+            className="slant h-12.5 bg-lampe font-display text-2xl font-black text-nacht uppercase shadow-[0_0_30px_rgb(255_213_74/0.4)] disabled:opacity-60"
           >
             Deal!
           </button>
@@ -983,10 +981,10 @@ export function Market({
 
   const closedNote =
     !draftMode && !canTrade ? (
-      <div className="flex items-center gap-2.5 border-b border-line bg-surface px-[18px] py-2.5 lg:px-9">
+      <div className="flex items-center gap-2.5 border-b border-line bg-surface px-4.5 py-2.5 lg:px-9">
         <Lock
           aria-hidden
-          className="h-[18px] w-[18px] shrink-0 text-muted"
+          className="h-4.5 w-4.5 shrink-0 text-muted"
           strokeWidth={2.4}
         />
         <span className="text-xs leading-snug font-semibold">
@@ -997,7 +995,7 @@ export function Market({
 
   const draftBar = draftMode ? (
     <div className="fixed inset-x-0 bottom-[calc(62px+env(safe-area-inset-bottom))] z-30 border-t-4 border-lampe bg-sheet-bg text-sheet-text shadow-[0_-10px_30px_rgb(0_0_0/0.35)] lg:bottom-0 lg:left-60">
-      <div className="mx-auto flex max-w-[560px] items-center gap-3 px-[18px] py-2.5 lg:max-w-none lg:px-9">
+      <div className="mx-auto flex max-w-140 items-center gap-3 px-4.5 py-2.5 lg:max-w-none lg:px-9">
         <div className="min-w-0 flex-1">
           <p className="font-display text-[22px] leading-none font-black uppercase">
             {draft.length < RULES.squadSize
@@ -1075,11 +1073,11 @@ export function Market({
               <>
                 {sellBanner}
                 {!desktop && !selling && hot.length > 0 ? (
-                  <section className="mt-2 mb-4 -mr-[18px]">
+                  <section className="mt-2 mb-4 -mr-4.5">
                     <h2 className="mb-2 font-display text-[26px] font-black uppercase">
                       Heiß gerade
                     </h2>
-                    <div className="flex gap-2.5 overflow-x-auto pr-[18px] pb-1 [scrollbar-width:none]">
+                    <div className="flex gap-2.5 overflow-x-auto pr-4.5 pb-1 scrollbar-none">
                       {hot.map((p) => (
                         <HotCard
                           key={p.id}
@@ -1172,7 +1170,7 @@ function PosTile({
   return (
     <div
       key={denied ? `d${deny.key}` : popped ? `p${pop.key}` : "still"}
-      className={`arena-anim flex items-baseline justify-center gap-[5px] px-1 pt-1.5 pb-[5px] ${
+      className={`arena-anim flex items-baseline justify-center gap-1.25 px-1 pt-1.5 pb-1.25 ${
         count >= max ? "bg-lampe text-nacht" : "bg-pos-open-bg text-board-text"
       } ${denied ? "animate-[arena-deny_.5s_ease-in-out_both]" : popped ? "animate-[arena-pop_.4s_cubic-bezier(.2,1.4,.4,1)_both]" : ""}`}
     >

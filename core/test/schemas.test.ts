@@ -169,3 +169,28 @@ describe("Schemas (KONZEPT 7)", () => {
     ).toBe(false);
   });
 });
+
+describe("Push-Anmeldungen je Gerät", () => {
+  const device = (n: number) => ({
+    endpoint: `https://push.example.org/${n}`,
+    keys: { p256dh: "p", auth: "a" },
+  });
+  const prefs = { reminder: true, daily: false, final: true };
+
+  it("übernimmt die einzelne Anmeldung alter Dokumente als ein Gerät", () => {
+    const old = { ...manager, push: { subscription: device(1), prefs } };
+    expect(ManagerDoc.parse(old).push).toEqual({
+      subscriptions: [device(1)],
+      prefs,
+    });
+  });
+
+  it("hält mehrere Geräte, aber mindestens eines", () => {
+    const two = { subscriptions: [device(1), device(2)], prefs };
+    expect(ManagerDoc.parse({ ...manager, push: two }).push).toEqual(two);
+    expect(
+      ManagerDoc.safeParse({ ...manager, push: { subscriptions: [], prefs } })
+        .success,
+    ).toBe(false);
+  });
+});

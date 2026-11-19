@@ -347,7 +347,7 @@ export function TeamLineup({
             {lockedIds.length > 0 ? (
               <div
                 role="status"
-                className="mb-3.5 flex items-center gap-2.5 border-l-4 border-lampe bg-surface px-3 py-[9px] text-xs leading-snug font-semibold"
+                className="mb-3.5 flex items-center gap-2.5 border-l-4 border-lampe bg-surface px-3 py-2.25 text-xs leading-snug font-semibold"
               >
                 <Lock
                   aria-hidden
@@ -440,7 +440,7 @@ export function TeamLineup({
               <button
                 type="button"
                 onClick={autoPick}
-                className="slant h-[52px] flex-1 bg-lampe font-display text-[22px] font-black tracking-[0.04em] text-nacht uppercase shadow-[0_0_30px_rgb(255_213_74/0.35)] lg:h-[50px] lg:text-[21px]"
+                className="slant h-13 flex-1 bg-lampe font-display text-[22px] font-black tracking-[0.04em] text-nacht uppercase shadow-[0_0_30px_rgb(255_213_74/0.35)] lg:h-12.5 lg:text-[21px]"
               >
                 Auto-Aufstellung
               </button>
@@ -461,7 +461,7 @@ export function TeamLineup({
                     role="radio"
                     aria-checked={autoBy === key}
                     onClick={() => setAutoBy(key)}
-                    className={`h-12 px-3 font-display text-base font-extrabold uppercase lg:h-[46px] ${
+                    className={`h-12 px-3 font-display text-base font-extrabold uppercase lg:h-11.5 ${
                       autoBy === key
                         ? "bg-chip-on-bg text-chip-on-text"
                         : "text-muted"
@@ -523,7 +523,7 @@ function Selection({
           >
             {player.name}
           </p>
-          <p className="mt-1 flex items-center gap-[5px] text-xs font-semibold opacity-85">
+          <p className="mt-1 flex items-center gap-1.25 text-xs font-semibold opacity-85">
             {player.lockAt ? (
               <Lock aria-hidden className="h-3 w-3" strokeWidth={2.6} />
             ) : null}

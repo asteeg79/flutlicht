@@ -2,9 +2,10 @@
 // hier: Finalisierung speichern, Schlüssel merken, Pushes senden.
 import { matchdayCalendar, matchdayFinalizer, planTick } from "@fm/core";
 import { finals, gameData } from "@/lib/game-data";
-import { removePush, updateManagers } from "@/lib/manager-writes";
+import { removePushDevices, updateManagers } from "@/lib/manager-writes";
 import {
   sendPush,
+  sendToAll,
   type PushPayload,
   type PushResult,
   type PushTarget,
@@ -51,25 +52,33 @@ export async function runTick(
   const result: TickResult = { finalized: [], sent: 0, failed: 0, expired: 0 };
   const at = now.toISOString();
 
-  // Finalisierung zuerst; sie ist idempotent, der Schlüssel folgt erst danach.
-  const positions = new Map(game.players.map((p) => [p.id, p.position]));
-  const calendar = matchdayCalendar(game.fixtures, finalsOf());
-  for (const action of actions) {
-    if (action.kind !== "finalize") continue;
-    await updateManagers(
-      managers.map((m) => m.userId),
+  // Finalisierung zuerst; sie ist idempotent, die Schlüssel folgen erst danach. Alle
+  // fälligen Spieltage in ihrer Reihenfolge (planTick sortiert), je Manager ein Schreibvorgang.
+  const finalizations = actions.flatMap((a) =>
+    a.kind === "finalize" ? [a] : [],
+  );
+  if (finalizations.length > 0) {
+    const positions = new Map(game.players.map((p) => [p.id, p.position]));
+    const calendar = matchdayCalendar(game.fixtures, finalsOf());
+    const steps = finalizations.map((a) =>
       matchdayFinalizer(
         managers,
-        action.matchday,
+        a.matchday,
         game.points,
         positions,
         calendar,
         game.season.firstScoredMatchday,
       ),
     );
-    state.done[action.key] = at;
+    await updateManagers(
+      managers.map((m) => m.userId),
+      (doc) => steps.reduce((d, step) => step(d), doc),
+    );
+    for (const a of finalizations) {
+      state.done[a.key] = at;
+      result.finalized.push(a.matchday);
+    }
     await saveSystemState(state);
-    result.finalized.push(action.matchday);
   }
 
   // Pushes höchstens einmal: erst den Schlüssel sichern, dann senden.
@@ -77,22 +86,22 @@ export async function runTick(
   if (pushes.length === 0) return result;
   for (const p of pushes) state.done[p.key] = at;
   await saveSystemState(state);
-  for (const p of pushes) {
-    const doc = await loadManager(p.userId);
-    if (!doc?.push) continue;
-    const outcome = await send(doc.push.subscription, {
-      title: p.title,
-      body: p.body,
-      url: p.url,
-      tag: p.key,
-    });
-    if (outcome === "sent") result.sent++;
-    else if (outcome === "failed") result.failed++;
-    else {
-      // Abgelaufene Subscription entfernen (Workgrid-Muster).
-      result.expired++;
-      await removePush(p.userId);
-    }
-  }
+  await Promise.all(
+    pushes.map(async (p) => {
+      const doc = await loadManager(p.userId);
+      if (!doc?.push) return;
+      const report = await sendToAll(
+        doc.push.subscriptions,
+        { title: p.title, body: p.body, url: p.url, tag: p.key },
+        send,
+      );
+      result.sent += report.sent;
+      result.failed += report.failed;
+      result.expired += report.expired.length;
+      // Abgelaufene Geräte abmelden (Workgrid-Muster), die übrigen bleiben.
+      if (report.expired.length > 0)
+        await removePushDevices(p.userId, report.expired);
+    }),
+  );
   return result;
 }

@@ -90,7 +90,7 @@ describe("runTick (Abnahme M9)", () => {
     const doc = await withSquad(SQUAD, {
       firstMatchday: 7,
       transferBank: { matchday: 8, available: 0 },
-      push: { subscription, prefs },
+      push: { subscriptions: [subscription], prefs },
     });
     const send = vi.fn(
       async (_s: unknown, _p: { tag?: string }) => "sent" as const,
@@ -103,10 +103,12 @@ describe("runTick (Abnahme M9)", () => {
       failed: 0,
       expired: 0,
     });
-    expect(send.mock.calls.map(([, p]) => (p as { tag: string }).tag)).toEqual([
-      `remind24:9:${doc.userId}`,
-      `finalpush:8:${doc.userId}`,
-    ]);
+    // Pushes gehen gleichzeitig raus, die Reihenfolge ist offen.
+    expect(
+      new Set(send.mock.calls.map(([, p]) => (p as { tag: string }).tag)),
+    ).toEqual(
+      new Set([`remind24:9:${doc.userId}`, `finalpush:8:${doc.userId}`]),
+    );
 
     const saved = (await storage.loadManager(doc.userId))!;
     // Eingefroren ab dem ersten Spieltag des Managers (7).
@@ -190,7 +192,7 @@ describe("runTick (Abnahme M9)", () => {
   it("meldet dem Admin einen stillen Scraper genau einmal je Ausfall", async () => {
     const adminDoc = await withSquad(SQUAD, {
       role: "admin",
-      push: { subscription, prefs },
+      push: { subscriptions: [subscription], prefs },
     });
     await storage.saveScraperHeartbeat({
       seenAt: "2026-11-06T07:00:00Z", // 1 h vor NOW
@@ -221,7 +223,9 @@ describe("runTick (Abnahme M9)", () => {
   });
 
   it("entfernt abgelaufene Subscriptions", async () => {
-    const doc = await withSquad(SQUAD, { push: { subscription, prefs } });
+    const doc = await withSquad(SQUAD, {
+      push: { subscriptions: [subscription], prefs },
+    });
     const r = await runTick(
       NOW,
       game,
@@ -230,6 +234,26 @@ describe("runTick (Abnahme M9)", () => {
     );
     expect(r.expired).toBeGreaterThan(0);
     expect((await storage.loadManager(doc.userId))!.push).toBeUndefined();
+  });
+
+  it("sendet an jedes Gerät und meldet nur abgelaufene ab", async () => {
+    const phone = {
+      ...subscription,
+      endpoint: "https://push.example.org/handy",
+    };
+    const doc = await withSquad(SQUAD, {
+      push: { subscriptions: [subscription, phone], prefs },
+    });
+    const send = vi.fn(async (s: { endpoint: string }, _p: { tag?: string }) =>
+      s.endpoint === phone.endpoint ? ("sent" as const) : ("expired" as const),
+    );
+    const r = await runTick(NOW, game, send, finals);
+    expect(r.sent).toBeGreaterThan(0);
+    const endpoints = new Set(send.mock.calls.map(([s]) => s.endpoint));
+    expect(endpoints).toEqual(new Set([subscription.endpoint, phone.endpoint]));
+    expect(
+      (await storage.loadManager(doc.userId))!.push?.subscriptions,
+    ).toEqual([phone]);
   });
 });
 
