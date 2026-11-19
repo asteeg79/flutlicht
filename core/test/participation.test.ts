@@ -1,5 +1,6 @@
 import { describe, expect, it } from "vitest";
-import { isScoredMatchday, isShadowMatchday, participation } from "../src";
+import { isScoredMatchday, isShadowMatchday } from "../src";
+import { participation } from "../src/participation";
 
 describe("Welche Spieltage zählen (KONZEPT 2.7, 2.8)", () => {
   it("gewertet ab dem Saisonstart, Schatten genau am Spieltag davor", () => {

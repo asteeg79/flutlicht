@@ -3,8 +3,8 @@ import {
   playerMatchPoints,
   positionFromSofascore,
   readSofascoreMatch,
-  type PlayerMatchResult,
 } from "../src";
+import { type PlayerMatchResult } from "../src/points";
 import round from "./fixtures/sofascore/round-01.json" with { type: "json" };
 import unionLineups from "./fixtures/sofascore/16434026/lineups.json" with { type: "json" };
 import unionIncidents from "./fixtures/sofascore/16434026/incidents.json" with { type: "json" };

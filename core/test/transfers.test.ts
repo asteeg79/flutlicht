@@ -2,14 +2,16 @@ import { describe, expect, it } from "vitest";
 import {
   applyTransfer,
   cashAfterTransfer,
-  rollTransferBank,
-  scoreManager,
   transferQuote,
   transferViolation,
+} from "../src";
+import { scoreManager } from "../src/points";
+import {
+  rollTransferBank,
   type OpenTransferWindow,
   type TransferPlayer,
   type TransferState,
-} from "../src";
+} from "../src/transfers";
 import {
   SQUAD_IDS,
   lineup442,

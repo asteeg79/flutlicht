@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  playerMatchPoints,
-  ratingPoints,
-  scoreManager,
-  type Lineup,
-  type PlayerMatchInput,
-} from "../src";
+import { playerMatchPoints, ratingPoints, type Lineup } from "../src";
+import { scoreManager, type PlayerMatchInput } from "../src/points";
 import { lineup442, positions, pts } from "./helpers";
 
 const quiet: Omit<

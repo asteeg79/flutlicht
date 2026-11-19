@@ -1,11 +1,6 @@
 import { describe, expect, it } from "vitest";
-import {
-  formationOf,
-  setCaptain,
-  swapPlayers,
-  validateLineup,
-  type Lineup,
-} from "../src";
+import { setCaptain, swapPlayers, validateLineup, type Lineup } from "../src";
+import { formationOf } from "../src/lineup";
 import { lineup442, positionOf, squadPlayers } from "./helpers";
 
 const free = () => false;

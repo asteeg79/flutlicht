@@ -3,12 +3,11 @@ import {
   awaitingData,
   DATA_ALARM_AFTER_MS,
   DATA_HINT_AFTER_MS,
-  MATCH_DURATION_MS,
-  scraperAlarms,
   scraperSilent,
   type Fixture,
   type ScraperStatus,
 } from "../src";
+import { MATCH_DURATION_MS, scraperAlarms } from "../src/freshness";
 
 const f = (dataState: Fixture["dataState"]): Fixture => ({
   matchday: 5,

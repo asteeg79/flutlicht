@@ -2,10 +2,10 @@ import { describe, expect, it } from "vitest";
 import {
   FORMATIONS,
   diffLineupRespectsLocks,
-  formationCounts,
   validateLineup,
   type Lineup,
 } from "../src";
+import { formationCounts } from "../src/lineup";
 import { lineup442, squadPlayers } from "./helpers";
 
 const codes = (l: Lineup) => validateLineup(l, squadPlayers).map((v) => v.code);

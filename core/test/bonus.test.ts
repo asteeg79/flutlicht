@@ -1,15 +1,15 @@
 import { describe, expect, it } from "vitest";
 import {
-  finalizeManager,
-  matchdayBonus,
   matchdayBonuses,
   median,
-  participation,
   type ManagerDoc,
   type MatchdayPoints,
   matchdayCalendar,
   matchdayFinalizer,
 } from "../src";
+import { matchdayBonus } from "../src/bonus";
+import { participation } from "../src/participation";
+import { finalizeManager } from "../src/tick";
 import { lineup442, positions, SQUAD_IDS } from "./helpers";
 
 describe("median", () => {

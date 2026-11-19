@@ -1,14 +1,13 @@
 import { describe, expect, it } from "vitest";
 import {
-  finalizeManager,
   planTick,
   type Fixture,
   type ManagerDoc,
   type MatchdayPoints,
   type ScraperStatus,
-  type TickInput,
   matchdayCalendar,
 } from "../src";
+import { finalizeManager, type TickInput } from "../src/tick";
 import { lineup442, SQUAD_IDS, squadPlayers } from "./helpers";
 
 // Kader aus helpers: je 3 Spieler bei den Vereinen 100–104 (IDs 1–3 → 100, …, 13–15 → 104).

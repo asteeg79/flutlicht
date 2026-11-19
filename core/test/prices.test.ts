@@ -1,12 +1,12 @@
 import { describe, expect, it } from "vitest";
 import {
-  expectation,
   lastPricedMatchday,
   nextPrice,
   priceChange,
   startBudget,
   startPrice,
 } from "../src";
+import { expectation } from "../src/prices";
 
 describe("startPrice (KONZEPT 4.1)", () => {
   const vMax = 140_000_000;
