@@ -106,10 +106,26 @@ async function backendWriteIf(
     );
     return Number(written) === 1;
   }
-  // Lokal (Entwicklung, Tests) läuft nur ein Prozess: Vergleichen und Schreiben genügt.
-  if ((await localRead(pathname)) !== expected) return false;
-  await localWrite(pathname, content);
-  return true;
+  // Lokal (Entwicklung, Tests) läuft nur ein Prozess: Vergleichen und Schreiben unter
+  // einer Sperre je Datei, sonst lesen zwei gleichzeitige Schreiber denselben Stand.
+  return withLocalLock(pathname, async () => {
+    if ((await localRead(pathname)) !== expected) return false;
+    await localWrite(pathname, content);
+    return true;
+  });
+}
+
+const localLocks = new Map<string, Promise<unknown>>();
+
+/** Führt `fn` erst aus, wenn der vorige Aufruf für denselben Schlüssel fertig ist. */
+function withLocalLock<T>(key: string, fn: () => Promise<T>): Promise<T> {
+  const previous = localLocks.get(key) ?? Promise.resolve();
+  const run = previous.then(fn, fn);
+  localLocks.set(
+    key,
+    run.catch(() => undefined),
+  );
+  return run;
 }
 
 async function backendDelete(pathname: string): Promise<void> {
@@ -146,15 +162,15 @@ async function backendListContents(
   } catch {
     return [];
   }
-  const result: Entry[] = [];
-  for (const f of files) {
-    if (!f.startsWith(prefix) || !f.endsWith(suffix)) continue;
-    result.push({
+  const matching = files.filter(
+    (f) => f.startsWith(prefix) && f.endsWith(suffix),
+  );
+  return Promise.all(
+    matching.map(async (f) => ({
       pathname: f,
       content: await fs.readFile(path.join(localDir(), f), "utf8"),
-    });
-  }
-  return result;
+    })),
+  );
 }
 
 // --- Öffentliche API ---

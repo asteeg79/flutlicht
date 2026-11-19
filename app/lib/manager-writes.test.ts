@@ -85,10 +85,10 @@ describe("updateManagers", () => {
       async (d) => {
         if (first) {
           first = false;
-          // Während der Admin alle Konten umschreibt, ändert der andere Manager sein Dokument.
+          // Während der Admin alle Konten umschreibt, ändert der andere Manager sein
+          // Dokument, wie jede Änderung über den Schreibweg (Compare-and-Set).
           const other = d.userId === tom.userId ? ana.userId : tom.userId;
-          const current = (await storage.loadManager(other))!;
-          await storage.saveManager({ ...current, teamName: "Neu" });
+          await updateManager(other, (o) => ({ ...o, teamName: "Neu" }));
         }
         return { ...d, firstMatchday: 9 };
       },

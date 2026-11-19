@@ -75,7 +75,8 @@ export async function updateManagers(
   change: Change,
   options: Omit<WriteOptions, "expect"> = {},
 ): Promise<void> {
-  for (const userId of userIds) await write(userId, change, options);
+  // Gleichzeitig: Kommen sich zwei Schreiber in die Quere, wiederholt write (Compare-and-Set).
+  await Promise.all(userIds.map((userId) => write(userId, change, options)));
 }
 
 /**

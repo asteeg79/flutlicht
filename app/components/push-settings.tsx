@@ -5,7 +5,7 @@ import { LoaderCircle } from "lucide-react";
 import { useState } from "react";
 import { toast } from "@/components/arena/toast";
 import { useInstall } from "@/hooks/useInstall";
-import { usePush } from "@/hooks/usePush";
+import { usePush, type PushState } from "@/hooks/usePush";
 import { callApi } from "@/lib/api-client";
 
 type Prefs = NonNullable<ManagerDoc["push"]>["prefs"];
@@ -29,17 +29,20 @@ const PREF_LABELS: { key: keyof Prefs; label: string; hint: string }[] = [
 ];
 
 /** Push je Typ und Test-Push (KONZEPT 8.1, 8.5); iPhone nur als installierte App. */
-export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
+export function PushSettings({
+  initialPrefs,
+}: Readonly<{ initialPrefs: Prefs | null }>) {
   const { state, subscribed, loading, subscribe, unsubscribe } = usePush();
   const [prefs, setPrefs] = useState<Prefs>(initialPrefs ?? DEFAULT_PUSH_PREFS);
   const [busy, setBusy] = useState(false);
   const iosHint = useInstall().mode === "ios";
 
   async function savePrefs(next: Prefs) {
+    const previous = prefs;
     setPrefs(next);
     const r = await callApi("/api/push/prefs", "PUT", next);
     if (!r.ok) {
-      setPrefs(prefs);
+      setPrefs(previous);
       toast.error(r.error ?? "Speichern hat nicht geklappt.");
     }
   }
@@ -68,11 +71,7 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
             Push auf diesem Gerät
           </h3>
           <p className="mt-0.5 text-xs font-medium text-muted">
-            {state === "unsupported"
-              ? "Dieser Browser kann keine Push-Benachrichtigungen empfangen."
-              : state === "denied"
-                ? "Im Browser blockiert. Erlaube Benachrichtigungen in den Website-Einstellungen."
-                : "Erinnerungen, Tagesfazit und Endergebnis."}
+            {pushHint(state)}
           </p>
         </div>
         {loading ? (
@@ -136,17 +135,25 @@ export function PushSettings({ initialPrefs }: { initialPrefs: Prefs | null }) {
   );
 }
 
+function pushHint(state: PushState): string {
+  if (state === "unsupported")
+    return "Dieser Browser kann keine Push-Benachrichtigungen empfangen.";
+  if (state === "denied")
+    return "Im Browser blockiert. Erlaube Benachrichtigungen in den Website-Einstellungen.";
+  return "Erinnerungen, Tagesfazit und Endergebnis.";
+}
+
 function Switch({
   label,
   checked,
   disabled = false,
   onChange,
-}: {
+}: Readonly<{
   label: string;
   checked: boolean;
   disabled?: boolean;
   onChange: (on: boolean) => void;
-}) {
+}>) {
   return (
     <button
       type="button"

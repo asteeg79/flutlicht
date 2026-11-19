@@ -103,10 +103,12 @@ describe("runTick (Abnahme M9)", () => {
       failed: 0,
       expired: 0,
     });
-    expect(send.mock.calls.map(([, p]) => (p as { tag: string }).tag)).toEqual([
-      `remind24:9:${doc.userId}`,
-      `finalpush:8:${doc.userId}`,
-    ]);
+    // Pushes gehen gleichzeitig raus, die Reihenfolge ist offen.
+    expect(
+      new Set(send.mock.calls.map(([, p]) => (p as { tag: string }).tag)),
+    ).toEqual(
+      new Set([`remind24:9:${doc.userId}`, `finalpush:8:${doc.userId}`]),
+    );
 
     const saved = (await storage.loadManager(doc.userId))!;
     // Eingefroren ab dem ersten Spieltag des Managers (7).

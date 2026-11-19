@@ -57,7 +57,7 @@ export interface DeliveryReport {
   expired: string[];
 }
 
-/** An jedes Gerät eines Managers senden, nacheinander. */
+/** An jedes Gerät eines Managers senden, gleichzeitig. */
 export async function sendToAll(
   subscriptions: readonly PushTarget[],
   payload: PushPayload,
@@ -66,12 +66,14 @@ export async function sendToAll(
     payload: PushPayload,
   ) => Promise<PushResult> = sendPush,
 ): Promise<DeliveryReport> {
+  const outcomes = await Promise.all(
+    subscriptions.map((target) => send(target, payload)),
+  );
   const report: DeliveryReport = { sent: 0, failed: 0, expired: [] };
-  for (const target of subscriptions) {
-    const outcome = await send(target, payload);
+  for (const [i, outcome] of outcomes.entries()) {
     if (outcome === "sent") report.sent++;
     else if (outcome === "failed") report.failed++;
-    else report.expired.push(target.endpoint);
+    else report.expired.push(subscriptions[i]!.endpoint);
   }
   return report;
 }

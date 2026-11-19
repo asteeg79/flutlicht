@@ -78,20 +78,22 @@ export async function runTick(
   if (pushes.length === 0) return result;
   for (const p of pushes) state.done[p.key] = at;
   await saveSystemState(state);
-  for (const p of pushes) {
-    const doc = await loadManager(p.userId);
-    if (!doc?.push) continue;
-    const report = await sendToAll(
-      doc.push.subscriptions,
-      { title: p.title, body: p.body, url: p.url, tag: p.key },
-      send,
-    );
-    result.sent += report.sent;
-    result.failed += report.failed;
-    result.expired += report.expired.length;
-    // Abgelaufene Geräte abmelden (Workgrid-Muster), die übrigen bleiben.
-    if (report.expired.length > 0)
-      await removePushDevices(p.userId, report.expired);
-  }
+  await Promise.all(
+    pushes.map(async (p) => {
+      const doc = await loadManager(p.userId);
+      if (!doc?.push) return;
+      const report = await sendToAll(
+        doc.push.subscriptions,
+        { title: p.title, body: p.body, url: p.url, tag: p.key },
+        send,
+      );
+      result.sent += report.sent;
+      result.failed += report.failed;
+      result.expired += report.expired.length;
+      // Abgelaufene Geräte abmelden (Workgrid-Muster), die übrigen bleiben.
+      if (report.expired.length > 0)
+        await removePushDevices(p.userId, report.expired);
+    }),
+  );
   return result;
 }
