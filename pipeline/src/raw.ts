@@ -65,38 +65,48 @@ export async function readSquadSnapshots(
   warn: (message: string) => void,
 ): Promise<SquadSnapshot[]> {
   const base = join(rawDir, "sofascore", "squads");
+  const dates = await listDirs(base);
+  const listed = await Promise.all(
+    dates.map((date) => listJson(join(base, date), SQUAD_EXT)),
+  );
+  const files = dates.flatMap((date, i) =>
+    listed[i]!.map((file) => ({ date, file })),
+  );
+  // Parallel lesen, in der Reihenfolge von Datum und Datei verarbeiten (Warnungen inklusive).
+  const contents = await Promise.all(
+    files.map(({ date, file }) => readFile(join(base, date, file))),
+  );
   const out: SquadSnapshot[] = [];
-  for (const date of await listDirs(base)) {
-    for (const file of await listJson(join(base, date), SQUAD_EXT)) {
-      const gz = await readFile(join(base, date, file));
-      const env = Envelope.parse(JSON.parse(gunzipSync(gz).toString("utf8")));
-      const data = SofaSquad.parse(env.data);
-      out.push({
-        date,
-        teamId: Number(file.slice(0, -SQUAD_EXT.length)),
-        // Neu gemeldete Nachwuchsspieler kommen zunächst ohne Geburtsdatum (und ohne
-        // Position und Marktwert). Sie zählen erst, wenn Sofascore sie vervollständigt.
-        players: data.players.flatMap(({ player: p }) => {
-          if (p.dateOfBirthTimestamp === undefined) {
-            warn(
-              `Kader ${date}/${file}: Spieler ${p.id} (${p.name}) ohne Geburtsdatum, übersprungen`,
-            );
-            return [];
-          }
-          return {
-            id: p.id,
-            name: p.name,
-            shortName: p.shortName || p.name,
-            lastName: p.lastName,
-            position: positionFromSofascore(p.position),
-            birthDate: new Date(p.dateOfBirthTimestamp * 1000)
-              .toISOString()
-              .slice(0, 10),
-            sofascoreValueEur: p.proposedMarketValueRaw?.value,
-          };
-        }),
-      });
-    }
+  for (const [i, { date, file }] of files.entries()) {
+    const env = Envelope.parse(
+      JSON.parse(gunzipSync(contents[i]!).toString("utf8")),
+    );
+    const data = SofaSquad.parse(env.data);
+    out.push({
+      date,
+      teamId: Number(file.slice(0, -SQUAD_EXT.length)),
+      // Neu gemeldete Nachwuchsspieler kommen zunächst ohne Geburtsdatum (und ohne
+      // Position und Marktwert). Sie zählen erst, wenn Sofascore sie vervollständigt.
+      players: data.players.flatMap(({ player: p }) => {
+        if (p.dateOfBirthTimestamp === undefined) {
+          warn(
+            `Kader ${date}/${file}: Spieler ${p.id} (${p.name}) ohne Geburtsdatum, übersprungen`,
+          );
+          return [];
+        }
+        return {
+          id: p.id,
+          name: p.name,
+          shortName: p.shortName || p.name,
+          lastName: p.lastName,
+          position: positionFromSofascore(p.position),
+          birthDate: new Date(p.dateOfBirthTimestamp * 1000)
+            .toISOString()
+            .slice(0, 10),
+          sofascoreValueEur: p.proposedMarketValueRaw?.value,
+        };
+      }),
+    });
   }
   return out;
 }
@@ -119,23 +129,23 @@ export async function readTmCrawl(rawDir: string): Promise<ValuedCandidate[]> {
     existsSync(join(base, d, "clubs.json")),
   );
   if (!date) return [];
-  const out: ValuedCandidate[] = [];
-  for (const file of await listJson(join(base, date))) {
+  const clubs = (await listJson(join(base, date))).flatMap((file) => {
     const match = /^club-(\d+)\.json$/.exec(file);
-    if (!match) continue;
-    const club = TmClub.parse(await readData(join(base, date, file)));
-    for (const p of club.players) {
-      out.push({
-        tmId: p.id,
-        name: p.name,
-        lastName: p.name.split(/\s+/).at(-1) ?? p.name,
-        birthDate: p.dateOfBirth?.slice(0, 10),
-        tmClubId: match[1],
-        valueEur: p.marketValue,
-      });
-    }
-  }
-  return out;
+    return match ? [{ file, tmClubId: match[1]! }] : [];
+  });
+  const contents = await Promise.all(
+    clubs.map(({ file }) => readData(join(base, date, file))),
+  );
+  return clubs.flatMap(({ tmClubId }, i) =>
+    TmClub.parse(contents[i]).players.map((p) => ({
+      tmId: p.id,
+      name: p.name,
+      lastName: p.name.split(/\s+/).at(-1) ?? p.name,
+      birthDate: p.dateOfBirth?.slice(0, 10),
+      tmClubId,
+      valueEur: p.marketValue,
+    })),
+  );
 }
 
 export async function readDcaribou(rawDir: string): Promise<ValuedCandidate[]> {
@@ -166,10 +176,11 @@ export async function readMinutes(
 ): Promise<Map<number, number>> {
   const base = join(rawDir, "sofascore", "matches");
   const minutes = new Map<number, number>();
-  for (const event of await listDirs(base)) {
-    const path = join(base, event, "final", "lineups.json");
-    if (!existsSync(path)) continue;
-    const lineups = SofaLineups.parse(await readData(path));
+  const paths = (await listDirs(base))
+    .map((event) => join(base, event, "final", "lineups.json"))
+    .filter((path) => existsSync(path));
+  for (const data of await Promise.all(paths.map((path) => readData(path)))) {
+    const lineups = SofaLineups.parse(data);
     for (const raw of [...lineups.home.players, ...lineups.away.players]) {
       const p = LineupMinutes.parse(raw);
       const m = p.statistics?.minutesPlayed ?? 0;
@@ -252,9 +263,13 @@ const SofaRound = z.object({
 export async function readRounds(rawDir: string): Promise<RoundEvent[]> {
   const base = join(rawDir, "sofascore", "rounds");
   const out: RoundEvent[] = [];
-  for (const file of await listJson(base)) {
+  const files = await listJson(base);
+  const contents = await Promise.all(
+    files.map((file) => readData(join(base, file))),
+  );
+  for (const [i, file] of files.entries()) {
     const matchday = Number(/round-(\d+)\.json/.exec(file)?.[1]);
-    for (const e of SofaRound.parse(await readData(join(base, file))).events) {
+    for (const e of SofaRound.parse(contents[i]).events) {
       out.push({
         id: e.id,
         matchday: e.roundInfo?.round ?? matchday,
@@ -279,27 +294,41 @@ export async function readMatchSources(
     return created;
   };
   const base = join(rawDir, "sofascore", "matches");
-  for (const event of await listDirs(base)) {
-    for (const phase of ["provisional", "final"] as const) {
-      const dir = join(base, event, phase);
-      if (
-        !existsSync(join(dir, "lineups.json")) ||
-        !existsSync(join(dir, "incidents.json"))
-      )
-        continue;
-      const lineups = await readJson(join(dir, "lineups.json"), Envelope);
-      const incidents = await readJson(join(dir, "incidents.json"), Envelope);
-      entry(Number(event))[phase] = {
-        lineups: lineups.data,
-        incidents: incidents.data,
-        at: [lineups.fetchedAt, incidents.fetchedAt].sort(byCodeUnit).at(-1)!,
-      };
-    }
+  const phases = (await listDirs(base))
+    .flatMap((event) =>
+      (["provisional", "final"] as const).map((phase) => ({
+        event,
+        phase,
+        dir: join(base, event, phase),
+      })),
+    )
+    .filter(
+      ({ dir }) =>
+        existsSync(join(dir, "lineups.json")) &&
+        existsSync(join(dir, "incidents.json")),
+    );
+  const read = await Promise.all(
+    phases.map(({ dir }) =>
+      Promise.all([
+        readJson(join(dir, "lineups.json"), Envelope),
+        readJson(join(dir, "incidents.json"), Envelope),
+      ]),
+    ),
+  );
+  for (const [i, { event, phase }] of phases.entries()) {
+    const [lineups, incidents] = read[i]!;
+    entry(Number(event))[phase] = {
+      lineups: lineups.data,
+      incidents: incidents.data,
+      at: [lineups.fetchedAt, incidents.fetchedAt].sort(byCodeUnit).at(-1)!,
+    };
   }
   const manualDir = join(rawDir, "manual", "matches");
-  for (const file of await listJson(manualDir)) {
-    const match = await readJson(join(manualDir, file), ManualMatch);
-    entry(match.eventId).manual = match;
-  }
+  const manuals = await Promise.all(
+    (await listJson(manualDir)).map((file) =>
+      readJson(join(manualDir, file), ManualMatch),
+    ),
+  );
+  for (const match of manuals) entry(match.eventId).manual = match;
   return out;
 }

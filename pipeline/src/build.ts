@@ -209,7 +209,7 @@ export async function writeData(
   dataDir: string,
   files: readonly DataFile[],
 ): Promise<void> {
-  for (const f of files) await f.write(dataDir);
+  await Promise.all(files.map((f) => f.write(dataDir)));
   await removeStalePoints(
     dataDir,
     new Set(files.map((f) => f.file).filter((f) => f.startsWith("points/"))),
@@ -237,7 +237,6 @@ async function removeStalePoints(
 ): Promise<void> {
   const dir = join(dataDir, "points");
   if (!existsSync(dir)) return;
-  for (const file of await readdir(dir)) {
-    if (!keep.has(`points/${file}`)) await rm(join(dir, file));
-  }
+  const stale = (await readdir(dir)).filter((f) => !keep.has(`points/${f}`));
+  await Promise.all(stale.map((file) => rm(join(dir, file))));
 }
