@@ -5,8 +5,8 @@ import argparse
 import logging
 
 from . import config, gitsync
-from .client import PauseRequired, default_client, tm_client
-from .dispatch import JOBS, NEEDS_MATCHDAY, commit_paths, run_job
+from .client import PauseRequired
+from .dispatch import JOBS, client_for, commit_paths, missing, run_job
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -25,11 +25,12 @@ def main(argv: list[str] | None = None) -> int:
 
         run_once()
         return 0
-    if args.job in NEEDS_MATCHDAY and args.matchday is None:
-        parser.error(f"{args.job} braucht --matchday")
+    problem = missing(args.job, args.matchday, args.event)
+    if problem:
+        parser.error(problem)
 
     logging.basicConfig(level=logging.INFO, format="%(asctime)s %(levelname)s %(message)s")
-    client = tm_client() if args.job == "tm-crawl" else default_client()
+    client = client_for(args.job)()
     try:
         written, _ = run_job(args.job, client, config.RAW_DIR, args.matchday, args.event)
     except PauseRequired as e:

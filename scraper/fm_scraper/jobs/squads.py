@@ -17,12 +17,21 @@ def _path(raw_dir: Path, day: str, team_id: int) -> Path:
     return raw_dir / "sofascore" / "squads" / day / f"{team_id}.json.gz"
 
 
-def complete(raw_dir: Path, day: str) -> bool:
+def _complete(raw_dir: Path, day: str) -> bool:
     """Hat jeder Verein aus teams.json einen Stand an diesem Tag? Nach einem Abbruch nicht."""
     teams_file = raw_dir / config.TEAMS_FILE.relative_to(config.RAW_DIR)
     if not teams_file.exists():
         return False
     return all(_path(raw_dir, day, team["id"]).exists() for team in load_teams(teams_file))
+
+
+def fetched_since(raw_dir: Path, day: date) -> bool:
+    """Gibt es ab `day` einen vollständigen Stand (auch von Hand geholt)? Ein abgebrochener
+    zählt nicht: Der Job holt dann nur die fehlenden Vereine."""
+    snapshots = raw_dir / "sofascore" / "squads"
+    return snapshots.exists() and any(
+        p.is_dir() and p.name >= day.isoformat() and _complete(raw_dir, p.name) for p in snapshots.iterdir()
+    )
 
 
 def run(client: Client, raw_dir: Path, teams: list[dict], today: date) -> list[Path]:

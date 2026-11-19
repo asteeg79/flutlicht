@@ -32,3 +32,16 @@ def test_pflichtargumente(tmp_path):
 def test_bilder_committen_auch_die_bilddateien():
     assert dispatch.commit_paths("images") == ("app/public/img", "raw")
     assert dispatch.commit_paths("squads") == ("raw",)
+
+
+def test_jeder_job_ruft_mit_seinem_client_ab():
+    from fm_scraper import client
+
+    assert dispatch.client_for("tm-crawl") is client.tm_client
+    assert dispatch.client_for("squads") is client.default_client
+
+
+def test_pflichtargumente_kommen_aus_der_registry():
+    assert dispatch.missing("match-provisional", None, None) == "match-provisional braucht --event"
+    assert dispatch.missing("match-final", None, 77) == "match-final braucht --matchday"
+    assert dispatch.missing("squads", None, None) is None

@@ -17,7 +17,7 @@ from typing import Any, Callable
 from zoneinfo import ZoneInfo
 
 from . import config
-from .jobs import squads
+from .jobs import match_final, squads
 from .jobs.round_events import round_path
 
 log = logging.getLogger(__name__)
@@ -71,10 +71,6 @@ def _counts(f: dict) -> bool:
     return _kickoff(f) - original <= POSTPONED_GRACE
 
 
-def _has_final(raw_dir: Path, event_id: int | None) -> bool:
-    return event_id is not None and (raw_dir / "sofascore" / "matches" / str(event_id) / "final" / "incidents.json").exists()
-
-
 def plan(
     now: datetime,
     fixtures: list[dict],
@@ -126,7 +122,7 @@ def plan(
         if event is None or f["status"] == "postponed" or f["dataState"] not in ("none", "pending"):
             continue
         key = f"prov:{event}"
-        if key in done or _has_final(raw_dir, event):
+        if key in done or match_final.has_final(raw_dir, event):
             continue
         kickoff = _kickoff(f)
         if kickoff > now or now - kickoff > PROVISIONAL_WINDOW:
@@ -141,12 +137,12 @@ def plan(
         games = [f for f in by_md[md] if _counts(f)]
         if not games or not all(f["status"] == "finished" for f in games):
             continue
-        if all(_has_final(raw_dir, f.get("sofascoreEventId")) for f in games):
+        if all(match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games):
             continue
         key = f"final:{md}"
         # „Erledigt“ ohne eine einzige finale Datei zählt nicht: Bis 12.10.2026 meldete match-final
         # „ok“, ohne etwas abzurufen, wenn die Rundendatei von vor dem Spieltag stammte.
-        empty = key not in state.get("gaveUp", {}) and not any(_has_final(raw_dir, f.get("sofascoreEventId")) for f in games)
+        empty = key not in state.get("gaveUp", {}) and not any(match_final.has_final(raw_dir, f.get("sofascoreEventId")) for f in games)
         if key in done and not empty:
             continue  # versucht (ggf. aufgegeben); nicht die späteren Spieltage blockieren
         if finals_today - {key}:
@@ -167,13 +163,7 @@ def plan(
         day = max(today - timedelta(days=(today.weekday() - wd) % 7) for wd in SQUAD_WEEKDAYS)
     key = f"squads:{day.isoformat()}"
     t = when(key, lambda: _random_between(rng, _at(day, 10), _at(day, 18)))
-    snapshots = raw_dir / "sofascore" / "squads"
-    # Ein vollständiger Kader-Stand ab dem geplanten Tag (etwa von Hand geholt) gilt als erledigt.
-    # Ein abgebrochener nicht: Der Job holt dann nur die fehlenden Vereine.
-    fetched = snapshots.exists() and any(
-        p.is_dir() and p.name >= day.isoformat() and squads.complete(raw_dir, p.name) for p in snapshots.iterdir()
-    )
-    if key not in done and t <= now and not fetched:
+    if key not in done and t <= now and not squads.fetched_since(raw_dir, day):
         tasks.append(Task(key, "squads"))
 
     # images: fehlende Bilder, höchstens ein Lauf pro Stunde. Die Prüfung liest alle Kader;
