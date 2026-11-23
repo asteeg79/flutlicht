@@ -5392,8 +5392,8 @@
     "startValueEur": 200000,
     "valueSource": "tm-crawl",
     "price": 0.9,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1140591.webp"
   },
   {
@@ -6378,8 +6378,8 @@
     "startValueEur": 440000,
     "valueSource": "sofascore",
     "price": 1.3,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1426231.webp"
   },
   {
@@ -6569,8 +6569,8 @@
     "startValueEur": 300000,
     "valueSource": "tm-crawl",
     "price": 1.1,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1489167.webp"
   },
   {
@@ -6685,8 +6685,8 @@
     "startValueEur": 125000,
     "valueSource": "tm-crawl",
     "price": 0.7,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1510765.webp"
   },
   {
@@ -7287,8 +7287,8 @@
     "startValueEur": 500000,
     "valueSource": "tm-crawl",
     "price": 1.4,
-    "purchasable": false,
-    "active": false,
+    "purchasable": true,
+    "active": true,
     "image": "/img/players/1861987.webp"
   },
   {
@@ -7582,6 +7582,19 @@
     "image": "/img/players/1925489.webp"
   },
   {
+    "id": 1925501,
+    "name": "Noah Codjo-Evora",
+    "shortName": "N. Codjo-Evora",
+    "teamId": 2672,
+    "position": "FWD",
+    "birthDate": "2007-08-16",
+    "startValueEur": 190000,
+    "valueSource": "sofascore",
+    "price": 0.8,
+    "purchasable": false,
+    "active": true
+  },
+  {
     "id": 1925507,
     "name": "Tim Binder",
     "shortName": "T. Binder",
@@ -7592,7 +7605,7 @@
     "valueSource": "sofascore",
     "price": 2.3,
     "purchasable": false,
-    "active": false,
+    "active": true,
     "image": "/img/players/1925507.webp"
   },
   {
@@ -7619,7 +7632,7 @@
     "valueSource": "sofascore",
     "price": 0.8,
     "purchasable": false,
-    "active": false,
+    "active": true,
     "image": "/img/players/1929651.webp"
   },
   {
@@ -7705,8 +7718,8 @@
     "startValueEur": 390000,
     "valueSource": "sofascore",
     "price": 1.2,
-    "purchasable": true,
-    "active": true,
+    "purchasable": false,
+    "active": false,
     "image": "/img/players/1952390.webp"
   },
   {
@@ -8248,10 +8261,11 @@
     "teamId": 2674,
     "position": "MID",
     "birthDate": "2010-10-31",
-    "valueSource": "missing",
-    "price": 0.5,
+    "startValueEur": 5300000,
+    "valueSource": "sofascore",
+    "price": 4.3,
     "purchasable": false,
-    "active": false
+    "active": true
   },
   {
     "id": 2160257,
@@ -8808,7 +8822,7 @@
     "valueSource": "sofascore",
     "price": 1,
     "purchasable": false,
-    "active": false,
+    "active": true,
     "image": "/img/players/2524633.webp"
   },
   {
