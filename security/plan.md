@@ -12,7 +12,7 @@ nachspielzeit, portfolio-analyser, vinted-relist (öffentlich), wm-tipp-agent.
 | --- | --- | --- |
 | 0 | PHP2Shell-Check, `security/inventory.yml` je Repo | erledigt (alle neun) |
 | 1 | Renovate für Actions, Images und Laufzeiten; Dependabot-Security-Updates für Pakete; kritische und hohe Lücken schließen | erledigt. Node und Python werden nur nach Freigabe im Dashboard zum PR |
-| 2 | Pilot Flutlicht: PR-Prüfung (gitleaks, Semgrep, Claude-Review), Wochenscan (Semgrep, gitleaks, ZAP) | läuft, Gate A vom 04.11. bis 18.11. (Protokoll: `security/gate-a.md`) |
+| 2 | Pilot Flutlicht: PR-Prüfung (gitleaks, Semgrep, Claude-Review), Wochenscan (Semgrep, gitleaks, ZAP) | Gate A am 18.11. ausgewertet: weiter mit Phase 4, vorher nachschärfen (`security/gate-a.md`, Empfehlung) |
 | 3 | Pilot Flutlicht: Tagesabgleich (OSV, CISA KEV, endoflife.date), Fristen 24 h / 7 / 30 / 90 Tage, Alarm per Erwähnung | läuft seit 03.11. |
 | 3b | Security-Cockpit (siehe unten) | Web-App SecCo auf https://security.a-tec.dev: Schritt 1 (Ansicht) und 2 (Aktionen) laufen seit 04.11.; Issue-Cockpit #28 abgeschaltet |
 | 4 | Rollout auf alle Repos über `security-agent` | nach Gate A |
