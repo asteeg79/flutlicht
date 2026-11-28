@@ -1,5 +1,5 @@
 {
-  "fetchedAt": "2026-11-28T14:19:07.960Z",
+  "fetchedAt": "2026-11-28T18:58:50.504Z",
   "url": "https://api.openligadb.de/getmatchdata/bl1/2026",
   "phase": "season",
   "data": [
@@ -9698,10 +9698,71 @@
         "tla": null,
         "wikidataId": "Q141971"
       },
-      "lastUpdateDateTime": "2026-11-20T11:58:22.52",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-11-28T17:23:49.047",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 131865,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 1,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 131866,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 2,
+          "pointsTeam2": 1,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 154132,
+          "scoreTeam1": 0,
+          "scoreTeam2": 1,
+          "matchMinute": 37,
+          "goalGetterID": 22667,
+          "goalGetterName": "M. Aebischer",
+          "scoringTeamId": 80,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154164,
+          "scoreTeam1": 1,
+          "scoreTeam2": 1,
+          "matchMinute": 85,
+          "goalGetterID": 18976,
+          "goalGetterName": "P. Tietz",
+          "scoringTeamId": 81,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154166,
+          "scoreTeam1": 2,
+          "scoreTeam2": 1,
+          "matchMinute": 92,
+          "goalGetterID": 19551,
+          "goalGetterName": "A. Caci",
+          "scoringTeamId": 81,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 1533,
         "locationCity": "Mainz",
@@ -9741,9 +9802,30 @@
         "tla": null,
         "wikidataId": "Q15789"
       },
-      "lastUpdateDateTime": "2026-11-20T11:57:14.017",
-      "matchIsFinished": false,
-      "matchResults": [],
+      "lastUpdateDateTime": "2026-11-28T17:22:19.7",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 131867,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 131868,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 0,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
       "goals": [],
       "location": {
         "locationID": 1030,
@@ -9784,10 +9866,97 @@
         "tla": null,
         "wikidataId": null
       },
-      "lastUpdateDateTime": "2026-11-20T11:56:51.85",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-11-28T17:20:50.94",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 131869,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 3,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 131870,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 5,
+          "pointsTeam2": 0,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 154130,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 8,
+          "goalGetterID": 18968,
+          "goalGetterName": "M. Bülter",
+          "scoringTeamId": 65,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154135,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 16,
+          "goalGetterID": 21344,
+          "goalGetterName": "S. El Mala",
+          "scoringTeamId": 65,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154136,
+          "scoreTeam1": 3,
+          "scoreTeam2": 0,
+          "matchMinute": 39,
+          "goalGetterID": 18968,
+          "goalGetterName": "M. Bülter",
+          "scoringTeamId": 65,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154154,
+          "scoreTeam1": 4,
+          "scoreTeam2": 0,
+          "matchMinute": 63,
+          "goalGetterID": 18968,
+          "goalGetterName": "M. Bülter",
+          "scoringTeamId": 65,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154158,
+          "scoreTeam1": 5,
+          "scoreTeam2": 0,
+          "matchMinute": 68,
+          "goalGetterID": 21344,
+          "goalGetterName": "S. El Mala",
+          "scoringTeamId": 65,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 509,
         "locationCity": "Köln",
@@ -9827,10 +9996,149 @@
         "tla": null,
         "wikidataId": "Q32494"
       },
-      "lastUpdateDateTime": "2026-11-20T11:57:33.83",
-      "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "lastUpdateDateTime": "2026-11-28T17:28:02.89",
+      "matchIsFinished": true,
+      "matchResults": [
+        {
+          "resultID": 131871,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 3,
+          "pointsTeam2": 0,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 131872,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 8,
+          "pointsTeam2": 1,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 154133,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 21,
+          "goalGetterID": 23538,
+          "goalGetterName": "Jano ter Horst",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154134,
+          "scoreTeam1": 2,
+          "scoreTeam2": 0,
+          "matchMinute": 39,
+          "goalGetterID": 24968,
+          "goalGetterName": "S. Marino",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154148,
+          "scoreTeam1": 3,
+          "scoreTeam2": 0,
+          "matchMinute": 49,
+          "goalGetterID": 24968,
+          "goalGetterName": "S. Marino",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        },
+        {
+          "goalID": 154151,
+          "scoreTeam1": 4,
+          "scoreTeam2": 0,
+          "matchMinute": 55,
+          "goalGetterID": 19135,
+          "goalGetterName": "S. Tigges",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154152,
+          "scoreTeam1": 5,
+          "scoreTeam2": 0,
+          "matchMinute": 57,
+          "goalGetterID": 24968,
+          "goalGetterName": "S. Marino",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154153,
+          "scoreTeam1": 5,
+          "scoreTeam2": 1,
+          "matchMinute": 59,
+          "goalGetterID": 24981,
+          "goalGetterName": "A. Aouchiche",
+          "scoringTeamId": 9,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154161,
+          "scoreTeam1": 6,
+          "scoreTeam2": 1,
+          "matchMinute": 73,
+          "goalGetterID": 23561,
+          "goalGetterName": "D. Zeitler",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154165,
+          "scoreTeam1": 7,
+          "scoreTeam2": 1,
+          "matchMinute": 85,
+          "goalGetterID": 27242,
+          "goalGetterName": "G. Vidovic",
+          "scoringTeamId": 31,
+          "isPenalty": true,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154167,
+          "scoreTeam1": 8,
+          "scoreTeam2": 1,
+          "matchMinute": 96,
+          "goalGetterID": 19565,
+          "goalGetterName": "Felix Götze",
+          "scoringTeamId": 31,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 1482,
         "locationCity": "Paderborn",
@@ -9870,10 +10178,84 @@
         "tla": null,
         "wikidataId": "Q38245"
       },
-      "lastUpdateDateTime": "2026-11-20T11:58:53.153",
+      "lastUpdateDateTime": "2026-11-28T19:53:25.063",
       "matchIsFinished": false,
-      "matchResults": [],
-      "goals": [],
+      "matchResults": [
+        {
+          "resultID": 131893,
+          "resultName": "Halbzeit",
+          "pointsTeam1": 1,
+          "pointsTeam2": 1,
+          "resultOrderID": 1,
+          "resultTypeID": 1,
+          "resultTypeKind": "HalfTime",
+          "resultDescription": "Ergebnis nach Ende der ersten Halbzeit"
+        },
+        {
+          "resultID": 131894,
+          "resultName": "Endergebnis",
+          "pointsTeam1": 2,
+          "pointsTeam2": 2,
+          "resultOrderID": 2,
+          "resultTypeID": 2,
+          "resultTypeKind": "After90Minutes",
+          "resultDescription": "Ergebnis nach Ende der offiziellen Spielzeit"
+        }
+      ],
+      "goals": [
+        {
+          "goalID": 154171,
+          "scoreTeam1": 1,
+          "scoreTeam2": 0,
+          "matchMinute": 42,
+          "goalGetterID": 18355,
+          "goalGetterName": "G. Prömel",
+          "scoringTeamId": 16,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154172,
+          "scoreTeam1": 1,
+          "scoreTeam2": 1,
+          "matchMinute": 47,
+          "goalGetterID": 23685,
+          "goalGetterName": "Younes Ebnoutalib",
+          "scoringTeamId": 91,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": true,
+          "comment": null
+        },
+        {
+          "goalID": 154178,
+          "scoreTeam1": 2,
+          "scoreTeam2": 1,
+          "matchMinute": 54,
+          "goalGetterID": 24178,
+          "goalGetterName": "L. Jaquez",
+          "scoringTeamId": 16,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        },
+        {
+          "goalID": 154179,
+          "scoreTeam1": 2,
+          "scoreTeam2": 2,
+          "matchMinute": 62,
+          "goalGetterID": 23685,
+          "goalGetterName": "Younes Ebnoutalib",
+          "scoringTeamId": 91,
+          "isPenalty": false,
+          "isOwnGoal": false,
+          "isOvertime": false,
+          "comment": null
+        }
+      ],
       "location": {
         "locationID": 1493,
         "locationCity": "Stuttgart",
